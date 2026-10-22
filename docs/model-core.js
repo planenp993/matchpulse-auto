@@ -31,7 +31,7 @@
   };
   const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
   const normal=n=>String(n||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'')
-    .replace(/&/g,' and ').replace(/[^a-zA-Z0-9]+/g,' ').trim().toLowerCase().replace(/\s+/g,' ');
+    .replace(/&/g,' and ').replace(/[^\p{L}\p{N}]+/gu,' ').trim().toLowerCase().replace(/\s+/g,' ');
   function clubKey(name){const n=normal(name);return ALIAS[n]||n}
   function sortRecent(a,b){return b[3].localeCompare(a[3]) || (b[4]||'').localeCompare(a[4]||'')}
   function leagueBases(rows,cutoff){
@@ -56,11 +56,6 @@
     recent:{decay:.86,prior:4,venue:.38,xg:.3,rho:-.06},
     cautious:{decay:.97,prior:10,venue:.20,xg:.15,rho:-.04}
   };
-  function wmean(series,prior){
-    let sum=0,weight=0;
-    for(const x of series){sum+=x.value*x.w;weight+=x.w}
-    return (prior+sum)/(prior?1+weight:weight||1); // prior strength applied separately below
-  }
   function shrink(observations,priorGames){
     let sum=priorGames,weight=priorGames;
     for(const e of observations){sum+=e.value*e.w;weight+=e.w}
