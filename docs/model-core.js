@@ -6,10 +6,10 @@
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
   const ALIAS={
-    'man united':'man united','manchester united':'man united',
+    'man united':'man united','man utd':'man united','manchester united':'man united',
     'man city':'man city','manchester city':'man city',
     'tottenham hotspur':'tottenham','spurs':'tottenham',
-    'nottingham forest':'nottm forest','nottm forest':'nottm forest',
+    'nottingham forest':'nottm forest','nott m forest':'nottm forest','nottm forest':'nottm forest',
     'brighton hove albion':'brighton','brighton and hove albion':'brighton',
     'newcastle united':'newcastle','leeds united':'leeds',
     'west ham united':'west ham','wolverhampton wanderers':'wolves',
