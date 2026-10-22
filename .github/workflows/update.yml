@@ -45,7 +45,7 @@ jobs:
           cp docs/data/history.json docs/data/fixtures.json docs/data/status.json docs/data/model_report.json /tmp/mp-refresh/
           for attempt in 1 2 3; do
             git fetch origin main
-            git checkout -B main origin/main
+            git reset --hard origin/main
             cp /tmp/mp-refresh/history.json /tmp/mp-refresh/fixtures.json /tmp/mp-refresh/status.json /tmp/mp-refresh/model_report.json docs/data/
             git add docs/data/history.json docs/data/fixtures.json docs/data/status.json docs/data/model_report.json
             if git diff --staged --quiet; then
