@@ -34,18 +34,20 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: Refresh Football-Data data
         run: python scripts/update.py --online
+      - name: Walk-forward model audit
+        run: python scripts/evaluate.py
       - name: Persist verified results
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           mkdir -p /tmp/mp-refresh
-          cp docs/data/history.json docs/data/fixtures.json docs/data/status.json /tmp/mp-refresh/
+          cp docs/data/history.json docs/data/fixtures.json docs/data/status.json docs/data/model_report.json /tmp/mp-refresh/
           for attempt in 1 2 3; do
             git fetch origin main
             git checkout -B main origin/main
-            cp /tmp/mp-refresh/history.json /tmp/mp-refresh/fixtures.json /tmp/mp-refresh/status.json docs/data/
-            git add docs/data/history.json docs/data/fixtures.json docs/data/status.json
+            cp /tmp/mp-refresh/history.json /tmp/mp-refresh/fixtures.json /tmp/mp-refresh/status.json /tmp/mp-refresh/model_report.json docs/data/
+            git add docs/data/history.json docs/data/fixtures.json docs/data/status.json docs/data/model_report.json
             if git diff --staged --quiet; then
               echo "No data changes"
               break
