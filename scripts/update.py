@@ -33,6 +33,7 @@ EXTRA = {
     "AUT": ("Austria","Bundesliga"), "POL": ("Poland","Ekstraklasa")
 }
 LEAGUES = {**MAIN, **EXTRA}
+from fixtures_fallback import collect as collect_secondary_fixtures
 
 def val(row, *names):
     normalized = {str(k).lstrip("\ufeff").strip().lower(): v for k,v in row.items() if k}
@@ -190,6 +191,28 @@ def run(online=True, downloader=fetch, now=None, sleeper=time.sleep):
             upcoming=[r for r in upcoming if isinstance(r,list) and len(r)>=13 and
                       today.isoformat()<=r[3]<=(today+dt.timedelta(days=15)).isoformat()]
         status["last_fixture_attempt_utc"]=stamp
+    # Secondary source supplies schedules only. Never treat its scores as history.
+    if online:
+        secondary, source_counts, secondary_errors = collect_secondary_fixtures(
+            downloader, today, LEAGUES, horizon_days=30
+        )
+        status["secondary_fixture_counts"] = source_counts
+        status["secondary_fixture_sources_ok"] = len(source_counts)
+        status["secondary_fixture_sources_total"] = 9
+        status["secondary_fixture_errors"] = secondary_errors[:12]
+        if secondary:
+            # Prefer Football-Data fixtures when both feeds report the same match.
+            # Avoid false clashes: a different kickoff time can reflect rescheduling,
+            # therefore keep the primary only when the same teams and date match.
+            merged = {(r[0], r[3], r[5].casefold(), r[6].casefold()):r for r in secondary}
+            for r in upcoming:
+                merged[(r[0], r[3], r[5].casefold(), r[6].casefold())] = r
+            upcoming = sorted(merged.values(), key=lambda r:(r[3],r[4],r[0]))
+            status["fixtures_feed_status"] = "ok_secondary"
+            status["fixtures_source"] = "Football-Data + FixtureDownload (keyless)"
+            status["fixtures_updated_utc"] = stamp
+        elif status.get("fixtures_feed_status") == "no_future_matches":
+            status["fixtures_source"] = "Football-Data; secondary calendar unavailable"
     if not history:
         raise RuntimeError("No completed matches available: keeping cached files untouched")
     historical=sorted(history.values(),key=lambda r:(r[3],r[0],r[5],r[6]))
