@@ -17,6 +17,8 @@ test('Name normalization does not collapse Cyrillic clubs',()=>{
  assert.notEqual(model.clubKey('ЦСКА София'),model.clubKey('Левски'));
  assert.equal(model.clubKey('Manchester United'),'man united');
  assert.equal(model.clubKey('Bayern'),'bayern munich');
+ assert.equal(model.clubKey("Nott'm Forest"),'nottm forest');
+ assert.equal(model.clubKey('Man Utd'),'man united');
 });
 test('All distributions sum to 1 and markets are coherent',()=>{
  const d=model.distribution(1.48,1.22,-0.06);
@@ -64,4 +66,12 @@ test('Match Lab HTML scripts parse without syntax errors',()=>{
  for(const code of inline)assert.doesNotThrow(()=>new Function(code));
  assert.match(html,/MATCH LAB/);
  assert.match(html,/model-core\.js/);
+});
+test('Legacy dashboard redirect and matching Match Lab deep links parse correctly',()=>{
+ const html=fs.readFileSync(path.resolve(__dirname,'../docs/index.html'),'utf8');
+ const scripts=[...html.matchAll(/<script(?: [^>]*)?>([\s\S]*?)<\/script>/g)].map(x=>x[1]).filter(Boolean);
+ assert.ok(scripts.length>=2);
+ for(const code of scripts)assert.doesNotThrow(()=>new Function(code));
+ assert.match(html,/lab\.html\?m=/);
+ assert.match(html,/dashboard/);
 });
