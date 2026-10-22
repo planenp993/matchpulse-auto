@@ -29,6 +29,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify Match Lab model and JavaScript
+        run: node --test tests/test_model_core.cjs
       - name: Verify CSV import
         run: python -m unittest discover -s tests -v
       - name: Refresh Football-Data data
