@@ -7,8 +7,7 @@ on:
       - 'docs/data/**'
   workflow_dispatch:
   schedule:
-    - cron: '23 20 * * 3'
-    - cron: '23 18 * * 5'
+    - cron: '17 05,17 * * *'  # Twice daily UTC; GitHub scheduling may be delayed
 
 permissions:
   contents: write
