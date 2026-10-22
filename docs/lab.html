@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="bg"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#07121b"><title>MATCHPULSE NEXT | Match Lab</title>
+<style>
+:root{color-scheme:dark;--bg:#07111a;--side:#0b1720;--panel:#101f2b;--panel2:#142836;--line:#294150;--muted:#91adba;--text:#f2f9fb;--mint:#72efaf;--mint2:#16c6a7;--yellow:#efcc78;--red:#f3a09b;font:14px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 10% -14%,#184253 0,transparent 36%),#07111a;color:var(--text)}button,select,input{font:inherit}a{color:var(--mint);text-decoration:none}button{cursor:pointer}button:disabled{opacity:.45;cursor:default}select:focus,input:focus,button:focus-visible{outline:2px solid #87f8c5;outline-offset:2px}
+.shell{display:grid;grid-template-columns:225px minmax(0,1fr);min-height:100vh}.sidebar{position:sticky;top:0;align-self:start;height:100vh;background:#091620e8;border-right:1px solid #1d3946;padding:25px 15px}.identity{font-size:22px;font-weight:950;letter-spacing:-1px;padding:8px}.identity b{color:var(--mint)}.tagline{font-size:9px;letter-spacing:2px;color:#77a7a9;margin-top:-1px;padding:0 8px 24px}.nav a{display:block;padding:12px 13px;border-radius:10px;color:#aac4cd;font-weight:740;margin:4px 0}.nav a.active{color:#071d17;background:var(--mint);box-shadow:0 8px 25px #52dda328}.nav a:hover:not(.active){background:#172e3d}.aside-note{font-size:11px;color:#809fac;line-height:1.65;padding:18px 10px;border-top:1px solid #24404f;margin-top:28px}.main{width:100%;max-width:1480px;margin:auto;padding:29px 34px 70px;min-width:0}
+.mast{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}.eyebrow{font-size:10px;font-weight:850;letter-spacing:2px;color:var(--mint2)}h1{font-size:clamp(29px,4vw,43px);letter-spacing:-1.5px;line-height:1.16;margin:5px 0 4px}.sub{color:var(--muted);margin:0;font-size:13px}.status{padding:9px 13px;border:1px solid #315a55;background:#112d2d;color:var(--mint);border-radius:25px;font-size:11px;font-weight:750}.safety{background:#2c251b;border:1px solid #65532f;color:#edd294;border-radius:12px;padding:11px 15px;font-size:12px;margin:18px 0;line-height:1.5}
+.panel{border:1px solid #254152;background:linear-gradient(155deg,#102230,#0e1e2b);border-radius:18px;padding:18px 19px;min-width:0}.section{margin:18px 0}.panel h2{font-size:18px;line-height:1.2;margin:0 0 9px;letter-spacing:-.3px}.panel h3{margin:0 0 11px;font-size:14px;color:#e3f6f7}.help{color:#90afbc;font-size:12px;line-height:1.6}.filters{display:grid;grid-template-columns:1.2fr 1fr 1.5fr auto;gap:10px;align-items:end;margin:14px 0}.field label{display:block;color:#98b7c1;font-size:11px;font-weight:780;margin:0 0 6px}.input{width:100%;padding:12px 11px;background:#081824;color:#eefbff;border:1px solid #395466;border-radius:10px;min-width:0}.btn{border:1px solid #355a62;background:#173141;color:#d9f7fa;padding:11px 16px;border-radius:10px;font-weight:780;transition:.14s}.btn:hover{background:#21455a}.btn.main{background:var(--mint);color:#062c1c;border-color:var(--mint);box-shadow:0 8px 25px #30c78c25}.btn.main:hover{background:#96ffd0}.btn.small{padding:7px 11px;font-size:12px}.hidden{display:none!important}.fixture-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;max-height:345px;overflow:auto;padding:2px}.fixture{background:#0a1b27;border:1px solid #2a4351;border-radius:12px;text-align:left;padding:12px 13px;color:#e6f4f6;min-width:0}.fixture:hover{border-color:#75e3b5}.fixture.active{border-color:var(--mint);background:#173b38;box-shadow:inset 3px 0 var(--mint)}.fixture strong{display:block;font-size:13px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}.fixture small{display:block;color:#94b5c2;font-size:11px;margin-top:3px}.fixture .src{color:#72bfad}.seg{display:flex;flex-wrap:wrap;gap:5px}.seg button{border:1px solid #2c5360;background:#0c2431;color:#add1d7;border-radius:9px;padding:9px 12px;font-weight:750}.seg button.active{background:#28513f;color:var(--mint);border-color:#6ae6a7}.manual{border-top:1px solid #254554;margin-top:14px;padding-top:14px}.manual-grid{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin-top:10px}
+.duel-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:2px 2px 14px}.duel-title{font-size:clamp(19px,2.5vw,27px);font-weight:880;letter-spacing:-.6px}.duel-note{font-size:11px;color:#b4d8d4}.team-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.team-card{border:1px solid #2c4b5b;background:#0c1d2b;border-radius:14px;padding:17px;min-width:0}.team-top{display:flex;justify-content:space-between;align-items:center;gap:12px}.team-tag{color:var(--mint);font-size:10px;letter-spacing:1.5px;font-weight:880}.team-name{font-size:clamp(17px,2vw,23px);font-weight:850;margin:4px 0 12px;overflow-wrap:anywhere}.team-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:12px 0}.team-metric{border:1px solid #2c4350;background:#132837;border-radius:10px;padding:10px 8px}.team-metric b{display:block;font-size:19px;color:#e4fff4}.team-metric small{color:#9ab4c3;font-size:10px}.history-row{display:grid;grid-template-columns:68px minmax(0,1fr) 40px;gap:8px;padding:9px 1px;border-bottom:1px solid #23404e;font-size:11px;color:#c2dbe4;align-items:center}.history-row b{text-align:right;color:#e9fbfa}.history-row .win{color:#8df1bb}.history-row .lose{color:#edb4ac}.history-row .draw{color:#e5cf92}.history-row small{color:#7da3b3}.history-box{max-height:310px;overflow-y:auto;margin-top:10px}.report-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.pill{display:inline-flex;border:1px solid #3c5b62;background:#143b3d;color:#8af4c1;border-radius:20px;padding:5px 10px;font-size:11px;font-weight:780}.pill.warning{border-color:#6d583a;background:#3b2e21;color:#f9d598}.kpi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:15px 0}.kpi>div{border:1px solid #335768;background:#102d3b;border-radius:11px;padding:15px 11px}.kpi b{display:block;font-size:clamp(19px,3vw,27px);line-height:1.1;color:#86f6c5}.kpi small{display:block;margin-top:5px;color:#9dc3cd;font-size:11px}
+.market-groups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.market-group{padding:15px;background:#0c2431;border-radius:13px;border:1px solid #30515e}.market-group h3{color:#90f2c9;border-bottom:1px solid #355561;padding-bottom:10px;font-size:12px;letter-spacing:1px}.market-row{display:flex;justify-content:space-between;gap:9px;border-bottom:1px solid #294453;padding:7px 0;font-size:12px;color:#d1e9ef}.market-row:last-child{border:0}.market-row b{font-variant-numeric:tabular-nums;color:#f1fff8}.matrix{display:grid;grid-template-columns:35px repeat(6,minmax(0,1fr));gap:5px}.score-cell{min-height:47px;border-radius:7px;border:1px solid #244351;background:#101e2a;display:flex;justify-content:center;align-items:center;flex-direction:column;text-align:center;font-size:12px;font-weight:800;font-variant-numeric:tabular-nums}.score-cell small{font-size:9px;font-weight:500;color:#9bbac7}.score-cell.axis{background:#1b3443;color:#abcad0}.two-col{display:grid;grid-template-columns:1fr .85fr;gap:12px}.foot{color:#81a6b5;font-size:11px;line-height:1.6;margin-top:30px}.explanation{font-size:12px;line-height:1.7;color:#bdd2d9;border-left:3px solid var(--mint2);padding-left:12px}.toggle{border:0;background:transparent;color:#82e4b7;text-decoration:underline;padding:8px 0;text-align:left;cursor:pointer}.fine{font-size:11px;color:#8da9b5}.caution{border-left:3px solid #cfad69;background:#302b22;color:#f6dba2;padding:12px 13px;border-radius:5px;font-size:12px;margin-top:12px}.empty{color:#b4ccd4;text-align:center;padding:28px;border:1px dashed #385768;border-radius:10px}.modebox{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.advanced{margin:12px 0 0;border-top:1px solid #2d4a58;padding-top:12px}.advanced-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.advanced-grid input{accent-color:#77efb4;width:100%}.advanced-grid output{font-size:12px;color:#96f8c9;font-weight:800}.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}
+@media(max-width:1100px){.fixture-list{grid-template-columns:repeat(2,minmax(0,1fr))}.filters{grid-template-columns:1fr 1fr}.market-groups{grid-template-columns:1fr 1fr}.advanced-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:850px){.shell{display:block}.sidebar{position:relative;height:auto;padding:13px 15px}.identity{font-size:19px}.tagline{padding-bottom:10px}.nav{display:flex;overflow:auto;gap:5px}.nav a{white-space:nowrap;padding:9px 11px;font-size:12px}.aside-note{display:none}.main{padding:19px 13px 60px}.team-grid,.two-col{grid-template-columns:1fr}.duel-top{align-items:start}}
+@media(max-width:560px){.filters{grid-template-columns:1fr 1fr}.filters .field:last-of-type{grid-column:1/-1}.filters .btn{grid-column:1/-1}.fixture-list{grid-template-columns:1fr 1fr;max-height:300px}.fixture{padding:9px}.fixture strong{font-size:11px}.fixture small{font-size:10px}.manual-grid{grid-template-columns:1fr 1fr}.manual-grid .btn{grid-column:1/-1}.kpi{grid-template-columns:repeat(2,minmax(0,1fr))}.market-groups{grid-template-columns:1fr}.matrix{gap:3px;grid-template-columns:24px repeat(6,minmax(0,1fr))}.score-cell{min-height:36px;font-size:10px}.score-cell small{font-size:8px}.panel{padding:13px}.team-card{padding:12px}.team-metric b{font-size:16px}.eyebrow{font-size:9px}.status{font-size:10px;padding:7px 9px}}
+</style></head><body><div class="shell"><aside class="sidebar">
+<div class="identity">MATCH<b>PULSE</b> <span style="font-size:11px;color:#96c7b8">NEXT</span></div><div class="tagline">MATCH LAB / AUTOMATED GOAL INTELLIGENCE</div>
+<nav class="nav"><a href="index.html">▦ &nbsp; Програма и подбор</a><a class="active" href="lab.html">◉ &nbsp; MATCH LAB</a><a href="index.html#teams">▤ &nbsp; История на отборите</a><a href="index.html#model">◇ &nbsp; Тестове на модела</a></nav>
+<div class="aside-note">Football-Data UK: история и резултати<br>FixtureDownload: календар<br>Без ръчно въвеждане на резултати.</div></aside>
+<main class="main"><header class="mast"><div><div class="eyebrow">MATCHPULSE NEXT · MATCH LAB</div><h1>Анализирай двубоя.</h1><p class="sub">Два отбора, автоматична история и прозрачни вероятности за голове.</p></div><div class="status" id="sync">● Зареждане на данни</div></header>
+<div class="safety" id="notice">Системата не предоставя live данни. Сверявай датата и часа на програмата преди публикуване на прогноза.</div>
+<section class="panel section"><div class="modebox"><div><h2>01 / Избери предстоящ двубой</h2><div class="help">Срещите са от автоматичния календар. Не въвеждаш резултати и статистика ръчно.</div></div><button class="btn small" id="reload">↻ Обнови екрана</button></div>
+<div class="filters"><div class="field"><label>Първенство</label><select class="input" id="league"><option value="">Всички</option></select></div><div class="field"><label>Период</label><select class="input" id="period"><option value="7">7 дни</option><option value="15">15 дни</option><option value="30" selected>30 дни</option></select></div><div class="field"><label>Отбор или среща</label><input class="input" type="search" id="search" placeholder="Например Arsenal, Barcelona..." autocomplete="off"></div><button class="btn" id="clear">Изчисти</button></div>
+<div class="help" id="fixtureInfo"></div><div id="fixtures" class="fixture-list" style="margin-top:12px"></div>
+<div class="manual"><button class="toggle" id="toggleManual">＋ Избор на два отбора от архива, без потвърдена програма</button><div class="hidden" id="manualPanel">
+<div class="help">Изчисляваш хипотетичен двубой със съществуващата статистика. Това не доказва, че има насрочен мач.</div>
+<div class="manual-grid"><div class="field"><label>Домакин</label><select class="input" id="manualHome"></select></div><div class="field"><label>Гост</label><select class="input" id="manualAway"></select></div><button class="btn" id="manualGo">Отвори двубоя</button></div></div></div></section>
+<section class="panel section" id="matchLab"><div class="duel-top"><div><div class="eyebrow">02 / MATCH LAB</div><div class="duel-title" id="duelTitle">Избери мач от програмата</div><div class="duel-note" id="duelMeta"></div></div><div class="pill" id="quality">Без избран мач</div></div>
+<div class="team-grid"><div class="team-card"><div class="team-top"><div class="team-tag">ДОМАKИН</div><div class="fine" id="homeCount">—</div></div><div class="team-name" id="homeName">—</div><div class="team-metrics" id="homeMetrics"></div><h3>Последните 10 мача</h3><div class="history-box" id="homeHistory"><div class="empty">Автоматично след избор на среща</div></div></div>
+<div class="team-card"><div class="team-top"><div class="team-tag">ГОСТ</div><div class="fine" id="awayCount">—</div></div><div class="team-name" id="awayName">—</div><div class="team-metrics" id="awayMetrics"></div><h3>Последните 10 мача</h3><div class="history-box" id="awayHistory"><div class="empty">Автоматично след избор на среща</div></div></div></div>
+<div class="toolbar"><button class="btn main" id="analyze">Изчисли головия анализ →</button><button class="btn" id="copy">Копирай аналитичен бриф</button></div></section>
+<section class="panel section"><div class="modebox"><div><div class="eyebrow">03 / МОДЕЛ</div><h2>Настройки на прогнозата</h2></div><div class="seg" id="presets"><button data-preset="standard" class="active">Балансиран</button><button data-preset="recent">Последна форма</button><button data-preset="cautious">Консервативен</button></div></div><p class="help">Режимите са изследователски настройки, не предварително доказано оптимални стратегии. Не променят историческите резултати.</p>
+<button class="toggle" id="toggleAdvanced">⚙ Разширени настройки и тежести</button>
+<div class="advanced hidden" id="advanced"><div class="advanced-grid">
+<div class="field"><label>Тежест на последните мачове</label><input id="decay" type="range" min=".80" max=".99" step=".01"><output id="decayOut"></output></div>
+<div class="field"><label>Изглаждане към средното (приоритет на историята)</label><input id="prior" type="range" min="2" max="14" step="1"><output id="priorOut"></output></div>
+<div class="field"><label>Тежест на домакинство/гостуване</label><input id="venue" type="range" min="0" max=".70" step=".05"><output id="venueOut"></output></div>
+<div class="field"><label>Влияние на xG (при налични данни)</label><input id="xg" type="range" min="0" max=".5" step=".05"><output id="xgOut"></output></div>
+</div><p class="fine">Корекцията Dixon–Coles остава фиксирана в съответния режим. За резултатите се използват до 30 последни мача на отбор, само отпреди датата на двубоя.</p></div></section>
+<section class="section hidden" id="report"><div class="panel"><div class="eyebrow">04 / GOAL INTELLIGENCE</div><div class="report-head"><h2>Голов модел и очаквано развитие</h2><div class="pill" id="reportMode">—</div></div><div class="kpi" id="kpis"></div><div class="caution hidden" id="risk"></div>
+<h3 style="margin-top:19px">Вероятности от едно общо разпределение</h3><div class="market-groups" id="marketGroups"></div>
+</div><div class="two-col section"><div class="panel"><h2>Матрица на точните резултати</h2><div class="help" style="margin:0 0 10px">Редове: домакин · Колони: гост · процент за всеки резултат</div><div class="matrix" id="matrix"></div></div><div class="panel"><h2>Как се получава оценката?</h2><div class="explanation" id="explanation"></div><div id="topScores" style="margin-top:14px"></div><div class="caution">Това са статистически вероятности, не проверени пазарни коефициенти. Няма надеждна оценка за value без актуална цена.</div></div></div></section>
+<footer class="foot">MATCHPULSE NEXT · Football-Data UK + допълнителен календар. Без платен API. Неизвестните xG стойности не се заместват с нули. Моделът е експериментален; сравнението с историческите тестове в основния сайт е за предишния двигател, не за този.</footer></main></div>
+<script src="model-core.js"></script><script>
+'use strict';
+const M=window.MatchpulseModel;const $=id=>document.getElementById(id);let H=[],F=[],S={},current=null,analysis=null,preset='standard',manual=false;
+const safe=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num=(v,n=2)=>Number.isFinite(v)?v.toFixed(n):'—';
+const pct=v=>Number.isFinite(v)?(v*100).toFixed(1)+'%':'—';
+const today=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Sofia',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+const localTime=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Sofia',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date());
+const key=f=>f[0]+'|'+f[3]+'|'+f[5]+'|'+f[6];
+const dateDelta=n=>{let t=new Date();t.setUTCDate(t.getUTCDate()+n);return new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Sofia',year:'numeric',month:'2-digit',day:'2-digit'}).format(t)};
+const icon=div=>['UCL','UEL','UECL'].includes(div)?'★':'◉';
+function forthcoming(f){return f[3]>today || (f[3]===today && ((f[13]||'').includes('Sofia')?f[4]>=localTime:true))}
+function eligible(){const end=dateDelta(+ $('period').value),q=$('search').value.toLowerCase().trim(),league=$('league').value;
+ return F.filter(f=>forthcoming(f)&&f[3]<=end&&(!league||league===f[0])&&
+ (!q||[f[5],f[6],f[2]].some(x=>String(x).toLowerCase().includes(q)))).sort((a,b)=>(a[3]+' '+a[4]).localeCompare(b[3]+' '+b[4]));}
+function refreshFixtures(){
+ const list=eligible();
+ $('fixtureInfo').textContent=list.length+' предстоящи срещи в избрания обхват · източникът не е live';
+ $('fixtures').innerHTML=list.length?list.slice(0,120).map(f=>'<button class="fixture '+(current&&key(current)===key(f)?'active':'')+'" data-key="'+safe(key(f))+'"><strong>'+icon(f[0])+' '+safe(f[5])+' – '+safe(f[6])+'</strong><small>'+safe(f[3])+' · '+safe(f[4])+' · '+safe(f[2])+'</small><small class="src">'+safe((f[13]||'Football-Data').split('/')[0])+'</small></button>').join(''):'<div class="empty">Няма срещи с тези филтри. Използвай избора от архива за изследователски мач.</div>';
+ for(const btn of $('fixtures').querySelectorAll('button[data-key]'))btn.onclick=()=>{const f=list.find(x=>key(x)===btn.dataset.key);if(f)select(f)};
+}
+function metrics(rows,team){
+ const x=rows.slice(0,10),count=x.length;
+ if(!count)return '<div class="empty">Няма история за отбора</div>';
+ let gf=0,ga=0,over=0,gg=0,xg=0,xx=0;
+ for(const r of x){const home=M.clubKey(r[5])===M.clubKey(team);const forGoals=home?r[7]:r[8],against=home?r[8]:r[7];gf+=forGoals;ga+=against;over+=+(r[7]+r[8]>=3);gg+=+(r[7]>0&&r[8]>0);const v=home?r[9]:r[10];if(typeof v==='number'&&Number.isFinite(v)){xg+=v;xx++}}
+ return [['Голове / мач',num(gf/count)],['Допуснати',num(ga/count)],['Над 2,5',pct(over/count)],['Гол/гол',pct(gg/count)],['xG / мач',xx?num(xg/xx):'—'],['xG мачове',xx+'/'+count]].map(t=>'<div class="team-metric"><b>'+t[1]+'</b><small>'+t[0]+'</small></div>').join('');
+}
+function historyHTML(rows,team){
+ if(!rows.length)return '<div class="empty">Няма история за този отбор в базата</div>';
+ return rows.slice(0,10).map(r=>{let home=M.clubKey(r[5])===M.clubKey(team),gf=home?r[7]:r[8],ga=home?r[8]:r[7];const opponent=home?r[6]:r[5],color=gf>ga?'win':gf<ga?'lose':'draw';
+ return '<div class="history-row"><span><small>'+r[3].slice(5)+'</small><br>'+ (home?'Д':'Г')+'</span><span>'+safe(opponent)+' <small>· '+safe(r[2])+'</small></span><b class="'+color+'">'+gf+':'+ga+'</b></div>'}).join('');
+}
+function select(f,isManual=false){
+ current=f;manual=isManual;analysis=null;$('report').classList.add('hidden');refreshFixtures();
+ $('duelTitle').textContent=f[5]+' – '+f[6];
+ $('duelMeta').textContent=f[2]+' · '+f[3]+' '+f[4]+' · '+(isManual?'НЕПОТВЪРДЕН, изследователски двубой':(f[13]||'Football-Data'));
+ const home=M.teamMatches(H,f[5],f[3]),away=M.teamMatches(H,f[6],f[3]);
+ $('homeName').textContent=f[5];$('awayName').textContent=f[6];
+ $('homeCount').textContent=home.length+' исторически мача';$('awayCount').textContent=away.length+' исторически мача';
+ $('homeMetrics').innerHTML=metrics(home,f[5]);$('awayMetrics').innerHTML=metrics(away,f[6]);
+ $('homeHistory').innerHTML=historyHTML(home,f[5]);$('awayHistory').innerHTML=historyHTML(away,f[6]);
+ $('quality').textContent=Math.min(home.length,away.length)>=5?'● Налични данни':'● Недостатъчни данни';
+ $('quality').classList.toggle('warning',Math.min(home.length,away.length)<5);
+ history.replaceState(null,'',isManual?'lab.html':('lab.html?m='+encodeURIComponent(key(f))));
+ $('matchLab').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function settings(){
+ return preset==='custom'?{
+  ...M.params.standard,
+  decay:+$('decay').value,prior:+$('prior').value,venue:+$('venue').value,xg:+$('xg').value
+ }:preset;
+}
+function fillSettings(){
+ const p=typeof settings()==='string'?M.params[settings()]:settings();
+ for(const x of ['decay','prior','venue','xg']){
+  $(x).value=p[x];$(x+'Out').textContent=x==='decay'?p[x].toFixed(2):x==='prior'?String(p[x]):pct(p[x]);
+ }
+}
+function render(){
+ if(!current){$('notice').textContent='Избери среща от програмата или състави изследователски двубой от архива.';return}
+ analysis=M.evaluate(H,current,settings());
+ if(analysis.error){
+  $('report').classList.remove('hidden');$('kpis').innerHTML='<div style="grid-column:1/-1;color:#f0ca9a">'+safe(analysis.error)+'</div>';
+  $('marketGroups').innerHTML='';$('matrix').innerHTML='';$('explanation').innerHTML='';
+  $('risk').classList.remove('hidden');$('risk').textContent='Не изчисляваме вероятности при недостатъчна история. Това не е доказателство, че отборът е слаб.';
+  $('report').scrollIntoView({behavior:'smooth',block:'start'});return;
+ }
+ const z=analysis,p=z.distribution.probs;const fair=v=>v>0?(1/v).toFixed(2):'—';
+ $('quality').textContent='● '+z.quality.grade;$('quality').classList.toggle('warning',z.euro||z.quality.score<52);
+ $('reportMode').textContent=(preset==='custom'?'Ръчен режим':{standard:'Балансиран',recent:'Последна форма',cautious:'Консервативен'}[preset])+' · '+z.quality.grade;
+ $('kpis').innerHTML=[['Домакин · λ',num(z.lambdaHome)],['Гост · λ',num(z.lambdaAway)],['Общо очаквани',num(z.total)],['Над 2,5 гола',pct(p.over25)]].map(v=>'<div><b>'+v[1]+'</b><small>'+v[0]+'</small></div>').join('');
+ const groups=[
+  ['ОБЩО ГОЛОВЕ', [['Над 0,5',p.over05],['Над 1,5',p.over15],['Над 2,5',p.over25],['Под 2,5',1-p.over25],['Над 3,5',p.over35],['Под 3,5',1-p.over35],['Над 4,5',p.over45]]],
+  [safe(current[5]).toUpperCase(), [['Над 0,5',p.homeOver05],['Над 1,5',p.homeOver15],['Над 2,5',p.homeOver25]]],
+  [safe(current[6]).toUpperCase(), [['Над 0,5',p.awayOver05],['Над 1,5',p.awayOver15],['Над 2,5',p.awayOver25]]],
+  ['ГОЛ / ГОЛ', [['Да',p.btts],['Не',1-p.btts]]]
+ ];
+ $('marketGroups').innerHTML=groups.map(g=>'<div class="market-group"><h3>'+g[0]+'</h3>'+g[1].map(a=>'<div class="market-row"><span>'+a[0]+'</span><b>'+pct(a[1])+'</b></div>').join('')+'</div>').join('');
+ const matrix=z.distribution.matrix;let grid='<div class="score-cell axis">Д\\Г</div>';
+ for(let j=0;j<=5;j++)grid+='<div class="score-cell axis">'+j+'</div>';
+ for(let i=0;i<=5;i++){grid+='<div class="score-cell axis">'+i+'</div>';
+  for(let j=0;j<=5;j++){let pr=matrix[i][j],opacity=Math.min(.78,.08+pr*7);
+   grid+='<div class="score-cell" style="background:rgba(52,203,144,'+opacity.toFixed(2)+')">'+pct(pr)+'</div>'}}
+ $('matrix').innerHTML=grid;
+ $('explanation').innerHTML='Атакуващ коефициент домакин: <b>'+num(z.strengths.home.gf)+'</b> · защита гост: <b>'+num(z.strengths.away.ga)+'</b>.<br>Атакуващ коефициент гост: <b>'+num(z.strengths.away.gf)+'</b> · защита домакин: <b>'+num(z.strengths.home.ga)+'</b>.<br>Лигова голова основа: '+num(z.bases.home)+' домакин, '+num(z.bases.away)+' гост.<br>Формула λ домакин = база × атака домакин × защита гост, аналогично за гост.<br><br>'+safe(z.explanation)+'<br><br>Данни: '+z.quality.homeN+' мача за домакина и '+z.quality.awayN+' за госта. xG наличен и при двата: '+z.quality.coverage+' мача минимум.';
+ $('topScores').innerHTML='<h3>Най-вероятни резултати</h3><div class="seg">'+z.distribution.scores.slice(0,5).map(x=>'<span class="pill">'+x.h+':'+x.a+' · '+pct(x.p)+'</span>').join('')+'</div>';
+ const warns=[];
+ if(z.quality.warning)warns.push(z.quality.warning);
+ if(z.quality.homeN<10||z.quality.awayN<10)warns.push('Ограничена актуална извадка.');
+ if(!z.quality.coverage)warns.push('Без достатъчно xG за двата отбора.');
+ if(manual)warns.push('Двубоят не е потвърден в календара.');
+ $('risk').classList.toggle('hidden',warns.length===0);
+ $('risk').textContent=warns.join(' ');
+ $('report').classList.remove('hidden');$('report').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function teams(){
+ const names=[...new Set(H.flatMap(r=>[r[5],r[6]]))].sort((a,b)=>a.localeCompare(b));
+ const opts=names.map(t=>'<option value="'+safe(t)+'">'+safe(t)+'</option>').join('');
+ $('manualHome').innerHTML=opts;$('manualAway').innerHTML=opts;
+ if(names.length>1)$('manualAway').selectedIndex=1;
+}
+async function init(){
+ try{
+  const payload=await Promise.all(['history.json','fixtures.json','status.json'].map(n=>fetch('data/'+n+'?v=next1',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(n+': HTTP '+r.status);return r.json()})));
+  H=payload[0];F=payload[1];S=payload[2];
+  const leagues=[...new Map(F.map(r=>[r[0],r[2]])).entries()].sort((a,b)=>a[1].localeCompare(b[1]));
+  $('league').innerHTML='<option value="">Всички състезания</option>'+leagues.map(z=>'<option value="'+safe(z[0])+'">'+safe(z[1])+'</option>').join('');
+  const refreshed=S.fixtures_checked_utc?new Date(S.fixtures_checked_utc).toLocaleString('bg-BG',{timeZone:'Europe/Sofia'}):'неизвестно';
+  $('sync').textContent='● '+H.length.toLocaleString('bg-BG')+' мача · календар '+refreshed;
+  $('notice').textContent='Календарът е периодично обновяван, не live. '+F.length+' записани предстоящи срещи при последната проверка. Преди публикуване провери часа, състава и отменените срещи.';
+  refreshFixtures();teams();fillSettings();
+  const match=new URLSearchParams(location.search).get('m'),existing=F.find(x=>key(x)===match);
+  if(existing)select(existing);
+ }catch(e){$('sync').textContent='● Грешка при зареждане';$('notice').textContent='Неуспешно зареждане на JSON данните: '+e.message+'. Опитай да презаредиш сайта.';}
+}
+for(const id of ['league','period'])$(id).onchange=refreshFixtures;
+$('search').oninput=refreshFixtures;
+$('clear').onclick=()=>{$('league').value='';$('search').value='';$('period').value='30';refreshFixtures()};
+$('reload').onclick=()=>location.reload();
+$('toggleManual').onclick=()=>$('manualPanel').classList.toggle('hidden');
+$('manualGo').onclick=()=>{
+ const h=$('manualHome').value,a=$('manualAway').value;
+ if(!h||!a||M.clubKey(h)===M.clubKey(a)){alert('Избери два различни отбора.');return}
+ const hRows=H.filter(r=>M.clubKey(r[5])===M.clubKey(h)||M.clubKey(r[6])===M.clubKey(h)).sort((a,b)=>b[3].localeCompare(a[3]));
+ const div=hRows[0]?.[0]||'MAN',country=hRows[0]?.[1]||'Изследователска среща';
+ const d=dateDelta(1);select([div,country,'Непотвърден двубой',d,'18:00',h,a,null,null,null,null,null,null,'Ръчно подбрани отбори'],true);
+};
+$('analyze').onclick=render;
+$('copy').onclick=async()=>{
+ if(!current){alert('Първо избери среща.');return}
+ const z=analysis||M.evaluate(H,current,settings());
+ if(z.error){alert(z.error);return}
+ const t=['MATCHPULSE NEXT · ANALYTICAL BRIEF',
+ current[3]+' '+current[4]+' | '+current[5]+' – '+current[6]+' | '+current[2],
+ 'Source: '+(current[13]||'Football-Data'),
+ 'Model: '+(preset==='custom'?'manual':preset)+'; lambda '+num(z.lambdaHome)+' / '+num(z.lambdaAway),
+ 'Over 1.5 '+pct(z.distribution.probs.over15)+'; Over 2.5 '+pct(z.distribution.probs.over25)+'; Over 3.5 '+pct(z.distribution.probs.over35),
+ 'BTTS Yes '+pct(z.distribution.probs.btts),
+ 'Home 2+ '+pct(z.distribution.probs.homeOver15)+'; Away 2+ '+pct(z.distribution.probs.awayOver15),
+ 'Recent: Home '+z.quality.homeN+'; Away '+z.quality.awayN,
+ 'Warning: '+(z.quality.warning||'No special warning')+(manual?' · Hypothetical fixture':''),
+ 'Not live odds. Not validated as profitable. Verify current team news and kickoff.'].join('\n');
+ try{await navigator.clipboard.writeText(t);$('copy').textContent='Копирано ✓';setTimeout(()=>$('copy').textContent='Копирай аналитичен бриф',1300)}
+ catch(e){alert('Копирането не е разрешено от браузъра.')}
+};
+$('presets').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+ preset=b.dataset.preset;$('presets').querySelectorAll('button').forEach(t=>t.classList.toggle('active',t===b));fillSettings();if(analysis)render();
+});
+$('toggleAdvanced').onclick=()=>$('advanced').classList.toggle('hidden');
+for(const x of ['decay','prior','venue','xg'])$(x).oninput=()=>{
+ preset='custom';$('presets').querySelectorAll('button').forEach(t=>t.classList.remove('active'));
+ $(x+'Out').textContent=x==='decay'?(+$(x).value).toFixed(2):x==='prior'?$(x).value:pct(+$(x).value);
+ if(analysis)render();
+};
+init();
+</script></body></html>
