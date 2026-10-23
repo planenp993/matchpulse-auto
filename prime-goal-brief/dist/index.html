@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#133d31">
+<meta name="description" content="PRIME: кратко футболно издание за голови пазари. Продуктова демонстрация с датирана програма и примерни селекции.">
+<title>PRIME · Головият бриф</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Към съдържанието</a>
+<div class="preview-bar"><span><i></i> ПРОДУКТОВ ПРОТОТИП</span><button data-action="about">Реални данни. Примерни селекции. <span aria-hidden="true">↗</span></button></div>
+<header class="header"><div class="header-inner">
+<a class="brand" href="#today" aria-label="PRIME начална страница"><svg viewBox="0 0 34 34" aria-hidden="true"><rect x="1" y="1" width="32" height="32" rx="10" fill="currentColor"/><path d="M10 25V9h8a6 6 0 010 12h-3v4zm5-9h3a1 1 0 000-2h-3z" fill="#f5f3eb"/></svg><span>PRIME<small>ГОЛОВИЯТ БРИФ</small></span></a>
+<nav class="top-nav" aria-label="Основна навигация"><a href="#today" data-nav="today">Изданието</a><a href="#fixtures" data-nav="fixtures">Програмата</a><a href="#record" data-nav="record">Архивът</a><a href="#club" data-nav="club">PRIME Club <span>↗</span></a></nav>
+<a href="#desk" class="desk-link" data-nav="desk"><span class="desk-dot"></span> Студио <span aria-hidden="true">↗</span></a>
+</div></header>
+<main id="main" tabindex="-1"></main>
+<footer class="footer"><div><a href="#today" class="wordmark">PRIME<span> / </span></a><p>Футболна логика. Проверими аргументи. Пълен отчет.</p></div><div><button data-action="about">За демонстрацията</button><a href="https://www.openligadb.de/" target="_blank" rel="noopener">Данни: OpenLigaDB · ODbL ↗</a><small>Програма към 23.10.2026 · Europe/Sofia</small></div></footer>
+<nav class="mobile-nav" aria-label="Мобилна навигация"><a href="#today" data-nav="today"><span>◉</span>Издание</a><a href="#fixtures" data-nav="fixtures"><span>▦</span>Програма</a><a href="#record" data-nav="record"><span>▤</span>Архив</a><a href="#club" data-nav="club"><span>◇</span>Club</a></nav>
+<dialog id="modal" aria-labelledby="modal-title"><button class="modal-close" aria-label="Затвори" data-action="close">×</button><div id="modal-content"></div></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="data.js"></script><script src="editorial.js"></script><script src="app.js"></script>
+</body></html>

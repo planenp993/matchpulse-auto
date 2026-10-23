@@ -1,0 +1,20 @@
+{
+  "audit_date": "2026-10-23",
+  "source_repository": "planenp993/matchpulse-auto",
+  "source_commit": "6f572ee1d4e7033957c9cdd5fb0c19f21b2a1fc8",
+  "historical_rows": 26558,
+  "historical_leagues": 19,
+  "historical_schema_positions": 13,
+  "xg_pair_rows": 1032,
+  "historical_ou25_price_pair_rows": 6792,
+  "fixtures": 300,
+  "fixture_competitions": 9,
+  "fixtures_with_current_odds": 0,
+  "fixtures_with_both_teams_at_least_5_matches_using_current_aliases": 113,
+  "prototype_source": "OpenLigaDB",
+  "prototype_history": 1350,
+  "prototype_fixtures": 72,
+  "real_publications": 0,
+  "paid_services_enabled": false,
+  "original_main_changed": false
+}
