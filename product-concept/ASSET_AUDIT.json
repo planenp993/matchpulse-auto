@@ -1,0 +1,48 @@
+{
+  "checked_on": "2026-10-23",
+  "repository": "planenp993/matchpulse-auto",
+  "main_commit": "1b721e28f5954d33e443983dc559b57a6ac2edeb",
+  "foundation_commit": "5da4c32f6dfe5bf986a58fdcbaa49d7cb8afc353",
+  "history": {
+    "count": 26558,
+    "competitions": 19,
+    "fields_per_row": 13,
+    "earliest_date": "2012-03-23",
+    "latest_date": "2026-10-21",
+    "both_xg_present": 1032,
+    "both_ou25_prices_present": 6792,
+    "duplicates_by_div_date_teams": 0
+  },
+  "fixtures": {
+    "snapshot_count": 298,
+    "competitions": 9,
+    "snapshot_updated_utc": "2026-10-22T17:38:10+00:00",
+    "date_range": ["2026-10-22", "2026-11-21"],
+    "rows_on_or_after_2026_10_23": 280,
+    "both_teams_exact_string_join_across_298_rows": 93,
+    "current_model_evaluate_ok_across_280_rows": 107,
+    "current_model_evaluate_errors_across_280_rows": 173,
+    "euro_rows_among_107_computed": 7
+  },
+  "legacy_report": {
+    "n": 1019,
+    "market": "Over 2.5 goals",
+    "brier": 0.2424,
+    "baseline_brier": 0.2449,
+    "applies_to": "legacy formula in docs/index.html, not current docs/model-core.js",
+    "no_profitability_claim": true
+  },
+  "new_research_snapshot": {
+    "source": "OpenLigaDB",
+    "license": "ODbL",
+    "leagues": ["bl1", "bl2"],
+    "seasons": [2024, 2025, 2026],
+    "history_count": 1350,
+    "fixtures_next_30_days": 72,
+    "fixtures_on_2026_10_23": 3,
+    "has_xg": false,
+    "has_current_odds": false,
+    "has_verified_team_news": false,
+    "automated_predictions_published": 0
+  }
+}

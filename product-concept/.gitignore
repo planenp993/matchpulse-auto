@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+prototype/source-cache/
+prototype/dist/data.js

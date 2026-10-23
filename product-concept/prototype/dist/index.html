@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="bg">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#173e34">
+  <meta name="description" content="PRIME — подбрани голови прогнози, ясни аргументи и прозрачен архив. Частен продуктов прототип.">
+  <title>PRIME — Голова селекция</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="data.js"></script>
+  <script defer src="editorial-core.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <div class="prototypebar" aria-label="Контроли на прототипа">
+    <span><i></i> ПРОДУКТОВ ПРОТОТИП <span class="proto-date">/ 23.10.2026</span></span>
+    <div class="proto-controls">
+      <button id="device-toggle" aria-pressed="false">Телефон</button>
+      <button id="editor-toggle">Редакция ↗</button>
+    </div>
+  </div>
+  <div class="viewport" id="viewport">
+    <a class="skip-link" href="#main">Към съдържанието</a>
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="#today" class="brand" aria-label="PRIME начало"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>PRIME<span class="brand-dot">.</span></a>
+        <nav class="desktopnav" aria-label="Основна навигация">
+          <a href="#today" data-nav="today">Селекция</a>
+          <a href="#schedule" data-nav="schedule">Програма</a>
+          <a href="#archive" data-nav="archive">Архив</a>
+        </nav>
+        <a href="#club" class="club-link" data-nav="club">PRIME Клуб <span aria-hidden="true">↗</span></a>
+      </div>
+    </header>
+    <main id="main" tabindex="-1"></main>
+    <footer class="site-footer">
+      <a href="#today" class="footer-brand">PRIME SYNDICATE</a>
+      <p>Футболен поглед. Проверими аргументи.</p>
+      <p class="footer-small">Прототип: селекциите, праговете и примерният архив са демонстрационни. Програмата и формата са от датиран OpenLigaDB snapshot. Няма live обновяване.</p>
+      <a href="https://www.openligadb.de/lizenz" target="_blank" rel="noopener">Данни: OpenLigaDB · ODbL</a>
+    </footer>
+    <nav class="bottomnav" aria-label="Мобилна навигация">
+      <a href="#today" data-nav="today"><span data-icon="selection"></span>Селекция</a>
+      <a href="#schedule" data-nav="schedule"><span data-icon="calendar"></span>Програма</a>
+      <a href="#archive" data-nav="archive"><span data-icon="archive"></span>Архив</a>
+      <a href="#club" data-nav="club"><span data-icon="club"></span>Клуб</a>
+    </nav>
+  </div>
+  <dialog id="packet-dialog" aria-labelledby="dialog-title">
+    <div class="dialog-head"><h2 id="dialog-title">Пакет за футболно проучване</h2><button id="close-dialog" aria-label="Затвори">×</button></div>
+    <p class="muted">Пакетът съдържа действителната форма и източниците. Следващият AI анализ се стартира ръчно.</p>
+    <textarea id="packet-output" readonly aria-label="Аналитичен пакет"></textarea>
+    <button class="btn btn-primary" id="copy-dialog">Копирай текста</button>
+  </dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
