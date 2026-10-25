@@ -111,10 +111,12 @@
     for(const threshold of [0,1,2,3,4])probs['over'+threshold+'5']=0;
     for(const prefix of ['home','away'])for(const t of [0,1,2])probs[prefix+'Over'+t+'5']=0;
     probs.btts=0;
+    probs.homeWin=0;probs.draw=0;probs.awayWin=0;
     const scores=[];
     for(let h=0;h<=n;h++)for(let a=0;a<=n;a++){
       const p=matrix[h][a];
       if(h>0&&a>0)probs.btts+=p;
+      if(h>a)probs.homeWin+=p; else if(h===a)probs.draw+=p; else probs.awayWin+=p;
       for(const t of [0,1,2,3,4])if(h+a>t)probs['over'+t+'5']+=p;
       for(const t of [0,1,2]){
         if(h>t)probs['homeOver'+t+'5']+=p;
@@ -122,6 +124,9 @@
       }
       scores.push({h,a,p});
     }
+    probs.double1X=probs.homeWin+probs.draw;
+    probs.doubleX2=probs.draw+probs.awayWin;
+    probs.double12=probs.homeWin+probs.awayWin;
     scores.sort((a,b)=>b.p-a.p);
     return {matrix,probs,scores:scores.slice(0,8)};
   }
