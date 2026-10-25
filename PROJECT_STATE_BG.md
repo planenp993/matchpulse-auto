@@ -135,7 +135,13 @@ node scripts/smoke_scout.cjs
 Последният проверен V4 GitHub Actions run е
 https://github.com/planenp993/matchpulse-auto/actions/runs/40228426123.
 Той е успешен, включително Chromium проверки на телефон и десктоп, за тогавашния
-V4 snapshot. Новата интеграция изисква собствен успешен `Scout Verify` run.
+V4 snapshot. Новата интеграция също премина собствените си `Scout Verify` проверки:
+
+- Push: https://github.com/planenp993/matchpulse-auto/actions/runs/40230057849
+- Pull request: https://github.com/planenp993/matchpulse-auto/actions/runs/40230088538
+
+И двете са успешни за кодовия commit `33c5219cb8fdf4e2aa23151af5caecbfd222791a`.
+Черновата за преглед е https://github.com/planenp993/matchpulse-auto/pull/5.
 
 ## Следваща работа
 
