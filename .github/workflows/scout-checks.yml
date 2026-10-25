@@ -9,6 +9,7 @@ on:
       - 'docs/scout.js'
       - 'tests/test_scout.cjs'
       - '.github/workflows/scout-checks.yml'
+      - 'scripts/build_scout_preview.py'
   workflow_dispatch:
 permissions:
   contents: read
@@ -25,3 +26,15 @@ jobs:
         run: node --test tests/test_scout.cjs
       - name: Validate existing goal model
         run: node --test tests/test_model_core.cjs
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Package offline Scout preview
+        run: python scripts/build_scout_preview.py
+      - name: Check preview file
+        run: test -s scout-offline.html
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MATCHPULSE-SCOUT-PREVIEW
+          path: scout-offline.html
+          retention-days: 14
