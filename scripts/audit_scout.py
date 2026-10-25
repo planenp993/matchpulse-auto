@@ -69,12 +69,27 @@ def audit(history,fixtures,today=None):
         else:future+=1;fixtures_by_league[f[0]]+=1
         if f[7] is not None or f[8] is not None:problems.append(f"fixture[{idx}] has final goals")
     all_leagues=sorted(set(league)|set(fixtures_by_league))
+    # Observed finished seasons 2021–2025; flag absent and thin snapshots.
+    # Thresholds are coarse quality gates, NOT guarantees of complete fixture coverage.
+    EXPECTED={"E0":380,"E1":552,"E2":552,"E3":552,
+              "D1":306,"D2":306,"I1":380,"I2":380,
+              "SP1":380,"SP2":462,"F1":306,"F2":306,
+              "N1":306,"P1":306,"B1":240,"T1":306,
+              "G1":200,"SC0":228,"AUT":180}
+    season_gaps=[]
     summary={}
     for code in all_leagues:
         obj=league[code];n=obj["matches"]
         coverage={field:{"available":obj["stats"].get(field,0),"percentage":round(obj["stats"].get(field,0)/n*100,1) if n else 0}
                   for field in FIELDS}
         coverage["xg"]={"available":obj["xg"],"percentage":round(obj["xg"]/n*100,1) if n else 0}
+        if code in EXPECTED:
+            for y in range(2021,2026):
+                observed=obj["seasons"].get(str(y),0)
+                if observed<EXPECTED[code]*.80:
+                    season_gaps.append({"division":code,"season":f"{y}/{(y+1)%100:02d}",
+                                        "matches":observed,"typical_size":EXPECTED[code],
+                                        "note":"thin or missing; source snapshots may be incomplete"})
         summary[code]={"matches":n,"first":obj["first"],"last":obj["last"],
             "seasons":dict(sorted(obj["seasons"].items())),"source_mix":dict(obj["sources"]),
             "coverage":coverage,"future_fixtures":fixtures_by_league[code]}
@@ -85,6 +100,7 @@ def audit(history,fixtures,today=None):
         "future_fixtures":future,"stale_fixture_rows":stale,
         "issues_total":len(problems),"issues":problems[:65],
         "season_target":"2021/22–2026/27, season-only leagues. Calendar-year leagues differ.",
+        "thin_or_missing_finished_seasons":season_gaps,
         "leagues":summary,
         "notes":[
             "A historic goal result does NOT imply shots/corners/cards coverage.",
@@ -101,7 +117,7 @@ def main():
     compact={k:result[k] for k in ("historical_matches","historical_leagues","calendar_leagues","future_fixtures","stale_fixture_rows","issues_total")}
     worst=sorted(result["leagues"].items(),key=lambda p:p[1]["matches"])
     print(json.dumps({**compact,"small_leagues":[[n,v["matches"]] for n,v in worst[:9]],
-                      "issues":result["issues"][:7]},ensure_ascii=False))
+                      "issues":result["issues"][:7],"thin_seasons":len(result["thin_or_missing_finished_seasons"])},ensure_ascii=False))
     if result["historical_matches"]<10000:raise SystemExit("Refuse empty/truncated archive")
     if result["issues_total"]>50:
         raise SystemExit("Fail audit: major data-integrity issues need investigation")
