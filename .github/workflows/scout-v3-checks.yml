@@ -1,0 +1,67 @@
+name: Scout V3 Data Backfill and Full Audit
+on:
+  push:
+    branches: [scout-database-trend-audit-v3]
+    paths-ignore:
+      - 'docs/data/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: scout-v3-data-backfill
+  cancel-in-progress: false
+
+jobs:
+  audit-and-import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify existing and new Python transformations
+        run: python -m unittest discover -s tests -v
+      - name: Verify JS model, Elo, trends and 3/4/5+ market streaks
+        run: node --test tests/test_model_core.cjs tests/test_scout.cjs tests/test_scout_markets.cjs tests/test_scout_elo.cjs tests/test_scout_v3.cjs
+      - name: Non-invasive CC0 historical backfill (NO requests to Football-Data)
+        run: python scripts/backfill_openfootball.py --seasons 6
+      - name: Audit six-season data coverage and integrity
+        run: python scripts/audit_scout.py
+      - name: Smoke check full historic base and trends
+        run: node scripts/smoke_scout.cjs
+      - name: Build downloadable offline preview
+        run: python scripts/build_scout_preview.py
+      - name: Install Chromium test browser
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Browser-test personal Scout on desktop and phone
+        run: |
+          python -m http.server 8765 --directory docs > /tmp/scout-http.log 2>&1 &
+          node scripts/test_scout_browser.cjs
+      - name: Preserve audited CC0 backfill in development branch
+        run: |
+          set -e
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/data/history.json docs/data/status.json docs/data/backfill_report.json docs/data/coverage_audit.json
+          if ! git diff --staged --quiet; then
+            git commit -m 'Import permitted CC0 seasonal results and publish integrity coverage report'
+            git push origin HEAD:scout-database-trend-audit-v3
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SCOUT-V3-AUDIT-PREVIEW
+          path: |
+            docs/data/backfill_report.json
+            docs/data/coverage_audit.json
+            scout-offline.html
+            scout-desktop.png
+            scout-mobile.png
+          retention-days: 14
