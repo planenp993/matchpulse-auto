@@ -49,7 +49,8 @@ def audit(history,fixtures,today=None):
         item["goals"]+=1
         if isinstance(row[9],(int,float)) and isinstance(row[10],(int,float)):item["xg"]+=1
         meta=row[13] if len(row)>13 and isinstance(row[13],dict) else {}
-        item["sources"]["openfootball-cc0" if meta.get("SRC")=="openfootball-cc0" else "existing-archive"]+=1
+        origin=meta.get("SRC") or "existing-archive"
+        item["sources"][origin]+=1
         for label,fields in FIELDS.items():
             if all(isinstance(meta.get(v),(int,float)) for v in fields):item["stats"][label]+=1
     double_teams=[f"{k} {n}" for k,n in team_date.items() if n>1]
@@ -93,12 +94,33 @@ def audit(history,fixtures,today=None):
         summary[code]={"matches":n,"first":obj["first"],"last":obj["last"],
             "seasons":dict(sorted(obj["seasons"].items())),"source_mix":dict(obj["sources"]),
             "coverage":coverage,"future_fixtures":fixtures_by_league[code]}
+    # Coverage is not uniform across markets. A zero here means unavailable,
+    # never a 0% prediction or a lost game.
+    stat_totals={field:sum(v["coverage"][field]["available"] for v in summary.values())
+                 for field in (*FIELDS,"xg")}
+    completed_season_gaps=collections.Counter(r["division"] for r in season_gaps)
+    confidence={
+        "historical_scores":"pass" if len(problems)==0 and sum(g["matches"] for g in summary.values())>=10000 else "review",
+        "six_seasons":"incomplete" if season_gaps else "no_flagged_gaps",
+        "match_stats":"missing" if not any(stat_totals[x] for x in ("shots","corners","yellow_cards")) else "partial",
+        "upcoming_fixtures":"incomplete" if len(fixtures_by_league)<20 else "partial",
+    }
+    # Coverage alert is deliberately non-fatal; integrity violations are fatal.
+    warnings=[]
+    if season_gaps:warnings.append(f"{len(season_gaps)} historical league-seasons appear incomplete or missing")
+    if not stat_totals["shots"]:warnings.append("Shots are unavailable in the published history")
+    if not stat_totals["corners"]:warnings.append("Corners are unavailable in the published history")
+    if not stat_totals["yellow_cards"]:warnings.append("Yellow cards are unavailable in the published history")
+    if stale:warnings.append(f"{stale} stale calendar rows")
     return {"checked_utc":dt.datetime.now(dt.timezone.utc).isoformat(),
         "historical_matches":sum(g["matches"] for g in summary.values()),
         "historical_leagues":sum(g["matches"]>0 for g in summary.values()),
         "calendar_leagues":len(fixtures_by_league),
         "future_fixtures":future,"stale_fixture_rows":stale,
         "issues_total":len(problems),"issues":problems[:65],
+        "readiness":confidence,"warnings":warnings,
+        "observations_by_market":stat_totals,
+        "incomplete_leagues":dict(completed_season_gaps),
         "season_target":"2021/22–2026/27, season-only leagues. Calendar-year leagues differ.",
         "thin_or_missing_finished_seasons":season_gaps,
         "leagues":summary,
@@ -115,6 +137,8 @@ def main():
     result=audit(h,f)
     u.writejson(u.OUT/"coverage_audit.json",result)
     compact={k:result[k] for k in ("historical_matches","historical_leagues","calendar_leagues","future_fixtures","stale_fixture_rows","issues_total")}
+    compact["readiness"]=result["readiness"]
+    compact["observations_by_market"]=result["observations_by_market"]
     worst=sorted(result["leagues"].items(),key=lambda p:p[1]["matches"])
     print(json.dumps({**compact,"small_leagues":[[n,v["matches"]] for n,v in worst[:9]],
                       "issues":result["issues"][:7],"thin_seasons":len(result["thin_or_missing_finished_seasons"])},ensure_ascii=False))
