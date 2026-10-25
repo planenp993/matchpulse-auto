@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="bg">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0b1523">
+  <meta name="description" content="Личен футболен анализатор с автоматична програма, статистика и голови тенденции.">
+  <title>MATCHPULSE SCOUT · Football & Goal Trends</title>
+  <link rel="stylesheet" href="scout.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand"><span class="brandball">◉</span> MATCH<span>PULSE</span><small>SCOUT</small></div>
+    <div class="tagline">FOOTBALL RESEARCH STUDIO</div>
+    <nav class="navigation" aria-label="Главно меню">
+      <button type="button" class="nav active" data-view="schedule"><span>▦</span> Програма</button>
+      <button type="button" class="nav" data-view="scanner"><span>◎</span> Trend Scanner</button>
+      <button type="button" class="nav" data-view="picks"><span>▤</span> Моите прогнози</button>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="source-status" id="sourceStatus">Зареждане на футболната база…</div>
+      <div class="sidebar-note">Личен анализ, не готови залози. Историческите тенденции не гарантират бъдещ резултат.</div>
+    </div>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <div><div class="eyebrow">FOOTBALL INTELLIGENCE · PERSONAL DESK</div>
+        <h1 id="pageTitle">Футболна програма</h1>
+        <p class="lead" id="pageSub">Дневни мачове, голови тенденции и подробен анализ на едно място.</p>
+      </div>
+      <div class="top-right"><span class="live-dot"></span><span id="lastSync">Проверка на данните…</span></div>
+    </header>
+    <div class="notice" id="notice">Данните и началните часове зависят от източника. Това не е live резултатна услуга.</div>
+
+    <section class="view" id="view-schedule">
+      <div class="hero">
+        <div class="hero-content"><div class="hero-kicker">MATCHDAY DESK</div>
+          <h2>Всички мачове.<br><em>Един удобен анализ.</em></h2>
+          <p>Преглеждай програмата, виж сигналите за голове и отваряй пълно досие за всяка среща.</p></div>
+        <div class="hero-illustration" aria-hidden="true">
+          <div class="pitch"><i></i><b></b><span></span></div>
+          <div class="hero-stats"><strong>2.5+</strong><small>GOAL TRENDS</small></div>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="days" aria-label="Дата"><button type="button" data-day="0" class="active">Днес</button><button type="button" data-day="1">Утре</button><button type="button" data-day="7">7 дни</button><label class="date-wrap" title="Избери дата"><input type="date" id="dateInput" aria-label="Избери дата"></label></div>
+        <div class="filterbar"><label class="control-label">Първенство<select id="leagueSelect"><option value="">Всички първенства</option></select></label><label class="control-label">Търси<input id="searchInput" type="search" placeholder="Отбор или лига" autocomplete="off"></label><label class="control-label">Покажи<select id="qualitySelect"><option value="all">Всички срещи</option><option value="qualified">С достатъчна история</option><option value="trending">С голов тренд</option></select></label></div>
+      </div>
+      <div class="section-heading"><div><h3 id="programTitle">Днешната програма</h3><span id="programSummary">—</span></div><div class="legend"><span class="legend-dot"></span> Головите сигнали са исторически наблюдения</div></div>
+      <div id="scheduleList" class="league-list"><div class="empty">Зареждане на програмата…</div></div>
+    </section>
+
+    <section class="view hidden" id="view-scanner">
+      <div class="section-header"><div class="eyebrow">TREND INTELLIGENCE</div><h2>Trend Scanner</h2><p>Открий мачовете с интересни съвпадения в последната форма, без да ги наричаме „сигурни прогнози“.</p></div>
+      <div class="scanner-toolbar">
+        <label class="control-label">Пазар<select id="scanMarket">
+          <option value="o25">Над 2,5 гола</option><option value="btts">Гол/гол – Да</option>
+          <option value="home2">Домакин 2+ гола</option><option value="away2">Гост 2+ гола</option>
+          <option value="u35">Под 3,5 гола</option></select></label>
+        <label class="control-label">Период<select id="scanWindow"><option value="1">Следващите 24 ч.</option><option value="3" selected>Следващите 3 дни</option><option value="7">Следващите 7 дни</option></select></label>
+        <label class="control-label">Минимум история<select id="minSample"><option value="5">5 мача</option><option value="8" selected>8 мача</option><option value="10">10 мача</option></select></label>
+        <label class="control-label">Първенство<select id="scanLeague"><option value="">Всички</option></select></label>
+      </div>
+      <div class="method-note"><strong>Как се подреждат?</strong> Сравняват се последните 10 мача на двата отбора и относимите домакинства/гостувания. Всяка карта показва реални бройки. Класацията е по сила на статистическия сигнал, а не по доказана вероятност за печалба.</div>
+      <div class="scanner-cards" id="scannerList"><div class="empty">Зареждане…</div></div>
+    </section>
+
+    <section class="view hidden" id="view-picks">
+      <div class="section-header"><div class="eyebrow">MY NOTEBOOK</div><h2>Моите прогнози</h2><p>Запазвай собствените си идеи за голови пазари. На този етап те остават в браузъра на устройството ти.</p></div>
+      <div class="picks-head"><div id="picksSummary">Няма записани прогнози</div><button id="exportPicks" type="button" class="button secondary">↓ Експорт CSV</button></div>
+      <div id="picksList"></div>
+      <p class="footnote">За момента записите се пазят само на това устройство (localStorage) и не се синхронизират между телефон и компютър. Можеш да ги експортираш като CSV.</p>
+    </section>
+    <footer> MATCHPULSE SCOUT · Исторически данни и източник за програма · Без гарантирани резултати и без live коефициенти.</footer>
+  </main>
+</div>
+
+<div id="matchOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="matchHeading">
+  <div class="drawer">
+    <div class="drawer-bar"><div class="eyebrow">MATCH CENTER</div><button id="closeMatch" type="button" class="close" aria-label="Затвори анализа">✕</button></div>
+    <div id="matchContent"><div class="empty">Зареждане…</div></div>
+  </div>
+</div>
+<script src="model-core.js"></script>
+<script src="scout-core.js"></script>
+<script src="scout.js"></script>
+</body></html>
