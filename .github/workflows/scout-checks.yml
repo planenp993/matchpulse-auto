@@ -12,6 +12,9 @@ on:
       - 'scripts/build_scout_preview.py'
       - 'scripts/smoke_scout.cjs'
       - 'scripts/test_scout_browser.cjs'
+      - 'scripts/update_calendar.py'
+      - 'tests/test_calendar_only.py'
+      - '.github/workflows/update.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -33,6 +36,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Check calendar-only refresh and existing Python imports
+        run: python -m unittest discover -s tests -v
       - name: Package offline Scout preview
         run: python scripts/build_scout_preview.py
       - name: Install headless browser
