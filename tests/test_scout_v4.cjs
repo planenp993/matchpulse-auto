@@ -40,7 +40,7 @@ test('single market minimum is not silently lowered by small sample window',()=>
 test('additional 1X2, BTTS-No and correct 12 streak observations',()=>{
  const r=game('2026-10-01','Alpha','Beta',1,0);
  for(const [m,home,away] of [
-  ['1',true,false],['2',false,true],['12',true,true],
+  ['1',true,true],['2',false,false],['12',true,true],
   ['X',false,false],['bttsNo',true,true]
  ]){assert.equal(P.observation(r,'Alpha','home',m,S.keyTeam),home);
      assert.equal(P.observation(r,'Beta','away',m,S.keyTeam),away)}
