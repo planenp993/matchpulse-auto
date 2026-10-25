@@ -1,0 +1,43 @@
+name: Scout Elo & Trend Windows
+on:
+  push:
+    branches: [scout-elo-window-2]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Test existing goal model and Scout statistics, plus new Elo
+        run: node --test tests/test_model_core.cjs tests/test_scout.cjs tests/test_scout_markets.cjs tests/test_scout_elo.cjs
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify existing data updater
+        run: python -m unittest discover -s tests -v
+      - name: Check full 26k game archive
+        run: node scripts/smoke_scout.cjs
+      - name: Package refreshed standalone offline preview
+        run: python scripts/build_scout_preview.py
+      - name: Setup headless Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Test match detail and filters on desktop and mobile
+        run: |
+          python -m http.server 8765 --directory docs >/tmp/scout-http.log 2>&1 &
+          node scripts/test_scout_browser.cjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SCOUT-ELO-15-MATCH-PREVIEW
+          path: |
+            scout-offline.html
+            scout-desktop.png
+            scout-mobile.png
+          retention-days: 7
