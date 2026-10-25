@@ -110,7 +110,7 @@ def run(history, *, today=None, downloader=fetch, seasons=6):
             url=url_for(year,name)
             try:
                 payload=downloader(url)
-                rows=parse(payload,division,today)
+                rows=[r for r in parse(payload,division,today) if season_key(r[3])==year]
                 if not rows:raise ValueError("No completed matches")
                 # Repeated club+date with distinct FT is suspicious. Block the feed.
                 keys={};error=None
