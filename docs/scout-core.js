@@ -62,14 +62,26 @@ function historyFor(index,team,div,date){
   if(!eligible.length)return {list:[],proxy:true,scope:'unmatched'};
   return {list:eligible[0][1].slice(0,50),proxy:true,scope:eligible[0][0]};
 }
-function profile(index,f){
-  const hm=historyFor(index,f[5],f[0],f[3]);
-  const am=historyFor(index,f[6],f[0],f[3]);
-  const homeAll=hm.list.slice(0,10),awayAll=am.list.slice(0,10);
-  const homeVenue=hm.list.filter(r=>keyTeam(r[5])===keyTeam(f[5])).slice(0,10);
-  const awayVenue=am.list.filter(r=>keyTeam(r[6])===keyTeam(f[6])).slice(0,10);
+function profile(index,f,{windowSize=10,opponentFilter='all',eloIndex=null}={}){
+  const n=[5,10,15].includes(Number(windowSize))?Number(windowSize):10;
+  const condition=['strong','weak'].includes(opponentFilter)?opponentFilter:'all';
+  const hm=historyFor(index,f[5],f[0],f[3]),am=historyFor(index,f[6],f[0],f[3]);
+  // Select the last N games FIRST, then classify the opponents within that sample.
+  // Never reach farther back to fill a selective filter: that hides how small the sample is.
+  const filt=(rows,name)=>{
+    const last=rows.slice(0,n);
+    if(condition==='all')return last;
+    if(!eloIndex)return [];
+    const elo=typeof globalThis!=='undefined'?globalThis.MatchpulseElo:null;
+    // Node/browser callers can supply Elo through index. Keep the module testable in Node.
+    const classify=eloIndex.opponentClass||elo?.opponentClass;
+    return typeof classify==='function'?last.filter(r=>classify(eloIndex,r,name)===condition):[];
+  };
+  const homeAll=filt(hm.list,f[5]),awayAll=filt(am.list,f[6]);
+  const homeVenue=filt(hm.list.filter(r=>keyTeam(r[5])===keyTeam(f[5])),f[5]);
+  const awayVenue=filt(am.list.filter(r=>keyTeam(r[6])===keyTeam(f[6])),f[6]);
   return {
-    fixture:f,
+    fixture:f,windowSize:n,opponentFilter:condition,
     home:{name:f[5],all:homeAll,venue:homeVenue,overall:aggregate(homeAll,f[5]),local:aggregate(homeVenue,f[5]),proxy:hm.proxy,scope:hm.scope,totalAvailable:hm.list.length},
     away:{name:f[6],all:awayAll,venue:awayVenue,overall:aggregate(awayAll,f[6]),local:aggregate(awayVenue,f[6]),proxy:am.proxy,scope:am.scope,totalAvailable:am.list.length},
     international:['UCL','UEL','UECL'].includes(f[0])
@@ -117,14 +129,14 @@ function getUpcoming(fixtures,now=new Date()){
    (f[3]!==date || !(f[13]||'').includes('Sofia') || (f[4]||'')>=clock) &&
    f[5]&&f[6]&&!isDone(f)).sort((a,b)=>(a[3]+' '+(a[4]||'')).localeCompare(b[3]+' '+(b[4]||'')));
 }
-function scan(index,fixtures,{market='o25',days=3,minSample=8,league='',now=new Date()}={}){
+function scan(index,fixtures,{market='o25',days=3,minSample=8,league='',now=new Date(),windowSize=10,opponentFilter='all',eloIndex=null}={}){
  const date=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Sofia',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
  const end=new Date(date+'T12:00:00Z');end.setUTCDate(end.getUTCDate()+Math.max(1,days)-1);
  const last=end.toISOString().slice(0,10);
  const evaluated=[];
  for(const f of getUpcoming(fixtures,now)){
   if(f[3]>last||(league&&f[0]!==league))continue;
-  const p=profile(index,f),s=trend(p,market,minSample);
+  const p=profile(index,f,{windowSize,opponentFilter,eloIndex}),s=trend(p,market,Math.min(minSample,p.windowSize));
   if(!s.qualified||!s.signalFound)continue;
   evaluated.push({fixture:f,profile:p,trend:s});
  }
