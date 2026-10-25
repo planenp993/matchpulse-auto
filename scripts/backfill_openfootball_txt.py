@@ -20,6 +20,10 @@ SOURCES={
     "E3":("england","4-league2",552),
     "SP2":("espana","2-liga2",462),
     "I2":("italy","2-serieb",380),
+    "F2":("europe","france/{season}_fr2",380),
+    "G1":("europe","greece/{season}_gr1",240),
+    "SC0":("europe","scotland/{season}_sco1",228),
+    "T1":("europe","turkey/{season}_tr1",380),
 }
 MONTH={v[:3].lower():k for k,v in enumerate(calendar.month_name) if k}
 DATE_RE=re.compile(r"^\s*(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s+([A-Za-z]{3})\s+(\d{1,2})(?:\s+(\d{4}))?\s*$")
@@ -29,7 +33,7 @@ CENTER=re.compile(r"^\s*(?:(\d{1,2}:\d{2})\s+)?(.+?)\s{2,}(\d{1,2})-(\d{1,2})(?:
 AT_END=re.compile(r"^\s*(?:(\d{1,2}:\d{2})\s+)?(.+?)\s{2,}v\s+(.+?)\s{2,}(\d{1,2})-(\d{1,2})(?:\s+\((\d{1,2})-(\d{1,2})\))?\s*$")
 HEADER_RE=re.compile(r"^=\s+.*\b(20\d{2})/(\d{2})\s*$")
 BAD_TEAM={"","tbc","tbd"}
-MAX_ROWS={"E2":552,"E3":552,"SP2":462,"I2":410}
+MAX_ROWS={"E2":552,"E3":552,"SP2":462,"I2":410,"F2":400,"G1":270,"SC0":260,"T1":410}
 
 def fetch(url):
     req=urllib.request.Request(url,headers={"User-Agent":"MATCHPULSE-SCOUT-CC0-PersonalResearch/1.0"})
@@ -37,7 +41,10 @@ def fetch(url):
         return r.read(2_000_000).decode("utf-8-sig")
 
 def url_for(year,repo,file):
-    return f"https://raw.githubusercontent.com/openfootball/{repo}/master/{year}-{(year+1)%100:02d}/{file}.txt"
+    season=f"{year}-{(year+1)%100:02d}"
+    if repo=="europe":
+        return f"https://raw.githubusercontent.com/openfootball/europe/master/{file.format(season=season)}.txt"
+    return f"https://raw.githubusercontent.com/openfootball/{repo}/master/{season}/{file}.txt"
 
 def parse(text, division, year, today):
     """Return score-only rows, with source provenance and optional halftime data."""
@@ -98,6 +105,9 @@ def fill(history,*,today=None,downloader=fetch):
             "sources":[],"skipped_partial":[],"skipped_existing":[],"issues":[]}
     for div,(owner,filename,expected) in SOURCES.items():
         for year in years:
+            # Europe archive coverage for these divisions starts in 2023/24.
+            if div in ("G1","SC0","T1") and year<2023:
+                continue
             n=counts.get((div,year),0)
             if n:
                 report["skipped_existing" if n>=.8*expected else "skipped_partial"].append(f"{div}/{year}: {n}")
