@@ -8,6 +8,33 @@ class CSVImportTests(unittest.TestCase):
         row=update.make_row(update.parse_csv(b)[0])
         self.assertEqual(row[:9],["E0","England","Premier League","2026-10-21","20:00","Arsenal","Chelsea",2,1])
 
+    def test_full_match_stats_columns_preserved(self):
+        blob=(b"Div,Date,HomeTeam,AwayTeam,FTHG,FTAG,HS,AS,HST,AST,HC,AC,HY,AY,HR,AR,HTHG,HTAG,AvgH,AvgD,AvgA\n"
+              b"E0,24/10/2026,Arsenal,Chelsea,2,1,18,9,8,4,11,5,2,3,0,1,1,0,1.85,3.7,4.5\n")
+        r=update.make_row(update.parse_csv(blob)[0])
+        self.assertEqual(r[7:9],[2,1])
+        self.assertEqual(r[13]["HS"],18)
+        self.assertEqual(r[13]["HC"],11)
+        self.assertEqual(r[13]["HY"],2)
+        self.assertEqual(r[13]["HTHG"],1)
+        self.assertEqual(r[13]["ODDH"],1.85)
+
+    def test_blanks_not_zero_and_partial_stats_do_not_erase_prior(self):
+        full=update.make_row(update.parse_csv(
+            b"Div,Date,HomeTeam,AwayTeam,FTHG,FTAG,HS,AS,HC,AC\nE0,24/10/2026,Arsenal,Chelsea,2,1,13,11,7,8\n"
+        )[0])
+        part=update.make_row(update.parse_csv(
+            b"Div,Date,HomeTeam,AwayTeam,FTHG,FTAG,HS,AS,HC,AC\nE0,24/10/2026,Arsenal,Chelsea,2,1,,,,\n"
+        )[0])
+        self.assertEqual(len(part),13)
+        merged=update.merge_rows(full,part)
+        self.assertEqual(merged[13]["HS"],13)
+        self.assertEqual(merged[13]["HC"],7)
+        self.assertNotIn("HY",merged[13])
+        self.assertIsNone(update.count_stat(""))
+        self.assertEqual(update.count_stat("0"),0)
+        self.assertIsNone(update.count_stat("-1"))
+
     def test_master_csv_format(self):
         b=b"DIV,DATE,HOME,AWAY,HG,AG,HXG,AXG\nN1,2026-10-18,Ajax,PSV,2,2,2.15,1.5\n"
         row=update.make_row(update.parse_csv(b)[0])

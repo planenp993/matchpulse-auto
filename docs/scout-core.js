@@ -134,8 +134,21 @@ function scan(index,fixtures,{market='o25',days=3,minSample=8,league='',now=new 
 function marketSettled(pick,result){
  if(!isDone(result))return null;
  const [h,a]=[result[7],result[8]],total=h+a;
- const answers={o15:total>=2,o25:total>=3,o35:total>=4,u35:total<=3,
- btts:h>=1&&a>=1,home2:h>=2,away2:a>=2};
+ const answers={'1':h>a,'X':h===a,'2':h<a,'1X':h>=a,'X2':h<=a,'12':h!==a,
+  o15:total>=2,o25:total>=3,o35:total>=4,u35:total<=3,
+  btts:h>=1&&a>=1,home2:h>=2,away2:a>=2};
+ const extra=result[13];
+ if(extra&&typeof extra==='object'&&!Array.isArray(extra)){
+  const stat=(left,right,threshold)=>{
+   const x=extra[left],y=extra[right];
+   return Number.isInteger(x)&&Number.isInteger(y)&&x>=0&&y>=0?x+y>threshold:null;
+  };
+  answers.corners85=stat('HC','AC',8.5);
+  answers.corners95=stat('HC','AC',9.5);
+  answers.yellow35=stat('HY','AY',3.5);
+  answers.shots215=stat('HS','AS',21.5);
+  answers.target85=stat('HST','AST',8.5);
+ }
  return Object.prototype.hasOwnProperty.call(answers,pick.market)?answers[pick.market]:null;
 }
 return {build,profile,trend,scan,aggregate,keyTeam,keyFixture,getUpcoming,marketSettled,SIGNALS};

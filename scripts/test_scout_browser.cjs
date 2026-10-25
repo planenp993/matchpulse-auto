@@ -15,6 +15,11 @@
  await desktop.screenshot({path:'scout-desktop.png',fullPage:true});
  await desktop.locator('.fixture-row').first().click();
  if(await desktop.locator('#matchOverlay').evaluate(el=>el.classList.contains('hidden')))throw new Error('Match drawer failed to open');
+ if(!(await desktop.locator('#matchContent').textContent()).includes('1X2 и двоен шанс'))throw new Error('Missing 1X2 analysis');
+ if(!(await desktop.locator('#matchContent').textContent()).includes('Двоен шанс 1X'))throw new Error('Missing double chance');
+ await desktop.locator('.extra-analytics summary').click();
+ if(!(await desktop.locator('.extra-analytics').textContent()).includes('Корнери'))throw new Error('Missing corner statistics');
+ await desktop.locator('#pickMarket').selectOption('1X');
  await desktop.locator('#closeMatch').click();
  await desktop.locator('[data-view="scanner"]').click();
  await desktop.locator('#scanWindow').selectOption('7');

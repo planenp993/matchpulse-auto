@@ -1,6 +1,6 @@
 /* MATCHPULSE SCOUT v1 · minimal personal football research cockpit */
 'use strict';
-const Scout=window.MatchpulseScout,Model=window.MatchpulseModel;
+const Scout=window.MatchpulseScout,Model=window.MatchpulseModel,Markets=window.MatchpulseMarkets;
 const el=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
 const fmt=(v,n=1)=>Number.isFinite(v)?v.toFixed(n):'—';
 const percent=v=>Number.isFinite(v)?fmt(v*100,0)+'%':'—';
@@ -122,6 +122,32 @@ function miniBar(name,value,total,alt=false){
  const frac=total?value/total:0;
  return '<div class="bar-row"><span>'+esc(name)+'</span><div class="bar-track"><div class="bar-fill '+(alt?'alt':'')+'" style="width:'+(frac*100)+'%"></div></div><strong>'+(total?value+'/'+total:'—')+'</strong></div>';
 }
+function extraReport(p){
+ const cards=Markets.compare(p,5),xg=Markets.xgReport(p,Scout.keyTeam);
+ const blocks=cards.map(x=>{
+  if(!x.home.n&&!x.away.n)return '<div class="extra-stat"><strong>'+esc(x.label)+'</strong><div class="extra-missing">Няма данни от CSV за последните срещи.</div></div>';
+  const lines=x.home.lines.map((h,i)=>{
+   const a=x.away.lines[i];
+   const text=(v,side)=>v.n?'<b>'+percent(v.rate)+'</b> <small>('+v.hits+'/'+v.n+')</small>':'<span class="extra-missing">няма данни</span>';
+   return '<div class="extra-line"><span>Над '+String(h.line).replace('.',',')+'</span><span>'+text(h,'h')+'</span><span>'+text(a,'a')+'</span></div>';
+  }).join('');
+  const avr=(y)=>y.n?fmt(y.average,1)+' / мач · '+y.n+' мача':'недостатъчно';
+  return '<div class="extra-stat"><strong>'+esc(x.label)+'</strong>'+
+   '<div class="extra-avg">Средно: домакин '+avr(x.home)+' · гост '+avr(x.away)+'</div>'+
+   '<div class="extra-line extra-heading"><span>Линия</span><span>Домакин</span><span>Гост</span></div>'+lines+
+   (x.eligible?'':'<div class="extra-missing">Ограничена извадка. Не използвай това като надеждна вероятност.</div>')+
+   '</div>';
+ }).join('');
+ const xgLabel=z=>z.n>=3?'xG средно '+fmt(z.mean,2)+' ('+z.n+' мача)':'xG: няма достатъчно данни';
+ return '<div class="card extra-analytics"><details>'+
+  '<summary><span>Удари, корнери, картони и xG</span><small>Наблюдавани проценти · според наличните данни</small></summary>'+
+  '<p class="footnote" style="margin-top:12px">Тези проценти са <strong>наблюдавана честота от предишни мачове</strong>, не моделирана вероятност за предстоящия двубой. Показваме „няма данни“, когато съответната CSV колона липсва.</p>'+
+  '<div class="extra-grid">'+blocks+'</div>'+
+  '<div class="extra-stat"><strong>xG (ако е наличен)</strong><div class="extra-avg">'+
+  esc(p.home.name)+': '+xgLabel(xg.home)+' · '+esc(p.away.name)+': '+xgLabel(xg.away)+'</div>'+
+  '<div class="footnote">xG не е стандартно гарантирана колона във Football-Data. Стойностите се показват само ако действително съществуват в базата.</div></div>'+
+  '</details></div>';
+}
 function modelReport(f,p){
  if(p.international)return '<div class="warn">За евротурнирите не прилагаме общи вероятности от националните първенства без корекция за силата на противниците. Използвай досието само като контекст.</div>';
  if(p.home.overall.n<5||p.away.overall.n<5)return '<div class="warn">Моделът е изключен: липсват поне 5 завършени срещи за единия отбор.</div>';
@@ -129,7 +155,14 @@ function modelReport(f,p){
  if(z.error)return '<div class="warn">'+esc(z.error)+'</div>';
  const x=z.distribution.probs;
  const markets=[['Над 1,5 гола',x.over15],['Над 2,5 гола',x.over25],['Под 2,5 гола',1-x.over25],['Над 3,5 гола',x.over35],['Гол/гол Да',x.btts],['Гол/гол Не',1-x.btts],['Домакин 2+',x.homeOver15],['Гост 2+',x.awayOver15]];
- return '<div class="card"><h3>Ориентировъчен голов модел</h3>'+
+ return '<div class="card"><h3>1X2 и двоен шанс</h3>'+
+   '<p class="footnote">Изчислени от същата матрица на точните резултати като головите пазари. Това са ориентировъчни моделни вероятности, не доказано пазарно предимство.</p>'+
+   '<div class="outcome-grid">'+
+   [['1',x.homeWin],['X',x.draw],['2',x.awayWin]].map(([label,p])=>'<div class="outcome-cell"><strong>'+label+'</strong><b>'+percent(p)+'</b></div>').join('')+
+   '</div><div class="model-markets">'+
+   [['1X · домакин или равен',x.double1X],['X2 · гост или равен',x.doubleX2],['12 · без равен',x.double12]].map(([label,p])=>'<div><span>'+label+'</span><strong>'+percent(p)+'</strong></div>').join('')+
+   '</div></div>'+
+   '<div class="card"><h3>Ориентировъчен голов модел</h3>'+
    '<div class="model-kpis"><div><b>'+fmt(z.lambdaHome,2)+'</b><span>Очаквани домакин</span></div><div><b>'+fmt(z.lambdaAway,2)+'</b><span>Очаквани гост</span></div><div><b>'+fmt(z.total,2)+'</b><span>Общо голове</span></div></div>'+
    '<p class="footnote">Прозрачен модел на атака/защита и Поасон с Dixon–Coles корекция. Това са <strong>експериментални вероятности, не сигурни прогнози</strong> и не потвърдени пазарни коефициенти.</p>'+
    '<div class="model-markets">'+markets.map(([n,v])=>'<div><span>'+esc(n)+'</span><strong>'+percent(v)+'</strong></div>').join('')+'</div></div>';
@@ -164,9 +197,10 @@ function openMatch(f){
      (p.international?'<div class="warn">При евротурнир може да се използва само история от вътрешно първенство или да липсва достатъчно история. Тези резултати не са директно съпоставими между различни лиги.</div>':'')+'</div>'+
    '<div class="card"><h3>Директни срещи · наличен архив</h3>'+directMeetings(f)+'</div>'+ 
    modelReport(f,p)+
+   extraReport(p)+
    '<div class="card"><h3>Запази моя прогноза</h3>'+
       '<div class="pick-form"><label>Голов пазар<select id="pickMarket">'+
-      [['o15','Над 1,5'],['o25','Над 2,5'],['o35','Над 3,5'],['u35','Под 3,5'],['btts','Гол/гол Да'],['home2','Домакин 2+'],['away2','Гост 2+']].map(([k,n])=>'<option value="'+k+'">'+n+'</option>').join('')+'</select></label>'+
+      [['1','Победа домакин (1)'],['X','Равен (X)'],['2','Победа гост (2)'],['1X','Двоен шанс 1X'],['X2','Двоен шанс X2'],['12','Двоен шанс 12'],['o15','Над 1,5'],['o25','Над 2,5'],['o35','Над 3,5'],['u35','Под 3,5'],['btts','Гол/гол Да'],['home2','Домакин 2+'],['away2','Гост 2+'],['corners85','Корнери над 8,5'],['corners95','Корнери над 9,5'],['yellow35','Жълти картони над 3,5'],['shots215','Удари над 21,5'],['target85','Точни удари над 8,5']].map(([k,n])=>'<option value="'+k+'">'+n+'</option>').join('')+'</select></label>'+
       '<label>Коефициент (по избор)<input id="pickOdds" inputmode="decimal" type="text" placeholder="Напр. 1.80"></label>'+
       '<button id="savePick" type="button" class="button">+ Запази в моя бележник</button></div>'+
       '<p class="form-notice">Коефициентът се въвежда от теб. Сайтът не извлича live котировки и няма да го измисля.</p><button class="button secondary" id="copyMatch" type="button">Копирай данните за ChatGPT анализ</button>'+
@@ -217,7 +251,7 @@ function renderScanner(){
  }).join('');
  el('scannerList').querySelectorAll('[data-scan]').forEach(x=>x.onclick=()=>openMatch(scannerRows[+x.dataset.scan].fixture));
 }
-const marketNames={o15:'Над 1,5',o25:'Над 2,5',o35:'Над 3,5',u35:'Под 3,5',btts:'Гол/гол Да',home2:'Домакин 2+',away2:'Гост 2+'};
+const marketNames={'1':'Победа домакин','X':'Равен','2':'Победа гост','1X':'Двоен шанс 1X','X2':'Двоен шанс X2','12':'Двоен шанс 12',o15:'Над 1,5',o25:'Над 2,5',o35:'Над 3,5',u35:'Под 3,5',btts:'Гол/гол Да',home2:'Домакин 2+',away2:'Гост 2+',corners85:'Корнери над 8,5',corners95:'Корнери над 9,5',yellow35:'Жълти картони над 3,5',shots215:'Удари над 21,5',target85:'Точни удари над 8,5'};
 function renderPicks(){
  const list=readPicks(),resolved=list.map(p=>{
   const done=index.lookup.get(p.fixtureKey),settled=done?Scout.marketSettled(p,done):null;

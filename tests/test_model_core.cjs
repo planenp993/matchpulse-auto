@@ -32,6 +32,19 @@ test('All distributions sum to 1 and markets are coherent',()=>{
  const over25=d.matrix.flatMap((r,h)=>r.map((v,a)=>h+a>=3?v:0)).reduce((a,b)=>a+b,0);
  assert.ok(Math.abs(over25-p.over25)<1e-11);
 });
+test('1X2 and double chance all come from the same normalized score matrix',()=>{
+ const d=model.distribution(1.53,1.38,-0.06),p=d.probs;
+ const raw=[0,0,0];
+ d.matrix.forEach((row,h)=>row.forEach((v,a)=>raw[h>a?0:h===a?1:2]+=v));
+ const close=(x,y)=>assert.ok(Math.abs(x-y)<1e-10,x+' != '+y);
+ close(p.homeWin,raw[0]);close(p.draw,raw[1]);close(p.awayWin,raw[2]);
+ close(p.homeWin+p.draw+p.awayWin,1);
+ close(p.double1X,p.homeWin+p.draw);
+ close(p.doubleX2,p.awayWin+p.draw);
+ close(p.double12,p.homeWin+p.awayWin);
+ for(const x of [p.homeWin,p.draw,p.awayWin,p.double1X,p.doubleX2,p.double12])
+  assert.ok(x>=0&&x<=1);
+});
 test('Data cutoff excludes both match and future scores',()=>{
  const fixture=['E0','England','Premier League','2026-03-05','19:00','Arsenal','Chelsea'];
  const clean=model.evaluate(sample,fixture);
