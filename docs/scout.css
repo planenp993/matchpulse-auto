@@ -5,3 +5,25 @@
 @media(max-width:1120px){.shell{grid-template-columns:205px minmax(0,1fr)}.scanner-toolbar{grid-template-columns:repeat(2,1fr)}.scanner-cards{grid-template-columns:1fr}.fixture-row{grid-template-columns:57px minmax(0,1fr) 24px}.fixture-tags{grid-column:2;grid-row:2}.chevron{grid-column:3;grid-row:1 / span 2}}
 @media(max-width:810px){.shell{display:block}.sidebar{height:auto;position:relative;padding:14px 16px}.brand{font-size:19px}.tagline{padding:0 8px 13px}.navigation{display:flex;overflow:auto;gap:6px}.nav{white-space:nowrap;width:auto;padding:9px 12px;font-size:12px}.sidebar-bottom{display:none}.main{padding:23px 15px 50px}.hero{padding:24px}.hero-illustration{opacity:.5;position:absolute;right:0}.hero-content{position:relative}.hero h2{font-size:27px}.topbar{align-items:start}.top-right{font-size:10px}.drawer{width:100%}}
 @media(max-width:550px){.topbar{flex-wrap:wrap}.hero{min-height:175px;padding:22px}.hero p{max-width:250px}.hero-illustration{width:150px;height:110px;right:-15px;bottom:15px;opacity:.42}.hero-stats{display:none}.days{gap:6px}.days>button{padding:9px 13px}.filterbar{grid-template-columns:1fr 1fr;gap:9px}.filterbar .control-label:nth-child(2){grid-column:1/-1;grid-row:2}.toolbar{padding:14px}.section-heading{align-items:start;flex-wrap:wrap}.legend{font-size:10px}.league-head{padding:13px}.fixture-row{padding:13px 12px;gap:9px}.teams{font-size:12px}.tag{font-size:9px;padding:4px 6px}.scanner-toolbar{grid-template-columns:1fr 1fr;gap:9px;padding:12px}.scan-card{padding:13px}.match-inner{padding:14px}.match-header{padding:21px 16px}.team-panel{padding:12px}.team-metrics{grid-template-columns:1fr 1fr}.duel{gap:8px}.team-panel h3{font-size:13px}.history-grid{grid-template-columns:1fr}.trend-grid{grid-template-columns:1fr}.card{padding:14px}.model-markets{grid-template-columns:1fr}.stats-comparison{grid-template-columns:1fr 80px 1fr;gap:5px}.picks-head{flex-wrap:wrap}.pick-card{flex-wrap:wrap}.match-history{font-size:10px}}
+
+/* Full Scout match intelligence, progressive disclosure for smaller screens. */
+.outcome-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:13px 0}
+.outcome-cell{border:1px solid #cfede3;border-radius:12px;background:linear-gradient(130deg,#effaf6,#e1f6ed);text-align:center;padding:14px 8px;display:grid;gap:4px}
+.outcome-cell strong{font-family:Manrope,sans-serif;font-size:15px;color:#4e796c}
+.outcome-cell b{font-size:clamp(20px,4vw,28px);letter-spacing:-.6px;color:#138465}
+.extra-analytics summary{display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer;font-weight:850;font-size:16px;list-style:none;padding:2px}
+.extra-analytics summary::-webkit-details-marker{display:none}
+.extra-analytics summary::after{content:"+";font-size:24px;line-height:1;color:#16a47e;font-weight:500}
+.extra-analytics details[open] summary::after{content:"−"}
+.extra-analytics summary small{font-size:10px;color:#729193;font-weight:600;text-align:right;max-width:165px}
+.extra-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:10px}
+.extra-stat{background:#f4faf8;border:1px solid #e1eee9;border-radius:11px;padding:13px;min-width:0}
+.extra-stat strong{display:block;color:#23524b;font-size:13px;margin-bottom:5px}
+.extra-avg{font-size:10px;color:#78998f;margin:6px 0 12px;line-height:1.6}
+.extra-line{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr);gap:6px;padding:7px 1px;border-top:1px solid #e0ece9;align-items:center;color:#4c6c69;font-size:11px}
+.extra-line span:not(:first-child){text-align:right}
+.extra-line b{font-size:12px;color:#117b61}
+.extra-line small{color:#819a95;font-size:9px}
+.extra-heading{font-size:9px;text-transform:uppercase;letter-spacing:.2px;color:#85a09a;font-weight:800}
+.extra-missing{color:#8d9ca3;font-size:11px;line-height:1.5}
+@media(max-width:700px){.extra-grid{grid-template-columns:1fr}.extra-analytics summary{font-size:14px}.outcome-cell{padding:12px 5px}.outcome-cell b{font-size:21px}}
