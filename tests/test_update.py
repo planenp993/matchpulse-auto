@@ -66,7 +66,7 @@ class CSVImportTests(unittest.TestCase):
     def test_current_seasons(self):
         years=update.current_years(dt.date(2026,10,22),"E0")
         self.assertEqual(years,[2025,2026])
-        self.assertEqual(update.current_years(dt.date(2026,10,22),"N1")[0],2021)
+        self.assertEqual(update.current_years(dt.date(2026,10,22),"N1"),[2025,2026])
 
     def test_dedup_key(self):
         a=["E0","England","Premier League","2026-10-20","17:00","Arsenal","Chelsea",1,1,None,None,None,None]
