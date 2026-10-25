@@ -10,6 +10,7 @@ on:
       - 'tests/test_scout.cjs'
       - '.github/workflows/scout-checks.yml'
       - 'scripts/build_scout_preview.py'
+      - 'scripts/smoke_scout.cjs'
   workflow_dispatch:
 permissions:
   contents: read
@@ -26,6 +27,8 @@ jobs:
         run: node --test tests/test_scout.cjs
       - name: Validate existing goal model
         run: node --test tests/test_model_core.cjs
+      - name: Smoke check real fixtures and history
+        run: node scripts/smoke_scout.cjs
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
