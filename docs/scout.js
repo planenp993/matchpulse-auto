@@ -214,8 +214,10 @@ function exportPicks(){
 }
 async function load(){
  try{
-  const [h,f,s]=await Promise.all(['history.json','fixtures.json','status.json'].map(name=>
-   fetch('data/'+name+'?scout=1',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(name+' HTTP '+r.status);return r.json()})));
+  const [h,f,s]=window.SCOUT_EMBEDDED_DATA ?
+    [window.SCOUT_EMBEDDED_DATA.history,window.SCOUT_EMBEDDED_DATA.fixtures,window.SCOUT_EMBEDDED_DATA.status] :
+    await Promise.all(['history.json','fixtures.json','status.json'].map(name=>
+      fetch('data/'+name+'?scout=1',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(name+' HTTP '+r.status);return r.json()})));
   if(!Array.isArray(h)||!Array.isArray(f))throw Error('Невалиден формат на базата');
   history=h;fixtures=f;status=s;index=Scout.build(h);
   const lg=new Map();f.forEach(row=>lg.set(row[0],row[2]));
