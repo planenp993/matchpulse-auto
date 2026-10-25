@@ -143,6 +143,6 @@ def main():
     print(json.dumps({**compact,"small_leagues":[[n,v["matches"]] for n,v in worst[:9]],
                       "issues":result["issues"][:7],"thin_seasons":len(result["thin_or_missing_finished_seasons"])},ensure_ascii=False))
     if result["historical_matches"]<10000:raise SystemExit("Refuse empty/truncated archive")
-    if result["issues_total"]>50:
-        raise SystemExit("Fail audit: major data-integrity issues need investigation")
+    if result["issues_total"]:
+        raise SystemExit("Fail audit: data-integrity issues need investigation")
 if __name__=="__main__":main()
