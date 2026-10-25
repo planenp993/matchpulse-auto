@@ -40,7 +40,7 @@ class BackfillTests(unittest.TestCase):
   original=backfill.SOURCES
   backfill.SOURCES={"D1":"de.1"}
   try:
-   merged,status=backfill.run(old,today=TODAY,downloader=fake,seasons=1)
+   merged,status=backfill.run(old,today=dt.date(2022,10,25),downloader=fake,seasons=1)
   finally:
    backfill.SOURCES=original
   self.assertEqual(len(merged),len(old))
