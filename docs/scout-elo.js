@@ -8,7 +8,16 @@
  if(root)root.MatchpulseElo=api;
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
 'use strict';
-const INITIAL=1500,K=24,HOME_ADVANTAGE=65,DIFFERENCE=75,MIN_GAMES=5;
+const INITIAL=1500,K=24,HOME_ADVANTAGE=65,DIFFERENCE=75,MIN_GAMES=5,REGRESSION=.82;
+const seasonAt=(div,date)=>{
+ const yr=Number(date.slice(0,4)),mo=Number(date.slice(5,7));
+ return (div==='NOR'||div==='SWE')?yr:(mo>=7?yr:yr-1);
+};
+function adjusted(row,season){
+ if(!row)return {rating:INITIAL,games:0,season};
+ const elapsed=Math.max(0,season-row.season);
+ return {...row,rating:INITIAL+(row.rating-INITIAL)*Math.pow(REGRESSION,elapsed),season};
+}
 const valid=r=>Array.isArray(r)&&typeof r[0]==='string'&&typeof r[3]==='string'&&
  typeof r[5]==='string'&&typeof r[6]==='string'&&
  Number.isInteger(r[7])&&Number.isInteger(r[8])&&r[7]>=0&&r[8]>=0;
@@ -19,24 +28,26 @@ function build(history,keyTeam){
   a[5].localeCompare(b[5])||a[6].localeCompare(b[6]));
  const states=new Map(),timeline=new Map(),before=new WeakMap();
  const key=(division,team)=>division+'|'+keyTeam(team);
- const read=k=>states.get(k)||{rating:INITIAL,games:0};
+ const read=(k,div,date)=>adjusted(states.get(k),seasonAt(div,date));
  for(let at=0;at<rows.length;){
   let end=at+1;while(end<rows.length&&rows[end][3]===rows[at][3])end++;
-  const adjustments=new Map(),increments=new Map(),day=rows[at][3];
+  const adjustments=new Map(),increments=new Map(),day=rows[at][3],divisionFor=new Map();
   for(let i=at;i<end;i++){
    const r=rows[i],hk=key(r[0],r[5]),ak=key(r[0],r[6]);
    if(hk===ak)continue;
-   const h=read(hk),a=read(ak),p=expected(h.rating,a.rating);
+   const h=read(hk,r[0],day),a=read(ak,r[0],day),p=expected(h.rating,a.rating);
    before.set(r,{home:h.rating,away:a.rating,homeN:h.games,awayN:a.games,date:day,div:r[0]});
    const outcome=r[7]>r[8]?1:r[7]===r[8]?.5:0;
-   const delta=K*(outcome-p);
+   const goalMargin=Math.min(1.5,1+0.22*Math.log1p(Math.abs(r[7]-r[8])));
+   const delta=K*goalMargin*(outcome-p);
+   divisionFor.set(hk,r[0]);divisionFor.set(ak,r[0]);
    adjustments.set(hk,(adjustments.get(hk)||0)+delta);
    adjustments.set(ak,(adjustments.get(ak)||0)-delta);
    increments.set(hk,(increments.get(hk)||0)+1);
    increments.set(ak,(increments.get(ak)||0)+1);
   }
   for(const [k,change] of adjustments){
-   const prior=read(k),next={rating:prior.rating+change,games:prior.games+(increments.get(k)||0)};
+   const div=divisionFor.get(k),prior=read(k,div,day),next={rating:prior.rating+change,games:prior.games+(increments.get(k)||0),season:seasonAt(div,day)};
    states.set(k,next);
    if(!timeline.has(k))timeline.set(k,[]);
    timeline.get(k).push({date:day,...next});
@@ -52,7 +63,7 @@ function teamAt(index,division,team,cutoff){
   const mid=(low+high)>>1;
   if(list[mid].date<cutoff)low=mid+1;else high=mid;
  }
- return low?list[low-1]:{rating:INITIAL,games:0,date:null};
+ return adjusted(low?list[low-1]:null,seasonAt(division,cutoff));
 }
 function matchup(index,fixture){
  const h=teamAt(index,fixture[0],fixture[5],fixture[3]);
@@ -82,5 +93,5 @@ function breakdown(index,rows,team){
  }
  return {strong,weak,similar,unknown,total:rows.length};
 }
-return {build,expected,teamAt,matchup,opponentClass,breakdown,INITIAL,K,HOME_ADVANTAGE,DIFFERENCE,MIN_GAMES};
+return {build,expected,teamAt,matchup,opponentClass,breakdown,seasonAt,INITIAL,K,HOME_ADVANTAGE,DIFFERENCE,MIN_GAMES,REGRESSION};
 });
