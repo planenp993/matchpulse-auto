@@ -33,7 +33,13 @@ EXTRA = {
     "DNK": ("Denmark","Superliga"), "SWZ": ("Switzerland","Super League"),
     "AUT": ("Austria","Bundesliga"), "POL": ("Poland","Ekstraklasa")
 }
-LEAGUES = {**MAIN, **EXTRA}
+# CC0 OpenFootball historical archives. Do NOT add these to Football-Data downloads.
+OPEN_ONLY = {
+    "D1": ("Germany","Bundesliga"), "I1": ("Italy","Serie A"),
+    "E2": ("England","League One"), "E3": ("England","League Two"),
+    "SC0": ("Scotland","Premiership")
+}
+LEAGUES = {**MAIN, **EXTRA, **OPEN_ONLY}
 from fixtures_fallback import collect as collect_secondary_fixtures
 
 def val(row, *names):
@@ -167,8 +173,6 @@ def fetch(url):
 def current_years(today,div):
     season_start=today.year if today.month>=7 else today.year-1
     years=[season_start-1,season_start]
-    if div=="N1":
-        years=list(range(2021,season_start+1))
     return years
 
 def run(online=True, downloader=fetch, now=None, sleeper=time.sleep):
@@ -187,7 +191,7 @@ def run(online=True, downloader=fetch, now=None, sleeper=time.sleep):
         try:
             for r in parse_csv(seed_master.read_bytes()):
                 parsed=make_row(r)
-                if parsed: history[key(parsed)]=parsed
+                if parsed: history[key(parsed)]=merge_rows(history.get(key(parsed)),parsed)
         except (OSError,ValueError): pass
     status=readjson(STAT,{})
     errors=[];checks={};success=0
