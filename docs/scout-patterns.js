@@ -17,6 +17,11 @@ const MARKETS=[
  {id:'home2',group:'goals',label:'Домакин вкарва 2+ / гост допуска 2+'},
  {id:'away2',group:'goals',label:'Гост вкарва 2+ / домакин допуска 2+'},
  {id:'1X',group:'results',label:'1X · домакин непобеден'},
+ {id:'1',group:'results',label:'Победа домакин'},
+ {id:'X',group:'results',label:'Равен'},
+ {id:'2',group:'results',label:'Победа гост'},
+ {id:'12',group:'results',label:'Без равен'},
+ {id:'bttsNo',group:'goals',label:'Гол/гол · Не'},
  {id:'X2',group:'results',label:'X2 · гост непобеден'},
  {id:'corners85',group:'corners',label:'Над 8,5 корнера'},
  {id:'corners95',group:'corners',label:'Над 9,5 корнера'},
@@ -57,6 +62,11 @@ function observation(row,club,side,id,teamKey){
   case 'u25':return total<=2;
   case 'u35':return total<=3;
   case 'btts':return gf>0&&ga>0;
+  case 'bttsNo':return gf===0||ga===0;
+  case '1':return side==='home'?gf>ga:gf<ga;
+  case 'X':return gf===ga;
+  case '2':return side==='away'?gf>ga:gf<ga;
+  case '12':return gf!==ga;
   case 'home2':return side==='home'?gf>=2:ga>=2;
   case 'away2':return side==='away'?gf>=2:ga>=2;
   case '1X':return side==='home'?gf>=ga:gf<=ga;
@@ -107,11 +117,42 @@ function run(index,fixtures,core,{market='o25',days=7,minimum=5,streak=3,both=fa
  for(const f of core.getUpcoming(fixtures,now)){
   if(f[3]>last||(league&&f[0]!==league))continue;
   const profile=core.profile(index,f,{windowSize,opponentFilter,eloIndex});
-  const signal=inspect(profile,market,{streak,minimum:Math.min(minimum,windowSize),both,teamKey:core.keyTeam});
+  const signal=inspect(profile,market,{streak,minimum,both,teamKey:core.keyTeam});
   if(signal.matched)out.push({fixture:f,profile,signal});
  }
  return out.sort((a,b)=>b.signal.rank-a.signal.rank||
   a.fixture[3].localeCompare(b.fixture[3])||a.fixture[4].localeCompare(b.fixture[4]));
 }
-return {MARKETS,observation,measures,inspect,run};
+
+/* One pass per match, all supported markets, and no duplicated fixture cards.
+ * The preview shows up to 3 distinct observed signals with their sample sizes.
+ */
+function runAll(index,fixtures,core,{days=7,minimum=5,streak=3,both=false,
+ windowSize=10,opponentFilter='all',eloIndex=null,league='',now=new Date()}={}){
+ const date=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Sofia',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
+ const end=new Date(date+'T12:00:00Z');end.setUTCDate(end.getUTCDate()+Math.max(1,days)-1);
+ const last=end.toISOString().slice(0,10),result=[];
+ for(const fixture of core.getUpcoming(fixtures,now)){
+  if(fixture[3]>last||(league&&fixture[0]!==league))continue;
+  const profile=core.profile(index,fixture,{windowSize,opponentFilter,eloIndex});
+  const matches=[];
+  for(const market of MARKETS){
+   const signal=inspect(profile,market.id,{streak,minimum,both,teamKey:core.keyTeam});
+   if(!signal.matched)continue;
+   // Ranking is a research heuristic, not a probability.
+   const n=Math.min(signal.home.n,signal.away.n);
+   const strength=.45*Math.min(1,Math.max(signal.home.currentStreak,signal.away.currentStreak)/6)+
+                  .3*Math.min(signal.home.rate,signal.away.rate)+.25*Math.min(1,n/10);
+   matches.push({...signal,strength});
+  }
+  if(!matches.length)continue;
+  matches.sort((a,b)=>b.strength-a.strength||
+   Math.min(b.home.n,b.away.n)-Math.min(a.home.n,a.away.n)||a.market.localeCompare(b.market));
+  result.push({fixture,profile,signal:matches[0],signals:matches.slice(0,3),
+   totalSignals:matches.length,strength:matches[0].strength});
+ }
+ return result.sort((a,b)=>b.strength-a.strength||b.totalSignals-a.totalSignals||
+  a.fixture[3].localeCompare(b.fixture[3])||a.fixture[4].localeCompare(b.fixture[4]));
+}
+return {MARKETS,observation,measures,inspect,run,runAll};
 });
