@@ -15,6 +15,7 @@ bundle={
  "history":json.loads((DOC/"data/history.json").read_text(encoding="utf-8")),
  "fixtures":json.loads((DOC/"data/fixtures.json").read_text(encoding="utf-8")),
  "status":json.loads((DOC/"data/status.json").read_text(encoding="utf-8")),
+ "coverage":json.loads((DOC/"data/coverage_audit.json").read_text(encoding="utf-8")) if (DOC/"data/coverage_audit.json").exists() else None,
 }
 payload=json.dumps(bundle,ensure_ascii=False,separators=(",",":")).replace("</","<\\/")
 html=html.replace('<link rel="stylesheet" href="scout.css">','<style>'+css+'</style>')
