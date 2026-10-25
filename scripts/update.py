@@ -7,6 +7,7 @@ import csv
 import datetime as dt
 import io
 import json
+import math
 import os
 import time
 import urllib.request
@@ -55,7 +56,49 @@ def number(value):
 
 def goals(value):
     n=number(value)
-    return int(n) if n is not None and n>=0 and n<=30 and int(n)==n else None
+    return int(n) if n is not None and math.isfinite(n) and 0<=n<=30 and int(n)==n else None
+
+def count_stat(value, upper=120):
+    """Blank is missing, never zero. Preserve only valid whole-number match stats."""
+    n=number(value)
+    return int(n) if n is not None and math.isfinite(n) and 0<=n<=upper and int(n)==n else None
+
+# Row[13] is an optional stats dict on FINISHED games only. Fixture[13] is source text.
+# Keep the stable original 13 indices for goals, existing xG and historical O/U odds.
+MATCH_STATS={
+    "HS":100,"AS":100, "HST":60,"AST":60,
+    "HC":45,"AC":45, "HY":20,"AY":20,
+    "HR":10,"AR":10, "HTHG":30,"HTAG":30,
+    "HF":100,"AF":100
+}
+
+def match_stats(row):
+    stats={}
+    for column,ceiling in MATCH_STATS.items():
+        n=count_stat(val(row,column),ceiling)
+        if n is not None: stats[column]=n
+    for field,names in (
+        ("ODDH",("AvgH","B365H","B365CH")),
+        ("ODDD",("AvgD","B365D","B365CD")),
+        ("ODDA",("AvgA","B365A","B365CA")),
+    ):
+        n=number(val(row,*names))
+        if n is not None and math.isfinite(n) and 1<n<1001: stats[field]=round(n,4)
+    return stats
+
+def merge_rows(old, fresh):
+    """Keep previously imported optional observations when an incoming row lacks them."""
+    if old is None: return fresh
+    new=list(fresh)
+    for i in (9,10,11,12):
+        if new[i] is None and len(old)>i: new[i]=old[i]
+    previous=old[13] if len(old)>13 and isinstance(old[13],dict) else {}
+    incoming=new[13] if len(new)>13 and isinstance(new[13],dict) else {}
+    merged={**previous,**incoming}
+    if merged:
+        if len(new)==13:new.append(merged)
+        else:new[13]=merged
+    return new
 
 def parse_csv(blob):
     for encoding in ("utf-8-sig","cp1252","latin1"):
@@ -88,11 +131,15 @@ def make_row(row, fallback=None, fixture=False):
     else:
         if hg is None or ag is None: return None
     country,league=LEAGUES[div]
-    return [div,val(row,"Country") or country,val(row,"League") or league,
+    base=[div,val(row,"Country") or country,val(row,"League") or league,
             d.isoformat(),val(row,"Time"),home,away,hg,ag,
             number(val(row,"HXG","HxG")),number(val(row,"AXG","AxG")),
             number(val(row,"B365>2.5","B365O2.5","B365O25","Avg>2.5","B365_OPEN_O25")),
             number(val(row,"B365<2.5","B365U2.5","B365U25","Avg<2.5","B365_OPEN_U25"))]
+    if not fixture:
+        extra=match_stats(row)
+        if extra:base.append(extra)
+    return base
 
 def readjson(path, default):
     try:
@@ -133,7 +180,7 @@ def run(online=True, downloader=fetch, now=None, sleeper=time.sleep):
         try:
             for r in parse_csv(seed.read_bytes()):
                 parsed=make_row(r)
-                if parsed: history[key(parsed)]=parsed
+                if parsed: history[key(parsed)]=merge_rows(history.get(key(parsed)),parsed)
         except (OSError,ValueError): pass
     seed_master=ROOT/"data"/"seed_master.csv"
     if seed_master.exists():
@@ -160,7 +207,7 @@ def run(online=True, downloader=fetch, now=None, sleeper=time.sleep):
                 for row in rows:
                     parsed=make_row(row,div)
                     if parsed and parsed[3]<=today.isoformat():
-                        history[key(parsed)]=parsed;valid+=1
+                        history[key(parsed)]=merge_rows(history.get(key(parsed)),parsed);valid+=1
                 if not valid: raise ValueError("No valid completed matches")
                 success+=1;checks[label]=valid
             except Exception as exc:
