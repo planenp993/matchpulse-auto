@@ -9,6 +9,7 @@ model=(DOC/"model-core.js").read_text(encoding="utf-8")
 core=(DOC/"scout-core.js").read_text(encoding="utf-8")
 markets=(DOC/"scout-markets.js").read_text(encoding="utf-8")
 elo=(DOC/"scout-elo.js").read_text(encoding="utf-8")
+patterns=(DOC/"scout-patterns.js").read_text(encoding="utf-8")
 ui=(DOC/"scout.js").read_text(encoding="utf-8")
 bundle={
  "history":json.loads((DOC/"data/history.json").read_text(encoding="utf-8")),
@@ -17,7 +18,7 @@ bundle={
 }
 payload=json.dumps(bundle,ensure_ascii=False,separators=(",",":")).replace("</","<\\/")
 html=html.replace('<link rel="stylesheet" href="scout.css">','<style>'+css+'</style>')
-for n,source in [("model-core.js",model),("scout-core.js",core),("scout-markets.js",markets),("scout-elo.js",elo),("scout.js",ui)]:
+for n,source in [("model-core.js",model),("scout-core.js",core),("scout-markets.js",markets),("scout-elo.js",elo),("scout-patterns.js",patterns),("scout.js",ui)]:
  marker=f'<script src="{n}"></script>'
  replacement='<script>'+source.replace("</script","<\\/script")+'</script>'
  if n=="scout.js":
