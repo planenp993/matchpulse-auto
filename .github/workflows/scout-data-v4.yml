@@ -10,6 +10,7 @@ on:
       - 'docs/scout.html'
       - 'tests/test_backfill_txt.py'
       - 'tests/test_scout_v4.cjs'
+      - 'scripts/test_scout_browser.cjs'
       - '.github/workflows/scout-data-v4.yml'
   workflow_dispatch:
 
@@ -46,6 +47,14 @@ jobs:
         run: node scripts/smoke_scout.cjs
       - name: Generate self-contained offline preview
         run: python scripts/build_scout_preview.py
+      - name: Install Chromium for real UI validation
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Verify desktop and mobile Scout
+        run: |
+          python -m http.server 8765 --directory docs > /tmp/mp-browser.log 2>&1 &
+          node scripts/test_scout_browser.cjs
       - name: Commit validated history to dev branch only
         run: |
           set -euo pipefail
@@ -65,4 +74,6 @@ jobs:
             docs/data/coverage_audit.json
             docs/data/txt_backfill_report.json
             scout-offline.html
+            scout-desktop.png
+            scout-mobile.png
           retention-days: 7
