@@ -29,8 +29,13 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: Verify JS model, Elo, trends and 3/4/5+ market streaks
         run: node --test tests/test_model_core.cjs tests/test_scout.cjs tests/test_scout_markets.cjs tests/test_scout_elo.cjs tests/test_scout_v3.cjs
-      - name: Non-invasive CC0 historical backfill (NO requests to Football-Data)
-        run: python scripts/backfill_openfootball.py --seasons 6
+      - name: One-time CC0 historical backfill (NO requests to Football-Data)
+        run: |
+          if [ -f docs/data/backfill_report.json ]; then
+            echo 'The audited CC0 archive is already present; skip repeated archive downloads.'
+          else
+            python scripts/backfill_openfootball.py --seasons 6
+          fi
       - name: Audit six-season data coverage and integrity
         run: python scripts/audit_scout.py
       - name: Smoke check full historic base and trends
@@ -47,14 +52,21 @@ jobs:
           node scripts/test_scout_browser.cjs
       - name: Preserve audited CC0 backfill in development branch
         run: |
-          set -e
+          set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add docs/data/history.json docs/data/status.json docs/data/backfill_report.json docs/data/coverage_audit.json
-          if ! git diff --staged --quiet; then
-            git commit -m 'Import permitted CC0 seasonal results and publish integrity coverage report'
-            git push origin HEAD:scout-database-trend-audit-v3
-          fi
+          mkdir -p /tmp/scout-v3-verified
+          cp docs/data/history.json docs/data/status.json docs/data/backfill_report.json docs/data/coverage_audit.json /tmp/scout-v3-verified/
+          for attempt in 1 2 3; do
+            git fetch origin scout-database-trend-audit-v3
+            git reset --hard origin/scout-database-trend-audit-v3
+            cp /tmp/scout-v3-verified/* docs/data/
+            git add docs/data/history.json docs/data/status.json docs/data/backfill_report.json docs/data/coverage_audit.json
+            if git diff --staged --quiet; then break; fi
+            git commit -m 'Import audited CC0 results and verified coverage data'
+            if git push origin HEAD:scout-database-trend-audit-v3; then break; fi
+            if [ "$attempt" -eq 3 ]; then exit 1; fi
+          done
       - uses: actions/upload-artifact@v4
         with:
           name: SCOUT-V3-AUDIT-PREVIEW
