@@ -10,6 +10,7 @@ on:
     - cron: '17 05 * * 2,5'       # Historical CSV: Tuesday and Friday only
     - cron: '17 05 * * 0,1,3,4,6' # Daily calendars on all other mornings
     - cron: '17 17 * * *'         # Every evening: calendars only
+    - cron: '41 04 * * 6'         # Saturday: keyless CC0 matches in open-only leagues
 
 permissions:
   contents: write
@@ -34,8 +35,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Verify Match Lab model and JavaScript
-        run: node --test tests/test_model_core.cjs
+      - name: Verify all Scout model, Elo and trend JavaScript
+        run: node --test tests/test_model_core.cjs tests/test_scout.cjs tests/test_scout_markets.cjs tests/test_scout_elo.cjs tests/test_scout_v3.cjs
       - name: Verify CSV import
         run: python -m unittest discover -s tests -v
       - name: Refresh calendar daily, history only twice weekly
@@ -46,6 +47,10 @@ jobs:
           if [ "$RUN_CRON" = "17 05 * * 2,5" ]; then
             echo "Permitted full historical refresh (Tuesday/Friday)"
             python scripts/update.py --online
+          elif [ "$RUN_CRON" = "41 04 * * 6" ]; then
+            echo "Weekly CC0-only Bundesliga and Serie A; no Football-Data"
+            python scripts/refresh_openfootball.py
+            python scripts/update_calendar.py
           elif [ "$RUN_EVENT" = "push" ]; then
             echo "Code-only deployment; do not request any provider data"
           else
@@ -54,18 +59,20 @@ jobs:
           fi
       - name: Walk-forward model audit
         run: python scripts/evaluate.py
+      - name: Independent Scout data coverage and quality audit
+        run: python scripts/audit_scout.py
       - name: Persist verified results
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           mkdir -p /tmp/mp-refresh
-          cp docs/data/history.json docs/data/fixtures.json docs/data/status.json docs/data/model_report.json /tmp/mp-refresh/
+          cp docs/data/history.json docs/data/fixtures.json docs/data/status.json docs/data/model_report.json docs/data/coverage_audit.json /tmp/mp-refresh/
           for attempt in 1 2 3; do
             git fetch origin main
             git reset --hard origin/main
-            cp /tmp/mp-refresh/history.json /tmp/mp-refresh/fixtures.json /tmp/mp-refresh/status.json /tmp/mp-refresh/model_report.json docs/data/
-            git add docs/data/history.json docs/data/fixtures.json docs/data/status.json docs/data/model_report.json
+            cp /tmp/mp-refresh/history.json /tmp/mp-refresh/fixtures.json /tmp/mp-refresh/status.json /tmp/mp-refresh/model_report.json /tmp/mp-refresh/coverage_audit.json docs/data/
+            git add docs/data/history.json docs/data/fixtures.json docs/data/status.json docs/data/model_report.json docs/data/coverage_audit.json
             if git diff --staged --quiet; then
               echo "No data changes"
               break
