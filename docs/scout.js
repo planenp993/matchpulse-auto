@@ -87,9 +87,36 @@ function signalTiles(p){
  return markets.map(m=>{
    const s=Scout.trend(p,m,5);
    return '<div class="trend-tile"><strong>'+esc(s.marketName)+'</strong>'+
-     '<div class="mini-bars">'+miniBar('Домакин',s.homeCount,s.homeTotal,false)+miniBar('Гост',s.awayCount,s.awayTotal,true)+'</div>'+
+     '<div class="mini-bars">'+miniBar(m==='away2'?'Допуска 2+':m==='home2'?'Вкарва 2+':'Домакин',s.homeCount,s.homeTotal,false)+miniBar(m==='away2'?'Вкарва 2+':m==='home2'?'Допуска 2+':'Гост',s.awayCount,s.awayTotal,true)+'</div>'+
      '<div style="font-size:10px;color:#7c919c">'+esc(s.explanation)+'</div></div>';
  }).join('');
+}
+function venueTiles(p){
+ const a=p.home.local,b=p.away.local;
+ const rules=[
+  ['Над 2,5 · по терен','o25','o25','Домакинства','Гостувания'],
+  ['Гол/гол · по терен','btts','btts','Домакинства','Гостувания'],
+  ['Домакин 2+ гола','scored2','conceded2','Вкарва 2+ у дома','Допуска 2+ навън'],
+  ['Гост 2+ гола','conceded2','scored2','Допуска 2+ у дома','Вкарва 2+ навън']
+ ];
+ return rules.map(([name,hkey,akey,hlabel,alabel])=>
+  '<div class="trend-tile"><strong>'+esc(name)+'</strong>'+
+  '<div class="mini-bars">'+miniBar(hlabel,a[hkey],a.n)+miniBar(alabel,b[akey],b.n,true)+'</div>'+
+  '<div style="font-size:10px;color:#7c919c">'+
+  (Math.min(a.n,b.n)<5?'Ниска извадка: изводът е несигурен.':'Реални последни до 10 домакинства/гостувания.')+
+  '</div></div>'
+ ).join('');
+}
+function directMeetings(f){
+ const h=Scout.keyTeam(f[5]),a=Scout.keyTeam(f[6]);
+ const rows=index.byDivision.get(f[0]+'|'+h)||[];
+ const direct=rows.filter(r=>r[3]<f[3]&&
+   ((Scout.keyTeam(r[5])===h&&Scout.keyTeam(r[6])===a)||
+    (Scout.keyTeam(r[5])===a&&Scout.keyTeam(r[6])===h))).slice(0,6);
+ if(!direct.length)return '<p class="footnote">Няма директни срещи в наличния архив за това първенство.</p>';
+ return direct.map(r=>'<div class="match-history"><time>'+esc(r[3].slice(2))+'</time>'+
+  '<span title="'+esc(r[5]+' – '+r[6])+'">'+esc(r[5])+' – '+esc(r[6])+'</span>'+
+  '<b>'+r[7]+':'+r[8]+'</b></div>').join('');
 }
 function miniBar(name,value,total,alt=false){
  const frac=total?value/total:0;
@@ -127,10 +154,15 @@ function openMatch(f){
    '<div class="match-head-tags"><span class="tag">Последни мачове: '+recent+'</span><span class="tag">'+esc((f[13]||'Football-Data').split('/')[0])+'</span></div></div>'+
    '<div class="match-inner"><div class="duel">'+m+'</div>'+
    '<div class="card"><h3>Голови тенденции · последните 10</h3><div class="trend-grid">'+signalTiles(p)+'</div></div>'+
+   '<div class="card"><h3>Домакинска и гостуваща форма</h3>'+
+   '<p class="footnote">Отделна проверка: последните до 10 домакински срещи на '+esc(f[5])+
+   ' срещу последните до 10 гостувания на '+esc(f[6])+'.</p>'+
+   '<div class="trend-grid">'+venueTiles(p)+'</div></div>'+
    '<div class="card"><h3>Последни резултати</h3><div class="history-grid">'+
      '<div><strong>'+esc(f[5])+'</strong>'+matchRows(p.home.all,p.home.name)+'</div>'+
      '<div><strong>'+esc(f[6])+'</strong>'+matchRows(p.away.all,p.away.name)+'</div></div>'+
      (p.international?'<div class="warn">При евротурнир може да се използва само история от вътрешно първенство или да липсва достатъчно история. Тези резултати не са директно съпоставими между различни лиги.</div>':'')+'</div>'+
+   '<div class="card"><h3>Директни срещи · наличен архив</h3>'+directMeetings(f)+'</div>'+ 
    modelReport(f,p)+
    '<div class="card"><h3>Запази моя прогноза</h3>'+
       '<div class="pick-form"><label>Голов пазар<select id="pickMarket">'+
