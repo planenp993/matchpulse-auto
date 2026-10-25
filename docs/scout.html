@@ -31,6 +31,7 @@
       <div class="top-right"><span class="live-dot"></span><span id="lastSync">Проверка на данните…</span></div>
     </header>
     <div class="notice" id="notice">Данните и началните часове зависят от източника. Това не е live резултатна услуга.</div>
+    <details class="coverage-details"><summary>▤ Покритие и надеждност на футболната база</summary><div id="coverageContent" class="coverage-content">Зареждане на независимия одит…</div></details>
     <div class="research-settings" aria-label="Настройки на футболните тенденции">
       <label>Последни срещи<select id="researchWindow"><option value="5">5 мача</option><option value="10" selected>10 мача</option><option value="15">15 мача</option></select></label>
       <label>Качество на предишните противници<select id="researchOpp"><option value="all">Всички</option><option value="strong">По-силни според Elo</option><option value="weak">По-слаби според Elo</option></select></label>
@@ -58,15 +59,14 @@
     <section class="view hidden" id="view-scanner">
       <div class="section-header"><div class="eyebrow">TREND INTELLIGENCE</div><h2>Trend Scanner</h2><p>Открий мачовете с интересни съвпадения в последната форма, без да ги наричаме „сигурни прогнози“.</p></div>
       <div class="scanner-toolbar">
-        <label class="control-label">Пазар<select id="scanMarket">
-          <option value="o25">Над 2,5 гола</option><option value="btts">Гол/гол – Да</option>
-          <option value="home2">Домакин 2+ гола</option><option value="away2">Гост 2+ гола</option>
-          <option value="u35">Под 3,5 гола</option></select></label>
+        <label class="control-label">Търси закономерност<select id="scanMarket"><optgroup label="Голове"><option value="o15">Над 1,5</option><option value="o25" selected>Над 2,5</option><option value="o35">Над 3,5</option><option value="u25">Под 2,5</option><option value="u35">Под 3,5</option><option value="btts">Гол/гол Да</option><option value="home2">Домакин 2+ / гост допуска 2+</option><option value="away2">Гост 2+ / домакин допуска 2+</option></optgroup><optgroup label="Резултат и двоен шанс"><option value="1X">Двоен шанс 1X</option><option value="X2">Двоен шанс X2</option></optgroup><optgroup label="Корнери"><option value="corners85">Над 8,5 корнера</option><option value="corners95">Над 9,5 корнера</option></optgroup><optgroup label="Картони"><option value="yellow35">Над 3,5 жълти</option><option value="yellow45">Над 4,5 жълти</option><option value="red05">Поне 1 червен</option></optgroup><optgroup label="Удари"><option value="shots215">Над 21,5 удара</option><option value="shots255">Над 25,5 удара</option><option value="target85">Над 8,5 точни</option></optgroup><optgroup label="Първо полувреме"><option value="ht05">Гол през първо полувреме</option><option value="ht15">2+ гола през първо полувреме</option></optgroup></select></label>
         <label class="control-label">Период<select id="scanWindow"><option value="1">Следващите 24 ч.</option><option value="3" selected>Следващите 3 дни</option><option value="7">Следващите 7 дни</option></select></label>
         <label class="control-label">Минимум история<select id="minSample"><option value="5">5 мача</option><option value="8" selected>8 мача</option><option value="10">10 мача</option></select></label>
         <label class="control-label">Първенство<select id="scanLeague"><option value="">Всички</option></select></label>
+        <label class="control-label">Поредни срещи<select id="scanStreak"><option value="3" selected>3+</option><option value="4">4+</option><option value="5">5+</option><option value="6">6+</option></select></label>
+        <label class="control-label">Серия при<select id="scanBoth"><option value="no">Поне единия отбор</option><option value="yes">Двата отбора</option></select></label>
       </div>
-      <div class="method-note"><strong>Как се подреждат?</strong> Сравняват се последните 10 мача на двата отбора и относимите домакинства/гостувания. Всяка карта показва реални бройки. Класацията е по сила на статистическия сигнал, а не по доказана вероятност за печалба.</div>
+      <div class="method-note"><strong>Как се подреждат?</strong> Търсим реални поредни успешни събития и съвпадения в последните 5/10/15 мача. Липсващите удари, корнери или картони прекъсват серията. Процентите са наблюдавани честоти, а не прогноза за бъдещия мач.</div>
       <div class="scanner-cards" id="scannerList"><div class="empty">Зареждане…</div></div>
     </section>
 
@@ -89,6 +89,7 @@
 <script src="model-core.js"></script>
 <script src="scout-core.js"></script>
 <script src="scout-elo.js"></script>
+<script src="scout-patterns.js"></script>
 <script src="scout-markets.js"></script>
 <script src="scout.js"></script>
 </body></html>

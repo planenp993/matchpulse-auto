@@ -45,3 +45,27 @@
 .elo-breakdown>div{background:#f4f8fa;border:1px solid #e4eef1;padding:12px;border-radius:9px;color:#577787;font-size:11px;line-height:1.65}
 @media(max-width:740px){.research-settings>span{flex-basis:100%}.drawer-bar{flex-wrap:wrap;gap:7px;padding:9px 13px}.drawer-controls{justify-content:flex-start;order:3;flex-basis:100%}.drawer-controls select{font-size:10px;max-width:122px}.research-settings{padding:10px}.research-settings label{flex:1;justify-content:space-between}.research-settings select{max-width:155px}}
 @media(max-width:400px){.elo-breakdown{grid-template-columns:1fr}.research-settings label{flex-basis:100%}.research-settings select{max-width:210px}}
+
+/* Scout Patterns v3: multi-market streaks with restrained presentation. */
+.scanner-toolbar{grid-template-columns:repeat(3,minmax(0,1fr))}
+.streak-box{border:1px solid #ceeade;background:#f0faf4;padding:11px 12px;border-radius:10px;font-size:12px;color:#2b6b57;display:grid;gap:3px;margin:10px 0}
+.streak-box strong{font-weight:850;color:#157f5f}
+.streak-box small{color:#789b89;font-size:10px}
+.streak-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.streak-list>div{border:1px solid #deede6;border-radius:9px;padding:10px;display:flex;justify-content:space-between;gap:9px;background:#f7fcf8;font-size:11px;color:#557b69}
+.streak-list strong{white-space:nowrap;color:#168866;font-size:13px}
+@media(max-width:760px){.scanner-toolbar{grid-template-columns:repeat(2,minmax(0,1fr))}.streak-list{grid-template-columns:1fr}}
+@media(max-width:420px){.scanner-toolbar{grid-template-columns:1fr 1fr}.scan-head{flex-wrap:wrap}.streak-box{font-size:11px}}
+
+/* Optional verifiable coverage disclosure */
+.coverage-details{background:#f9fcfa;border:1px solid #d8ece3;border-radius:12px;margin:-6px 0 16px;padding:11px 14px}
+.coverage-details summary{font-weight:750;font-size:12px;cursor:pointer;color:#197657;list-style:none}
+.coverage-details summary::-webkit-details-marker{display:none}
+.coverage-details summary::after{content:" ▾";font-size:12px}
+.coverage-details[open] summary::after{content:" ▴"}
+.coverage-content{color:#627b77;font-size:11px;line-height:1.65;padding-top:7px}
+.coverage-scroll{overflow:auto;max-height:300px;border:1px solid #dae8e4;border-radius:8px;background:white}
+.coverage-content table{width:100%;border-collapse:collapse;min-width:520px}
+.coverage-content th,.coverage-content td{padding:7px 9px;text-align:right;white-space:nowrap;border-bottom:1px solid #edf1ef}
+.coverage-content th:first-child,.coverage-content td:first-child{text-align:left;font-weight:750}
+.coverage-content th{position:sticky;top:0;background:#eaf7f0;font-weight:800;color:#347662}

@@ -35,6 +35,12 @@
  await desktop.locator('#closeMatch').click();
  await desktop.locator('[data-view="scanner"]').click();
  await desktop.locator('#scanWindow').selectOption('7');
+ await desktop.locator('#scanStreak').selectOption('3');
+ await desktop.locator('#scanBoth').selectOption('no');
+ await desktop.locator('#scanMarket').selectOption('corners85');
+ if((await desktop.locator('#scanMarket').inputValue())!=='corners85')throw new Error('Corner scanner selection failed');
+ await desktop.locator('#scanMarket').selectOption('o25');
+
  const scans=await desktop.locator('.scan-card').count();
  stats.scannerCards=scans;
  if(!scans)throw new Error('No goal-trend signal on fixture test data');

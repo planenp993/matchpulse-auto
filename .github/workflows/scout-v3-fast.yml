@@ -1,0 +1,31 @@
+name: Scout V3 Fast Release Verification
+on:
+  push:
+    branches: [scout-database-trend-audit-v3]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate full JS and football logic
+        run: node --test tests/test_model_core.cjs tests/test_scout.cjs tests/test_scout_markets.cjs tests/test_scout_elo.cjs tests/test_scout_v3.cjs
+      - name: Validate importer, calendars and CC0 data rules
+        run: python -m unittest discover -s tests -v
+      - name: Run independent data audit
+        run: python scripts/audit_scout.py
+      - name: Smoke check actual merged dataset
+        run: node scripts/smoke_scout.cjs
+      - name: Build and inspect standalone version
+        run: |
+          python scripts/build_scout_preview.py
+          test -s scout-offline.html
