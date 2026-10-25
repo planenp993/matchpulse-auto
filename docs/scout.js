@@ -1,6 +1,6 @@
 /* MATCHPULSE SCOUT v1 · minimal personal football research cockpit */
 'use strict';
-const Scout=window.MatchpulseScout,Model=window.MatchpulseModel,Markets=window.MatchpulseMarkets,Elo=window.MatchpulseElo;
+const Scout=window.MatchpulseScout,Model=window.MatchpulseModel,Markets=window.MatchpulseMarkets,Elo=window.MatchpulseElo,Patterns=window.MatchpulsePatterns;
 const el=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
 const fmt=(v,n=1)=>Number.isFinite(v)?v.toFixed(n):'—';
 const percent=v=>Number.isFinite(v)?fmt(v*100,0)+'%':'—';
@@ -227,6 +227,7 @@ function openMatch(f){
      '<div><strong>'+esc(f[6])+'</strong>'+matchRows(p.away.all,p.away.name)+'</div></div>'+
      (p.international?'<div class="warn">При евротурнир може да се използва само история от вътрешно първенство или да липсва достатъчно история. Тези резултати не са директно съпоставими между различни лиги.</div>':'')+'</div>'+
    '<div class="card"><h3>Директни срещи · наличен архив</h3>'+directMeetings(f)+'</div>'+ 
+   streakReport(p)+
    eloReport(f,p)+
    modelReport(f,p)+
    extraReport(p)+
@@ -270,19 +271,41 @@ function copyMatch(){
 }
 function renderScanner(){
  if(!index)return;
- const market=el('scanMarket').value,days=+el('scanWindow').value,minSample=+el('minSample').value,league=el('scanLeague').value;
- scannerRows=Scout.scan(index,fixtures,{market,days,minSample:Math.min(minSample,windowSize),league,windowSize,opponentFilter,eloIndex}).slice(0,60);
- if(!scannerRows.length){el('scannerList').innerHTML='<div class="empty">Няма срещи, които покриват тези условия. Опитай по-широк период или друг пазар. Това не е грешка.</div>';return}
+ const market=el('scanMarket').value,days=+el('scanWindow').value,
+  minimum=Math.min(+el('minSample').value,windowSize),league=el('scanLeague').value,
+  streak=+el('scanStreak').value,both=el('scanBoth').value==='yes';
+ scannerRows=Patterns.run(index,fixtures,Scout,{market,days,minimum,league,streak,both,windowSize,opponentFilter,eloIndex}).slice(0,70);
+ if(!scannerRows.length){
+   el('scannerList').innerHTML='<div class="empty">Не са открити потвърдени исторически серии при тези настройки. Опитай 3+ поредни, повече мачове или друг пазар. За удари и корнери са нужни достатъчно реални CSV стойности.</div>';
+   return;
+ }
  el('scannerList').innerHTML=scannerRows.map((entry,i)=>{
-  const {fixture:f,trend:s}=entry;
-  return '<article class="scan-card"><div class="scan-head"><span class="scan-league">'+esc(f[2])+'</span><span class="signal">'+esc(s.marketName)+'</span></div>'+
-    '<div class="scan-date">'+esc(f[3])+' · '+esc(f[4]||'—')+'</div><h3>'+esc(f[5])+' – '+esc(f[6])+'</h3>'+
-    '<div class="mini-bars">'+miniBar('Домакин',s.homeCount,s.homeTotal)+miniBar('Гост',s.awayCount,s.awayTotal,true)+'</div>'+
-    '<p>И двата отбора подкрепят тенденцията. Отчитаме последната форма и домакинско/гостуващия контекст. Не е прогноза с доказан пазарен ръб.</p>'+
-    '<div class="scan-actions"><span style="font-size:11px;color:#8aa0ac">Статистически сигнал · не вероятност</span><button data-scan="'+i+'" class="button secondary" type="button">Анализирай →</button></div></article>'
+   const {fixture:f,signal:q}=entry,h=q.home,a=q.away;
+   const line=(side,z)=>miniBar(side,z.hits,z.n,side==='Гост');
+   const badge=q.market==='btts'?'гол/гол':q.group;
+   return '<article class="scan-card"><div class="scan-head"><span class="scan-league">'+esc(f[2])+' · '+esc(badge)+'</span><span class="signal">'+esc(q.label)+'</span></div>'+
+     '<div class="scan-date">'+esc(f[3])+' · '+esc(f[4]||'—')+'</div><h3>'+esc(f[5])+' – '+esc(f[6])+'</h3>'+
+     '<div class="mini-bars">'+line('Домакин',h)+line('Гост',a)+'</div>'+
+     '<div class="streak-box"><span>Поредни събития: <b>Домакин '+h.currentStreak+'</b> · <b>Гост '+a.currentStreak+'</b></span>'+
+     '<small>От последни '+windowSize+' мача · отчетени '+h.n+' и '+a.n+' мача</small></div>'+
+     '<p>Статистическа закономерност, не гаранция за залог. Провери качеството на противниците, домакинството, съставите и реалния коефициент.</p>'+
+     '<div class="scan-actions"><span style="font-size:11px;color:#8aa0ac">Историческа серия · не вероятност</span><button data-scan="'+i+'" class="button secondary" type="button">Анализирай →</button></div></article>';
  }).join('');
  el('scannerList').querySelectorAll('[data-scan]').forEach(x=>x.onclick=()=>openMatch(scannerRows[+x.dataset.scan].fixture));
 }
+function streakReport(p){
+ const sample=Patterns.MARKETS.map(v=>{
+  const o=Patterns.inspect(p,v.id,{streak:3,minimum:Math.min(5,windowSize),teamKey:Scout.keyTeam});
+  return {label:v.label,group:v.group,...o};
+ }).filter(v=>v.reliable&&(v.home.currentStreak>=3||v.away.currentStreak>=3))
+  .sort((a,b)=>Math.max(b.home.currentStreak,b.away.currentStreak)-Math.max(a.home.currentStreak,a.away.currentStreak)).slice(0,10);
+ if(!sample.length)return '<div class="card"><h3>Поредни закономерности</h3><p class="footnote">Няма надеждни серии от 3+ в избраната извадка с достатъчна статистика.</p></div>';
+ return '<div class="card"><h3>Поредни закономерности</h3>'+
+   '<p class="footnote">Реални непрекъснати серии, включително голове, удари, корнери и картони, само когато данните ги съдържат. Не се попълват липсващи стойности.</p>'+
+   '<div class="streak-list">'+sample.map(v=>'<div><span>'+esc(v.label)+'</span><strong>'+v.home.currentStreak+' / '+v.away.currentStreak+'</strong></div>').join('')+'</div>'+
+   '<p class="footnote">Показаните две стойности са поредните мачове на домакина и госта, не изчислен шанс за победа.</p></div>';
+}
+
 const marketNames={'1':'Победа домакин','X':'Равен','2':'Победа гост','1X':'Двоен шанс 1X','X2':'Двоен шанс X2','12':'Двоен шанс 12',o15:'Над 1,5',o25:'Над 2,5',o35:'Над 3,5',u35:'Под 3,5',btts:'Гол/гол Да',home2:'Домакин 2+',away2:'Гост 2+',corners85:'Корнери над 8,5',corners95:'Корнери над 9,5',yellow35:'Жълти картони над 3,5',shots215:'Удари над 21,5',target85:'Точни удари над 8,5'};
 function renderPicks(){
  const list=readPicks(),resolved=list.map(p=>{
@@ -343,7 +366,7 @@ document.querySelectorAll('[data-day]').forEach(b=>b.onclick=()=>{
 });
 el('dateInput').onchange=e=>{if(e.target.value){mode='custom';customDate=e.target.value;document.querySelectorAll('[data-day]').forEach(x=>x.classList.remove('active'));renderSchedule()}};
 for(const id of ['leagueSelect','qualitySelect','searchInput'])el(id).addEventListener(id==='searchInput'?'input':'change',renderSchedule);
-for(const id of ['scanMarket','scanWindow','minSample','scanLeague'])el(id).addEventListener('change',renderScanner);
+for(const id of ['scanMarket','scanWindow','minSample','scanLeague','scanStreak','scanBoth'])el(id).addEventListener('change',renderScanner);
 el('exportPicks').onclick=exportPicks;el('closeMatch').onclick=closeMatch;
 el('matchOverlay').onclick=e=>{if(e.target===el('matchOverlay'))closeMatch()};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!el('matchOverlay').classList.contains('hidden'))closeMatch()});
