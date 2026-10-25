@@ -53,7 +53,7 @@ class BackfillTests(unittest.TestCase):
   original=backfill.SOURCES
   backfill.SOURCES={"D1":"de.1"}
   try:
-   merged,status=backfill.run(old,today=TODAY,downloader=lambda url:source_json(),seasons=1)
+   merged,status=backfill.run(old,today=dt.date(2022,10,25),downloader=lambda url:source_json(),seasons=1)
   finally:
    backfill.SOURCES=original
   self.assertEqual(len(merged),1)
