@@ -1,0 +1,27 @@
+name: Scout Preview Checks
+on:
+  push:
+    branches: [matchpulse-scout-v1]
+    paths:
+      - 'docs/scout.html'
+      - 'docs/scout.css'
+      - 'docs/scout-core.js'
+      - 'docs/scout.js'
+      - 'tests/test_scout.cjs'
+      - '.github/workflows/scout-checks.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser-logic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Test Scout data rules and UI JavaScript
+        run: node --test tests/test_scout.cjs
+      - name: Validate existing goal model
+        run: node --test tests/test_model_core.cjs
