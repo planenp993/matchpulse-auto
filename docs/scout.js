@@ -333,6 +333,29 @@ function exportPicks(){
  }).join(','))).join('\r\n');
  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF',csv],{type:'text/csv;charset=utf-8'}));a.download='matchpulse_my_picks.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 }
+async function loadCoverage(){
+ const target=el('coverageContent');
+ if(!target)return;
+ try{
+   const doc=window.SCOUT_EMBEDDED_DATA?.coverage||
+      await fetch('data/coverage_audit.json?scout=3',{cache:'no-store'}).then(r=>{
+        if(!r.ok)throw Error('Няма публикуван актуален одит');
+        return r.json();
+      });
+   if(!doc||!doc.leagues)throw Error('Липсва отчет за покритието');
+   const rows=Object.entries(doc.leagues).sort((a,b)=>(b[1].future_fixtures||0)-(a[1].future_fixtures||0)||b[1].matches-a[1].matches);
+   const coverage=(v,k)=>v.coverage?.[k]?.percentage===undefined?'—':v.coverage[k].percentage+'%';
+   target.innerHTML='<p><b>'+doc.historical_matches.toLocaleString('bg-BG')+' мача</b> · '+doc.historical_leagues+
+    ' първенства с история · '+doc.calendar_leagues+' със записана бъдеща програма. Независим одит: '+esc(doc.checked_utc?.slice(0,10)||'—')+'.</p>'+
+    '<p><b>Важно:</b> броят на изиграните мачове не означава, че има и корнери, удари, картони или xG. Те са отделни колони с независимо покритие.</p>'+
+    '<div class="coverage-scroll"><table><thead><tr><th>Лига</th><th>Мачове</th><th>Бъдещи</th><th>Удари</th><th>Корнери</th><th>Жълти</th><th>xG</th></tr></thead><tbody>'+
+    rows.map(([code,v])=>'<tr><td>'+esc(code)+'</td><td>'+v.matches+'</td><td>'+v.future_fixtures+
+      '</td><td>'+coverage(v,'shots')+'</td><td>'+coverage(v,'corners')+'</td><td>'+coverage(v,'yellow_cards')+
+      '</td><td>'+coverage(v,'xg')+'</td></tr>').join('')+'</tbody></table></div>'+
+    '<p>Сезони с липсващи или твърде малко мачове: <b>'+ (doc.thin_or_missing_finished_seasons?.length||0) +
+    '</b> (отчетени отделно, без да се представят за пълни). Потвърдени структурни проблеми: <b>'+doc.issues_total+'</b>.</p>';
+ }catch(e){target.textContent='Докладът за покритието още не е достъпен: '+e.message;}
+}
 async function load(){
  try{
   const [h,f,s]=window.SCOUT_EMBEDDED_DATA ?
@@ -350,6 +373,7 @@ async function load(){
   el('notice').textContent='Автоматично обновени файлове · последно '+last+
    '. Календарът не е live. Часовете с „UTC→Europe-Sofia“ са български, а при другите източници потвърди часовата зона. Данните могат да изостават.';
   setView('schedule');
+  loadCoverage();
  }catch(e){
   el('lastSync').textContent='Няма данни';
   el('notice').textContent='Не успях да заредя футболната база: '+e.message+'. За локална проба пусни сайта през уеб сървър, не като file://.';
