@@ -272,11 +272,11 @@ function copyMatch(){
 function renderScanner(){
  if(!index)return;
  const market=el('scanMarket').value,days=+el('scanWindow').value,
-  minimum=Math.min(+el('minSample').value,windowSize),league=el('scanLeague').value,
+  minimum=+el('minSample').value,league=el('scanLeague').value,
   streak=+el('scanStreak').value,both=el('scanBoth').value==='yes';
- scannerRows=Patterns.run(index,fixtures,Scout,{market,days,minimum,league,streak,both,windowSize,opponentFilter,eloIndex}).slice(0,70);
+ scannerRows=(market==='all'?Patterns.runAll:Patterns.run)(index,fixtures,Scout,{market,days,minimum,league,streak,both,windowSize,opponentFilter,eloIndex}).slice(0,70);
  if(!scannerRows.length){
-   el('scannerList').innerHTML='<div class="empty">Не са открити потвърдени исторически серии при тези настройки. Опитай 3+ поредни, повече мачове или друг пазар. За удари и корнери са нужни достатъчно реални CSV стойности.</div>';
+   el('scannerList').innerHTML='<div class="empty">Не са открити потвърдени исторически серии при тези настройки. Провери дали прозорецът съдържа поне зададения минимален брой мачове, или опитай друг пазар. За удари и корнери са нужни достатъчно реални CSV стойности.</div>';
    return;
  }
  el('scannerList').innerHTML=scannerRows.map((entry,i)=>{
@@ -286,6 +286,7 @@ function renderScanner(){
    return '<article class="scan-card"><div class="scan-head"><span class="scan-league">'+esc(f[2])+' · '+esc(badge)+'</span><span class="signal">'+esc(q.label)+'</span></div>'+
      '<div class="scan-date">'+esc(f[3])+' · '+esc(f[4]||'—')+'</div><h3>'+esc(f[5])+' – '+esc(f[6])+'</h3>'+
      '<div class="mini-bars">'+line('Домакин',h)+line('Гост',a)+'</div>'+
+     (entry.signals?.length>1?'<div class="streak-list" style="margin:9px 0">'+entry.signals.map(v=>'<div><span>'+esc(v.label)+'</span><b>'+v.home.currentStreak+' / '+v.away.currentStreak+'</b></div>').join('')+'</div>':'')+
      '<div class="streak-box"><span>Поредни събития: <b>Домакин '+h.currentStreak+'</b> · <b>Гост '+a.currentStreak+'</b></span>'+
      '<small>От последни '+windowSize+' мача · отчетени '+h.n+' и '+a.n+' мача</small></div>'+
      '<p>Статистическа закономерност, не гаранция за залог. Провери качеството на противниците, домакинството, съставите и реалния коефициент.</p>'+
@@ -343,6 +344,21 @@ async function loadCoverage(){
         return r.json();
       });
    if(!doc||!doc.leagues)throw Error('Липсва отчет за покритието');
+   const readiness=el('scannerReadiness');
+   if(readiness){
+    const totals={shots:0,corners:0,cards:0,half:0};
+    for(const v of Object.values(doc.leagues)){
+     totals.shots+=(v.coverage?.shots?.available||0);
+     totals.corners+=(v.coverage?.corners?.available||0);
+     totals.cards+=(v.coverage?.yellow_cards?.available||0);
+     totals.half+=(v.coverage?.halftime?.available||0);
+    }
+    const mark=(name,n)=>name+': '+(n?n.toLocaleString('bg-BG')+' мача':'липсват данни');
+    readiness.textContent='Реално покритие: '+[
+      mark('удари',totals.shots),mark('корнери',totals.corners),
+      mark('картони',totals.cards),mark('първо полувреме',totals.half)
+    ].join(' · ')+'. При липсващи статистики скенерът не създава сигнали.';
+   }
    const rows=Object.entries(doc.leagues).sort((a,b)=>(b[1].future_fixtures||0)-(a[1].future_fixtures||0)||b[1].matches-a[1].matches);
    const coverage=(v,k)=>v.coverage?.[k]?.percentage===undefined?'—':v.coverage[k].percentage+'%';
    target.innerHTML='<p><b>'+doc.historical_matches.toLocaleString('bg-BG')+' мача</b> · '+doc.historical_leagues+
