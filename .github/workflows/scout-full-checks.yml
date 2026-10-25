@@ -1,0 +1,45 @@
+name: Scout Full Analysis Checks
+on:
+  push:
+    branches: [scout-full-analysis-v1]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check all model and Scout JS
+        run: node --test tests/test_model_core.cjs tests/test_scout.cjs tests/test_scout_markets.cjs
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify Python CSV parsing and calendar
+        run: python -m unittest discover -s tests -v
+      - name: Check actual matches and scanner
+        run: node scripts/smoke_scout.cjs
+      - name: Build offline preview
+        run: python scripts/build_scout_preview.py
+      - name: Install browser
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Test desktop and mobile Scout
+        run: |
+          python -m http.server 8765 --directory docs >/tmp/scout-http.log 2>&1 &
+          node scripts/test_scout_browser.cjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MATCHPULSE-SCOUT-FULL-ANALYSIS
+          path: |
+            scout-offline.html
+            scout-desktop.png
+            scout-mobile.png
+          retention-days: 7
