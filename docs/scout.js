@@ -1,16 +1,16 @@
 /* MATCHPULSE SCOUT v1 · minimal personal football research cockpit */
 'use strict';
-const Scout=window.MatchpulseScout,Model=window.MatchpulseModel,Markets=window.MatchpulseMarkets;
+const Scout=window.MatchpulseScout,Model=window.MatchpulseModel,Markets=window.MatchpulseMarkets,Elo=window.MatchpulseElo;
 const el=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
 const fmt=(v,n=1)=>Number.isFinite(v)?v.toFixed(n):'—';
 const percent=v=>Number.isFinite(v)?fmt(v*100,0)+'%':'—';
 const localISO=(d=new Date())=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Sofia',year:'numeric',month:'2-digit',day:'2-digit'}).format(d);
 function offsetISO(n){const a=new Date(localISO()+'T12:00:00Z');a.setUTCDate(a.getUTCDate()+n);return a.toISOString().slice(0,10)}
-let history=[],fixtures=[],status={},index=null,active='schedule',fixtureRows=[],scannerRows=[],mode='today',customDate='',activeMatch=null;
+let history=[],fixtures=[],status={},index=null,eloIndex=null,windowSize=10,opponentFilter='all',active='schedule',fixtureRows=[],scannerRows=[],mode='today',customDate='',activeMatch=null;
 const PROFILE_CACHE=new Map(),PICK_KEY='matchpulse-scout-picks-v1';
 function readPicks(){try{const v=JSON.parse(localStorage.getItem(PICK_KEY)||'[]');return Array.isArray(v)?v:[]}catch{return []}}
 function writePicks(v){try{localStorage.setItem(PICK_KEY,JSON.stringify(v));return true}catch{return false}}
-function profile(f){const k=Scout.keyFixture(f);if(!PROFILE_CACHE.has(k))PROFILE_CACHE.set(k,Scout.profile(index,f));return PROFILE_CACHE.get(k)}
+function profile(f){const k=Scout.keyFixture(f)+'|'+windowSize+'|'+opponentFilter;if(!PROFILE_CACHE.has(k))PROFILE_CACHE.set(k,Scout.profile(index,f,{windowSize,opponentFilter,eloIndex}));return PROFILE_CACHE.get(k)}
 function setView(next){
   active=next;
   for(const view of ['schedule','scanner','picks'])el('view-'+view).classList.toggle('hidden',view!==next);
@@ -20,6 +20,38 @@ function setView(next){
     picks:['Моите прогнози','Твоят личен бележник с пазари, коефициенти и резултати.']};
   el('pageTitle').textContent=t[next][0];el('pageSub').textContent=t[next][1];
   if(next==='schedule')renderSchedule();else if(next==='scanner')renderScanner();else renderPicks();
+}
+function syncResearchControls(){
+ el('researchWindow').value=String(windowSize);el('researchOpp').value=opponentFilter;
+ el('drawerWindow').value=String(windowSize);el('drawerOpp').value=opponentFilter;
+ el('researchInfo').textContent='Трендове: последни '+windowSize+' мача'+
+  (opponentFilter==='strong'?' срещу по-силни по Elo':opponentFilter==='weak'?' срещу по-слаби по Elo':' срещу всички противници')+
+  '. Головите моделни проценти използват отделен прозорец до 30 мача.';
+}
+function setResearch(windowValue,qualityValue){
+ const v=Number(windowValue);
+ windowSize=[5,10,15].includes(v)?v:10;
+ opponentFilter=['all','strong','weak'].includes(qualityValue)?qualityValue:'all';
+ PROFILE_CACHE.clear();syncResearchControls();
+ if(index){
+   renderSchedule();
+   if(active==='scanner')renderScanner();
+   if(activeMatch&&!el('matchOverlay').classList.contains('hidden'))openMatch(activeMatch);
+ }
+}
+function eloReport(f,p){
+ if(!eloIndex)return '';
+ const m=Elo.matchup(eloIndex,f);
+ const left=Elo.breakdown(eloIndex,p.home.all,p.home.name);
+ const right=Elo.breakdown(eloIndex,p.away.all,p.away.name);
+ const side=(n,r)=>n+' · '+r.strong+' по-силни, '+r.similar+' близки, '+r.weak+' по-слаби'+(r.unknown?', '+r.unknown+' неоценени':'');
+ return '<div class="card elo-analysis"><h3>Elo и сила на съперниците</h3>'+
+  (m.usable?'<div class="elo-score-grid"><div><b>'+Math.round(m.home.rating)+'</b><small>'+esc(f[5])+'</small></div>'+
+   '<div class="elo-divider">срещу</div><div><b>'+Math.round(m.away.rating)+'</b><small>'+esc(f[6])+'</small></div></div>'+
+   '<p class="footnote">'+esc(m.label)+' · '+m.home.games+' и '+m.away.games+' изиграни мача в тази дивизия.</p>':
+   '<p class="footnote">Elo за тази среща е ограничен: няма достатъчно сравнима история в едно първенство. Не сравняваме автоматично рейтинги от различни държави или турнири.</p>')+
+  '<div class="elo-breakdown"><div>'+esc(side('Домакин',left))+'</div><div>'+esc(side('Гост',right))+'</div></div>'+
+  '<p class="footnote">По-силен съперник = поне 75 Elo точки над отбора <strong>преди съответния исторически мач</strong>. Отборите започват от 1500; K=24, бонус домакинство 65. Това е инструмент за контекст, не доказана вероятност за залог.</p></div>';
 }
 function fixtureQualified(f){
  const p=profile(f);
@@ -150,7 +182,6 @@ function extraReport(p){
 }
 function modelReport(f,p){
  if(p.international)return '<div class="warn">За евротурнирите не прилагаме общи вероятности от националните първенства без корекция за силата на противниците. Използвай досието само като контекст.</div>';
- if(p.home.overall.n<5||p.away.overall.n<5)return '<div class="warn">Моделът е изключен: липсват поне 5 завършени срещи за единия отбор.</div>';
  const z=Model.evaluate(history,f,'standard');
  if(z.error)return '<div class="warn">'+esc(z.error)+'</div>';
  const x=z.distribution.probs;
@@ -164,7 +195,7 @@ function modelReport(f,p){
    '</div></div>'+
    '<div class="card"><h3>Ориентировъчен голов модел</h3>'+
    '<div class="model-kpis"><div><b>'+fmt(z.lambdaHome,2)+'</b><span>Очаквани домакин</span></div><div><b>'+fmt(z.lambdaAway,2)+'</b><span>Очаквани гост</span></div><div><b>'+fmt(z.total,2)+'</b><span>Общо голове</span></div></div>'+
-   '<p class="footnote">Прозрачен модел на атака/защита и Поасон с Dixon–Coles корекция. Това са <strong>експериментални вероятности, не сигурни прогнози</strong> и не потвърдени пазарни коефициенти.</p>'+
+   '<p class="footnote">Прозрачен модел на атака/защита и Поасон с Dixon–Coles корекция. Използва до 30 предишни срещи независимо от избора 5/10/15 за трендовете. Това са <strong>експериментални вероятности, не сигурни прогнози</strong> и не потвърдени пазарни коефициенти.</p>'+
    '<div class="model-markets">'+markets.map(([n,v])=>'<div><span>'+esc(n)+'</span><strong>'+percent(v)+'</strong></div>').join('')+'</div></div>';
 }
 function openMatch(f){
@@ -177,25 +208,26 @@ function openMatch(f){
  const m=sections.map(([role,data])=>{
    const v=data.overall;
    return '<section class="team-panel"><div class="role">'+role+'</div><h3>'+esc(data.name)+'</h3>'+
-     '<div class="team-metrics"><div class="metric"><b>'+fmt(v.gf,2)+'</b><small>Вкарани</small></div>'+
-     '<div class="metric"><b>'+fmt(v.ga,2)+'</b><small>Допуснати</small></div>'+
-     '<div class="metric"><b>'+fmt(v.total,2)+'</b><small>Голове/мач</small></div></div>'+
-     graphBars(data.all,data.name)+'</section>';
+     '<div class="team-metrics"><div class="metric"><b>'+(v.n?fmt(v.gf,2):'—')+'</b><small>Вкарани</small></div>'+
+     '<div class="metric"><b>'+(v.n?fmt(v.ga,2):'—')+'</b><small>Допуснати</small></div>'+
+     '<div class="metric"><b>'+(v.n?fmt(v.total,2):'—')+'</b><small>Голове/мач</small></div></div>'+
+     (v.n?graphBars(data.all,data.name):'<p class="footnote">Няма срещи в тази извадка. Промени Elo филтъра.</p>')+'</section>';
  }).join('');
  el('matchContent').innerHTML='<div class="match-header"><div class="match-date">'+esc(date)+'</div>'+
    '<div class="match-heading" id="matchHeading">'+esc(f[5])+' <span style="color:#8de8c1">vs</span> '+esc(f[6])+'</div>'+
    '<div class="match-head-tags"><span class="tag">Последни мачове: '+recent+'</span><span class="tag">'+esc((f[13]||'Football-Data').split('/')[0])+'</span></div></div>'+
    '<div class="match-inner"><div class="duel">'+m+'</div>'+
-   '<div class="card"><h3>Голови тенденции · последните 10</h3><div class="trend-grid">'+signalTiles(p)+'</div></div>'+
+   '<div class="card"><h3>Голови тенденции · последните '+windowSize+' мача</h3><div class="trend-grid">'+signalTiles(p)+'</div></div>'+
    '<div class="card"><h3>Домакинска и гостуваща форма</h3>'+
-   '<p class="footnote">Отделна проверка: последните до 10 домакински срещи на '+esc(f[5])+
-   ' срещу последните до 10 гостувания на '+esc(f[6])+'.</p>'+
+   '<p class="footnote">Отделна проверка: последните до '+windowSize+' домакински срещи на '+esc(f[5])+
+   ' срещу последните до '+windowSize+' гостувания на '+esc(f[6])+'.</p>'+
    '<div class="trend-grid">'+venueTiles(p)+'</div></div>'+
    '<div class="card"><h3>Последни резултати</h3><div class="history-grid">'+
      '<div><strong>'+esc(f[5])+'</strong>'+matchRows(p.home.all,p.home.name)+'</div>'+
      '<div><strong>'+esc(f[6])+'</strong>'+matchRows(p.away.all,p.away.name)+'</div></div>'+
      (p.international?'<div class="warn">При евротурнир може да се използва само история от вътрешно първенство или да липсва достатъчно история. Тези резултати не са директно съпоставими между различни лиги.</div>':'')+'</div>'+
    '<div class="card"><h3>Директни срещи · наличен архив</h3>'+directMeetings(f)+'</div>'+ 
+   eloReport(f,p)+
    modelReport(f,p)+
    extraReport(p)+
    '<div class="card"><h3>Запази моя прогноза</h3>'+
@@ -239,7 +271,7 @@ function copyMatch(){
 function renderScanner(){
  if(!index)return;
  const market=el('scanMarket').value,days=+el('scanWindow').value,minSample=+el('minSample').value,league=el('scanLeague').value;
- scannerRows=Scout.scan(index,fixtures,{market,days,minSample,league}).slice(0,60);
+ scannerRows=Scout.scan(index,fixtures,{market,days,minSample:Math.min(minSample,windowSize),league,windowSize,opponentFilter,eloIndex}).slice(0,60);
  if(!scannerRows.length){el('scannerList').innerHTML='<div class="empty">Няма срещи, които покриват тези условия. Опитай по-широк период или друг пазар. Това не е грешка.</div>';return}
  el('scannerList').innerHTML=scannerRows.map((entry,i)=>{
   const {fixture:f,trend:s}=entry;
@@ -285,7 +317,7 @@ async function load(){
     await Promise.all(['history.json','fixtures.json','status.json'].map(name=>
       fetch('data/'+name+'?scout=1',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(name+' HTTP '+r.status);return r.json()})));
   if(!Array.isArray(h)||!Array.isArray(f))throw Error('Невалиден формат на базата');
-  history=h;fixtures=f;status=s;index=Scout.build(h);
+  history=h;fixtures=f;status=s;index=Scout.build(h);eloIndex=Elo.build(h,Scout.keyTeam);eloIndex.opponentClass=Elo.opponentClass;syncResearchControls();
   const lg=new Map();f.forEach(row=>lg.set(row[0],row[2]));
   const options='<option value="">Всички първенства</option>'+[...lg.entries()].sort((a,b)=>a[1].localeCompare(b[1])).map(([code,name])=>'<option value="'+esc(code)+'">'+esc(name)+'</option>').join('');
   el('leagueSelect').innerHTML=options;el('scanLeague').innerHTML=options;
@@ -301,6 +333,8 @@ async function load(){
   el('scheduleList').innerHTML='<div class="empty">'+esc(e.message)+'</div>';
  }
 }
+for(const id of ['researchWindow','drawerWindow'])el(id).onchange=e=>setResearch(e.target.value,opponentFilter);
+for(const id of ['researchOpp','drawerOpp'])el(id).onchange=e=>setResearch(windowSize,e.target.value);
 document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>setView(b.dataset.view));
 document.querySelectorAll('[data-day]').forEach(b=>b.onclick=()=>{
  mode=b.dataset.day==='7'?'week':b.dataset.day==='1'?'tomorrow':'today';

@@ -9,11 +9,23 @@
  await desktop.goto(base,{waitUntil:'domcontentloaded',timeout:60000});
  await desktop.waitForFunction(()=>document.getElementById('lastSync')?.textContent.includes('Обновено:'),{timeout:20000});
  await desktop.locator('[data-day="7"]').click();
+ await desktop.locator('#researchWindow').selectOption('15');
+ if((await desktop.locator('#researchWindow').inputValue())!=='15')throw new Error('15-match selector failed');
+ await desktop.locator('#researchOpp').selectOption('strong');
+ if(!(await desktop.locator('#researchInfo').textContent()).includes('по-силни'))throw new Error('Elo opponent filter did not activate');
+ await desktop.locator('#researchOpp').selectOption('all');
+
  const fixtures=await desktop.locator('.fixture-row').count();
  if(!fixtures)throw new Error('No next-7-days fixtures');
  stats.fixtures=fixtures;
  await desktop.screenshot({path:'scout-desktop.png',fullPage:true});
  await desktop.locator('.fixture-row').first().click();
+ if(!(await desktop.locator('#matchContent').textContent()).includes('Elo и сила на съперниците'))throw new Error('Missing Elo context');
+ await desktop.locator('#drawerWindow').selectOption('5');
+ if(!(await desktop.locator('#matchContent').textContent()).includes('последните 5 мача'))throw new Error('In-match 5-game stats did not re-render');
+ if((await desktop.locator('#researchWindow').inputValue())!=='5')throw new Error('Global selector did not sync');
+ await desktop.locator('#drawerWindow').selectOption('10');
+
  if(await desktop.locator('#matchOverlay').evaluate(el=>el.classList.contains('hidden')))throw new Error('Match drawer failed to open');
  if(!(await desktop.locator('#matchContent').textContent()).includes('1X2 и двоен шанс'))throw new Error('Missing 1X2 analysis');
  if(!(await desktop.locator('#matchContent').textContent()).includes('Двоен шанс 1X'))throw new Error('Missing double chance');

@@ -31,6 +31,11 @@
       <div class="top-right"><span class="live-dot"></span><span id="lastSync">Проверка на данните…</span></div>
     </header>
     <div class="notice" id="notice">Данните и началните часове зависят от източника. Това не е live резултатна услуга.</div>
+    <div class="research-settings" aria-label="Настройки на футболните тенденции">
+      <label>Последни срещи<select id="researchWindow"><option value="5">5 мача</option><option value="10" selected>10 мача</option><option value="15">15 мача</option></select></label>
+      <label>Качество на предишните противници<select id="researchOpp"><option value="all">Всички</option><option value="strong">По-силни според Elo</option><option value="weak">По-слаби според Elo</option></select></label>
+      <span id="researchInfo">Настройките важат за статистиките и Trend Scanner. Вероятностният модел има отделен исторически прозорец.</span>
+    </div>
 
     <section class="view" id="view-schedule">
       <div class="hero">
@@ -77,12 +82,13 @@
 
 <div id="matchOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="matchHeading">
   <div class="drawer">
-    <div class="drawer-bar"><div class="eyebrow">MATCH CENTER</div><button id="closeMatch" type="button" class="close" aria-label="Затвори анализа">✕</button></div>
+    <div class="drawer-bar"><div class="eyebrow">MATCH CENTER</div><div class="drawer-controls"><label>Последни <select id="drawerWindow" aria-label="Брой последни мачове"><option value="5">5</option><option value="10">10</option><option value="15">15</option></select></label><label>Съперници <select id="drawerOpp" aria-label="Сила на съперниците"><option value="all">Всички</option><option value="strong">По-силни</option><option value="weak">По-слаби</option></select></label></div><button id="closeMatch" type="button" class="close" aria-label="Затвори анализа">✕</button></div>
     <div id="matchContent"><div class="empty">Зареждане…</div></div>
   </div>
 </div>
 <script src="model-core.js"></script>
 <script src="scout-core.js"></script>
+<script src="scout-elo.js"></script>
 <script src="scout-markets.js"></script>
 <script src="scout.js"></script>
 </body></html>

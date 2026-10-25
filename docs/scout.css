@@ -27,3 +27,21 @@
 .extra-heading{font-size:9px;text-transform:uppercase;letter-spacing:.2px;color:#85a09a;font-weight:800}
 .extra-missing{color:#8d9ca3;font-size:11px;line-height:1.5}
 @media(max-width:700px){.extra-grid{grid-template-columns:1fr}.extra-analytics summary{font-size:14px}.outcome-cell{padding:12px 5px}.outcome-cell b{font-size:21px}}
+
+/* Elo/context filters: intentionally unobtrusive and usable on mobile. */
+.research-settings{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:0 0 19px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:11px 14px;box-shadow:var(--shadow)}
+.research-settings label{display:flex;align-items:center;gap:8px;color:#637f8a;font-size:11px;font-weight:800;white-space:nowrap}
+.research-settings select{border:1px solid #d8e6e9;border-radius:8px;background:#f4faf8;color:#164338;padding:8px 10px;font-size:12px;font-weight:750;min-width:0}
+.research-settings>span{font-size:10px;color:#8497a1;line-height:1.5;flex:1;min-width:190px}
+.drawer-controls{display:flex;align-items:center;gap:9px;flex:1;justify-content:flex-end}
+.drawer-controls label{font-size:10px;color:#b1cdd0;white-space:nowrap;display:flex;align-items:center;gap:5px}
+.drawer-controls select{max-width:106px;border:1px solid #355d66;border-radius:7px;background:#163548;color:#d7ffef;padding:7px 5px;font-size:11px;font-weight:750}
+.elo-score-grid{display:grid;grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr);align-items:center;gap:10px;margin:13px 0}
+.elo-score-grid>div:not(.elo-divider){background:#eaf9f2;border:1px solid #cdeee0;border-radius:12px;text-align:center;padding:12px 9px;min-width:0}
+.elo-score-grid b{color:#0e8663;font-size:25px;display:block}
+.elo-score-grid small{color:#60817b;font-size:11px;display:block;overflow-wrap:anywhere}
+.elo-divider{text-align:center;font-size:11px;color:#83a59f}
+.elo-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0}
+.elo-breakdown>div{background:#f4f8fa;border:1px solid #e4eef1;padding:12px;border-radius:9px;color:#577787;font-size:11px;line-height:1.65}
+@media(max-width:740px){.research-settings>span{flex-basis:100%}.drawer-bar{flex-wrap:wrap;gap:7px;padding:9px 13px}.drawer-controls{justify-content:flex-start;order:3;flex-basis:100%}.drawer-controls select{font-size:10px;max-width:122px}.research-settings{padding:10px}.research-settings label{flex:1;justify-content:space-between}.research-settings select{max-width:155px}}
+@media(max-width:400px){.elo-breakdown{grid-template-columns:1fr}.research-settings label{flex-basis:100%}.research-settings select{max-width:210px}}
