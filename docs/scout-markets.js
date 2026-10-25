@@ -40,19 +40,16 @@ function compare(profile,minSamples=5){
     isHistoricalOnly:true,caption:'Наблюдавана честота в наличните завършени мачове, не прогноза за следващия двубой.'};
  });
 }
-function xgReport(profile){
- const rowStats=t=>{
+function xgReport(profile,teamKey){
+ const read=t=>{
+  const team=t.name;
   const v=t.all.map(r=>{
-   const isHome=profile.home===t?String(r[5])===t.name:String(r[6])===t.name;
-   // Use relative to matching side only, never substitute guessed 0.
-   const key=t===profile.home?profile.home.name:profile.away.name;
-   const norm=x=>String(x||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-   const home=norm(r[5])===norm(key);
-   return home?r[9]:r[10];
-  }).filter(v=>valid(v));
+   const isHome=teamKey(r[5])===teamKey(team);
+   return isHome?r[9]:r[10];
+  }).filter(valid);
   return {n:v.length,mean:v.length?v.reduce((a,b)=>a+b,0)/v.length:null};
  };
- return {home:rowStats(profile.home),away:rowStats(profile.away)};
+ return {home:read(profile.home),away:read(profile.away)};
 }
 return {DEFINITIONS:DEF,fields,sample,compare,xgReport};
 });
