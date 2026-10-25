@@ -7,6 +7,7 @@ html=(DOC/"scout.html").read_text(encoding="utf-8")
 css=(DOC/"scout.css").read_text(encoding="utf-8")
 model=(DOC/"model-core.js").read_text(encoding="utf-8")
 core=(DOC/"scout-core.js").read_text(encoding="utf-8")
+markets=(DOC/"scout-markets.js").read_text(encoding="utf-8")
 ui=(DOC/"scout.js").read_text(encoding="utf-8")
 bundle={
  "history":json.loads((DOC/"data/history.json").read_text(encoding="utf-8")),
@@ -15,7 +16,7 @@ bundle={
 }
 payload=json.dumps(bundle,ensure_ascii=False,separators=(",",":")).replace("</","<\\/")
 html=html.replace('<link rel="stylesheet" href="scout.css">','<style>'+css+'</style>')
-for n,source in [("model-core.js",model),("scout-core.js",core),("scout.js",ui)]:
+for n,source in [("model-core.js",model),("scout-core.js",core),("scout-markets.js",markets),("scout.js",ui)]:
  marker=f'<script src="{n}"></script>'
  replacement='<script>'+source.replace("</script","<\\/script")+'</script>'
  if n=="scout.js":
