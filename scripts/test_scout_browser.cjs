@@ -40,6 +40,15 @@
  await desktop.locator('#scanMarket').selectOption('corners85');
  if((await desktop.locator('#scanMarket').inputValue())!=='corners85')throw new Error('Corner scanner selection failed');
  await desktop.locator('#scanMarket').selectOption('o25');
+ await desktop.locator('#scanMarket').selectOption('all');
+ if((await desktop.locator('#scanMarket').inputValue())!=='all')throw new Error('All-markets scanner toggle missing');
+ const autoCount=await desktop.locator('.scan-card').count();
+ if(!autoCount)throw new Error('Auto-discovery should find at least one observable streak');
+ stats.allMarketCandidates=autoCount;
+ await desktop.locator('#scanStreak').selectOption('7');
+ if((await desktop.locator('#scanStreak').inputValue())!=='7')throw new Error('7+ streak selector missing');
+ await desktop.locator('#scanStreak').selectOption('3');
+ await desktop.locator('#scanMarket').selectOption('o25');
 
  const scans=await desktop.locator('.scan-card').count();
  stats.scannerCards=scans;
