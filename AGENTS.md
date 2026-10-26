@@ -30,6 +30,12 @@ counts and branch instructions.
   Never edit or delete published JSONL lines. Forecasts stay frozen; score and
   schedule corrections append events. Keep the recorder inside the refresh
   workflow's post-reset retry loop so concurrent pushes cannot lose snapshots.
+- The paired model experiment under `docs/data/diary/experiments` is also
+  append-only; published `config.json` files are immutable. It captures both
+  forecasts at one instant from the same inputs, separately from the original
+  diary. Keep its frozen calibration and capture-week fit cutoff. Changed
+  candidate code pauses new captures; it never rewrites existing pairs. Keep
+  this recorder after the ordinary diary writer, inside the same retry loop.
 
 ## Validation
 
@@ -42,6 +48,7 @@ python scripts/audit_scout.py
 node scripts/smoke_scout.cjs
 node scripts/forecast_diary.cjs --check
 node scripts/compare_goal_models.cjs --check
+node scripts/paired_model_diary.cjs --check
 ```
 
 These checks do not download sports-provider data. The audit writes its report;

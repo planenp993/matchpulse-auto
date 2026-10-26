@@ -116,7 +116,7 @@ function report(forecasts,events,now=new Date(),run={}){
    immutable_forecasts:true,append_only_result_revisions:true,missing_statistics:'pending, never losses',
    note:'Forecasts use only the archived inputs available at capture. Results arrive with historical refreshes. Earlier historical backtests are not included. Baselines, code versions and inputs are frozen with each forecast.'}};
 }
-function advance({history,fixtures,forecasts=[],events=[],now=new Date(),sources={},versions=codeVersions()}){
+function advance({history,fixtures,forecasts=[],events=[],now=new Date(),sources={},versions=codeVersions(),capture=true}){
  const {latest}=validate(forecasts,events),today=sofiaDate(now),nowISO=now.toISOString();
  if(history.some(r=>M.isPlayed(r)&&r[3]>today))throw Error('Future scores in diary inputs');
  if(forecasts.some(f=>Date.parse(f.captured_at_utc)>+now)||events.some(e=>Date.parse(e.observed_at_utc)>+now))throw Error('Diary clock moved backwards');
@@ -126,11 +126,11 @@ function advance({history,fixtures,forecasts=[],events=[],now=new Date(),sources
  const knownResults=new Set(history.filter(r=>Number.isInteger(r[7])&&Number.isInteger(r[8])).map(S.keyFixture));
  const awardedResults=new Map(history.filter(r=>r[13]?.AWARDED===true).map(r=>[S.keyFixture(r),r]));
  const latestLeagueDate=new Map();for(const row of history)if(M.isPlayed(row)&&row[3]>(latestLeagueDate.get(row[0])||''))latestLeagueDate.set(row[0],row[3]);
- const scans=P.runAll(index,fixtures,S,{days:HORIZON_DAYS,windowSize:10,minimum:5,streak:3,both:false,venue:false,now});
+ const scans=capture?P.runAll(index,fixtures,S,{days:HORIZON_DAYS,windowSize:10,minimum:5,streak:3,both:false,venue:false,now}):[];
  const scanMap=new Map(scans.map((entry,i)=>[S.keyFixture(entry.fixture),{...entry,position:i+1}]));
  const end=new Date(today+'T12:00:00Z');end.setUTCDate(end.getUTCDate()+HORIZON_DAYS-1);const last=end.toISOString().slice(0,10);
  const skipped={already_recorded:0,already_played:0,unconfirmed_kickoff:0,too_late:0,international:0,insufficient_history:0};
- for(const f of fixtures.slice().sort((a,b)=>String(a[3]+' '+a[4]).localeCompare(String(b[3]+' '+b[4]))||S.keyFixture(a).localeCompare(S.keyFixture(b)))){
+ for(const f of (capture?fixtures:[]).slice().sort((a,b)=>String(a[3]+' '+a[4]).localeCompare(String(b[3]+' '+b[4]))||S.keyFixture(a).localeCompare(S.keyFixture(b)))){
   if(f[3]<today||f[3]>last)continue;
   const key=S.keyFixture(f);
   if(captured.has(key)){skipped.already_recorded++;continue;}
@@ -190,8 +190,8 @@ function appendRecords(directory,kind,records,forecastMap){
  for(const record of records){const month=(kind==='forecasts'?record.fixture:forecastMap.get(record.forecast_id).fixture).date.slice(0,7);if(!grouped.has(month))grouped.set(month,[]);grouped.get(month).push(record);}
  for(const [month,rows] of grouped){fs.mkdirSync(path.join(directory,kind),{recursive:true});fs.appendFileSync(path.join(directory,kind,month+'.jsonl'),rows.map(r=>JSON.stringify(r)+'\n').join(''));}
 }
-function checkPrefixes(baseRef,repositoryRoot=ROOT){
- const files=execFileSync('git',['ls-tree','-r','--name-only',baseRef,'--','docs/data/diary/forecasts','docs/data/diary/events'],{cwd:repositoryRoot,encoding:'utf8'}).trim().split('\n').filter(Boolean);
+function checkPrefixes(baseRef,repositoryRoot=ROOT,roots=['docs/data/diary/forecasts','docs/data/diary/events']){
+ const files=execFileSync('git',['ls-tree','-r','--name-only',baseRef,'--',...roots],{cwd:repositoryRoot,encoding:'utf8'}).trim().split('\n').filter(Boolean);
  for(const file of files){
   if(!file.endsWith('.jsonl'))continue;
   const before=execFileSync('git',['show',baseRef+':'+file],{cwd:repositoryRoot,maxBuffer:100*1024*1024}),current=path.join(repositoryRoot,file);
