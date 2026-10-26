@@ -62,7 +62,13 @@
  if((await desktop.locator('#scanMarket').inputValue())!=='all')throw new Error('All-markets scanner toggle missing');
  const autoCount=await desktop.locator('.scan-card').count();
  if(!autoCount)throw new Error('Auto-discovery should find at least one observable streak');
+ const ranks=await desktop.locator('.scan-card').evaluateAll(cards=>cards.map(c=>Number(c.dataset.evidenceRank)));
+ if(ranks.some((value,i)=>!Number.isFinite(value)||(i>0&&value>ranks[i-1])))throw new Error('Scanner evidence ranks are invalid or out of order');
+ const contexts=await desktop.locator('.scan-context').allTextContents();
+ if(contexts.length!==autoCount||contexts.some(text=>!text.includes('Лига:')&&!text.includes('Малка база за лигата')))throw new Error('Missing league-reference context');
+ if(!(await desktop.locator('#scannerSummary').textContent()).startsWith(String(autoCount)+' '))throw new Error('Scanner summary disagrees with visible cards');
  stats.allMarketCandidates=autoCount;
+ stats.evidenceRanking=true;
  await desktop.locator('#scanStreak').selectOption('7');
  if((await desktop.locator('#scanStreak').inputValue())!=='7')throw new Error('7+ streak selector missing');
  await desktop.locator('#scanStreak').selectOption('3');
@@ -103,6 +109,11 @@
  await mobile.locator('#closeMatch').click();
  stats.mobileFixtures=await mobile.locator('.fixture-row').count();
  if(!stats.mobileFixtures)throw new Error('Mobile day program is empty');
+ await mobile.locator('[data-view="scanner"]').click();
+ await mobile.locator('#scanWindow').selectOption('7');
+ if(!(await mobile.locator('.scan-context').count()))throw new Error('Mobile scanner context missing');
+ if(await mobile.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth+1))throw new Error('Mobile scanner overflows horizontally');
+ await mobile.screenshot({path:'scout-scanner.png',fullPage:false});
  if(failures.length)throw new Error('Browser JS errors: '+failures.join(' | '));
  console.log('SCOUT_BROWSER_OK '+JSON.stringify(stats));
  await browser.close();

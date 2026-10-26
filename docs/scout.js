@@ -251,17 +251,23 @@ function renderScanner(){
  const market=el('scanMarket').value,days=+el('scanWindow').value,
   league=el('scanLeague').value,streak=+el('scanStreak').value,
   both=el('scanBoth').value==='yes',venue=el('scanVenue').value==='venue';
- scannerRows=(market==='all'?Patterns.runAll:Patterns.run)(index,fixtures,Scout,{market,days,minimum:5,league,streak,both,venue,windowSize}).slice(0,70);
- el('scannerSummary').textContent=scannerRows.length+' мача със серия '+streak+'+'+(venue?' · домакинства / гостувания':'');
+ const found=(market==='all'?Patterns.runAll:Patterns.run)(index,fixtures,Scout,{market,days,minimum:5,league,streak,both,venue,windowSize});
+ scannerRows=found.slice(0,70);
+ el('scannerSummary').textContent=(found.length>70?scannerRows.length+' от '+found.length:scannerRows.length)+' мача със серия '+streak+'+'+(venue?' · домакинства / гостувания':'');
  if(!scannerRows.length){el('scannerList').innerHTML='<div class="empty">Няма серии при тези филтри. Опитай друг пазар, по-дълъг период или повече мачове.</div>';return}
  el('scannerList').innerHTML=scannerRows.map((entry,i)=>{
   const {fixture:f,signal:q}=entry,h=q.home,a=q.away;
   const signals=entry.signals||[q];
-  return '<article class="scan-card"><div class="scan-head"><span class="scan-league">'+esc(f[2])+'</span><span class="scan-date">'+esc(f[3])+' · '+esc(f[4]||'—')+'</span></div>'+
+  const reference=q.evidence.reference,homeBase=percent(reference.homeRate),awayBase=percent(reference.awayRate);
+  const baseline=reference.available?'Лига: '+(homeBase===awayBase?homeBase:homeBase+' / '+awayBase)+' · '+reference.n.toLocaleString('bg-BG')+' мача':'Малка база за лигата';
+  const notes=q.evidence.notes.filter(note=>reference.available||note!=='Малка база за лигата');
+  return '<article class="scan-card" data-evidence-rank="'+q.rank+'"><div class="scan-head"><span class="scan-league">'+esc(f[2])+'</span><span class="scan-date">'+esc(f[3])+' · '+esc(f[4]||'—')+'</span></div>'+
    '<h3>'+esc(f[5])+' – '+esc(f[6])+'</h3><div class="signal">'+esc(q.label)+'</div>'+
    '<div class="mini-bars">'+miniBar('Домакин',h.hits,h.n)+miniBar('Гост',a.hits,a.n,true)+'</div>'+
+   '<div class="scan-context"><span title="Наблюдавана честота за предходните 3 години, съобразена с домакинствата и гостуванията в извадката. Това е лигова база за сравнение.">'+esc(baseline)+'</span>'+
+   (notes.length?'<span class="scan-quality" title="'+esc(notes.join(' · '))+'">'+esc(notes[0])+'</span>':'')+'</div>'+
    '<table class="streak-table"><thead><tr><th>Поредни серии</th><th>Дом.</th><th>Гост</th></tr></thead><tbody>'+
-   signals.map(v=>'<tr><td>'+esc(v.label)+'</td><td>'+v.home.currentStreak+'</td><td>'+v.away.currentStreak+'</td></tr>').join('')+'</tbody></table>'+
+   signals.map(v=>'<tr><td>'+esc(v.label)+'</td>'+[v.home,v.away].map(t=>'<td title="Наблюдавано '+t.hits+' / '+t.n+' мача'+(t.missing?' · '+t.missing+' без данни':'')+'">'+t.currentStreak+'</td>').join('')+'</tr>').join('')+'</tbody></table>'+
    '<div class="scan-actions"><span class="footnote">'+(venue?'Домакинства / гостувания':'Последни '+windowSize+' мача')+'</span><button data-scan="'+i+'" class="button secondary" type="button">Анализ →</button></div></article>';
  }).join('');
  el('scannerList').querySelectorAll('[data-scan]').forEach(x=>x.onclick=()=>openMatch(scannerRows[+x.dataset.scan].fixture));
