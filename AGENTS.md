@@ -36,6 +36,10 @@ counts and branch instructions.
   diary. Keep its frozen calibration and capture-week fit cutoff. Changed
   candidate code pauses new captures; it never rewrites existing pairs. Keep
   this recorder after the ordinary diary writer, inside the same retry loop.
+- `scout.html` versions the UI script with the first 12 SHA-256 digits of
+  `docs/scout.js`. Update that query when the UI changes; a regression test
+  protects existing browsers from stale JavaScript. The offline builder accepts
+  versioned script URLs and still embeds every script locally.
 
 ## Validation
 
