@@ -218,6 +218,21 @@ def load_cache(directory, today):
     return sources
 
 
+def preserve_provenance(report,previous):
+    """Keep correction evidence when an already accepted cache is applied again."""
+    result=dict(report)
+    result["verified_score_corrections_this_run"]=report["verified_score_corrections"]
+    for field in ("verified_score_corrections","annotation_repairs","awarded_score_variants"):
+        events={json.dumps(item,sort_keys=True,ensure_ascii=False):item for item in previous.get(field,[])}
+        for item in report.get(field,[]):
+            events.setdefault(json.dumps(item,sort_keys=True,ensure_ascii=False),item)
+        result[field]=list(events.values())
+    result["verified_score_correction_count"]=len(result["verified_score_corrections"])
+    result["cumulative_added"]=previous.get("cumulative_added",previous.get("added",0))+report["added"]
+    result["first_import_before"]=previous.get("first_import_before",previous.get("before",report["before"]))
+    return result
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--cache-dir", type=Path, required=True)
@@ -225,7 +240,7 @@ def main():
     p.add_argument("--apply", action="store_true")
     p.add_argument("--report", type=Path)
     args = p.parse_args()
-    today = dt.date.today()
+    today = u.today_sofia()
     sources = load_cache(args.cache_dir, today)
     seeds = []
     for path in args.local_seed:
@@ -261,6 +276,7 @@ def main():
         return
     if len(output) < len(history) - report["aliases_deduplicated"]:
         raise SystemExit("Refuse shrinking archive")
+    report=preserve_provenance(report,u.readjson(u.OUT/"archive_import_report.json",{}))
     u.writejson(u.HIST, output)
     u.writejson(u.FIX, fixtures)
     u.writejson(u.OUT / "archive_import_report.json", report)

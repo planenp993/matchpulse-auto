@@ -12,7 +12,7 @@ import backfill_openfootball as of
 # Verified available 2026/27 OpenFootball JSON files; absent competitions aren't spammed.
 CURRENT_SUPPORTED=("D1","I1")
 def run(today=None, downloader=of.fetch):
-    today=today or dt.date.today()
+    today=today or u.today_sofia()
     season=today.year if today.month>=7 else today.year-1
     old=u.readjson(u.HIST,[])
     bykey={u.key(r):r for r in old if isinstance(r,list) and len(r)>=13}

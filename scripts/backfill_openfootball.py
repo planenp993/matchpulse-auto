@@ -83,7 +83,7 @@ def fetch(url):
         return json.loads(r.read(1_800_000).decode("utf-8-sig"))
 
 def run(history, *, today=None, downloader=fetch, seasons=6):
-    today=today or dt.date.today()
+    today=today or u.today_sofia()
     start=today.year if today.month>=7 else today.year-1
     first=start-seasons+1
     results={u.key(r):r for r in history if isinstance(r,list) and len(r)>=13 and

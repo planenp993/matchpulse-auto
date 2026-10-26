@@ -76,5 +76,39 @@ class CSVArchiveTests(unittest.TestCase):
         result=u.merge_fixtures([secondary,primary])
         self.assertEqual(result,[primary])
 
+    def test_reimport_is_idempotent_and_preserves_score_verification(self):
+        old=["E2","England","League One","2025-11-06","19:00","Reading FC","Stevenage FC",2,0,None,None,None,None,{"SRC":"openfootball-cc0"}]
+        fresh=["E2","England","League One","2025-11-06","19:00","Reading","Stevenage",1,0,None,None,None,None,{"HS":12,"AS":7}]
+        first,one=archive.merge_archive([old],[{"matches":[fresh]}])
+        second,two=archive.merge_archive(first,[{"matches":[fresh]}])
+        self.assertEqual(first,second)
+        self.assertEqual(len(one["verified_score_corrections"]),1)
+        self.assertEqual(len(two["verified_score_corrections"]),0)
+        self.assertTrue(second[0][13]["SCORE_VERIFIED"])
+        self.assertEqual(two["added"],0)
+
+    def test_reapplying_cli_keeps_the_original_correction_ledger(self):
+        import contextlib,io,tempfile
+        from unittest import mock
+        corrected=["E2","England","League One","2025-11-06","19:00","Reading FC","Stevenage FC",1,0,None,None,None,None,{"SRC":"football-data","SCORE_VERIFIED":"fixture-verification"}]
+        fresh=list(corrected[:13])+[{"HS":12,"AS":7}]
+        evidence={"key":list(u.key(corrected)),"existing":[2,0],"csv":[1,0],"evidence":"fixture-verification"}
+        source={"division":"E2","season_start":2025,"rows":1,"matches":[fresh],"unplayed":[]}
+        with tempfile.TemporaryDirectory() as name:
+            root=Path(name)
+            with mock.patch.multiple(archive.u,OUT=root,HIST=root/"history.json",FIX=root/"fixtures.json",STAT=root/"status.json"),mock.patch.object(archive,"load_cache",return_value=[source]),mock.patch.object(sys,"argv",["backfill_csv_archive.py","--cache-dir",name,"--apply"]):
+                u.writejson(u.HIST,[corrected]);u.writejson(u.FIX,[]);u.writejson(u.STAT,{})
+                u.writejson(root/"archive_import_report.json",{"before":50889,"added":3790,"verified_score_corrections":[evidence]})
+                with contextlib.redirect_stdout(io.StringIO()):
+                    archive.main()
+                    first=u.HIST.read_bytes()
+                    archive.main()
+                self.assertEqual(u.HIST.read_bytes(),first)
+                report=u.readjson(root/"archive_import_report.json",{})
+                self.assertEqual(report["verified_score_corrections"],[evidence])
+                self.assertEqual(report["verified_score_correction_count"],1)
+                self.assertEqual(report["verified_score_corrections_this_run"],[])
+                self.assertEqual(report["cumulative_added"],3790)
+
 if __name__=="__main__":
     unittest.main()

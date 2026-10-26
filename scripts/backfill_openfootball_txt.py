@@ -101,7 +101,7 @@ def parse(text, division, year, today):
 
 def fill(history,*,today=None,downloader=fetch):
     """Fill absent seasons only, or leave them unresolved. No fuzzy joins of identities."""
-    today=today or dt.date.today()
+    today=today or u.today_sofia()
     years=list(range(2021,2026))
     existing={u.key(r):r for r in history if isinstance(r,list) and len(r)>=13}
     counts={}

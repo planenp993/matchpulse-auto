@@ -21,7 +21,7 @@ def season(date, div):
     return year if div in ("NOR","SWE") or int(date[5:7])>=7 else year-1
 
 def audit(history,fixtures,today=None,source_expectations=None):
-    today=today or dt.date.today()
+    today=today or u.today_sofia()
     league=collections.defaultdict(lambda:{"matches":0,"first":None,"last":None,"seasons":{},
         "goals":0,"xg":0,"sources":collections.Counter(),
         "stats":collections.Counter(),"season_stats":collections.defaultdict(collections.Counter),
@@ -140,6 +140,7 @@ def audit(history,fixtures,today=None,source_expectations=None):
         source_checks.append({"division":div,"season_start":int(year),"expected_source_rows":expected,
                               "observed_season_rows":observed,"covered_count":observed>=expected})
     return {"checked_utc":dt.datetime.now(dt.timezone.utc).isoformat(),
+        "as_of_date":today.isoformat(),"date_zone":"Europe/Sofia",
         "historical_matches":sum(g["matches"] for g in summary.values()),
         "historical_leagues":sum(g["matches"]>0 for g in summary.values()),
         "calendar_leagues":len(fixtures_by_league),

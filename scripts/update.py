@@ -14,6 +14,7 @@ import urllib.request
 import argparse
 from pathlib import Path
 import sys
+from zoneinfo import ZoneInfo
 
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 from club_identity import club_key
@@ -46,6 +47,13 @@ OPEN_ONLY = {
 LEAGUES = {**MAIN, **EXTRA, **OPEN_ONLY}
 CSV_LEAGUES = {**MAIN, **OPEN_ONLY}
 from fixtures_fallback import collect as collect_secondary_fixtures
+
+def today_sofia(instant=None):
+    """Use the product's civil date, independently of the server's TZ setting."""
+    instant=instant or dt.datetime.now(dt.timezone.utc)
+    if instant.tzinfo is None:
+        raise ValueError("An explicit instant must include its timezone")
+    return instant.astimezone(ZoneInfo("Europe/Sofia")).date()
 
 def val(row, *names):
     normalized = {str(k).lstrip("\ufeff").strip().lower(): v for k,v in row.items() if k}
@@ -210,7 +218,7 @@ def current_years(today,div):
     return years
 
 def run(online=True, downloader=fetch, now=None, sleeper=time.sleep):
-    today=now or dt.date.today()
+    today=now or today_sofia()
     saved=readjson(HIST,[])
     history=index_history(saved)
     for seed in sorted((ROOT/"data"/"extra_seed").glob("*.csv")):
