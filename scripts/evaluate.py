@@ -14,10 +14,14 @@ def report(history,since="2026-08-20"):
     return json.loads(process.stdout)
 
 def main():
-    process=subprocess.run(["node",str(ENGINE)],text=True,capture_output=True,check=True,cwd=ROOT)
+    process=subprocess.run(["node",str(ENGINE),"--quality","--progress","--markdown-output",
+                            str(ROOT/"docs/model-quality.md")],
+                           text=True,stdout=subprocess.PIPE,check=True,cwd=ROOT)
     result=json.loads(process.stdout)
     OUT.write_text(json.dumps(result,ensure_ascii=False,separators=(",",":")),encoding="utf-8")
-    print(json.dumps({"walk_forward_n":result["n"],"brier":result.get("brier"),
-                      "league_baseline":result.get("baseline_brier"),"model":result["model"]}))
+    diagnostics=result["diagnostics"]
+    print(json.dumps({"walk_forward_n":diagnostics["n"],"markets":len(diagnostics["markets"]),
+                      "windows":diagnostics["windows"],"since":diagnostics["since"],
+                      "observed_until":diagnostics["observed_until"],"model":result["model"]}))
 
 if __name__=="__main__":main()
