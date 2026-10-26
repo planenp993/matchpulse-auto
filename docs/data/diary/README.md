@@ -17,6 +17,9 @@ record hashes, sequences and byte-for-byte prefixes against `origin/main`.
 
 Capture covers the current Sofia day and next two days, requires a confirmed,
 unambiguous kickoff at least 30 minutes away, and never backfills played games.
+Production capture and kickoff changes also require a calendar snapshot no older
+than 36 hours and a successful feed for that league. Failed cached leagues are
+skipped; existing records can still settle from new historical results.
 Settlement requires a recorded final score at least three hours after kickoff.
 Awarded scores are excluded; missing supplementary statistics stay pending.
 Scores and statistics may be corrected through new events without changing a

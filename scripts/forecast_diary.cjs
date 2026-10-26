@@ -28,6 +28,13 @@ function confirmedKickoff(fixture){
  // Refuse nonexistent spring clocks and ambiguous autumn clocks.
  return candidates.length===1?new Date(candidates[0]).toISOString():null;
 }
+function calendarSnapshot(status,fixtures,now=new Date()){
+ const stamp=status.fixtures_updated_utc,age=+now-Date.parse(stamp);
+ const fresh=Number.isFinite(age)&&age>=-60000&&age<=36*3600000&&['ok','ok_secondary','partial_secondary'].includes(status.fixtures_feed_status);
+ const successful=new Set(Object.keys(status.secondary_fixture_counts||{})),stale=new Set(status.stale_secondary_leagues||[]);
+ const eligible=fresh?fixtures.filter(f=>successful.has(f[0])&&!stale.has(f[0])):[];
+ return {fixtures:eligible,stamp:stamp||null,blocked:fixtures.length-eligible.length,fresh};
+}
 function fixtureRow(f){return [f.div,f.country,f.league,f.date,f.time,f.home,f.away,null,null,null,null,null,null,f.source];}
 const fixtureKey=f=>S.keyFixture(fixtureRow(f));
 const dict=vector=>Object.fromEntries(D.MARKETS.map((m,i)=>[m.id,vector[i]]));
@@ -105,6 +112,7 @@ function report(forecasts,events,now=new Date(),run={}){
   method:{type:'prospective',model_window:30,scanner_window:10,scanner_selection:'Primary signal frozen at first capture; no later market substitution',
    capture_horizon_days:HORIZON_DAYS,minimum_minutes_before_kickoff:MARGIN_MINUTES,minimum_minutes_after_kickoff_for_results:RESULT_WAIT_MINUTES,
    missing_result_grace_days:MISSING_RESULT_GRACE_DAYS,
+   production_calendar_policy:'Only successful league feeds from a calendar snapshot no older than 36 hours can create new forecasts or update kickoffs; settlement remains independent of calendar availability',
    immutable_forecasts:true,append_only_result_revisions:true,missing_statistics:'pending, never losses',
    note:'Forecasts use only the archived inputs available at capture. Results arrive with historical refreshes. Earlier historical backtests are not included. Baselines, code versions and inputs are frozen with each forecast.'}};
 }
@@ -112,7 +120,8 @@ function advance({history,fixtures,forecasts=[],events=[],now=new Date(),sources
  const {latest}=validate(forecasts,events),today=sofiaDate(now),nowISO=now.toISOString();
  if(history.some(r=>M.isPlayed(r)&&r[3]>today))throw Error('Future scores in diary inputs');
  if(forecasts.some(f=>Date.parse(f.captured_at_utc)>+now)||events.some(e=>Date.parse(e.observed_at_utc)>+now))throw Error('Diary clock moved backwards');
- const source={history_sha256:sources.history_sha256||sha(canonical(history)),fixtures_sha256:sources.fixtures_sha256||sha(canonical(fixtures))};
+ const source={history_sha256:sources.history_sha256||sha(canonical(history)),fixtures_sha256:sources.fixtures_sha256||sha(canonical(fixtures)),
+  ...(sources.status_sha256?{status_sha256:sources.status_sha256,calendar_stamp_utc:sources.calendar_stamp_utc}: {})};
  const index=S.build(history),replay=D.createReplay(history),captured=new Set(forecasts.map(f=>fixtureKey(f.fixture))),newForecasts=[],newEvents=[];
  const knownResults=new Set(history.filter(r=>Number.isInteger(r[7])&&Number.isInteger(r[8])).map(S.keyFixture));
  const awardedResults=new Map(history.filter(r=>r[13]?.AWARDED===true).map(r=>[S.keyFixture(r),r]));
@@ -202,7 +211,9 @@ function main(){
  }
  if(!args.includes('--write'))throw Error('Use --check or --write');
  const historyRaw=fs.readFileSync(path.join(DATA,'history.json'),'utf8'),fixturesRaw=fs.readFileSync(path.join(DATA,'fixtures.json'),'utf8');
- const result=advance({...ledger,history:JSON.parse(historyRaw),fixtures:JSON.parse(fixturesRaw),sources:{history_sha256:sha(historyRaw),fixtures_sha256:sha(fixturesRaw)}});
+ const statusRaw=fs.readFileSync(path.join(DATA,'status.json'),'utf8'),now=new Date(),calendar=calendarSnapshot(JSON.parse(statusRaw),JSON.parse(fixturesRaw),now);
+ const result=advance({...ledger,now,history:JSON.parse(historyRaw),fixtures:calendar.fixtures,sources:{history_sha256:sha(historyRaw),fixtures_sha256:sha(fixturesRaw),status_sha256:sha(statusRaw),calendar_stamp_utc:calendar.stamp}});
+ result.report.last_run.calendar={fresh:calendar.fresh,blocked_fixtures:calendar.blocked,stamp:calendar.stamp};
  appendRecords(LEDGER,'forecasts',result.newForecasts);
  const forecastMap=new Map([...ledger.forecasts,...result.newForecasts].map(f=>[f.id,f]));
  appendRecords(LEDGER,'events',result.newEvents,forecastMap);
@@ -210,4 +221,4 @@ function main(){
  console.log(JSON.stringify({...result.report.last_run,totals:result.report.totals,ledger_sha256:result.report.integrity.ledger_sha256}));
 }
 if(require.main===module)main();
-module.exports={advance,report,validate,seal,sha,canonical,confirmedKickoff,sofiaDate,readLedger,appendRecords,checkPrefixes,ledgerHash,MARGIN_MINUTES,HORIZON_DAYS,RESULT_WAIT_MINUTES};
+module.exports={advance,report,validate,seal,sha,canonical,confirmedKickoff,calendarSnapshot,sofiaDate,readLedger,appendRecords,checkPrefixes,ledgerHash,MARGIN_MINUTES,HORIZON_DAYS,RESULT_WAIT_MINUTES};

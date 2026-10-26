@@ -167,3 +167,19 @@ test('A month boundary stores forecasts and their later outcomes in the fixture 
  J.appendRecords(temp,'events',next.newEvents,new Map(first.newForecasts.map(f=>[f.id,f])));
  assert.ok(fs.existsSync(path.join(temp,'events/2026-11.jsonl')));assert.equal(J.readLedger(temp).events.length,1);
 });
+test('Capture accepts only recently successful league calendars and blocks cached failed leagues',()=>{
+ const a=fixture(),b=fixture();b[0]='D1';const c=fixture();c[0]='T1';
+ const status={fixtures_updated_utc:NOW.toISOString(),fixtures_feed_status:'partial_secondary',secondary_fixture_counts:{E0:1,D1:1},stale_secondary_leagues:['D1']};
+ const selected=J.calendarSnapshot(status,[a,b,c],NOW);
+ assert.deepEqual(selected.fixtures,[a]);assert.equal(selected.blocked,2);assert.equal(selected.fresh,true);
+});
+test('Missing, future, old or failed calendar snapshots cannot add prospective forecasts',()=>{
+ const status={fixtures_updated_utc:NOW.toISOString(),fixtures_feed_status:'ok_secondary',secondary_fixture_counts:{E0:1}};
+ for(const change of [{fixtures_updated_utc:undefined},{fixtures_updated_utc:'2026-10-24T08:00:00Z'},{fixtures_updated_utc:'2026-10-27T08:00:00Z'},{fixtures_feed_status:'stale_secondary'}])
+  assert.equal(J.calendarSnapshot({...status,...change},[fixture()],NOW).fixtures.length,0);
+});
+test('An unavailable calendar still allows existing forecasts to settle from new history',()=>{
+ const first=capture(),now=new Date('2026-10-27T08:00:00Z'),calendar=J.calendarSnapshot({},[fixture()],now);
+ const result=capture({now,forecasts:first.newForecasts,fixtures:calendar.fixtures,history:[...history(),row('2026-10-26')]});
+ assert.equal(result.newForecasts.length,0);assert.equal(result.report.totals.settled,1);
+});
