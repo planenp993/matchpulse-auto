@@ -41,12 +41,20 @@ node --test tests/*.cjs
 python scripts/audit_scout.py
 node scripts/smoke_scout.cjs
 node scripts/forecast_diary.cjs --check
+node scripts/compare_goal_models.cjs --check
 ```
 
 These checks do not download sports-provider data. The audit writes its report;
 structural integrity failures block publishing, while missing coverage is reported
 as a warning. UI changes also need the browser checks in
 `scripts/test_scout_browser.cjs`.
+
+The registered offline comparison is `docs/model-comparison-protocol.md`. Keep
+its fixed candidates, fitting/calibration cutoffs and paired-cohort evaluation
+explicit. Do not tune settings on its later periods or activate a model from
+retrospective results alone. Changed comparison code/history requires
+`node scripts/compare_goal_models.cjs --write --progress`; calendar-only runs
+reuse the exact matching report. This experiment does not change live formulas.
 
 Keep historical CSV refresh separate from calendar-only updates. Tests and code
 pushes must not add provider downloads. Record changed measured results and
