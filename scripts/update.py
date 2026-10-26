@@ -204,6 +204,25 @@ def merge_fixtures(rows):
             result[k]=row
     return sorted(result.values(),key=lambda r:(r[3],r[4],r[0],r[5]))
 
+def confirmed_kickoffs(rows, secondary):
+    """Keep cached CSV odds, but use freshly confirmed Sofia kickoff times."""
+    fresh = {key(r): r for r in secondary
+             if len(r)>13 and isinstance(r[13],str) and "Sofia" in r[13]}
+    out = []
+    for row in rows:
+        source = row[13] if len(row)>13 and isinstance(row[13],str) else "Football-Data"
+        verified = fresh.get(key(row))
+        if verified is not None and "FixtureDownload" not in source:
+            row = list(row)
+            row[4] = verified[4]
+            # This remains a primary CSV snapshot, with a secondary kickoff source.
+            source = "Football-Data / UTC→Europe-Sofia (fixturedownload.com kickoff)"
+            if len(row)>13: row[13] = source
+            else: row.append(source)
+        out.append(row)
+    return out
+
+
 def fetch(url):
     req=urllib.request.Request(url,headers={
         "User-Agent":"Mozilla/5.0 MatchpulseOpenCSVResearch/1.0",
@@ -293,13 +312,8 @@ def run(online=True, downloader=fetch, now=None, sleeper=time.sleep):
         status["secondary_fixture_sources_total"] = 9
         status["secondary_fixture_errors"] = secondary_errors[:12]
         if secondary:
-            # Prefer Football-Data fixtures when both feeds report the same match.
-            # Avoid false clashes: a different kickoff time can reflect rescheduling,
-            # therefore keep the primary only when the same teams and date match.
-            merged = {key(r):r for r in secondary}
-            for r in upcoming:
-                merged[key(r)] = r
-            upcoming = sorted(merged.values(), key=lambda r:(r[3],r[4],r[0]))
+            # Keep primary odds and the fresh, explicitly converted Sofia clock.
+            upcoming = confirmed_kickoffs(merge_fixtures([*secondary,*upcoming]),secondary)
             status["fixtures_feed_status"] = "ok_secondary"
             status["fixtures_source"] = "Football-Data + FixtureDownload (keyless)"
             status["fixtures_updated_utc"] = stamp

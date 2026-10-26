@@ -38,7 +38,7 @@ def run(downloader=u.fetch, now=None):
         # A successful empty feed clears its old rows. Failed feeds retain
         # their usable cached rows while the status names their stale leagues.
         retained=[r for r in cached_secondary if r[0] not in counts]
-        upcoming=u.merge_fixtures([*retained,*secondary,*primaries])
+        upcoming=u.confirmed_kickoffs(u.merge_fixtures([*retained,*secondary,*primaries]),secondary)
         status.update(
             fixtures_feed_status="partial_secondary" if errors else "ok_secondary" if upcoming else "no_future_matches",
             fixtures_source="Football-Data cached + FixtureDownload (keyless)",

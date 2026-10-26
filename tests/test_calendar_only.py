@@ -75,5 +75,19 @@ class CalendarOnlyTests(unittest.TestCase):
         self.assertEqual(out[0][0],"D2")
         self.assertEqual(status["fixtures_feed_status"],"ok_secondary")
 
+    def test_confirmed_sofia_time_replaces_unknown_csv_clock_and_keeps_odds(self):
+        primary=["F2","France","Ligue 2","2026-10-26","19:45","Montpellier","Red Star",None,None,None,None,1.8,2.0]
+        fresh=[*primary[:13],"FixtureDownload / UTC→Europe-Sofia"]
+        fresh[4]="21:45";fresh[5]="Montpellier Hérault SC";fresh[6]="Red Star FC"
+        update.writejson(update.FIX,[primary])
+        update_calendar.collect_secondary_fixtures=lambda *args,**kwargs:([fresh],{"F2":1},[])
+        update_calendar.run(downloader=lambda *_:None,now=dt.date(2026,10,26))
+        out=update.readjson(update.FIX,[])
+        self.assertEqual(len(out),1)
+        self.assertEqual(out[0][4],"21:45")
+        self.assertEqual(out[0][11:13],[1.8,2.0])
+        self.assertIn("Sofia",out[0][13])
+        self.assertIn("fixturedownload.com",out[0][13])
+
 
 if __name__=='__main__':unittest.main()

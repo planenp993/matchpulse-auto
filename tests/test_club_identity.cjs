@@ -18,6 +18,8 @@ test('Importer and browser share every reviewed club identity',()=>{
  assert.deepEqual(keys,names.map(M.clubKey));
  assert.equal(M.clubKey('FC Internazionale Milano'),M.clubKey('Inter'));
  assert.equal(M.clubKey('Heart of Midlothian'),M.clubKey('Hearts'));
+ assert.equal(M.clubKey('Montpellier Hérault SC'),M.clubKey('Montpellier'));
+ assert.equal(M.clubKey('US Boulogne CO'),M.clubKey('Boulogne'));
  assert.notEqual(M.clubKey('Red Star FC'),M.clubKey('Red Star Belgrade'));
 });
 
