@@ -89,11 +89,14 @@ jobs:
             # Separate offline study; never changes the frozen paired candidate.
             node scripts/compare_shot_models.cjs --write --if-needed --progress
             node scripts/compare_shot_models.cjs --check
+            node scripts/evaluate_scanner.cjs --write --if-needed --progress
+            node scripts/evaluate_scanner.cjs --check
             git add docs/data/history.json docs/data/fixtures.json docs/data/status.json docs/data/model_report.json docs/data/coverage_audit.json docs/model-quality.md
             git add docs/data/diary docs/data/diary_report.json
             git add docs/data/model_comparison.json docs/model-comparison.md
             git add docs/data/paired_model_report.json
             git add docs/data/shot_model_comparison.json docs/shot-model-comparison.md
+            git add docs/data/scanner_validation.json docs/scanner-validation.md
             if git diff --staged --quiet; then
               echo "No data changes"
               break
