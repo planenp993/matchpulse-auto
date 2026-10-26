@@ -12,6 +12,7 @@ const registry=require('../docs/data/club_aliases.json');
 test('Importer and browser share every reviewed club identity',()=>{
  const aliases=require('../docs/club-aliases.js');
  assert.deepEqual(aliases,registry.aliases);
+ for(const canonical of Object.values(aliases))assert.equal(aliases[canonical]||canonical,canonical,'Alias targets must be canonical roots');
  const names=[...Object.keys(aliases),'ЦСКА София','Левски','Bayern München','Kasımpaşa SK'];
  const python="import json,sys;sys.path.insert(0,'scripts');from club_identity import club_key;print(json.dumps([club_key(x) for x in json.load(sys.stdin)]))";
  const keys=JSON.parse(execFileSync('python',['-c',python],{cwd:path.resolve(__dirname,'..'),input:JSON.stringify(names),encoding:'utf8'}));
@@ -21,6 +22,8 @@ test('Importer and browser share every reviewed club identity',()=>{
  assert.equal(M.clubKey('Montpellier Hérault SC'),M.clubKey('Montpellier'));
  assert.equal(M.clubKey('US Boulogne CO'),M.clubKey('Boulogne'));
  assert.notEqual(M.clubKey('Red Star FC'),M.clubKey('Red Star Belgrade'));
+ assert.notEqual(M.clubKey('RC Celta Fortuna'),M.clubKey('Celta'));
+ assert.notEqual(M.clubKey('Real Sociedad II'),M.clubKey('Real Sociedad'));
 });
 
 test('Administrative scores cannot influence form, Elo, trends or automatic settlement',()=>{
@@ -41,4 +44,13 @@ test('Browser and offline entry points load identities before the model',()=>{
  }
  const builder=fs.readFileSync(path.resolve(__dirname,'../scripts/build_scout_preview.py'),'utf8');
  assert.match(builder,/club-aliases\.js/);
+});
+
+test('old notebook fixture keys still resolve after a reviewed club name is linked',()=>{
+ const pick={fixtureKey:'SP1|2026-10-20|real sociedad|rayo vallecano',div:'SP1',date:'2026-10-20',home:'Real Sociedad',away:'Rayo Vallecano',market:'o25',modelProbability:.62};
+ const saved=JSON.stringify(pick);
+ const result=['SP1','Spain','LaLiga','2026-10-20','18:00','Sociedad','Vallecano',2,1,null,null,null,null];
+ const index=S.build([result]);
+ assert.equal(S.marketSettled(pick,index.lookup.get(S.keyPick(pick))),true);
+ assert.equal(JSON.stringify(pick),saved,'Keep the original pick and recorded probability unchanged');
 });

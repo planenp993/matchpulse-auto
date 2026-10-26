@@ -46,7 +46,7 @@ OPEN_ONLY = {
 }
 LEAGUES = {**MAIN, **EXTRA, **OPEN_ONLY}
 CSV_LEAGUES = {**MAIN, **OPEN_ONLY}
-from fixtures_fallback import collect as collect_secondary_fixtures
+from fixtures_fallback import CALENDAR_DIVISIONS, is_secondary, collect as collect_secondary_fixtures
 
 def today_sofia(instant=None):
     """Use the product's civil date, independently of the server's TZ setting."""
@@ -196,7 +196,7 @@ def index_history(rows):
 def merge_fixtures(rows):
     """Join reviewed aliases; prefer primary CSV over secondary schedule copies."""
     result={}
-    secondary=lambda row:len(row)>13 and isinstance(row[13],str) and "FixtureDownload" in row[13]
+    secondary=is_secondary
     for row in rows:
         k=key(row)
         old=result.get(k)
@@ -212,11 +212,12 @@ def confirmed_kickoffs(rows, secondary):
     for row in rows:
         source = row[13] if len(row)>13 and isinstance(row[13],str) else "Football-Data"
         verified = fresh.get(key(row))
-        if verified is not None and "FixtureDownload" not in source:
+        if verified is not None and not is_secondary(row):
             row = list(row)
             row[4] = verified[4]
             # This remains a primary CSV snapshot, with a secondary kickoff source.
-            source = "Football-Data / UTC→Europe-Sofia (fixturedownload.com kickoff)"
+            provider = "site.api.espn.com" if verified[13].startswith("ESPN") else "fixturedownload.com"
+            source = f"Football-Data / UTC→Europe-Sofia ({provider} kickoff)"
             if len(row)>13: row[13] = source
             else: row.append(source)
         out.append(row)
@@ -281,6 +282,7 @@ def run(online=True, downloader=fetch, now=None, sleeper=time.sleep):
                       history_sources_total=len(targets),history_sources_ok=success)
         if success: status["last_history_success_utc"]=stamp
     upcoming=readjson(FIX,[])
+    cached_calendar=list(upcoming)
     if online:
         try:
             rows=parse_csv(downloader("https://www.football-data.co.uk/fixtures.csv"))
@@ -309,16 +311,20 @@ def run(online=True, downloader=fetch, now=None, sleeper=time.sleep):
         )
         status["secondary_fixture_counts"] = source_counts
         status["secondary_fixture_sources_ok"] = len(source_counts)
-        status["secondary_fixture_sources_total"] = 9
+        status["secondary_fixture_sources_total"] = len(CALENDAR_DIVISIONS)
         status["secondary_fixture_errors"] = secondary_errors[:12]
+        retained=[r for r in cached_calendar if is_secondary(r) and r[0] not in source_counts
+                  and today.isoformat()<=r[3]<=(today+dt.timedelta(days=30)).isoformat()]
+        status["stale_secondary_leagues"]=sorted({r[0] for r in retained})
+        secondary=[*secondary,*retained]
         if secondary:
             # Keep primary odds and the fresh, explicitly converted Sofia clock.
             upcoming = confirmed_kickoffs(merge_fixtures([*secondary,*upcoming]),secondary)
-            status["fixtures_feed_status"] = "ok_secondary"
-            status["fixtures_source"] = "Football-Data + FixtureDownload (keyless)"
+            status["fixtures_feed_status"] = "partial_secondary" if secondary_errors else "ok_secondary"
+            status["fixtures_source"] = "Football-Data + FixtureDownload + ESPN (keyless)"
             status["fixtures_updated_utc"] = stamp
         elif status.get("fixtures_feed_status") == "no_future_matches":
-            status["fixtures_source"] = "Football-Data; secondary calendar unavailable"
+            status["fixtures_source"] = "No upcoming fixtures in the refreshed calendars" if source_counts else "Football-Data; secondary calendars unavailable"
     if not history:
         raise RuntimeError("No completed matches available: keeping cached files untouched")
     historical=sorted(history.values(),key=lambda r:(r[3],r[0],r[5],r[6]))

@@ -8,6 +8,11 @@
  desktop.on('pageerror',e=>failures.push('desktop: '+String(e)));
  await desktop.goto(base,{waitUntil:'domcontentloaded',timeout:60000});
  await desktop.waitForFunction(()=>document.getElementById('lastSync')?.textContent.includes('Програма:'),{timeout:20000});
+ const covered=await desktop.locator('#leagueSelect option').evaluateAll(options=>options.map(x=>x.value));
+ for(const league of ['D1','I1','D2','I2','B1','G1','SP2','SC0','P1','T1','E2','E3']){
+  if(!covered.includes(league))throw new Error('Expanded calendar is missing '+league);
+ }
+ stats.calendarCompetitions=covered.filter(Boolean).length;
  await desktop.locator('[data-day="7"]').click();
  await desktop.locator('#leagueSelect').selectOption('E0');
 

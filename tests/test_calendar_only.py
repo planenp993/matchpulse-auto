@@ -89,5 +89,32 @@ class CalendarOnlyTests(unittest.TestCase):
         self.assertIn("Sofia",out[0][13])
         self.assertIn("fixturedownload.com",out[0][13])
 
+    def test_successful_empty_league_also_clears_its_old_primary_schedule(self):
+        primary=["D2","Germany","2. Bundesliga","2026-10-27","12:00","A","B",None,None,None,None,None,None]
+        update.writejson(update.FIX,[primary])
+        update_calendar.collect_secondary_fixtures=lambda *args,**kwargs:([],{"D2":0},[])
+        update_calendar.run(downloader=lambda _:None,now=dt.date(2026,10,26))
+        self.assertEqual(update.readjson(update.FIX,[]),[])
+
+    def test_failed_espn_league_preserves_its_cache_during_a_partial_refresh(self):
+        cached=["D2","Germany","2. Bundesliga","2026-10-27","19:00","A","B",None,None,None,None,None,None,"ESPN / UTC→Europe-Sofia"]
+        update.writejson(update.FIX,[cached])
+        update_calendar.collect_secondary_fixtures=lambda *args,**kwargs:([],{"F1":0},["D2 ESPN day unavailable"])
+        status=update_calendar.run(downloader=lambda _:None,now=dt.date(2026,10,26))
+        self.assertEqual(update.readjson(update.FIX,[]),[cached])
+        self.assertEqual(status["stale_secondary_leagues"],["D2"])
+
+    def test_full_refresh_keeps_a_failed_leagues_secondary_schedule(self):
+        from unittest import mock
+        cached=["D2","Germany","2. Bundesliga","2026-10-27","19:00","A","B",None,None,None,None,None,None,"ESPN / UTC→Europe-Sofia"]
+        played=["D2","Germany","2. Bundesliga","2026-10-20","19:00","A","B",1,0,None,None,None,None]
+        update.writejson(update.HIST,[played]);update.writejson(update.FIX,[cached])
+        with mock.patch.multiple(update,CSV_LEAGUES={},EXTRA={}),mock.patch.object(update,"collect_secondary_fixtures",return_value=([],{},["D2 unavailable"])):
+            status=update.run(online=True,downloader=lambda _:b"Div,Date,Time,HomeTeam,AwayTeam\nF1,27/10/2026,19:00,C,D\n",now=dt.date(2026,10,26),sleeper=lambda _:None)
+        self.assertIn(cached,update.readjson(update.FIX,[]))
+        self.assertEqual(len(update.readjson(update.FIX,[])),2)
+        self.assertEqual(status["stale_secondary_leagues"],["D2"])
+        self.assertEqual(status["fixtures_feed_status"],"partial_secondary")
+
 
 if __name__=='__main__':unittest.main()

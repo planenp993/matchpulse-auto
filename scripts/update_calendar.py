@@ -6,7 +6,7 @@ For personal research. Existing published results are never modified here.
 import datetime as dt
 import json
 import update as u
-from fixtures_fallback import FEEDS, collect as collect_secondary_fixtures
+from fixtures_fallback import CALENDAR_DIVISIONS, is_secondary, collect as collect_secondary_fixtures
 
 
 def run(downloader=u.fetch, now=None):
@@ -19,7 +19,7 @@ def run(downloader=u.fetch, now=None):
     status.update(
         secondary_fixture_counts=counts,
         secondary_fixture_sources_ok=len(counts),
-        secondary_fixture_sources_total=len(FEEDS),
+        secondary_fixture_sources_total=len(CALENDAR_DIVISIONS),
         secondary_fixture_errors=errors[:12],
         fixtures_checked_utc=stamp,
         last_fixture_attempt_utc=stamp,
@@ -27,21 +27,22 @@ def run(downloader=u.fetch, now=None):
 
     future=lambda r: (isinstance(r,list) and len(r)>=13 and
         today.isoformat() <= str(r[3]) <= (today+dt.timedelta(days=30)).isoformat())
-    is_secondary=lambda r:len(r)>13 and isinstance(r[13],str) and "FixtureDownload" in r[13]
     cached_secondary=[r for r in old if future(r) and is_secondary(r)]
     if counts:
         # Keep recent primary CSV calendar snapshots without querying their source.
         # Drop stale secondary fixtures that the refreshed feed no longer contains.
+        fresh_keys={u.key(r) for r in secondary}
         primaries = [r for r in old if future(r) and
             not is_secondary(r) and
-            str(r[3]) <= (today+dt.timedelta(days=15)).isoformat()]
+            str(r[3]) <= (today+dt.timedelta(days=15)).isoformat() and
+            (r[0] not in counts or u.key(r) in fresh_keys)]
         # A successful empty feed clears its old rows. Failed feeds retain
         # their usable cached rows while the status names their stale leagues.
         retained=[r for r in cached_secondary if r[0] not in counts]
         upcoming=u.confirmed_kickoffs(u.merge_fixtures([*retained,*secondary,*primaries]),secondary)
         status.update(
             fixtures_feed_status="partial_secondary" if errors else "ok_secondary" if upcoming else "no_future_matches",
-            fixtures_source="Football-Data cached + FixtureDownload (keyless)",
+            fixtures_source="Football-Data cached + FixtureDownload + ESPN (keyless)",
             fixtures_updated_utc=stamp,
             stale_secondary_leagues=sorted({r[0] for r in retained}),
         )
