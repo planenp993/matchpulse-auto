@@ -55,5 +55,25 @@ class CalendarOnlyTests(unittest.TestCase):
         self.assertEqual(status["history_count"],26558)
         self.assertEqual(len(update.readjson(update.FIX,[])),2)
 
+    def test_partial_failure_preserves_only_the_failed_leagues_cache(self):
+        fresh=["F1","France","Ligue 1","2026-10-28","19:00","Fresh","Opponent",None,None,None,None,None,None,"FixtureDownload / UTC→Europe-Sofia"]
+        update_calendar.collect_secondary_fixtures=lambda *args,**kwargs:([fresh],{"F1":1},["E0 unavailable"])
+        history_before=update.HIST.read_bytes()
+        status=update_calendar.run(downloader=lambda *_:None,now=dt.date(2026,10,25))
+        out=update.readjson(update.FIX,[])
+        self.assertTrue(any(r[5]=="OLD" for r in out))
+        self.assertTrue(any(r[5]=="Fresh" for r in out))
+        self.assertEqual(status["stale_secondary_leagues"],["E0"])
+        self.assertEqual(status["fixtures_feed_status"],"partial_secondary")
+        self.assertEqual(update.HIST.read_bytes(),history_before)
+
+    def test_successful_empty_feed_clears_its_outdated_schedule(self):
+        update_calendar.collect_secondary_fixtures=lambda *args,**kwargs:([],{"E0":0},[])
+        status=update_calendar.run(downloader=lambda *_:None,now=dt.date(2026,10,25))
+        out=update.readjson(update.FIX,[])
+        self.assertEqual(len(out),1)
+        self.assertEqual(out[0][0],"D2")
+        self.assertEqual(status["fixtures_feed_status"],"ok_secondary")
+
 
 if __name__=='__main__':unittest.main()

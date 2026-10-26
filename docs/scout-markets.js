@@ -22,7 +22,7 @@ function fields(row,stat){
 }
 function sample(rows,stat){
  const observed=[];
- for(const r of rows.slice(0,15)){
+ for(const r of rows){
   const got=fields(r,stat);
   if(got)observed.push(got[0]+got[1]);
  }
@@ -31,7 +31,7 @@ function sample(rows,stat){
   const hits=observed.filter(v=>v>level).length;
   return {line:level,hits,n,rate:n?hits/n:null};
  });
- return {n,possible:Math.min(rows.length,15),average:n?observed.reduce((a,b)=>a+b,0)/n:null,lines:stats};
+ return {n,possible:rows.length,average:n?observed.reduce((a,b)=>a+b,0)/n:null,lines:stats};
 }
 function compare(profile,minSamples=5){
  return DEF.map(type=>{

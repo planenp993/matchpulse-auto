@@ -1,0 +1,75 @@
+name: Scout Verify
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: ['work/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: scout-verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: All import, calendar and integrity regression tests
+        run: python -m unittest discover -s tests -v
+      - name: All model, Elo and trend regression tests
+        run: node --test tests/*.cjs
+      - name: Audit the checked-out snapshot without provider requests
+        run: python scripts/audit_scout.py
+      - name: Smoke check real history and fixtures
+        run: node scripts/smoke_scout.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: SCOUT-VERIFY-AUDIT
+          path: docs/data/coverage_audit.json
+          retention-days: 7
+          if-no-files-found: warn
+
+  browser:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Build the self-contained preview
+        run: python scripts/build_scout_preview.py
+      - name: Install the pinned browser test dependency
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Verify real match data, markets and identities on desktop and mobile
+        run: |
+          python -m http.server 8765 --directory docs > /tmp/scout-http.log 2>&1 &
+          node scripts/test_scout_browser.cjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SCOUT-VERIFIED-PREVIEW
+          path: |
+            scout-offline.html
+            scout-desktop.png
+            scout-mobile.png
+            scout-match.png
+          retention-days: 7

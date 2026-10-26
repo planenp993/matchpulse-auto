@@ -36,7 +36,7 @@ jobs:
         with:
           node-version: '24'
       - name: Verify all Scout model, Elo and trend JavaScript
-        run: node --test tests/test_model_core.cjs tests/test_scout.cjs tests/test_scout_markets.cjs tests/test_scout_elo.cjs tests/test_scout_v3.cjs
+        run: node --test tests/*.cjs
       - name: Verify CSV import
         run: python -m unittest discover -s tests -v
       - name: Refresh calendar daily, history only twice weekly

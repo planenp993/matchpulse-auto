@@ -13,6 +13,11 @@ import time
 import urllib.request
 import argparse
 from pathlib import Path
+import sys
+from zoneinfo import ZoneInfo
+
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+from club_identity import club_key
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "docs" / "data"
@@ -33,14 +38,22 @@ EXTRA = {
     "DNK": ("Denmark","Superliga"), "SWZ": ("Switzerland","Super League"),
     "AUT": ("Austria","Bundesliga"), "POL": ("Poland","Ekstraklasa")
 }
-# CC0 OpenFootball historical archives. Do NOT add these to Football-Data downloads.
+# Additional divisions with verified historical CSVs and OpenFootball archives.
 OPEN_ONLY = {
     "D1": ("Germany","Bundesliga"), "I1": ("Italy","Serie A"),
     "E2": ("England","League One"), "E3": ("England","League Two"),
     "SC0": ("Scotland","Premiership")
 }
 LEAGUES = {**MAIN, **EXTRA, **OPEN_ONLY}
+CSV_LEAGUES = {**MAIN, **OPEN_ONLY}
 from fixtures_fallback import collect as collect_secondary_fixtures
+
+def today_sofia(instant=None):
+    """Use the product's civil date, independently of the server's TZ setting."""
+    instant=instant or dt.datetime.now(dt.timezone.utc)
+    if instant.tzinfo is None:
+        raise ValueError("An explicit instant must include its timezone")
+    return instant.astimezone(ZoneInfo("Europe/Sofia")).date()
 
 def val(row, *names):
     normalized = {str(k).lstrip("\ufeff").strip().lower(): v for k,v in row.items() if k}
@@ -77,12 +90,20 @@ MATCH_STATS={
     "HR":10,"AR":10, "HTHG":30,"HTAG":30,
     "HF":100,"AF":100
 }
+STAT_ALIASES={
+    "HS":("HS","SHOTS_H"), "AS":("AS","SHOTS_A"),
+    "HST":("HST","SOT_H"), "AST":("AST","SOT_A"),
+    "HTHG":("HTHG","HT_HG"), "HTAG":("HTAG","HT_AG"),
+}
 
 def match_stats(row):
     stats={}
     for column,ceiling in MATCH_STATS.items():
-        n=count_stat(val(row,column),ceiling)
+        n=count_stat(val(row,*STAT_ALIASES.get(column,(column,))),ceiling)
         if n is not None: stats[column]=n
+    if any(a in stats and b in stats and stats[b]>stats[a] for a,b in (("HS","HST"),("AS","AST"))):
+        rejected={k:stats.pop(k) for k in ("HS","AS","HST","AST") if k in stats}
+        stats["STAT_ISSUES"]={"shots":rejected,"reason":"Shots on target exceed total shots; values excluded"}
     for field,names in (
         ("ODDH",("AvgH","B365H","B365CH")),
         ("ODDD",("AvgD","B365D","B365CD")),
@@ -95,6 +116,8 @@ def match_stats(row):
 def merge_rows(old, fresh):
     """Keep previously imported optional observations when an incoming row lacks them."""
     if old is None: return fresh
+    if old[7:9] != fresh[7:9]:
+        raise ValueError("Conflicting final scores for the same verified fixture")
     new=list(fresh)
     for i in (9,10,11,12):
         if new[i] is None and len(old)>i: new[i]=old[i]
@@ -160,7 +183,26 @@ def writejson(path,obj):
     os.replace(p,path)
 
 def key(row):
-    return (row[0],row[3],row[5].casefold(),row[6].casefold())
+    return (row[0],row[3],club_key(row[5]),club_key(row[6]))
+
+def index_history(rows):
+    result={}
+    for row in rows:
+        if isinstance(row,list) and len(row)>=13 and type(row[7]) is int and type(row[8]) is int:
+            k=key(row)
+            result[k]=merge_rows(result.get(k),row)
+    return result
+
+def merge_fixtures(rows):
+    """Join reviewed aliases; prefer primary CSV over secondary schedule copies."""
+    result={}
+    secondary=lambda row:len(row)>13 and isinstance(row[13],str) and "FixtureDownload" in row[13]
+    for row in rows:
+        k=key(row)
+        old=result.get(k)
+        if old is None or (secondary(old) and not secondary(row)):
+            result[k]=row
+    return sorted(result.values(),key=lambda r:(r[3],r[4],r[0],r[5]))
 
 def fetch(url):
     req=urllib.request.Request(url,headers={
@@ -176,10 +218,9 @@ def current_years(today,div):
     return years
 
 def run(online=True, downloader=fetch, now=None, sleeper=time.sleep):
-    today=now or dt.date.today()
+    today=now or today_sofia()
     saved=readjson(HIST,[])
-    history={key(r):r for r in saved
-             if isinstance(r,list) and len(r)>=13 and isinstance(r[7],int) and isinstance(r[8],int)}
+    history=index_history(saved)
     for seed in sorted((ROOT/"data"/"extra_seed").glob("*.csv")):
         try:
             for r in parse_csv(seed.read_bytes()):
@@ -198,7 +239,7 @@ def run(online=True, downloader=fetch, now=None, sleeper=time.sleep):
     stamp=dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
     if online:
         targets=[]
-        for div in MAIN:
+        for div in CSV_LEAGUES:
             for yr in current_years(today,div):
                 suffix=f"{yr%100:02d}{(yr+1)%100:02d}"
                 targets.append((f"{div}-{suffix}",div,f"https://www.football-data.co.uk/mmz4281/{suffix}/{div}.csv"))
@@ -255,9 +296,9 @@ def run(online=True, downloader=fetch, now=None, sleeper=time.sleep):
             # Prefer Football-Data fixtures when both feeds report the same match.
             # Avoid false clashes: a different kickoff time can reflect rescheduling,
             # therefore keep the primary only when the same teams and date match.
-            merged = {(r[0], r[3], r[5].casefold(), r[6].casefold()):r for r in secondary}
+            merged = {key(r):r for r in secondary}
             for r in upcoming:
-                merged[(r[0], r[3], r[5].casefold(), r[6].casefold())] = r
+                merged[key(r)] = r
             upcoming = sorted(merged.values(), key=lambda r:(r[3],r[4],r[0]))
             status["fixtures_feed_status"] = "ok_secondary"
             status["fixtures_source"] = "Football-Data + FixtureDownload (keyless)"

@@ -1,0 +1,79 @@
+name: Scout Data V4 · Backfill + Integrity Gate
+on:
+  push:
+    branches: [scout-data-integrity-v4]
+    paths:
+      - 'scripts/backfill_openfootball_txt.py'
+      - 'scripts/audit_scout.py'
+      - 'docs/scout-patterns.js'
+      - 'docs/scout.js'
+      - 'docs/scout.html'
+      - 'tests/test_backfill_txt.py'
+      - 'tests/test_scout_v4.cjs'
+      - 'scripts/test_scout_browser.cjs'
+      - '.github/workflows/scout-data-v4.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: scout-v4-development
+  cancel-in-progress: false
+
+jobs:
+  verify-and-backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 17
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Python parser and import tests
+        run: python -m unittest discover -s tests -v
+      - name: All Scout, Elo and trend tests
+        run: node --test tests/test_model_core.cjs tests/test_scout.cjs tests/test_scout_markets.cjs tests/test_scout_elo.cjs tests/test_scout_v3.cjs tests/test_scout_v4.cjs
+      - name: CC0 historical score import; no Football-Data requests
+        run: python scripts/backfill_openfootball_txt.py
+      - name: End-to-end data audit, duplicate and completeness gate
+        run: python scripts/audit_scout.py
+      - name: Check real data with scanner
+        run: node scripts/smoke_scout.cjs
+      - name: Generate self-contained offline preview
+        run: python scripts/build_scout_preview.py
+      - name: Install Chromium for real UI validation
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Verify desktop and mobile Scout
+        run: |
+          python -m http.server 8765 --directory docs > /tmp/mp-browser.log 2>&1 &
+          node scripts/test_scout_browser.cjs
+      - name: Commit validated history to dev branch only
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/data/history.json docs/data/status.json docs/data/coverage_audit.json docs/data/txt_backfill_report.json
+          if ! git diff --staged --quiet; then
+            git commit -m 'Backfill verified CC0 historical seasons [skip ci]'
+            git push origin HEAD:scout-data-integrity-v4
+          else
+            echo 'No history changes'
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SCOUT-DATA-V4-AUDIT
+          path: |
+            docs/data/coverage_audit.json
+            docs/data/txt_backfill_report.json
+            scout-offline.html
+            scout-desktop.png
+            scout-mobile.png
+          retention-days: 7

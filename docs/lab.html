@@ -40,7 +40,7 @@
 <h3 style="margin-top:19px">Вероятности от едно общо разпределение</h3><div class="market-groups" id="marketGroups"></div>
 </div><div class="two-col section"><div class="panel"><h2>Матрица на точните резултати</h2><div class="help" style="margin:0 0 10px">Редове: домакин · Колони: гост · процент за всеки резултат</div><div class="matrix" id="matrix"></div></div><div class="panel"><h2>Как се получава оценката?</h2><div class="explanation" id="explanation"></div><div id="topScores" style="margin-top:14px"></div><div class="caution">Това са статистически вероятности, не проверени пазарни коефициенти. Няма надеждна оценка за value без актуална цена.</div></div></div></section>
 <footer class="foot">MATCHPULSE NEXT · Football-Data UK + допълнителен календар. Без платен API. Неизвестните xG стойности не се заместват с нули. Моделът е експериментален; сравнението с историческите тестове в основния сайт е за предишния двигател, не за този.</footer></main></div>
-<script src="model-core.js"></script><script>
+<script src="club-aliases.js"></script><script src="model-core.js"></script><script>
 'use strict';
 const M=window.MatchpulseModel;const $=id=>document.getElementById(id);let H=[],F=[],S={},current=null,analysis=null,preset='standard',manual=false;
 const safe=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -145,7 +145,7 @@ function teams(){
 async function init(){
  try{
   const payload=await Promise.all(['history.json','fixtures.json','status.json'].map(n=>fetch('data/'+n+'?v=next1',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(n+': HTTP '+r.status);return r.json()})));
-  H=payload[0];F=payload[1];S=payload[2];
+  H=payload[0].filter(M.isPlayed);F=payload[1];S=payload[2];
   const leagues=[...new Map(F.map(r=>[r[0],r[2]])).entries()].sort((a,b)=>a[1].localeCompare(b[1]));
   $('league').innerHTML='<option value="">Всички състезания</option>'+leagues.map(z=>'<option value="'+safe(z[0])+'">'+safe(z[1])+'</option>').join('');
   const refreshed=S.fixtures_checked_utc?new Date(S.fixtures_checked_utc).toLocaleString('bg-BG',{timeZone:'Europe/Sofia'}):'неизвестно';

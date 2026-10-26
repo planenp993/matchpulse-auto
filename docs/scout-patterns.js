@@ -17,6 +17,11 @@ const MARKETS=[
  {id:'home2',group:'goals',label:'Домакин вкарва 2+ / гост допуска 2+'},
  {id:'away2',group:'goals',label:'Гост вкарва 2+ / домакин допуска 2+'},
  {id:'1X',group:'results',label:'1X · домакин непобеден'},
+ {id:'1',group:'results',label:'Победа домакин'},
+ {id:'X',group:'results',label:'Равен'},
+ {id:'2',group:'results',label:'Победа гост'},
+ {id:'12',group:'results',label:'Без равен'},
+ {id:'bttsNo',group:'goals',label:'Гол/гол · Не'},
  {id:'X2',group:'results',label:'X2 · гост непобеден'},
  {id:'corners85',group:'corners',label:'Над 8,5 корнера'},
  {id:'corners95',group:'corners',label:'Над 9,5 корнера'},
@@ -39,6 +44,7 @@ const statFields={
 };
 const scored=r=>Array.isArray(r)&&Number.isInteger(r[7])&&Number.isInteger(r[8])&&r[7]>=0&&r[8]>=0;
 function observation(row,club,side,id,teamKey){
+ if(row?.[13]?.AWARDED===true)return null;
  if(!MAP.has(id))return null;
  if(statFields[id]){
   const extra=row[13];
@@ -57,6 +63,11 @@ function observation(row,club,side,id,teamKey){
   case 'u25':return total<=2;
   case 'u35':return total<=3;
   case 'btts':return gf>0&&ga>0;
+  case 'bttsNo':return gf===0||ga===0;
+  case '1':return side==='home'?gf>ga:gf<ga;
+  case 'X':return gf===ga;
+  case '2':return side==='away'?gf>ga:gf<ga;
+  case '12':return gf!==ga;
   case 'home2':return side==='home'?gf>=2:ga>=2;
   case 'away2':return side==='away'?gf>=2:ga>=2;
   case '1X':return side==='home'?gf>=ga:gf<=ga;
@@ -78,12 +89,12 @@ function measures(rows,club,side,market,teamKey){
  }
  return {n,hits,rate:n?hits/n:null,currentStreak,longestStreak,
   missing:observations.length-n,total:observations.length,
-  trail:observations.slice(0,15)};
+  trail:observations};
 }
-function inspect(profile,market,{streak=3,minimum=5,both=false,teamKey}={}){
+function inspect(profile,market,{streak=3,minimum=5,both=false,venue=false,teamKey}={}){
  if(typeof teamKey!=='function')throw Error('canonical team key required');
- const h=measures(profile.home.all,profile.home.name,'home',market,teamKey);
- const a=measures(profile.away.all,profile.away.name,'away',market,teamKey);
+ const h=measures(venue?profile.home.venue:profile.home.all,profile.home.name,'home',market,teamKey);
+ const a=measures(venue?profile.away.venue:profile.away.all,profile.away.name,'away',market,teamKey);
  const reliable=!profile.international&&!profile.home.proxy&&!profile.away.proxy &&
   h.n>=minimum&&a.n>=minimum;
  const one=h.currentStreak>=streak||a.currentStreak>=streak;
@@ -92,13 +103,13 @@ function inspect(profile,market,{streak=3,minimum=5,both=false,teamKey}={}){
   h.rate>=.55&&a.rate>=.55;
  const matched=reliable&&supporting&&(both?dual:one);
  const rank=matched?(h.rate+a.rate)/2 + .05*Math.min(6,h.currentStreak+a.currentStreak):0;
- return {market,label:MAP.get(market)?.label||market,group:MAP.get(market)?.group||'',
+ return {market,venue,label:MAP.get(market)?.label||market,group:MAP.get(market)?.group||'',
   home:h,away:a,reliable,matched,rank,streak,minimum,
   reason:!reliable?'Недостатъчно сравними мачове с налични данни':
    !supporting?'Историческите тенденции на отборите не се подкрепят достатъчно':
    !matched?'Липсва исканата поредна серия':'Поредната серия е налична; не доказва вероятност за бъдещ залог'};
 }
-function run(index,fixtures,core,{market='o25',days=7,minimum=5,streak=3,both=false,
+function run(index,fixtures,core,{market='o25',days=7,minimum=5,streak=3,both=false,venue=false,
   windowSize=10,opponentFilter='all',eloIndex=null,league='',now=new Date()}={}){
  const date=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Sofia',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
  const end=new Date(date+'T12:00:00Z');end.setUTCDate(end.getUTCDate()+Math.max(1,days)-1);
@@ -107,11 +118,42 @@ function run(index,fixtures,core,{market='o25',days=7,minimum=5,streak=3,both=fa
  for(const f of core.getUpcoming(fixtures,now)){
   if(f[3]>last||(league&&f[0]!==league))continue;
   const profile=core.profile(index,f,{windowSize,opponentFilter,eloIndex});
-  const signal=inspect(profile,market,{streak,minimum:Math.min(minimum,windowSize),both,teamKey:core.keyTeam});
+  const signal=inspect(profile,market,{streak,minimum,both,venue,teamKey:core.keyTeam});
   if(signal.matched)out.push({fixture:f,profile,signal});
  }
  return out.sort((a,b)=>b.signal.rank-a.signal.rank||
   a.fixture[3].localeCompare(b.fixture[3])||a.fixture[4].localeCompare(b.fixture[4]));
 }
-return {MARKETS,observation,measures,inspect,run};
+
+/* One pass per match, all supported markets, and no duplicated fixture cards.
+ * The preview shows up to 3 distinct observed signals with their sample sizes.
+ */
+function runAll(index,fixtures,core,{days=7,minimum=5,streak=3,both=false,venue=false,
+ windowSize=10,opponentFilter='all',eloIndex=null,league='',now=new Date()}={}){
+ const date=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Sofia',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
+ const end=new Date(date+'T12:00:00Z');end.setUTCDate(end.getUTCDate()+Math.max(1,days)-1);
+ const last=end.toISOString().slice(0,10),result=[];
+ for(const fixture of core.getUpcoming(fixtures,now)){
+  if(fixture[3]>last||(league&&fixture[0]!==league))continue;
+  const profile=core.profile(index,fixture,{windowSize,opponentFilter,eloIndex});
+  const matches=[];
+  for(const market of MARKETS){
+   const signal=inspect(profile,market.id,{streak,minimum,both,venue,teamKey:core.keyTeam});
+   if(!signal.matched)continue;
+   // Ranking is a research heuristic, not a probability.
+   const n=Math.min(signal.home.n,signal.away.n);
+   const strength=.45*Math.min(1,Math.max(signal.home.currentStreak,signal.away.currentStreak)/6)+
+                  .3*Math.min(signal.home.rate,signal.away.rate)+.25*Math.min(1,n/10);
+   matches.push({...signal,strength});
+  }
+  if(!matches.length)continue;
+  matches.sort((a,b)=>b.strength-a.strength||
+   Math.min(b.home.n,b.away.n)-Math.min(a.home.n,a.away.n)||a.market.localeCompare(b.market));
+  result.push({fixture,profile,signal:matches[0],signals:matches.slice(0,3),
+   totalSignals:matches.length,strength:matches[0].strength});
+ }
+ return result.sort((a,b)=>b.strength-a.strength||b.totalSignals-a.totalSignals||
+  a.fixture[3].localeCompare(b.fixture[3])||a.fixture[4].localeCompare(b.fixture[4]));
+}
+return {MARKETS,observation,measures,inspect,run,runAll};
 });

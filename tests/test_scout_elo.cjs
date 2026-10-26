@@ -6,9 +6,9 @@ const path=require('node:path');
 const S=require('../docs/scout-core.js'),E=require('../docs/scout-elo.js'),Stats=require('../docs/scout-markets.js');
 const row=(day,home,away,hg,ag,extra=null)=>['E0','England','Premier League',day,'18:00',home,away,hg,ag,null,null,null,null,...(extra?[extra]:[])];
 function fixture(date='2026-11-01'){return row(date,'Alpha','Beta',null,null)}
-function history(){
+function history(count=15){
  const rows=[],teams=['Alpha','Beta','Gamma','Delta'];
- for(let i=1;i<=15;i++){
+ for(let i=1;i<=count;i++){
    const day='2026-10-'+String(i).padStart(2,'0');
    rows.push(row(day,'Alpha','Beta',i%3+1,0,{HC:i%5+4,AC:i%4+3,HY:2,AY:3,HS:10+i%4,AS:8+i%3}));
    rows.push(row(day,'Gamma','Delta',1,0,{HC:6,AC:5,HY:1,AY:1,HS:8,AS:9}));
@@ -38,9 +38,9 @@ test('same division ratings are deterministic and no cross-league comparison',()
  assert.ok(m.usable);assert.ok(m.home.rating>m.away.rating);
  assert.ok(m.homeExpected>0&&m.homeExpected<1);
 });
-test('last 5/10/15 windows apply equally to goals, corners, shots and venue',()=>{
- const rows=history(),i=S.build(rows),e=E.build(rows,S.keyTeam);e.opponentClass=E.opponentClass;
- for(const n of [5,10,15]){
+test('last 5/10/20 windows apply equally to goals, corners, shots and venue',()=>{
+ const rows=history(25),i=S.build(rows),e=E.build(rows,S.keyTeam);e.opponentClass=E.opponentClass;
+ for(const n of [5,10,20]){
   const p=S.profile(i,fixture(),{windowSize:n,eloIndex:e});
   assert.equal(p.home.overall.n,n);assert.equal(p.away.overall.n,n);
   const cards=Stats.compare(p,1);
@@ -72,7 +72,20 @@ test('Elo engine and research controls are included in Scout HTML and offline bu
  const js=fs.readFileSync(path.join(__dirname,'../docs/scout.js'),'utf8');
  const bundle=fs.readFileSync(path.join(__dirname,'../scripts/build_scout_preview.py'),'utf8');
  assert.doesNotThrow(()=>new vm.Script(js));
- for(const id of ['researchWindow','researchOpp','drawerWindow','drawerOpp'])assert.ok(html.includes(id));
+ for(const id of ['researchWindow','drawerWindow'])assert.ok(html.includes(id));
  assert.match(html,/scout-elo\.js/);assert.match(bundle,/scout-elo\.js/);
- assert.match(js,/eloReport\(f,p\)/);
+ assert.match(js,/eloReference\(f,data.name\)/);
+});
+
+test('simple Elo reference uses the latest available domestic archive before the fixture',()=>{
+ const old=history().slice(0,10).map(r=>[...r.slice(0,13)]);old.forEach(r=>r[0]='E1');
+ const recent=history().slice(10);
+ const future=row('2026-11-02','Alpha','Beta',0,8);future[0]='E1';
+ const index=E.build([...old,...recent,future],S.keyTeam);
+ const ref=E.reference(index,'UCL','Alpha','2026-11-01');
+ assert.equal(ref.division,'E0');
+ assert.equal(ref.rating,E.teamAt(index,'E0','Alpha','2026-11-01').rating);
+ assert.equal(ref.games,10);
+ assert.equal(E.reference(index,'E0','Unknown','2026-11-01').games,0);
+ assert.equal(E.reference(index,'E0','Alpha','2026-10-01').games,0);
 });

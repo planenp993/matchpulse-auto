@@ -3,6 +3,14 @@ import unittest
 from scripts import update
 
 class CSVImportTests(unittest.TestCase):
+    def test_normalized_master_shots_and_halftime_are_preserved(self):
+        row={"DIV":"E0","DATE":"2026-10-01","HOME":"Arsenal","AWAY":"Chelsea",
+             "HG":"2","AG":"1","SHOTS_H":"17","SHOTS_A":"9",
+             "SOT_H":"7","SOT_A":"3","HT_HG":"1","HT_AG":"0"}
+        r=update.make_row(row)
+        self.assertEqual(r[13],{"HS":17,"AS":9,"HST":7,"AST":3,"HTHG":1,"HTAG":0})
+        row["SHOTS_A"]=""
+        self.assertNotIn("AS",update.make_row(row)[13])
     def test_original_football_data(self):
         b=b"Div,Date,HomeTeam,AwayTeam,FTHG,FTAG,Time\nE0,21/10/2026,Arsenal,Chelsea,2,1,20:00\n"
         row=update.make_row(update.parse_csv(b)[0])
