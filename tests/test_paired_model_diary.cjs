@@ -142,3 +142,8 @@ test('A single record cannot change the registered calibration or trigger automa
  assert.equal(done.report.decision.checks.enough_results,false);assert.equal(done.report.decision.automatic_promotion,false);
  assert.throws(()=>T.makeConfig({...comparison,qualifications:{}},{now:NOW}),/historical filter/);
 });
+test('The published UI asset has a content version so cached clients receive the paired table',()=>{
+ const root=path.resolve(__dirname,'..'),html=fs.readFileSync(path.join(root,'docs/scout.html'),'utf8');
+ const version=require('node:crypto').createHash('sha256').update(fs.readFileSync(path.join(root,'docs/scout.js'))).digest('hex').slice(0,12);
+ assert.ok(html.includes('src="scout.js?v='+version+'"'));
+});
