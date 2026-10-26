@@ -90,6 +90,8 @@
 .scan-card h3{margin:13px 0 10px}
 .scan-card .signal{display:inline-block;padding:5px 9px;border-radius:7px}
 .scan-actions{margin-top:14px}
+.scan-context{display:flex;flex-wrap:wrap;gap:4px 12px;margin:-5px 0 10px;font-size:11px;line-height:1.6;color:#78909c}
+.scan-context .scan-quality{color:#986f28}
 .streak-table{border-collapse:collapse;width:100%;font-size:12px;margin-top:8px}
 .streak-table th,.streak-table td{text-align:right;padding:9px 6px;border-bottom:1px solid #e7efec}
 .streak-table th{color:#7b938c;font-size:10px;font-weight:700}
