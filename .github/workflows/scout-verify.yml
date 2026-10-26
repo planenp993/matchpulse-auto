@@ -41,3 +41,34 @@ jobs:
           path: docs/data/coverage_audit.json
           retention-days: 7
           if-no-files-found: warn
+
+  browser:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Build the self-contained preview
+        run: python scripts/build_scout_preview.py
+      - name: Install the pinned browser test dependency
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Verify real match data, markets and identities on desktop and mobile
+        run: |
+          python -m http.server 8765 --directory docs > /tmp/scout-http.log 2>&1 &
+          node scripts/test_scout_browser.cjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SCOUT-VERIFIED-PREVIEW
+          path: |
+            scout-offline.html
+            scout-desktop.png
+            scout-mobile.png
+          retention-days: 7

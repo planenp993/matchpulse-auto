@@ -67,18 +67,25 @@ def parse(text, division, year, today):
                 except ValueError:day=None
             continue
         if not day or day>today or season_key(day.isoformat())!=year:continue
-        regular=CENTER.match(line)
-        final=AT_END.match(line)
-        if regular:
-            time,home,hg,ag,ht_h,ht_a,away=regular.groups()
-        elif final:
+        awarded=bool(re.search(r"\s+\[awarded\]\s*$",line,re.I))
+        clean=re.sub(r"\s+\[awarded\]\s*$","",line,flags=re.I)
+        # Try the explicit home-v-away format first. Otherwise a trailing note
+        # can be mistaken for the away club by the centered-score expression.
+        final=AT_END.match(clean)
+        regular=CENTER.match(clean)
+        if final:
             time,home,away,hg,ag,ht_h,ht_a=final.groups()
+        elif regular:
+            time,home,hg,ag,ht_h,ht_a,away=regular.groups()
         else:continue
         home,away=" ".join(home.split())," ".join(away.split())
         if home.casefold() in BAD_TEAM or away.casefold() in BAD_TEAM or home.casefold()==away.casefold():continue
+        if any(" v " in club or "[" in club or "]" in club for club in (home,away)):
+            raise ValueError("Unparsed team annotation")
         hg,ag=int(hg),int(ag)
         if max(hg,ag)>30:continue
         extra={"SRC":"openfootball-txt-cc0"}
+        if awarded:extra["AWARDED"]=True
         if ht_h is not None and ht_a is not None:
             extra.update(HTHG=int(ht_h),HTAG=int(ht_a))
         rows.append([division,country,league,day.isoformat(),time or "",

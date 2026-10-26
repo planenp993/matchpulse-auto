@@ -44,6 +44,7 @@ const statFields={
 };
 const scored=r=>Array.isArray(r)&&Number.isInteger(r[7])&&Number.isInteger(r[8])&&r[7]>=0&&r[8]>=0;
 function observation(row,club,side,id,teamKey){
+ if(row?.[13]?.AWARDED===true)return null;
  if(!MAP.has(id))return null;
  if(statFields[id]){
   const extra=row[13];

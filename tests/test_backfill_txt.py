@@ -44,6 +44,22 @@ Sun Jan 2 2022
  def test_silent_misdated_source_is_rejected(self):
   with self.assertRaisesRegex(ValueError,"Season title"):
    txt.parse(EXAMPLE.replace("2021/22","2020/21"),"E2",2021,NOW)
+ def test_awarded_annotation_is_metadata_not_a_team(self):
+  text="""= Greek Super League 2023/24
+Sun Feb 11 2024
+  16:00  AE Kifisias             v Volos NFC              3-0  [awarded]
+"""
+  r=txt.parse(text,"G1",2023,NOW)[0]
+  self.assertEqual(r[5:9],["AE Kifisias","Volos NFC",3,0])
+  self.assertTrue(r[13]["AWARDED"])
+ def test_centered_score_strips_awarded_note_from_away_club(self):
+  text="""= Italian Serie B 2022/23
+Thu Jun 1 2023
+  20:30  Brescia Calcio           0-3  Cosenza Calcio [awarded]
+"""
+  r=txt.parse(text,"I2",2022,NOW)[0]
+  self.assertEqual(r[5:9],["Brescia Calcio","Cosenza Calcio",0,3])
+  self.assertTrue(r[13]["AWARDED"])
  def test_skips_future_and_ignores_invalid(self):
   future="= English League One 2026/27\nTue Oct 27\n  19:00  Team A         2-1  Team B\n"
   self.assertEqual(txt.parse(future,"E2",2026,NOW),[])

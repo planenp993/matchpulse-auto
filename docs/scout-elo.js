@@ -20,7 +20,7 @@ function adjusted(row,season){
 }
 const valid=r=>Array.isArray(r)&&typeof r[0]==='string'&&typeof r[3]==='string'&&
  typeof r[5]==='string'&&typeof r[6]==='string'&&
- Number.isInteger(r[7])&&Number.isInteger(r[8])&&r[7]>=0&&r[8]>=0;
+ Number.isInteger(r[7])&&Number.isInteger(r[8])&&r[7]>=0&&r[8]>=0&&r[13]?.AWARDED!==true;
 const expected=(home,away)=>1/(1+Math.pow(10,(away-home-HOME_ADVANTAGE)/400));
 function build(history,keyTeam){
  if(typeof keyTeam!=='function')throw Error('Elo requires canonical team key function');

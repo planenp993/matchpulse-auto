@@ -8,7 +8,7 @@
 const clean = x=>String(x??'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^\p{L}\p{N}]+/gu,' ').trim().toLowerCase();
 const keyTeam = x=>model?.clubKey?.(x)||clean(x);
 const keyFixture = f=>[f[0],f[3],keyTeam(f[5]),keyTeam(f[6])].join('|');
-const isDone = r=>Array.isArray(r)&&Number.isInteger(r[7])&&Number.isInteger(r[8])&&r[7]>=0&&r[8]>=0;
+const isDone = r=>Array.isArray(r)&&Number.isInteger(r[7])&&Number.isInteger(r[8])&&r[7]>=0&&r[8]>=0&&r[13]?.AWARDED!==true;
 const blank = ()=>({n:0,gf:0,ga:0,total:0,o15:0,o25:0,o35:0,btts:0,scored:0,scored2:0,conceded2:0,u35:0});
 function aggregate(rows,team){
   const k=keyTeam(team),out=blank();

@@ -1,44 +1,29 @@
 /* Matchpulse Next · transparent experimental goals engine. No external dependencies. */
 (function(root,factory){
-  const value=factory();
+  const aliases=typeof module==='object'&&module.exports?require('./club-aliases.js'):(root?.MatchpulseClubAliases||{});
+  const value=factory(aliases);
   if(typeof module==='object'&&module.exports) module.exports=value;
   if(root)root.MatchpulseModel=value;
-})(typeof globalThis!=='undefined'?globalThis:this,function(){
+})(typeof globalThis!=='undefined'?globalThis:this,function(aliases){
   'use strict';
-  const ALIAS={
-    'man united':'man united','man utd':'man united','manchester united':'man united',
-    'man city':'man city','manchester city':'man city',
-    'tottenham hotspur':'tottenham','spurs':'tottenham',
-    'nottingham forest':'nottm forest','nott m forest':'nottm forest','nottm forest':'nottm forest',
-    'brighton hove albion':'brighton','brighton and hove albion':'brighton',
-    'newcastle united':'newcastle','leeds united':'leeds',
-    'west ham united':'west ham','wolverhampton wanderers':'wolves',
-    'wolverhampton':'wolves','sheffield utd':'sheffield united',
-    'bayern munich':'bayern munich','bayern munchen':'bayern munich','bayern':'bayern munich',
-    'borussia dortmund':'dortmund','b dortmund':'dortmund',
-    'inter milan':'inter','internazionale':'inter',
-    'ac milan':'milan','atletico madrid':'ath madrid',
-    'ath madrid':'ath madrid','athletic club':'ath bilbao','athletic bilbao':'ath bilbao',
-    'real betis':'betis','rcd espanyol':'espanol','paris saint germain':'paris sg',
-    'psg':'paris sg','olympique lyonnais':'lyon',
-    'fc porto':'porto','sporting cp':'sporting','sporting lisbon':'sporting',
-    'sl benfica':'benfica','psv eindhoven':'psv','ajax amsterdam':'ajax',
-    'az alkmaar':'az','ne c nijmegen':'nijmegen','nec nijmegen':'nijmegen',
-    'fc twente':'twente','sc heerenveen':'heerenveen',
-    'fc copenhagen':'fc copenhagen','fc kopenhagen':'fc copenhagen',
-    'copenhagen':'fc copenhagen','fc midtjylland':'midtjylland',
-    'crvena zvezda':'red star belgrade','red star':'red star belgrade'
-  };
+  const ALIAS=aliases;
   const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+  const isPlayed=r=>Array.isArray(r)&&Number.isInteger(r[7])&&Number.isInteger(r[8])&&
+    r[7]>=0&&r[8]>=0&&r[13]?.AWARDED!==true;
   const normal=n=>String(n||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'')
     .replace(/&/g,' and ').replace(/[^\p{L}\p{N}]+/gu,' ').trim().toLowerCase().replace(/\s+/g,' ');
-  function clubKey(name){const n=normal(name);return ALIAS[n]||n}
+  const clubCache=new Map();
+  function clubKey(name){
+    const raw=String(name||'');
+    if(clubCache.has(raw))return clubCache.get(raw);
+    const n=normal(raw),key=ALIAS[n]||n;clubCache.set(raw,key);return key;
+  }
   function sortRecent(a,b){return b[3].localeCompare(a[3]) || (b[4]||'').localeCompare(a[4]||'')}
   function leagueBases(rows,cutoff){
     const games=rows.filter(r=>r[3]<cutoff&&r[3]>=String(+cutoff.slice(0,4)-3)+cutoff.slice(4));
     const sums=new Map();
     for(const r of games){
-      if(!Number.isInteger(r[7])||!Number.isInteger(r[8]))continue;
+      if(!isPlayed(r))continue;
       const x=sums.get(r[0])||{h:0,a:0,n:0};
       x.h+=r[7];x.a+=r[8];x.n++;sums.set(r[0],x);
     }
@@ -48,7 +33,7 @@
   }
   function teamMatches(rows,name,cutoff){
     const key=clubKey(name);
-    return rows.filter(r=>r[3]<cutoff && Number.isInteger(r[7]) && Number.isInteger(r[8]) &&
+    return rows.filter(r=>r[3]<cutoff && isPlayed(r) &&
       (clubKey(r[5])===key||clubKey(r[6])===key)).sort(sortRecent);
   }
   const params={
@@ -166,5 +151,5 @@
       explanation:'Атакуваща и защитна сила спрямо нормите за лигата; претеглени до 30 мача; изглаждане към 1,0; корекция за терен; xG само при поне 6 мача и за двата отбора; разпределение Поасон с Dixon–Coles за 0:0/1:0/0:1/1:1.',
       euro};
   }
-  return {clubKey,teamMatches,leagueBases,distribution,evaluate,params};
+  return {clubKey,isPlayed,teamMatches,leagueBases,distribution,evaluate,params};
 });

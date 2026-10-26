@@ -39,6 +39,12 @@
  await desktop.locator('#scanBoth').selectOption('no');
  await desktop.locator('#scanMarket').selectOption('corners85');
  if((await desktop.locator('#scanMarket').inputValue())!=='corners85')throw new Error('Corner scanner selection failed');
+ for(const market of ['corners85','yellow35','shots215']){
+  await desktop.locator('#scanMarket').selectOption(market);
+  const count=await desktop.locator('.scan-card').count();
+  if(!count)throw new Error('No observable '+market+' signal despite imported real statistics');
+  stats[market]=count;
+ }
  await desktop.locator('#scanMarket').selectOption('o25');
  await desktop.locator('#scanMarket').selectOption('all');
  if((await desktop.locator('#scanMarket').inputValue())!=='all')throw new Error('All-markets scanner toggle missing');
