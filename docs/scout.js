@@ -7,16 +7,17 @@ const percent=v=>Number.isFinite(v)?fmt(v*100,0)+'%':'—';
 const localISO=(d=new Date())=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Sofia',year:'numeric',month:'2-digit',day:'2-digit'}).format(d);
 function offsetISO(n){const a=new Date(localISO()+'T12:00:00Z');a.setUTCDate(a.getUTCDate()+n);return a.toISOString().slice(0,10)}
 let history=[],fixtures=[],status={},index=null,eloIndex=null,windowSize=10,active='schedule',fixtureRows=[],scannerRows=[],mode='today',customDate='',activeMatch=null;
+let diaryLoaded=false,diaryLoading=false;
 const PROFILE_CACHE=new Map(),PICK_KEY='matchpulse-scout-picks-v1';
 function readPicks(){try{const v=JSON.parse(localStorage.getItem(PICK_KEY)||'[]');return Array.isArray(v)?v:[]}catch{return []}}
 function writePicks(v){try{localStorage.setItem(PICK_KEY,JSON.stringify(v));return true}catch{return false}}
 function profile(f){const k=Scout.keyFixture(f)+'|'+windowSize;if(!PROFILE_CACHE.has(k))PROFILE_CACHE.set(k,Scout.profile(index,f,{windowSize}));return PROFILE_CACHE.get(k)}
 function setView(next){
  active=next;
- for(const view of ['schedule','scanner','picks'])el('view-'+view).classList.toggle('hidden',view!==next);
+ for(const view of ['schedule','scanner','picks','diary'])el('view-'+view).classList.toggle('hidden',view!==next);
  document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.view===next));
- el('pageTitle').textContent={schedule:'Програма',scanner:'Trend Scanner',picks:'Моите прогнози'}[next];
- if(next==='schedule')renderSchedule();else if(next==='scanner')renderScanner();else renderPicks();
+ el('pageTitle').textContent={schedule:'Програма',scanner:'Trend Scanner',picks:'Моите прогнози',diary:'Автоматичен дневник'}[next];
+ if(next==='schedule')renderSchedule();else if(next==='scanner')renderScanner();else if(next==='diary')loadDiary();else renderPicks();
 }
 function syncResearchControls(){
  for(const id of ['researchWindow','drawerWindow'])el(id).value=String(windowSize);
@@ -309,6 +310,43 @@ function exportPicks(){
   return '"'+String(v).replace(/"/g,'""')+'"';
  }).join(','))).join('\r\n');
  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF',csv],{type:'text/csv;charset=utf-8'}));a.download='matchpulse_my_picks.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+async function loadDiary(){
+ if(diaryLoaded||diaryLoading)return;
+ diaryLoading=true;
+ try{
+  const doc=window.SCOUT_EMBEDDED_DATA?window.SCOUT_EMBEDDED_DATA.diary:
+   await fetch('data/diary_report.json?scout=1',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('Дневникът още няма публикуван отчет.');return r.json()});
+  if(doc?.schema_version!==1||!Array.isArray(doc.recent))throw Error('Дневникът още няма публикуван отчет.');
+  const t=doc.totals,stamp=value=>value?new Date(value).toLocaleString('bg-BG',{timeZone:'Europe/Sofia',dateStyle:'short',timeStyle:'short'}):'—';
+  el('diarySummary').textContent='Начало: '+stamp(doc.started_at_utc)+(t.excluded||t.unmatched?' · '+(t.excluded+t.unmatched)+' изключени / за проверка':'');
+  el('diaryUpdated').textContent='Обновен: '+stamp(doc.checked_at_utc);
+  el('diaryTotals').innerHTML=[['Записани',t.recorded],['Приключили',t.settled],['Чакат',t.pending]].map(([label,n])=>'<div><b>'+esc(n)+'</b><span>'+label+'</span></div>').join('');
+  const s=doc.scanner;
+  el('diaryScanner').textContent='Водещи сигнали на скенера: '+s.tracked+' записани · '+s.settled+' оценени'+
+   (s.settled?' · '+s.hits+'/'+s.settled+' успешни ('+percent(s.hit_rate)+')':'')+
+   (s.pending_stats?' · '+s.pending_stats+' чакат статистика':'');
+  const selected=['1x2','double1X','doubleX2','double12','over15','over25','over35','btts','homeOver15','awayOver15'];
+  el('diaryQuality').innerHTML=t.settled?'<p class="footnote">Грешка Brier: по-ниска стойност е по-добра. Общият 1X2 е по отделна скала.</p>'+
+   '<table><thead><tr><th>Пазар</th><th>Мачове</th><th>Модел</th><th>Лигова база</th></tr></thead><tbody>'+
+   selected.map(id=>{const m=doc.markets[id];return '<tr><td>'+esc(doc.market_labels[id])+'</td><td>'+m.n+'</td><td>'+fmt(m.brier,4)+'</td><td>'+fmt(m.baselines.league_frequencies.brier,4)+'</td></tr>'}).join('')+'</tbody></table>'+
+   (Object.keys(doc.versions).length>1?'<p class="footnote">Общо за '+Object.keys(doc.versions).length+' версии на модела; отделните резултати се пазят в отчета.</p>':''):
+   '<p class="footnote">Оценката ще се появи след първите приключили мачове. Историческите тестове не са включени тук.</p>';
+  const statuses={pending:'Чака резултат',settled:'Приключил',excluded:'Изключен',unmatched:'За проверка'};
+  el('diaryList').innerHTML=doc.recent.length?doc.recent.map(entry=>{
+   const p=entry.probabilities,f=entry.fixture,closed=['excluded','unmatched'].includes(entry.status);
+   const result=entry.score?entry.score.join(':'):statuses[entry.status];
+   const scanner=entry.scanner,scanState=closed?statuses[entry.status]:scanner?.result===true?'Успешен ✓':scanner?.result===false?'Неуспешен':scanner?.pending_stats?'Чака статистика':'Чака резултат';
+   return '<article class="diary-entry" data-forecast-id="'+esc(entry.id)+'"><div class="diary-entry-head"><strong>'+esc(f.home)+' – '+esc(f.away)+'</strong>'+
+    '<span class="tag '+(closed?'amber':'')+'">'+esc(result)+'</span></div>'+
+    '<div class="footnote">'+esc(f.league)+' · Начало '+esc(stamp(entry.kickoff_utc))+'</div>'+
+    '<div class="diary-probabilities">1 '+percent(p.homeWin)+' · X '+percent(p.draw)+' · 2 '+percent(p.awayWin)+'<span>Над 2,5 '+percent(p.over25)+' · Гол/гол '+percent(p.btts)+'</span></div>'+
+    (scanner?'<div class="footnote">Скенер: '+esc(scanner.label)+' · '+esc(scanState)+'</div>':'')+
+    '<div class="footnote">Запис: '+esc(stamp(entry.captured_at_utc))+'</div></article>';
+  }).join(''):'<div class="empty">Дневникът очаква предстоящи мачове с потвърден час и достатъчна история.</div>';
+  diaryLoaded=true;
+ }catch(e){el('diarySummary').textContent=e.message;el('diaryList').innerHTML='<div class="empty">Отчетът ще се появи след автоматичното обновяване.</div>';}
+ finally{diaryLoading=false;}
 }
 async function loadCoverage(){
  const target=el('coverageContent');

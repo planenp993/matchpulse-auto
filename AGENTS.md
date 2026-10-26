@@ -26,6 +26,10 @@ counts and branch instructions.
 - Review JSON merges semantically. Preserve imported history and newer calendar
   data together; do not choose all of one branch's JSON files blindly.
 - Keep personal seed CSVs, tokens and credentials out of the public repository.
+- The prospective diary in `docs/data/diary/{forecasts,events}` is append-only.
+  Never edit or delete published JSONL lines. Forecasts stay frozen; score and
+  schedule corrections append events. Keep the recorder inside the refresh
+  workflow's post-reset retry loop so concurrent pushes cannot lose snapshots.
 
 ## Validation
 
@@ -36,6 +40,7 @@ python -m unittest discover -s tests -v
 node --test tests/*.cjs
 python scripts/audit_scout.py
 node scripts/smoke_scout.cjs
+node scripts/forecast_diary.cjs --check
 ```
 
 These checks do not download sports-provider data. The audit writes its report;
