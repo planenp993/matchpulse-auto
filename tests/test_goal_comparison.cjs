@@ -47,6 +47,7 @@ test('Training/prediction boundaries refuse future models, cross-league use and 
  assert.throws(()=>F.predict(fit,row('2026-09-30','Man Utd','Everton',null,null)),/future/);
  assert.throws(()=>F.predict(fit,row('2026-10-10','Man Utd','Everton',null,null,'D1')),/cross leagues/);
  assert.equal(F.predict(fit,row('2026-10-10','Unknown','Everton',null,null)).error,'unknown_team');
+ assert.equal(F.predict(fit,row('2026-10-10','constructor','Everton',null,null)).error,'unknown_team');
  assert.equal(F.fit([],'E0',cutoff).error,'insufficient_league_history');
  const sparse=F.fit([...history,row('2026-09-15','Newcomer','Chelsea',1,1)],'E0',cutoff);
  assert.equal(F.predict(sparse,row('2026-10-10','Newcomer','Chelsea',null,null)).error,'insufficient_team_history');
@@ -98,6 +99,14 @@ test('Comparison keeps the paired cohort, labels calibration fitting and records
  assert.equal(r.blends.current.n,r.evaluations.current.periods.calibration_fit.n);
  assert.equal(r.fitting.days.nonconverged,0);
  assert.match(C.renderMarkdown(r),/Работещият модел/);
+});
+test('The comparison reference reproduces the existing evaluator and league baselines exactly',()=>{
+ const rows=D.replay(history,{since:comparisonOptions.since,until:comparisonOptions.until,windows:[30]}).observations;
+ for(const id of ['1x2','over25','btts','homeOver15']){
+  const index=id==='1x2'?null:D.MARKETS.findIndex(m=>m.id===id),expected=D.score(rows,30,index,{detail:true});
+  const {against_current,...actual}=comparison.evaluations.current.overall.markets[id];
+  assert.deepEqual(actual,expected);
+ }
 });
 test('Later labels cannot change the early calibrator and future rows cannot enter the replay',()=>{
  const changed=history.map(r=>{const copy=r.slice();if(r[3]>='2026-10-01'){copy[7]=0;copy[8]=0;}return copy;});

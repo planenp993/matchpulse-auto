@@ -111,8 +111,9 @@ function predict(model,fixture){
  if(fixture[0]!==model.division)throw Error('Fitted model cannot cross leagues');
  if(fixture[3]<model.cutoff)throw Error('Fitted model contains future training data');
  if(!model.converged)return {error:'not_converged'};
- const h=model.teams[M.clubKey(fixture[5])],a=model.teams[M.clubKey(fixture[6])];
- if(!h||!a)return {error:'unknown_team'};
+ const hk=M.clubKey(fixture[5]),ak=M.clubKey(fixture[6]);
+ if(!Object.hasOwn(model.teams,hk)||!Object.hasOwn(model.teams,ak))return {error:'unknown_team'};
+ const h=model.teams[hk],a=model.teams[ak];
  if(Math.min(h.n,a.n)<model.settings.minimumTeamMatches)return {error:'insufficient_team_history'};
  const rawHome=Math.exp(model.homeIntercept+h.attack+a.defence),rawAway=Math.exp(model.awayIntercept+a.attack+h.defence);
  const lambdaHome=clamp(rawHome,.15,4.2),lambdaAway=clamp(rawAway,.15,4.2);

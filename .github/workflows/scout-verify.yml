@@ -36,6 +36,8 @@ jobs:
           node scripts/forecast_diary.cjs --check --base-ref origin/main
       - name: Replay all model markets and windows without provider requests
         run: python scripts/evaluate.py
+      - name: Check the registered model comparison and its exact input versions
+        run: node scripts/compare_goal_models.cjs --check
       - name: Audit the checked-out snapshot without provider requests
         run: python scripts/audit_scout.py
       - name: Smoke check real history and fixtures
@@ -47,8 +49,10 @@ jobs:
           path: |
             docs/data/coverage_audit.json
             docs/data/model_report.json
+            docs/data/model_comparison.json
             docs/data/diary_report.json
             docs/model-quality.md
+            docs/model-comparison.md
           retention-days: 7
           if-no-files-found: warn
 

@@ -126,6 +126,7 @@ function compare(history,settings={}){
   evaluations[key]={label:LABELS[key],overall:summarize(observations,key,{detail:true}),
    periods:Object.fromEntries(Object.entries(periods).map(([id,rows])=>[id,summarize(rows,key,{detail:true})])),
    later:summarize(later,key,{detail:true}),fitted_only:summarize(available,key),
+   later_fitted_only:summarize(available.filter(r=>r.date>=opts.validationSince),key),
    leagues:Object.fromEntries([...byLeague.keys()].sort().map(id=>[id,summarize(later.filter(r=>r.division===id),key)]).filter(([,s])=>s.n))};
  }
  const coverage=later.length?later.filter(r=>r.available.days).length/later.length:0;
