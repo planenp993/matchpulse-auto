@@ -53,6 +53,7 @@ node scripts/smoke_scout.cjs
 node scripts/forecast_diary.cjs --check
 node scripts/compare_goal_models.cjs --check
 node scripts/paired_model_diary.cjs --check
+node scripts/compare_shot_models.cjs --check
 ```
 
 These checks do not download sports-provider data. The audit writes its report;
@@ -66,6 +67,16 @@ explicit. Do not tune settings on its later periods or activate a model from
 retrospective results alone. Changed comparison code/history requires
 `node scripts/compare_goal_models.cjs --write --progress`; calendar-only runs
 reuse the exact matching report. This experiment does not change live formulas.
+
+The separate shot contribution study is registered in
+`docs/shot-model-protocol.md`. Its two fixed volume components, chronological
+cutoffs and coherent mixtures must stay explicit. Use the common available
+cohort and its equally calibrated goal-only control to assess incremental value;
+improvement against current alone is not evidence that shots help. Never turn
+aggregate shot counts into event-level xG or modify the frozen prospective
+candidate for this study. Regenerate with
+`node scripts/compare_shot_models.cjs --write --progress` after changing its exact
+inputs/code; calendar-only runs reuse the matching report.
 
 Keep historical CSV refresh separate from calendar-only updates. Tests and code
 pushes must not add provider downloads. Record changed measured results and
