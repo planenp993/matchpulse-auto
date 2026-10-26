@@ -54,6 +54,7 @@ node scripts/forecast_diary.cjs --check
 node scripts/compare_goal_models.cjs --check
 node scripts/paired_model_diary.cjs --check
 node scripts/compare_shot_models.cjs --check
+node scripts/evaluate_scanner.cjs --check
 ```
 
 These checks do not download sports-provider data. The audit writes its report;
@@ -77,6 +78,17 @@ aggregate shot counts into event-level xG or modify the frozen prospective
 candidate for this study. Regenerate with
 `node scripts/compare_shot_models.cjs --write --progress` after changing its exact
 inputs/code; calendar-only runs reuse the matching report.
+
+The scanner ranking study is registered in `docs/scanner-validation-protocol.md`.
+Keep the current, league-frequency and fixed prior-6 candidates on the same
+daily eligible pools. Selection happens before target-statistics settlement;
+missing outcomes never trigger replacements. The primary analysis is top 10 on
+competitive days under the fixed 10-match / 3-streak setting. Other windows,
+streaks, top 20 and single markets are diagnostics. A rank is not a probability.
+Use league-adjusted outcomes, weekly paired uncertainty and missing-outcome
+bounds; raw hit rate alone does not establish ranking value. Regenerate with
+`node scripts/evaluate_scanner.cjs --write --progress` when its exact inputs or
+code change. Never mix retrospective results into the prospective diary.
 
 Keep historical CSV refresh separate from calendar-only updates. Tests and code
 pushes must not add provider downloads. Record changed measured results and
