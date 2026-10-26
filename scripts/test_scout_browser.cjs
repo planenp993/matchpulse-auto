@@ -95,6 +95,16 @@
  await desktop.waitForFunction(()=>document.getElementById('lastSync')?.textContent.includes('Програма:'));
  const retained=await desktop.evaluate(()=>JSON.parse(localStorage.getItem('matchpulse-scout-picks-v1')));
  if(retained[0].modelProbability!==saved[0].modelProbability)throw new Error('Saved probability changed on reload');
+ await desktop.locator('[data-view="diary"]').click();
+ await desktop.waitForFunction(()=>document.querySelectorAll('.diary-entry').length>0,{timeout:20000});
+ const diary=require('node:fs').readFileSync('docs/data/diary_report.json','utf8'),diaryDoc=JSON.parse(diary),firstForecast=diaryDoc.recent[0];
+ if((await desktop.locator('.diary-totals b').first().textContent())!==String(diaryDoc.totals.recorded))throw new Error('Diary count is not the published prospective count');
+ const firstEntry=desktop.locator('[data-forecast-id="'+firstForecast.id+'"]');
+ if(!(await firstEntry.locator('.diary-probabilities').textContent()).includes('1 '+(firstForecast.probabilities.homeWin*100).toFixed(0)+'%'))throw new Error('Diary does not show the saved pre-match probability');
+ const privateAfterDiary=await desktop.evaluate(()=>JSON.parse(localStorage.getItem('matchpulse-scout-picks-v1')));
+ if(JSON.stringify(privateAfterDiary)!==JSON.stringify(retained))throw new Error('Automatic diary changed private picks');
+ await desktop.screenshot({path:'scout-diary.png',fullPage:false});
+ stats.diaryForecasts=diaryDoc.totals.recorded;
  const mobile=await browser.newPage({viewport:{width:393,height:852},deviceScaleFactor:1,isMobile:true,hasTouch:true});
  mobile.on('pageerror',e=>failures.push('mobile: '+String(e)));
  await mobile.goto(base,{waitUntil:'domcontentloaded',timeout:60000});
@@ -114,6 +124,9 @@
  if(!(await mobile.locator('.scan-context').count()))throw new Error('Mobile scanner context missing');
  if(await mobile.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth+1))throw new Error('Mobile scanner overflows horizontally');
  await mobile.screenshot({path:'scout-scanner.png',fullPage:false});
+ await mobile.locator('[data-view="diary"]').click();
+ await mobile.waitForFunction(()=>document.querySelectorAll('.diary-entry').length>0,{timeout:20000});
+ if(await mobile.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth+1))throw new Error('Mobile diary overflows horizontally');
  if(failures.length)throw new Error('Browser JS errors: '+failures.join(' | '));
  console.log('SCOUT_BROWSER_OK '+JSON.stringify(stats));
  await browser.close();

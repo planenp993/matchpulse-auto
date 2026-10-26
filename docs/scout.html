@@ -15,6 +15,7 @@
       <button type="button" class="nav active" data-view="schedule"><span>▦</span> Програма</button>
       <button type="button" class="nav" data-view="scanner"><span>◎</span> Trend Scanner</button>
       <button type="button" class="nav" data-view="picks"><span>▤</span> Моите прогнози</button>
+      <button type="button" class="nav" data-view="diary"><span>◷</span> Дневник</button>
     </nav>
     <div class="sidebar-bottom"><div class="source-status" id="sourceStatus">Зареждане…</div></div>
   </aside>
@@ -51,6 +52,15 @@
       <div class="picks-head"><div id="picksSummary">Няма записани прогнози</div><button id="exportPicks" type="button" class="button secondary">↓ Експорт CSV</button></div>
       <div id="picksList"></div>
       <p class="footnote">Записите са на това устройство. Експортирай CSV за резервно копие.</p>
+    </section>
+    <section class="view hidden" id="view-diary" aria-label="Автоматичен дневник">
+      <div class="section-heading"><span id="diarySummary" role="status">Зареждане на дневника…</span><small class="timezone-label" id="diaryUpdated"></small></div>
+      <div class="diary-totals" id="diaryTotals"></div>
+      <p class="footnote diary-note">Първите проценти се запазват преди мача. Резултатите се отчитат при обновяване на архива.</p>
+      <div id="diaryScanner" class="footnote"></div>
+      <details class="card detail-card"><summary>Качество по пазари</summary><div id="diaryQuality" class="coverage-scroll">Очакват се първите резултати.</div></details>
+      <div class="section-heading"><h2>Последни записи</h2><small class="timezone-label">Записани преди мача</small></div>
+      <div id="diaryList"><div class="empty">Зареждане…</div></div>
     </section>
     <details class="coverage-details"><summary>Данни и обновяване</summary>
       <div id="syncContent" class="coverage-content">Зареждане…</div>

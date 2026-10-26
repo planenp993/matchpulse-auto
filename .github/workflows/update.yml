@@ -24,6 +24,7 @@ concurrency:
 jobs:
   refresh-and-deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
@@ -74,7 +75,13 @@ jobs:
             git reset --hard origin/main
             cp /tmp/mp-refresh/history.json /tmp/mp-refresh/fixtures.json /tmp/mp-refresh/status.json /tmp/mp-refresh/model_report.json /tmp/mp-refresh/coverage_audit.json docs/data/
             cp /tmp/mp-refresh/model-quality.md docs/model-quality.md
+            # Read the latest committed ledger only after resetting to main.
+            # Rejected pushes repeat capture/settlement from that latest ledger.
+            node scripts/forecast_diary.cjs --check --base-ref origin/main
+            node scripts/forecast_diary.cjs --write
+            node scripts/forecast_diary.cjs --check
             git add docs/data/history.json docs/data/fixtures.json docs/data/status.json docs/data/model_report.json docs/data/coverage_audit.json docs/model-quality.md
+            git add docs/data/diary docs/data/diary_report.json
             if git diff --staged --quiet; then
               echo "No data changes"
               break
