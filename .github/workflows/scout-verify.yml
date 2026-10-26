@@ -34,6 +34,7 @@ jobs:
         run: |
           git fetch --no-tags --depth=1 origin main
           node scripts/forecast_diary.cjs --check --base-ref origin/main
+          node scripts/paired_model_diary.cjs --check --base-ref origin/main
       - name: Replay all model markets and windows without provider requests
         run: python scripts/evaluate.py
       - name: Check the registered model comparison and its exact input versions
@@ -51,6 +52,7 @@ jobs:
             docs/data/model_report.json
             docs/data/model_comparison.json
             docs/data/diary_report.json
+            docs/data/paired_model_report.json
             docs/model-quality.md
             docs/model-comparison.md
           retention-days: 7

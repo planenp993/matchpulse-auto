@@ -103,6 +103,16 @@
  if(!(await firstEntry.locator('.diary-probabilities').textContent()).includes('1 '+(firstForecast.probabilities.homeWin*100).toFixed(0)+'%'))throw new Error('Diary does not show the saved pre-match probability');
  const privateAfterDiary=await desktop.evaluate(()=>JSON.parse(localStorage.getItem('matchpulse-scout-picks-v1')));
  if(JSON.stringify(privateAfterDiary)!==JSON.stringify(retained))throw new Error('Automatic diary changed private picks');
+ const paired=diaryDoc.paired_model_test;
+ if(paired){
+  await desktop.locator('#view-diary summary').click();
+  const quality=desktop.locator('#diaryQuality');
+  if(!(await quality.textContent()).includes('Паралелна проверка: '+paired.totals.recorded))throw new Error('Paired comparison count is missing');
+  if(!(await quality.locator('thead').textContent()).includes('Кандидат'))throw new Error('Paired model columns are missing');
+  const ns=await quality.locator('tbody tr td:nth-child(2)').allTextContents();
+  if(ns.some(n=>n!==String(paired.totals.settled)))throw new Error('Paired quality table mixes different cohorts');
+  await desktop.locator('#view-diary summary').click();
+ }
  await desktop.screenshot({path:'scout-diary.png',fullPage:false});
  stats.diaryForecasts=diaryDoc.totals.recorded;
  const mobile=await browser.newPage({viewport:{width:393,height:852},deviceScaleFactor:1,isMobile:true,hasTouch:true});
@@ -126,6 +136,7 @@
  await mobile.screenshot({path:'scout-scanner.png',fullPage:false});
  await mobile.locator('[data-view="diary"]').click();
  await mobile.waitForFunction(()=>document.querySelectorAll('.diary-entry').length>0,{timeout:20000});
+ if(paired)await mobile.locator('#view-diary summary').click();
  if(await mobile.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth+1))throw new Error('Mobile diary overflows horizontally');
  if(failures.length)throw new Error('Browser JS errors: '+failures.join(' | '));
  console.log('SCOUT_BROWSER_OK '+JSON.stringify(stats));

@@ -327,7 +327,14 @@ async function loadDiary(){
    (s.settled?' · '+s.hits+'/'+s.settled+' успешни ('+percent(s.hit_rate)+')':'')+
    (s.pending_stats?' · '+s.pending_stats+' чакат статистика':'');
   const selected=['1x2','double1X','doubleX2','double12','over15','over25','over35','btts','homeOver15','awayOver15'];
-  el('diaryQuality').innerHTML=t.settled?'<p class="footnote">Грешка Brier: по-ниска стойност е по-добра. Общият 1X2 е по отделна скала.</p>'+
+  const paired=doc.paired_model_test;
+  el('diaryQuality').innerHTML=paired?.schema_version===1&&paired.current?.markets&&paired.candidate?.markets?
+   '<p class="footnote">Паралелна проверка: '+esc(paired.totals.recorded)+' двойни записа · '+esc(paired.totals.settled)+' с резултат. Начало: '+esc(stamp(paired.started_at_utc))+'. Двата модела използват едни и същи данни и час на запис.</p>'+
+   '<p class="footnote">Грешка Brier: по-ниска стойност е по-добра. Общият 1X2 е по отделна скала.</p>'+
+   '<table><thead><tr><th>Пазар</th><th>Мачове</th><th>Сегашен</th><th>Кандидат</th></tr></thead><tbody>'+
+   selected.map(id=>{const a=paired.current.markets[id],b=paired.candidate.markets[id];return '<tr><td>'+esc(doc.market_labels[id])+'</td><td>'+esc(a.n)+'</td><td>'+fmt(a.brier,4)+'</td><td>'+fmt(b.brier,4)+'</td></tr>'}).join('')+'</tbody></table>'+
+   '<p class="footnote">'+(paired.capture_paused?'Записването на нови двойки е спряно за проверка.':paired.decision.status==='ready_for_review'?'Има достатъчно данни за преглед на новия модел.':paired.decision.status==='insufficient_evidence'?'Няма достатъчно доказателства за смяна на модела.':'Събират се нови резултати.')+' Живият анализ използва сегашния модел.</p>':
+   t.settled?'<p class="footnote">Грешка Brier: по-ниска стойност е по-добра. Общият 1X2 е по отделна скала.</p>'+
    '<table><thead><tr><th>Пазар</th><th>Мачове</th><th>Модел</th><th>Лигова база</th></tr></thead><tbody>'+
    selected.map(id=>{const m=doc.markets[id];return '<tr><td>'+esc(doc.market_labels[id])+'</td><td>'+m.n+'</td><td>'+fmt(m.brier,4)+'</td><td>'+fmt(m.baselines.league_frequencies.brier,4)+'</td></tr>'}).join('')+'</tbody></table>'+
    (Object.keys(doc.versions).length>1?'<p class="footnote">Общо за '+Object.keys(doc.versions).length+' версии на модела; отделните резултати се пазят в отчета.</p>':''):
