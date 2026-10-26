@@ -8,6 +8,8 @@
 const clean = x=>String(x??'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^\p{L}\p{N}]+/gu,' ').trim().toLowerCase();
 const keyTeam = x=>model?.clubKey?.(x)||clean(x);
 const keyFixture = f=>[f[0],f[3],keyTeam(f[5]),keyTeam(f[6])].join('|');
+const keyPick = p=>p.div&&p.date&&p.home&&p.away?
+  keyFixture([p.div,null,null,p.date,null,p.home,p.away]):p.fixtureKey;
 const isDone = r=>Array.isArray(r)&&Number.isInteger(r[7])&&Number.isInteger(r[8])&&r[7]>=0&&r[8]>=0&&r[13]?.AWARDED!==true;
 const blank = ()=>({n:0,gf:0,ga:0,total:0,o15:0,o25:0,o35:0,btts:0,scored:0,scored2:0,conceded2:0,u35:0});
 function aggregate(rows,team){
@@ -126,7 +128,7 @@ function getUpcoming(fixtures,now=new Date()){
  const clock=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Sofia',hour:'2-digit',minute:'2-digit',hour12:false}).format(now);
  return fixtures.filter(f=>Array.isArray(f)&&f[3]>=date&&
    // Secondary fixtures explicitly have Sofia time; all other sources' timezones may vary.
-   (f[3]!==date || !(f[13]||'').includes('Sofia') || (f[4]||'')>=clock) &&
+   (f[3]!==date || !(f[13]||'').includes('Sofia') || (!f[4] || f[4]>=clock)) &&
    f[5]&&f[6]&&!isDone(f)).sort((a,b)=>(a[3]+' '+(a[4]||'')).localeCompare(b[3]+' '+(b[4]||'')));
 }
 function scan(index,fixtures,{market='o25',days=3,minSample=8,league='',now=new Date(),windowSize=10,opponentFilter='all',eloIndex=null}={}){
@@ -176,5 +178,5 @@ function probability(probs,market){
  const value=probs[direct||opposite];
  return Number.isFinite(value)&&value>=0&&value<=1?(direct?value:1-value):null;
 }
-return {build,profile,trend,scan,aggregate,keyTeam,keyFixture,getUpcoming,marketSettled,probability,SIGNALS};
+return {build,profile,trend,scan,aggregate,keyTeam,keyFixture,keyPick,getUpcoming,marketSettled,probability,SIGNALS};
 });

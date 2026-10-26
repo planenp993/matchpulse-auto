@@ -221,7 +221,7 @@ function savePick(){
  if(oddsString&&(!Number.isFinite(odds)||odds<1.01||odds>1000)){alert('Въведи реален десетичен коефициент, например 1.80, или остави празно.');return}
  if(!Scout.getUpcoming([activeMatch]).length){alert('Мачът вече е започнал. Презареди програмата.');return}
  const picks=readPicks(),m=el('pickMarket').value;
- if(picks.some(x=>x.fixtureKey===Scout.keyFixture(activeMatch)&&x.market===m)){
+ if(picks.some(x=>Scout.keyPick(x)===Scout.keyFixture(activeMatch)&&x.market===m)){
   alert('Вече имаш запазена прогноза за този мач и пазар.');return
  }
  const evaluation=profile(activeMatch).international?null:Model.evaluate(history,activeMatch,'standard');
@@ -278,7 +278,7 @@ const marketNames=Object.fromEntries(Patterns.MARKETS.map(v=>[v.id,v.label]));
 Object.assign(marketNames,{'1':'Победа домакин','2':'Победа гост','1X':'Двоен шанс 1X','X2':'Двоен шанс X2',home2:'Домакин 2+',away2:'Гост 2+'});
 function renderPicks(){
  const list=readPicks(),resolved=list.map(p=>{
-  const done=index.lookup.get(p.fixtureKey),settled=done?Scout.marketSettled(p,done):null;
+  const done=index.lookup.get(Scout.keyPick(p)),settled=done?Scout.marketSettled(p,done):null;
   return {...p,settled,score:done?done[7]+':'+done[8]:null}
  });
  const done=resolved.filter(x=>x.settled!==null);
@@ -298,7 +298,7 @@ function exportPicks(){
  const picks=readPicks();if(!picks.length){alert('Няма прогнози за експорт.');return}
  const cols=['date','home','away','market','odds','modelProbability','analysisWindow','createdAt','score','result'];
  const csv=[cols.join(',')].concat(picks.map(p=>cols.map(k=>{
-  const done=index.lookup.get(p.fixtureKey),settled=done?Scout.marketSettled(p,done):null;
+  const done=index.lookup.get(Scout.keyPick(p)),settled=done?Scout.marketSettled(p,done):null;
   const v=k==='result'?(settled===null?'pending':settled?'win':'loss'):k==='score'?(done?done[7]+':'+done[8]:''):(p[k]??'');
   return '"'+String(v).replace(/"/g,'""')+'"';
  }).join(','))).join('\r\n');

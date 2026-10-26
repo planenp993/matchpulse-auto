@@ -81,3 +81,10 @@ test('distinguishes model probabilities from history and needs no paid API',()=>
  assert.match(js,/Честотите и сериите описват историята/);
  assert.ok(!js.includes('api-key'));
 });
+
+test('a scheduled match with an unconfirmed kickoff remains visible on its calendar date',()=>{
+ const unknown=['D2','Germany','2. Bundesliga','2026-10-26','','Alpha','Beta',null,null,null,null,null,null,'ESPN / UTC→Europe-Sofia; kickoff unconfirmed'];
+ const started=[...unknown];started[4]='12:00';
+ const rows=S.getUpcoming([unknown,started],new Date('2026-10-26T13:00:00Z'));
+ assert.deepEqual(rows,[unknown]);
+});
