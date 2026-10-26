@@ -49,7 +49,7 @@ function build(history){
 function historyFor(index,team,div,date){
   const c=keyTeam(team);
   const regular=index.byDivision.get(div+'|'+c);
-  if(regular?.length)return {list:regular.filter(r=>r[3]<date).slice(0,50),proxy:false,scope:div};
+  if(regular?.length)return {list:regular.filter(r=>r[3]<date),proxy:false,scope:div};
   if(!['UCL','UEL','UECL'].includes(div))return {list:[],proxy:false,scope:div};
   const others=index.global.get(c);
   if(!others)return {list:[],proxy:true,scope:'unmatched'};
@@ -60,10 +60,10 @@ function historyFor(index,team,div,date){
   if(eligible.length>1&&eligible[0][0]!==eligible[1][0]&&eligible[0][1][0][3]===eligible[1][1][0][3])
     return {list:[],proxy:true,scope:'ambiguous'};
   if(!eligible.length)return {list:[],proxy:true,scope:'unmatched'};
-  return {list:eligible[0][1].slice(0,50),proxy:true,scope:eligible[0][0]};
+  return {list:eligible[0][1],proxy:true,scope:eligible[0][0]};
 }
 function profile(index,f,{windowSize=10,opponentFilter='all',eloIndex=null}={}){
-  const n=[5,10,15].includes(Number(windowSize))?Number(windowSize):10;
+  const n=[5,10,20].includes(Number(windowSize))?Number(windowSize):10;
   const condition=['strong','weak'].includes(opponentFilter)?opponentFilter:'all';
   const hm=historyFor(index,f[5],f[0],f[3]),am=historyFor(index,f[6],f[0],f[3]);
   // Select the last N games FIRST, then classify the opponents within that sample.
@@ -147,8 +147,8 @@ function marketSettled(pick,result){
  if(!isDone(result))return null;
  const [h,a]=[result[7],result[8]],total=h+a;
  const answers={'1':h>a,'X':h===a,'2':h<a,'1X':h>=a,'X2':h<=a,'12':h!==a,
-  o15:total>=2,o25:total>=3,o35:total>=4,u35:total<=3,
-  btts:h>=1&&a>=1,home2:h>=2,away2:a>=2};
+  o15:total>=2,o25:total>=3,o35:total>=4,u25:total<=2,u35:total<=3,
+  btts:h>=1&&a>=1,bttsNo:h===0||a===0,home2:h>=2,away2:a>=2};
  const extra=result[13];
  if(extra&&typeof extra==='object'&&!Array.isArray(extra)){
   const stat=(left,right,threshold)=>{
@@ -158,10 +158,23 @@ function marketSettled(pick,result){
   answers.corners85=stat('HC','AC',8.5);
   answers.corners95=stat('HC','AC',9.5);
   answers.yellow35=stat('HY','AY',3.5);
+  answers.yellow45=stat('HY','AY',4.5);
+  answers.red05=stat('HR','AR',.5);
   answers.shots215=stat('HS','AS',21.5);
+  answers.shots255=stat('HS','AS',25.5);
   answers.target85=stat('HST','AST',8.5);
+  answers.ht05=stat('HTHG','HTAG',.5);
+  answers.ht15=stat('HTHG','HTAG',1.5);
  }
  return Object.prototype.hasOwnProperty.call(answers,pick.market)?answers[pick.market]:null;
 }
-return {build,profile,trend,scan,aggregate,keyTeam,keyFixture,getUpcoming,marketSettled,SIGNALS};
+function probability(probs,market){
+ if(!probs)return null;
+ const fields={'1':'homeWin','X':'draw','2':'awayWin','1X':'double1X','X2':'doubleX2','12':'double12',
+  o15:'over15',o25:'over25',o35:'over35',btts:'btts',home2:'homeOver15',away2:'awayOver15'};
+ const direct=fields[market],opposite={u25:'over25',u35:'over35',bttsNo:'btts'}[market];
+ const value=probs[direct||opposite];
+ return Number.isFinite(value)&&value>=0&&value<=1?(direct?value:1-value):null;
+}
+return {build,profile,trend,scan,aggregate,keyTeam,keyFixture,getUpcoming,marketSettled,probability,SIGNALS};
 });

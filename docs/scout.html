@@ -3,86 +3,65 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0b1523">
-  <meta name="description" content="Личен футболен анализатор с автоматична програма, статистика и голови тенденции.">
-  <title>MATCHPULSE SCOUT · Football & Goal Trends</title>
+  <meta name="description" content="Футболна програма, статистика и анализ на мачове.">
+  <title>MATCHPULSE SCOUT · Футболни анализи</title>
   <link rel="stylesheet" href="scout.css">
 </head>
 <body>
 <div class="shell">
   <aside class="sidebar">
     <div class="brand"><span class="brandball">◉</span> MATCH<span>PULSE</span><small>SCOUT</small></div>
-    <div class="tagline">FOOTBALL RESEARCH STUDIO</div>
     <nav class="navigation" aria-label="Главно меню">
       <button type="button" class="nav active" data-view="schedule"><span>▦</span> Програма</button>
       <button type="button" class="nav" data-view="scanner"><span>◎</span> Trend Scanner</button>
       <button type="button" class="nav" data-view="picks"><span>▤</span> Моите прогнози</button>
     </nav>
-    <div class="sidebar-bottom">
-      <div class="source-status" id="sourceStatus">Зареждане на футболната база…</div>
-      <div class="sidebar-note">Личен анализ, не готови залози. Историческите тенденции не гарантират бъдещ резултат.</div>
-    </div>
+    <div class="sidebar-bottom"><div class="source-status" id="sourceStatus">Зареждане…</div></div>
   </aside>
   <main class="main">
     <header class="topbar">
-      <div><div class="eyebrow">FOOTBALL INTELLIGENCE · PERSONAL DESK</div>
-        <h1 id="pageTitle">Футболна програма</h1>
-        <p class="lead" id="pageSub">Дневни мачове, голови тенденции и подробен анализ на едно място.</p>
-      </div>
-      <div class="top-right"><span class="live-dot"></span><span id="lastSync">Проверка на данните…</span></div>
+      <h1 id="pageTitle">Програма</h1>
+      <div class="top-right" id="syncBadge"><span class="sync-dot"></span><span id="lastSync">Зареждане…</span></div>
     </header>
-    <div class="notice" id="notice">Данните и началните часове зависят от източника. Това не е live резултатна услуга.</div>
-    <details class="coverage-details"><summary>▤ Покритие и надеждност на футболната база</summary><div id="coverageContent" class="coverage-content">Зареждане на независимия одит…</div></details>
-    <div class="research-settings" aria-label="Настройки на футболните тенденции">
-      <label>Последни срещи<select id="researchWindow"><option value="5">5 мача</option><option value="10" selected>10 мача</option><option value="15">15 мача</option></select></label>
-      <label>Качество на предишните противници<select id="researchOpp"><option value="all">Всички</option><option value="strong">По-силни според Elo</option><option value="weak">По-слаби според Elo</option></select></label>
-      <span id="researchInfo">Настройките важат за статистиките и Trend Scanner. Вероятностният модел има отделен исторически прозорец.</span>
-    </div>
-
-    <section class="view" id="view-schedule">
-      <div class="hero">
-        <div class="hero-content"><div class="hero-kicker">MATCHDAY DESK</div>
-          <h2>Всички мачове.<br><em>Един удобен анализ.</em></h2>
-          <p>Преглеждай програмата, виж сигналите за голове и отваряй пълно досие за всяка среща.</p></div>
-        <div class="hero-illustration" aria-hidden="true">
-          <div class="pitch"><i></i><b></b><span></span></div>
-          <div class="hero-stats"><strong>2.5+</strong><small>GOAL TRENDS</small></div>
-        </div>
-      </div>
+    <div class="notice hidden" id="notice" role="status"></div>
+    <section class="view" id="view-schedule" aria-label="Програма">
       <div class="toolbar">
         <div class="days" aria-label="Дата"><button type="button" data-day="0" class="active">Днес</button><button type="button" data-day="1">Утре</button><button type="button" data-day="7">7 дни</button><label class="date-wrap" title="Избери дата"><input type="date" id="dateInput" aria-label="Избери дата"></label></div>
         <div class="filterbar"><label class="control-label">Първенство<select id="leagueSelect"><option value="">Всички първенства</option></select></label><label class="control-label">Търси<input id="searchInput" type="search" placeholder="Отбор или лига" autocomplete="off"></label><label class="control-label">Покажи<select id="qualitySelect"><option value="all">Всички срещи</option><option value="qualified">С достатъчна история</option><option value="trending">С голов тренд</option></select></label></div>
       </div>
-      <div class="section-heading"><div><h3 id="programTitle">Днешната програма</h3><span id="programSummary">—</span></div><div class="legend"><span class="legend-dot"></span> Головите сигнали са исторически наблюдения</div></div>
+      <div class="section-heading"><div><h2 id="programTitle">Днешната програма</h2><span id="programSummary">—</span></div><small class="timezone-label">Часове: София</small></div>
       <div id="scheduleList" class="league-list"><div class="empty">Зареждане на програмата…</div></div>
     </section>
-
-    <section class="view hidden" id="view-scanner">
-      <div class="section-header"><div class="eyebrow">TREND INTELLIGENCE</div><h2>Trend Scanner</h2><p>Открий мачовете с интересни съвпадения в последната форма, без да ги наричаме „сигурни прогнози“.</p></div>
+    <section class="view hidden" id="view-scanner" aria-label="Trend Scanner">
       <div class="scanner-toolbar">
-        <label class="control-label">Търси закономерност<select id="scanMarket"><option value="all">✨ Автоматично открий всички пазари</option><optgroup label="Голове"><option value="o15">Над 1,5</option><option value="o25" selected>Над 2,5</option><option value="o35">Над 3,5</option><option value="u25">Под 2,5</option><option value="u35">Под 3,5</option><option value="btts">Гол/гол Да</option><option value="bttsNo">Гол/гол Не</option><option value="home2">Домакин 2+ / гост допуска 2+</option><option value="away2">Гост 2+ / домакин допуска 2+</option></optgroup><optgroup label="Резултат и двоен шанс"><option value="1">Победа на домакина</option><option value="X">Равен</option><option value="2">Победа на госта</option><option value="12">Без равен</option><option value="1X">Двоен шанс 1X</option><option value="X2">Двоен шанс X2</option></optgroup><optgroup label="Корнери"><option value="corners85">Над 8,5 корнера</option><option value="corners95">Над 9,5 корнера</option></optgroup><optgroup label="Картони"><option value="yellow35">Над 3,5 жълти</option><option value="yellow45">Над 4,5 жълти</option><option value="red05">Поне 1 червен</option></optgroup><optgroup label="Удари"><option value="shots215">Над 21,5 удара</option><option value="shots255">Над 25,5 удара</option><option value="target85">Над 8,5 точни</option></optgroup><optgroup label="Първо полувреме"><option value="ht05">Гол през първо полувреме</option><option value="ht15">2+ гола през първо полувреме</option></optgroup></select></label>
-        <label class="control-label">Период<select id="scanWindow"><option value="1">Следващите 24 ч.</option><option value="3" selected>Следващите 3 дни</option><option value="7">Следващите 7 дни</option></select></label>
-        <label class="control-label">Минимум история<select id="minSample"><option value="5">5 мача</option><option value="8" selected>8 мача</option><option value="10">10 мача</option></select></label>
-        <label class="control-label">Първенство<select id="scanLeague"><option value="">Всички</option></select></label>
-        <label class="control-label">Поредни срещи<select id="scanStreak"><option value="3" selected>3+</option><option value="4">4+</option><option value="5">5+</option><option value="6">6+</option><option value="7">7+</option><option value="8">8+</option><option value="10">10+</option></select></label>
-        <label class="control-label">Серия при<select id="scanBoth"><option value="no">Поне единия отбор</option><option value="yes">Двата отбора</option></select></label>
+        <label class="control-label">Пазар<select id="scanMarket"><option value="all" selected>Всички пазари</option><optgroup label="Голове"><option value="o15">Над 1,5</option><option value="o25">Над 2,5</option><option value="o35">Над 3,5</option><option value="u25">Под 2,5</option><option value="u35">Под 3,5</option><option value="btts">Гол/гол Да</option><option value="bttsNo">Гол/гол Не</option><option value="home2">Домакин 2+ / гост допуска 2+</option><option value="away2">Гост 2+ / домакин допуска 2+</option></optgroup><optgroup label="Резултат и двоен шанс"><option value="1">Победа на домакина</option><option value="X">Равен</option><option value="2">Победа на госта</option><option value="12">Без равен</option><option value="1X">Двоен шанс 1X</option><option value="X2">Двоен шанс X2</option></optgroup><optgroup label="Корнери"><option value="corners85">Над 8,5 корнера</option><option value="corners95">Над 9,5 корнера</option></optgroup><optgroup label="Картони"><option value="yellow35">Над 3,5 жълти</option><option value="yellow45">Над 4,5 жълти</option><option value="red05">Поне 1 червен</option></optgroup><optgroup label="Удари"><option value="shots215">Над 21,5 удара</option><option value="shots255">Над 25,5 удара</option><option value="target85">Над 8,5 точни</option></optgroup><optgroup label="Първо полувреме"><option value="ht05">Гол през първо полувреме</option><option value="ht15">2+ гола през първо полувреме</option></optgroup></select></label>
+        <label class="control-label">Период<select id="scanWindow"><option value="1">Днес</option><option value="3" selected>3 дни</option><option value="7">7 дни</option></select></label>
+        <label class="control-label">Последни мачове<select id="researchWindow"><option value="5">5</option><option value="10" selected>10</option><option value="20">20</option></select></label>
+        <label class="control-label">Поредна серия<select id="scanStreak"><option value="3" selected>3+</option><option value="4">4+</option><option value="5">5+</option><option value="6">6+</option><option value="7">7+</option><option value="8">8+</option><option value="10">10+</option></select></label>
+        <details class="scanner-more"><summary>Още филтри</summary><div class="scanner-more-grid">
+          <label class="control-label">Първенство<select id="scanLeague"><option value="">Всички</option></select></label>
+          <label class="control-label">Срещи<select id="scanVenue"><option value="all">Всички</option><option value="venue">Домакинства / гостувания</option></select></label>
+          <label class="control-label">Серия при<select id="scanBoth"><option value="no">Поне единия отбор</option><option value="yes">Двата отбора</option></select></label>
+        </div></details>
       </div>
-      <div class="method-note" id="scannerReadiness">Проверката на покритието на статистиките ще се зареди от последния одит.</div><div class="method-note"><strong>Как се подреждат?</strong> Търсим реални поредни успешни събития и съвпадения в последните 5/10/15 мача. Липсващите удари, корнери или картони прекъсват серията. Процентите са наблюдавани честоти, а не прогноза за бъдещия мач.</div>
+      <div class="section-heading"><span id="scannerSummary" role="status">Исторически серии</span><small class="timezone-label">Честота в архива</small></div>
       <div class="scanner-cards" id="scannerList"><div class="empty">Зареждане…</div></div>
     </section>
-
-    <section class="view hidden" id="view-picks">
-      <div class="section-header"><div class="eyebrow">MY NOTEBOOK</div><h2>Моите прогнози</h2><p>Запазвай собствените си идеи за голови пазари. На този етап те остават в браузъра на устройството ти.</p></div>
+    <section class="view hidden" id="view-picks" aria-label="Моите прогнози">
       <div class="picks-head"><div id="picksSummary">Няма записани прогнози</div><button id="exportPicks" type="button" class="button secondary">↓ Експорт CSV</button></div>
       <div id="picksList"></div>
-      <p class="footnote">За момента записите се пазят само на това устройство (localStorage) и не се синхронизират между телефон и компютър. Можеш да ги експортираш като CSV.</p>
+      <p class="footnote">Записите са на това устройство. Експортирай CSV за резервно копие.</p>
     </section>
-    <footer> MATCHPULSE SCOUT · Исторически данни и източник за програма · Без гарантирани резултати и без live коефициенти.</footer>
+    <details class="coverage-details"><summary>Данни и обновяване</summary>
+      <div id="syncContent" class="coverage-content">Зареждане…</div>
+      <div id="coverageContent" class="coverage-content">Зареждане на покритието…</div>
+      <p class="footnote">Източниците с обозначение „Sofia“ са в българско време. Часовете от останалите източници са непотвърдени и се отбелязват със *.</p>
+    </details>
   </main>
 </div>
-
 <div id="matchOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="matchHeading">
   <div class="drawer">
-    <div class="drawer-bar"><div class="eyebrow">MATCH CENTER</div><div class="drawer-controls"><label>Последни <select id="drawerWindow" aria-label="Брой последни мачове"><option value="5">5</option><option value="10">10</option><option value="15">15</option></select></label><label>Съперници <select id="drawerOpp" aria-label="Сила на съперниците"><option value="all">Всички</option><option value="strong">По-силни</option><option value="weak">По-слаби</option></select></label></div><button id="closeMatch" type="button" class="close" aria-label="Затвори анализа">✕</button></div>
+    <div class="drawer-bar"><strong>Анализ на мача</strong><div class="drawer-controls"><label>Последни <select id="drawerWindow" aria-label="Брой последни мачове"><option value="5">5</option><option value="10" selected>10</option><option value="20">20</option></select></label></div><button id="closeMatch" type="button" class="close" aria-label="Затвори анализа">✕</button></div>
     <div id="matchContent"><div class="empty">Зареждане…</div></div>
   </div>
 </div>

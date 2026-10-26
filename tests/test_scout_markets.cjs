@@ -69,3 +69,14 @@ test('full analysis available in standalone offline builder, without uncaught JS
  assert.match(js,/Удари, корнери, картони и xG/);
  assert.match(js,/няма данни/);
 });
+test('saved probability uses the shared score distribution and remains absent for statistical markets',()=>{
+ const p=Model.distribution(1.7,1.2,-.06).probs;
+ assert.equal(S.probability(p,'1X'),p.homeWin+p.draw);
+ assert.equal(S.probability(p,'u25'),1-p.over25);
+ assert.equal(S.probability(p,'bttsNo'),1-p.btts);
+ assert.equal(S.probability(p,'corners85'),null);
+ assert.equal(S.probability(null,'o25'),null);
+ const result=row('2026-10-25','Alpha','Beta',2,0,{HR:0,AR:1,HS:16,AS:12,HTHG:1,HTAG:1});
+ for(const market of ['u25','bttsNo','red05','shots255','ht05','ht15'])assert.equal(S.marketSettled({market},result),true,market);
+ assert.equal(S.marketSettled({market:'yellow45'},result),null);
+});

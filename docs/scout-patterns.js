@@ -89,12 +89,12 @@ function measures(rows,club,side,market,teamKey){
  }
  return {n,hits,rate:n?hits/n:null,currentStreak,longestStreak,
   missing:observations.length-n,total:observations.length,
-  trail:observations.slice(0,15)};
+  trail:observations};
 }
-function inspect(profile,market,{streak=3,minimum=5,both=false,teamKey}={}){
+function inspect(profile,market,{streak=3,minimum=5,both=false,venue=false,teamKey}={}){
  if(typeof teamKey!=='function')throw Error('canonical team key required');
- const h=measures(profile.home.all,profile.home.name,'home',market,teamKey);
- const a=measures(profile.away.all,profile.away.name,'away',market,teamKey);
+ const h=measures(venue?profile.home.venue:profile.home.all,profile.home.name,'home',market,teamKey);
+ const a=measures(venue?profile.away.venue:profile.away.all,profile.away.name,'away',market,teamKey);
  const reliable=!profile.international&&!profile.home.proxy&&!profile.away.proxy &&
   h.n>=minimum&&a.n>=minimum;
  const one=h.currentStreak>=streak||a.currentStreak>=streak;
@@ -103,13 +103,13 @@ function inspect(profile,market,{streak=3,minimum=5,both=false,teamKey}={}){
   h.rate>=.55&&a.rate>=.55;
  const matched=reliable&&supporting&&(both?dual:one);
  const rank=matched?(h.rate+a.rate)/2 + .05*Math.min(6,h.currentStreak+a.currentStreak):0;
- return {market,label:MAP.get(market)?.label||market,group:MAP.get(market)?.group||'',
+ return {market,venue,label:MAP.get(market)?.label||market,group:MAP.get(market)?.group||'',
   home:h,away:a,reliable,matched,rank,streak,minimum,
   reason:!reliable?'Недостатъчно сравними мачове с налични данни':
    !supporting?'Историческите тенденции на отборите не се подкрепят достатъчно':
    !matched?'Липсва исканата поредна серия':'Поредната серия е налична; не доказва вероятност за бъдещ залог'};
 }
-function run(index,fixtures,core,{market='o25',days=7,minimum=5,streak=3,both=false,
+function run(index,fixtures,core,{market='o25',days=7,minimum=5,streak=3,both=false,venue=false,
   windowSize=10,opponentFilter='all',eloIndex=null,league='',now=new Date()}={}){
  const date=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Sofia',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
  const end=new Date(date+'T12:00:00Z');end.setUTCDate(end.getUTCDate()+Math.max(1,days)-1);
@@ -118,7 +118,7 @@ function run(index,fixtures,core,{market='o25',days=7,minimum=5,streak=3,both=fa
  for(const f of core.getUpcoming(fixtures,now)){
   if(f[3]>last||(league&&f[0]!==league))continue;
   const profile=core.profile(index,f,{windowSize,opponentFilter,eloIndex});
-  const signal=inspect(profile,market,{streak,minimum,both,teamKey:core.keyTeam});
+  const signal=inspect(profile,market,{streak,minimum,both,venue,teamKey:core.keyTeam});
   if(signal.matched)out.push({fixture:f,profile,signal});
  }
  return out.sort((a,b)=>b.signal.rank-a.signal.rank||
@@ -128,7 +128,7 @@ function run(index,fixtures,core,{market='o25',days=7,minimum=5,streak=3,both=fa
 /* One pass per match, all supported markets, and no duplicated fixture cards.
  * The preview shows up to 3 distinct observed signals with their sample sizes.
  */
-function runAll(index,fixtures,core,{days=7,minimum=5,streak=3,both=false,
+function runAll(index,fixtures,core,{days=7,minimum=5,streak=3,both=false,venue=false,
  windowSize=10,opponentFilter='all',eloIndex=null,league='',now=new Date()}={}){
  const date=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Sofia',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
  const end=new Date(date+'T12:00:00Z');end.setUTCDate(end.getUTCDate()+Math.max(1,days)-1);
@@ -138,7 +138,7 @@ function runAll(index,fixtures,core,{days=7,minimum=5,streak=3,both=false,
   const profile=core.profile(index,fixture,{windowSize,opponentFilter,eloIndex});
   const matches=[];
   for(const market of MARKETS){
-   const signal=inspect(profile,market.id,{streak,minimum,both,teamKey:core.keyTeam});
+   const signal=inspect(profile,market.id,{streak,minimum,both,venue,teamKey:core.keyTeam});
    if(!signal.matched)continue;
    // Ranking is a research heuristic, not a probability.
    const n=Math.min(signal.home.n,signal.away.n);

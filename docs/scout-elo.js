@@ -75,6 +75,24 @@ function matchup(index,fixture){
    Math.abs(h.rating-a.rating)<DIFFERENCE?'Близка рейтингова сила':
    h.rating>a.rating?'Домакинът има по-висок Elo':'Гостът има по-висок Elo'};
 }
+// Display one archive reference per club. Keep the original division context;
+// never combine independently anchored leagues into a new rating.
+function reference(index,division,team,cutoff){
+ const suffix='|'+index.keyTeam(team),candidates=[];
+ for(const key of index.timeline.keys()){
+  if(!key.endsWith(suffix))continue;
+  const div=key.slice(0,key.indexOf('|'));
+  if(['UCL','UEL','UECL'].includes(div))continue;
+  const state=teamAt(index,div,team,cutoff);
+  if(state.games)candidates.push({...state,division:div});
+ }
+ candidates.sort((a,b)=>b.date.localeCompare(a.date)||
+  Number(b.division===division)-Number(a.division===division));
+ if(!candidates.length)return {...teamAt(index,division,team,cutoff),division};
+ if(candidates[1]?.date===candidates[0].date&&candidates[0].division!==division)
+  return {rating:null,games:0,division:null};
+ return candidates[0];
+}
 function opponentClass(index,row,team){
  const data=index.before.get(row);
  if(!data||Math.min(data.homeN,data.awayN)<MIN_GAMES)return 'unknown';
@@ -93,5 +111,5 @@ function breakdown(index,rows,team){
  }
  return {strong,weak,similar,unknown,total:rows.length};
 }
-return {build,expected,teamAt,matchup,opponentClass,breakdown,seasonAt,INITIAL,K,HOME_ADVANTAGE,DIFFERENCE,MIN_GAMES,REGRESSION};
+return {build,expected,teamAt,reference,matchup,opponentClass,breakdown,seasonAt,INITIAL,K,HOME_ADVANTAGE,DIFFERENCE,MIN_GAMES,REGRESSION};
 });

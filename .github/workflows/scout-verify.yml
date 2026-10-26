@@ -71,4 +71,5 @@ jobs:
             scout-offline.html
             scout-desktop.png
             scout-mobile.png
+            scout-match.png
           retention-days: 7

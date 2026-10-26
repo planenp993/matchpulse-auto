@@ -76,8 +76,8 @@ test('standalone Scout HTML and browser JS are syntactically valid',()=>{
  for(const name of ['view-schedule','view-scanner','view-picks','matchOverlay'])
   assert.ok(html.includes(name));
 });
-test('no hidden claims of guaranteed bets and uses no remote paid API',()=>{
+test('distinguishes model probabilities from history and needs no paid API',()=>{
  const js=fs.readFileSync(path.join(__dirname,'../docs/scout.js'),'utf8');
- assert.match(js,/не сигурни прогнози/);
+ assert.match(js,/Честотите и сериите описват историята/);
  assert.ok(!js.includes('api-key'));
 });
