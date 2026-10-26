@@ -30,6 +30,8 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: All model, Elo and trend regression tests
         run: node --test tests/*.cjs
+      - name: Replay all model markets and windows without provider requests
+        run: python scripts/evaluate.py
       - name: Audit the checked-out snapshot without provider requests
         run: python scripts/audit_scout.py
       - name: Smoke check real history and fixtures
@@ -38,7 +40,10 @@ jobs:
         if: always()
         with:
           name: SCOUT-VERIFY-AUDIT
-          path: docs/data/coverage_audit.json
+          path: |
+            docs/data/coverage_audit.json
+            docs/data/model_report.json
+            docs/model-quality.md
           retention-days: 7
           if-no-files-found: warn
 

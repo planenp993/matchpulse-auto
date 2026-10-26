@@ -48,7 +48,7 @@
   }
   function makeProfile(ms,club,bases,settings){
     const key=clubKey(club),rows=[];
-    for(const [idx,r] of ms.slice(0,30).entries()){
+    for(const [idx,r] of ms.slice(0,settings.sampleSize??30).entries()){
       const home=clubKey(r[5])===key;
       const base=bases.get(r[0])||{h:1.48,a:1.22,n:0};
       const gf=home?r[7]:r[8],ga=home?r[8]:r[7];
@@ -116,10 +116,17 @@
     return {matrix,probs,scores:scores.slice(0,8)};
   }
   function evaluate(history,fixture,preset='standard'){
+    const date=fixture[3];
+    return evaluateContext(fixture,{bases:leagueBases(history,date),
+      homeMatches:teamMatches(history,fixture[5],date),awayMatches:teamMatches(history,fixture[6],date)},preset);
+  }
+  // Offline replay supplies these same pre-match lists and bases once per date.
+  // The public evaluator and replay share all model equations and default settings.
+  function evaluateContext(fixture,{bases,homeMatches:hm,awayMatches:am},preset='standard'){
     const s=typeof preset==='string'?(params[preset]||params.standard):{...params.standard,...preset};
+    if(s.sampleSize!==undefined&&(!Number.isInteger(s.sampleSize)||s.sampleSize<5||s.sampleSize>30))
+      throw new RangeError('sampleSize must be an integer from 5 to 30');
     const [div,,league,date,time,home,away]=fixture;
-    const bases=leagueBases(history,date);
-    const hm=teamMatches(history,home,date),am=teamMatches(history,away,date);
     const h=makeProfile(hm,home,bases,s),a=makeProfile(am,away,bases,s);
     if(h.count<5||a.count<5)return {error:'Недостатъчно изиграни срещи за един от отборите (минимум 5).',home:hm,away:am};
     const own=bases.get(div);
@@ -146,10 +153,10 @@
     return {home:hm.slice(0,20),away:am.slice(0,20),homeTotal:hm.length,awayTotal:am.length,
       lambdaHome:lh,lambdaAway:la,total:lh+la,distribution:d,bases:{home:bh,away:ba,count:own?.n??0},
       strengths:{home:hs,away:as},settings:s,quality:{grade,score,coverage,warning,homeN:h.count,awayN:a.count,
-        hVenue:hm.slice(0,30).filter(r=>clubKey(r[5])===clubKey(home)).length,
-        aVenue:am.slice(0,30).filter(r=>clubKey(r[6])===clubKey(away)).length},
-      explanation:'Атакуваща и защитна сила спрямо нормите за лигата; претеглени до 30 мача; изглаждане към 1,0; корекция за терен; xG само при поне 6 мача и за двата отбора; разпределение Поасон с Dixon–Coles за 0:0/1:0/0:1/1:1.',
+        hVenue:hm.slice(0,s.sampleSize??30).filter(r=>clubKey(r[5])===clubKey(home)).length,
+        aVenue:am.slice(0,s.sampleSize??30).filter(r=>clubKey(r[6])===clubKey(away)).length},
+      explanation:'Атакуваща и защитна сила спрямо нормите за лигата; претеглени до '+(s.sampleSize??30)+' мача; изглаждане към 1,0; корекция за терен; xG само при поне 6 мача и за двата отбора; разпределение Поасон с Dixon–Coles за 0:0/1:0/0:1/1:1.',
       euro};
   }
-  return {clubKey,isPlayed,teamMatches,leagueBases,distribution,evaluate,params};
+  return {clubKey,isPlayed,teamMatches,leagueBases,distribution,evaluate,evaluateContext,params};
 });

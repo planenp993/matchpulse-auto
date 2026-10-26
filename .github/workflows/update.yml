@@ -57,7 +57,7 @@ jobs:
             echo "Calendar-only: zero requests to football-data.co.uk"
             python scripts/update_calendar.py
           fi
-      - name: Walk-forward model audit
+      - name: Multi-market model audit with fixed historical periods
         run: python scripts/evaluate.py
       - name: Independent Scout data coverage and quality audit
         run: python scripts/audit_scout.py
@@ -68,11 +68,13 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           mkdir -p /tmp/mp-refresh
           cp docs/data/history.json docs/data/fixtures.json docs/data/status.json docs/data/model_report.json docs/data/coverage_audit.json /tmp/mp-refresh/
+          cp docs/model-quality.md /tmp/mp-refresh/
           for attempt in 1 2 3; do
             git fetch origin main
             git reset --hard origin/main
             cp /tmp/mp-refresh/history.json /tmp/mp-refresh/fixtures.json /tmp/mp-refresh/status.json /tmp/mp-refresh/model_report.json /tmp/mp-refresh/coverage_audit.json docs/data/
-            git add docs/data/history.json docs/data/fixtures.json docs/data/status.json docs/data/model_report.json docs/data/coverage_audit.json
+            cp /tmp/mp-refresh/model-quality.md docs/model-quality.md
+            git add docs/data/history.json docs/data/fixtures.json docs/data/status.json docs/data/model_report.json docs/data/coverage_audit.json docs/model-quality.md
             if git diff --staged --quiet; then
               echo "No data changes"
               break
