@@ -183,3 +183,16 @@ test('An unavailable calendar still allows existing forecasts to settle from new
  const result=capture({now,forecasts:first.newForecasts,fixtures:calendar.fixtures,history:[...history(),row('2026-10-26')]});
  assert.equal(result.newForecasts.length,0);assert.equal(result.report.totals.settled,1);
 });
+test('A postponed match keeps one frozen forecast and settles against its verified new date',()=>{
+ const S=require('../docs/scout-core.js'),old=fixture(),revised=fixture('2026-11-02'),oldKey=S.keyFixture(old),newKey=S.keyFixture(revised);
+ const link={id:'stable-match',current_key:newKey,result_key:null,kickoff_utc:J.confirmedKickoff(revised),state:'scheduled'};
+ const first=capture(),saved=JSON.stringify(first.newForecasts),matchLinks={[oldKey]:link,[newKey]:link};
+ const before=J.advance({history:history(),fixtures:[revised],forecasts:first.newForecasts,now:new Date('2026-11-01T08:00:00Z'),matchLinks});
+ assert.equal(before.newForecasts.length,0);assert.equal(before.report.totals.pending,1);
+ assert.equal(before.newEvents[0].state.kickoff_utc,J.confirmedKickoff(revised));
+ link.result_key=newKey;link.state='final';
+ const after=J.advance({history:[...history(),row('2026-11-02')],fixtures:[],forecasts:first.newForecasts,events:before.newEvents,now:new Date('2026-11-03T08:00:00Z'),matchLinks});
+ assert.equal(after.report.totals.settled,1);assert.equal(after.newEvents[0].state.result.actual_date,'2026-11-02');
+ assert.equal(after.newEvents[0].state.result.fixture_key,newKey);assert.equal(JSON.stringify(first.newForecasts),saved);
+ assert.throws(()=>J.advance({history:history(),fixtures:[],forecasts:first.newForecasts,now:new Date('2026-11-03T08:00:00Z'),matchLinks:{[oldKey]:{...link,result_key:'D1|2026-11-02|alpha|beta'}}}),/changes fixture identity/);
+});

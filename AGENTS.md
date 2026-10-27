@@ -51,10 +51,8 @@ node --test tests/*.cjs
 python scripts/audit_scout.py
 node scripts/smoke_scout.cjs
 node scripts/forecast_diary.cjs --check
-node scripts/compare_goal_models.cjs --check
+python scripts/check_research.py
 node scripts/paired_model_diary.cjs --check
-node scripts/compare_shot_models.cjs --check
-node scripts/evaluate_scanner.cjs --check
 ```
 
 These checks do not download sports-provider data. The audit writes its report;
@@ -90,6 +88,35 @@ bounds; raw hit rate alone does not establish ranking value. Regenerate with
 `node scripts/evaluate_scanner.cjs --write --progress` when its exact inputs or
 code change. Never mix retrospective results into the prospective diary.
 
-Keep historical CSV refresh separate from calendar-only updates. Tests and code
-pushes must not add provider downloads. Record changed measured results and
+## Operational data refresh (27 October 2026)
+
+The user has paused changes to model/scanner algorithms. The four registered
+reports and their exact code/history are pinned by `docs/data/research_snapshot.json`.
+Use `python scripts/check_research.py`; it checks the registered reports against
+the pinned Git history blob, while live history can advance. Do not rerun research
+on every data update or promote a candidate. Earlier regeneration commands above
+apply only to a separately authorized research change.
+
+`scripts/data_sync.py` is the production orchestrator. Collection produces a
+patch; apply merges it into the latest main with per-record base fingerprints.
+Never restore stale whole JSON files after a retry. Source score conflicts go to
+`data/match_registry.json`, preserving the existing published score. IDs and old
+schedule keys persist beyond the 30-day calendar. Public `match_links.json`
+allows both append-only diaries to settle rescheduled matches without rewriting
+forecasts. Provider absence alone is neither a cancellation nor a final score.
+
+Auto mode checks successful receipts: current 24 history sources daily (20h),
+two-season 42-source catch-up at least every four days, calendars every eight
+hours, and quotes after Tuesday 13:10 / Friday 17:10 Europe/London. Failed jobs
+are retried by a later tick, with a two-hour history/quote cooldown. No same-day
+result is promised before the upstream provider publishes it. Manual modes are
+`auto`, `full`, `history`, `calendar`, and `publish`. Calendar mode has no
+Football-Data requests. Full mode requests the 42 historical sources, calendars
+and the short-term quote CSV.
+
+Tests and ordinary code pushes never download provider data. The explicit
+operational push exception changes **only** `ops/sync_request.json`, has a
+`[data-sync] ` commit title and a new request ID. The workflow validates the
+commit paths/title and records the processed ID. This is a data request, not a
+code deployment. Do not commit personal seeds or credentials. Record changed measured results and
 unfinished work in `PROJECT_STATE_BG.md` so a new conversation can continue.

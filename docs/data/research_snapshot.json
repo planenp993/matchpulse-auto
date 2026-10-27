@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "commit": "ec1701bebb62138e8017c5b472bc5bd879e58ab3",
+  "history_sha256": "eb8958112efefe8e6cd81552392346390b6376e70efaaa842015360e026ef74c",
+  "reason": "Registered studies are frozen while live results continue to refresh. No model or scanner promotion.",
+  "files": {
+    "docs/club-aliases.js": "18fccab2d3a8f44278c0c7b825b46c54da5e791d481a3bfce09ff9108ad90297",
+    "docs/data/diary/experiments/opponent-days-v1/config.json": "92ab16b1fefe40fb0f44af08965ee2fe57f10dde9dc49bd57f412e376428745d",
+    "docs/data/model_comparison.json": "efa339f0f288fb06524b8e65719797abed4c8d8734f0d3738a4e3f24625b5fb5",
+    "docs/data/model_report.json": "d86b38534bff6a90e1f3dbccb444b143a8cec4723f2eccb936ca428cad13ce24",
+    "docs/data/scanner_validation.json": "cb09f8d1a7ec1291f23db19d7de64f8cab596a27e189bac34c32047ccf6838d1",
+    "docs/data/shot_model_comparison.json": "2a04189e8770074c108fdbdd16e3ff75f40a47186c4f1f5d71b29fd0f673e412",
+    "docs/model-comparison-protocol.md": "feebc50beed71c556d3d511018ce2e8ae9f3e089743410d04aeda52ec55a6458",
+    "docs/model-comparison.md": "1d88f4bb92c6bcd6f3d686d2ce9c4a95daf772793f88536d0d4da070b29042e7",
+    "docs/model-core.js": "1b0d29cc6e3573acfd9e9e443e38314d58c4d420938f992ccf9aeb216b48ce9e",
+    "docs/model-quality.md": "ceba792c48814851ff1b21d6eb277379c87a6f3def6cc0d77a277a5cd14e06b9",
+    "docs/scanner-validation-protocol.md": "740c0f35c73ff60b6c295169c08a09b41a553794ed4634d5ae968377d883db3a",
+    "docs/scanner-validation.md": "48fe30bcecca7287ca3aa7bc4b8276460882b294afc1f1bef233f64aa349ca29",
+    "docs/scout-core.js": "7d0003f497f2baa7fe02d3d291404d88bcdbbf1370911ab02f4ac370cbbd7536",
+    "docs/scout-patterns.js": "568431155bb9121ac5559ac816ff3a07bf99df07ebf9e2687b4f1124f077c457",
+    "docs/shot-model-comparison.md": "c2df3713078ec51f581abae73e3185e5fade22337a6fc01499f5144ffa6d1923",
+    "docs/shot-model-protocol.md": "d8e399cc18d7f8ef446a26564510986fadaf3114d8a065a6141baac7801799a3",
+    "scripts/compare_goal_models.cjs": "41d996e390dba57a68c01892727d42d96327d128e6cf9f2a184bb928e80ce27a",
+    "scripts/compare_shot_models.cjs": "29fa7a488d79c357fdd3f43b436a4742d682518fcbc8ce9742e9b488d618c49a",
+    "scripts/evaluate.py": "211679e8040b29b503525974f2bbf607a56fefa794c15f51b8028f3df0172c6d",
+    "scripts/evaluate_model.cjs": "f491ecaeb3c4b853101dcca58f1a5f2a6c351db6901ca6bdb608c944c436f1b0",
+    "scripts/evaluate_scanner.cjs": "829baa310723896b18ec59c406b15979d5e210cbb87ca88a00941a5a3f16b1aa",
+    "scripts/fit_goal_model.cjs": "bd6d3f4deb8d11569e3036fd746d26cec79a5ec345c0a464e1256c960553f5f6",
+    "scripts/scanner_replay.cjs": "f1e508b6fbb3492b995c80ff0947c2e5de1f6c622b07f967a7a48d11919c5298",
+    "scripts/shot_goal_model.cjs": "a18da42105e8a91ece963c2d4901b626e81b2f6b7fe1ff2817ba68cacb8499d9"
+  }
+}

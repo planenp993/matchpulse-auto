@@ -20,6 +20,8 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -35,14 +37,8 @@ jobs:
           git fetch --no-tags --depth=1 origin main
           node scripts/forecast_diary.cjs --check --base-ref origin/main
           node scripts/paired_model_diary.cjs --check --base-ref origin/main
-      - name: Replay all model markets and windows without provider requests
-        run: python scripts/evaluate.py
-      - name: Check the registered model comparison and its exact input versions
-        run: node scripts/compare_goal_models.cjs --check
-      - name: Check the registered shot contribution study and exact input versions
-        run: node scripts/compare_shot_models.cjs --check
-      - name: Check the registered scanner ranking study and exact input versions
-        run: node scripts/evaluate_scanner.cjs --check
+      - name: Check registered research against its frozen inputs
+        run: python scripts/check_research.py
       - name: Audit the checked-out snapshot without provider requests
         run: python scripts/audit_scout.py
       - name: Smoke check real history and fixtures
@@ -72,6 +68,8 @@ jobs:
     timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -87,6 +85,7 @@ jobs:
       - name: Verify real match data, markets and identities on desktop and mobile
         run: |
           python -m http.server 8765 --directory docs > /tmp/scout-http.log 2>&1 &
+          python -c 'import time,urllib.request; exec("for attempt in range(50):\n try:\n  urllib.request.urlopen(\"http://127.0.0.1:8765/scout.html\",timeout=1); break\n except OSError: time.sleep(0.1)\nelse: raise RuntimeError(\"Preview server did not start\")")'
           node scripts/test_scout_browser.cjs
       - uses: actions/upload-artifact@v4
         with:

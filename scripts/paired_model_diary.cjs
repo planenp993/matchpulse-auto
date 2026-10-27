@@ -96,7 +96,7 @@ function report(forecasts,events,config,now=new Date(),run={}){
    retrospective_results_included:false,original_diary_records_included:false,minimum_minutes_before_kickoff:p.minimum_minutes_before_kickoff,
    results_follow_history_refresh:true,intervals:'Approximate paired calendar-week clusters; not an automatic activation rule'}};
 }
-function advance({history,fixtures,forecasts=[],events=[],config,now=new Date(),sources={},versions=codeVersions()}){
+function advance({history,fixtures,forecasts=[],events=[],config,now=new Date(),sources={},versions=codeVersions(),matchLinks={}}){
  validate(forecasts,events,config);
  if(+now<Date.parse(config.created_at_utc))throw Error('Experiment clock predates registration');
  const active=versions.candidate===config.candidate_code_sha256;
@@ -105,7 +105,7 @@ function advance({history,fixtures,forecasts=[],events=[],config,now=new Date(),
  }):[];
  // Retain all fresh fixtures for schedule updates, while capture has the stricter
  // one-hour margin. Existing records can always settle, including during a pause.
- const captureAndSettle=J.advance({history,fixtures:eligible,forecasts,events,now,sources});
+ const captureAndSettle=J.advance({history,fixtures:eligible,forecasts,events,now,sources,matchLinks});
  const fits=new Map(),cutoff=F.weekStart(J.sofiaDate(now)),newForecasts=[];
  for(const entry of captureAndSettle.newForecasts){
   const f=entry.fixture,fixture=[f.div,f.country,f.league,f.date,f.time,f.home,f.away,null,null,null,null,null,null,f.source];
@@ -123,7 +123,7 @@ function advance({history,fixtures,forecasts=[],events=[],config,now=new Date(),
  const allForecasts=[...forecasts,...newForecasts];
  // Reuse the diary's established outcome/schedule handling with the fully sealed
  // paired records and every fresh fixture, even if too near kickoff for capture.
- const settlement=J.advance({history,fixtures,forecasts:allForecasts,events,now,sources,capture:false});
+ const settlement=J.advance({history,fixtures,forecasts:allForecasts,events,now,sources,capture:false,matchLinks});
  const run={new_pairs:newForecasts.length,new_events:settlement.newEvents.length,capture_paused:!active,
   skipped:captureAndSettle.report.last_run.skipped,weekly_fits:fits.size};
  return {newForecasts,newEvents:settlement.newEvents,
@@ -166,7 +166,7 @@ function main(){
  if(!args.includes('--write'))throw Error('Use --init, --check or --write');
  const h=fs.readFileSync(path.join(DATA,'history.json'),'utf8'),f=fs.readFileSync(path.join(DATA,'fixtures.json'),'utf8'),s=fs.readFileSync(path.join(DATA,'status.json'),'utf8');
  const now=new Date(),calendar=J.calendarSnapshot(JSON.parse(s),JSON.parse(f),now);
- const result=advance({...ledger,config,now,history:JSON.parse(h),fixtures:calendar.fixtures,
+ const result=advance({...ledger,config,now,history:JSON.parse(h),fixtures:calendar.fixtures,matchLinks:J.readMatchLinks(),
   sources:{history_sha256:J.sha(h),fixtures_sha256:J.sha(f),status_sha256:J.sha(s),calendar_stamp_utc:calendar.stamp}});
  result.report.last_run.calendar={fresh:calendar.fresh,blocked_fixtures:calendar.blocked,stamp:calendar.stamp};
  J.appendRecords(DIR,'forecasts',result.newForecasts);

@@ -60,7 +60,7 @@ ALIASES = {
            "FC Utrecht": "Utrecht"},
 }
 
-def collect(download, today, leagues, horizon_days=30):
+def collect(download, today, leagues, horizon_days=30, observer=None):
     """Fetch each league independently; failures never masquerade as an empty feed."""
     season_start = today.year if today.month >= 7 else today.year - 1
     now_sofia = dt.datetime.now(dt.timezone.utc).astimezone(ZoneInfo("Europe/Sofia"))
@@ -75,38 +75,48 @@ def collect(download, today, leagues, horizon_days=30):
         div,provider,slug = task
         url = f"https://fixturedownload.com/feed/json/{slug}-{season_start}"
         try:
+            observed = []
             if provider=="ESPN":
-                rows = collect_espn_league(download,div,slug,meta[div],now_sofia,end)
+                rows = collect_espn_league(download,div,slug,meta[div],now_sofia,end,
+                    observer=observed.append) if observer else collect_espn_league(download,div,slug,meta[div],now_sofia,end)
             else:
                 items = json.loads(download(url).decode("utf-8-sig"))
                 if not isinstance(items,list): raise ValueError("Not a list")
                 rows = []
                 for item in items:
                     if not isinstance(item,dict) or not item.get("DateUtc"): continue
-                    if item.get("HomeTeamScore") is not None or item.get("AwayTeamScore") is not None: continue
                     try:
                         kickoff = dt.datetime.fromisoformat(item["DateUtc"].replace(" ","T").replace("Z","+00:00"))
                         if kickoff.tzinfo is None: continue
                         local = kickoff.astimezone(now_sofia.tzinfo)
                     except (ValueError,TypeError,OverflowError): continue
-                    if not (now_sofia<=local and today<=local.date()<=end): continue
+                    if not today-dt.timedelta(days=7)<=local.date()<=end: continue
                     home = ALIASES.get(div,{}).get(item.get("HomeTeam"),item.get("HomeTeam"))
                     away = ALIASES.get(div,{}).get(item.get("AwayTeam"),item.get("AwayTeam"))
                     if not home or not away or home==away: continue
                     if str(home).upper() in ("TBC","TBD") or str(away).upper() in ("TBC","TBD"): continue
                     country,league = meta[div]
-                    rows.append([div,country,league,local.date().isoformat(),local.strftime("%H:%M"),
+                    row=[div,country,league,local.date().isoformat(),local.strftime("%H:%M"),
                                  str(home).strip(),str(away).strip(),None,None,None,None,None,None,
-                                 "FixtureDownload / UTC→Europe-Sofia"])
-            return div,rows,None
+                                 "FixtureDownload / UTC→Europe-Sofia"]
+                    scored=item.get("HomeTeamScore") is not None or item.get("AwayTeamScore") is not None
+                    if observer:
+                        observed.append({"row":row,"provider_id":f"FixtureDownload:{div}:{season_start}:{item['MatchNumber']}" if item.get("MatchNumber") is not None else None,
+                            "round":item.get("RoundNumber"),"phase":item.get("Group"),
+                            "status":"provisional_result" if scored else "scheduled"})
+                    if not scored and now_sofia<=local and today<=local.date()<=end: rows.append(row)
+            return div,rows,None,observed
         except Exception as exc:
             source = url if provider=="FixtureDownload" else "ESPN "+slug
-            return div,[],f"{div} ({source}): {type(exc).__name__}: {exc}"
+            return div,[],f"{div} ({source}): {type(exc).__name__}: {exc}",[]
 
     counts,errors,rows = {},[],[]
     # Bound provider traffic and avoid one slow league blocking the other sources.
     with ThreadPoolExecutor(max_workers=4) as pool:
-        for div,fixtures,error in pool.map(one,tasks):
+        for div,fixtures,error,observed in pool.map(one,tasks):
             if error: errors.append(error)
-            else: counts[div]=len(fixtures);rows.extend(fixtures)
+            else:
+                counts[div]=len(fixtures);rows.extend(fixtures)
+                if observer:
+                    for item in observed: observer(item)
     return sorted(rows,key=lambda r:(r[3],r[4],r[0],r[5])),counts,errors
