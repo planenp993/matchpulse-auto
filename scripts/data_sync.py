@@ -310,7 +310,7 @@ def apply(root, patch):
               "calendar_stale_leagues": status.get("stale_secondary_leagues", []),
               "sources": status.get("source_checks", {}),
               "note": "Source date alone does not prove missing games during a break. Pending fixtures are retained; unlisted is not cancelled. UEFA result coverage is a separate unfinished stage."}
-    added_markets, market_report = markets.apply(root, patch.get("markets", []), fixtures, registry.row_key, view_stamp, u.readjson, u.writejson, status.get("quote_check_status"))
+    added_markets, market_report = markets.apply(root, patch.get("markets", []), fixtures, registry.row_key, stamp, u.readjson, u.writejson, status.get("quote_check_status"), checked_stamp=view_stamp)
     health["market_archive"] = {"future_matches_with_saved_quotes": market_report["future_matches_with_saved_quotes"],
                                 "quote_check_status": status.get("quote_check_status")}
     for name, data in [("docs/data/history.json", historical), ("docs/data/fixtures.json", fixtures),

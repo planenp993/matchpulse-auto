@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "stage": "offline_pilot_verified_before_live_refresh",
+  "stage": "production_verified",
   "pilot_date": "2026-10-27",
   "window_days": 30,
   "new_fixture_counts": {
@@ -50,5 +50,75 @@
   "remaining": [
     "UEFA historical result archive",
     "official standings"
-  ]
+  ],
+  "implementation_pr": 18,
+  "production_run": 40492052150,
+  "published_commit": "68a0a8b2c85b762164eafed829d268be5a5d6d66",
+  "verified_utc": "2026-10-27T10:59:58+00:00",
+  "source_receipt_utc": "2026-10-27T10:54:58+00:00",
+  "production": {
+    "history_sources_ok": 42,
+    "history_sources_total": 42,
+    "calendar_sources_ok": 27,
+    "calendar_sources_total": 27,
+    "calendar_counts": {
+      "E0": 30,
+      "E1": 60,
+      "E2": 48,
+      "E3": 40,
+      "D1": 27,
+      "I1": 40,
+      "P1": 18,
+      "T1": 27,
+      "SC0": 24,
+      "SP1": 30,
+      "F1": 27,
+      "F2": 27,
+      "N1": 27,
+      "UCL": 36,
+      "UEL": 36,
+      "UECL": 36,
+      "D2": 27,
+      "I2": 50,
+      "B1": 28,
+      "SP2": 44,
+      "G1": 21,
+      "NOR": 24,
+      "SWE": 32,
+      "DNK": 18,
+      "AUT": 18,
+      "POL": 27,
+      "SWZ": 18
+    },
+    "history_matches": 54850,
+    "future_fixtures": 840,
+    "structural_issues": 0,
+    "unresolved_conflicts": 0,
+    "market_matches": 27964,
+    "market_observations": 27964,
+    "market_shards": 126,
+    "market_field_observations": {
+      "one_x_two": 592309,
+      "asian_handicap": 142981,
+      "total_2_5": 129023
+    },
+    "future_matches_with_saved_quotes": 0,
+    "quote_check_status": "empty_for_upcoming"
+  },
+  "replay": {
+    "provider_downloads": 0,
+    "changed_results": 0,
+    "new_market_snapshots": 0,
+    "second_changed_results": 0,
+    "second_new_market_snapshots": 0,
+    "byte_identical_files": 133,
+    "all_files_unchanged": true,
+    "file_manifest_sha256": "e47f641181f98c02867c7cf58299e0f114304c0d4cfe49deb1012828c9b60937"
+  },
+  "real_model_pilot": {
+    "fixtures": 137,
+    "valid_model_outputs": 137,
+    "missing_team_profiles": 0,
+    "live_model_source_changed": false
+  }
 }

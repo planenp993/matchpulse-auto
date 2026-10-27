@@ -138,7 +138,7 @@ def summary(shards, fixtures, key_for, stamp, quote_status=None):
                       'Absence of future quotes is distinct from a failed download. No odds are invented.']}
 
 
-def apply(root, observations, fixtures, key_for, stamp, readjson, writejson, quote_status=None):
+def apply(root, observations, fixtures, key_for, stamp, readjson, writejson, quote_status=None, checked_stamp=None):
     grouped = {}
     for item in observations:
         division, season = item['division'], item['season']
@@ -156,6 +156,6 @@ def apply(root, observations, fixtures, key_for, stamp, readjson, writejson, quo
         added += merge(shard, items, stamp)
         writejson(path, shard)
     shards = [load(p) for p in sorted((root/DIRECTORY).glob('*/*.json'))]
-    report = summary(shards, fixtures, key_for, stamp, quote_status)
+    report = summary(shards, fixtures, key_for, checked_stamp or stamp, quote_status)
     writejson(root/SUMMARY, report)
     return added, report
