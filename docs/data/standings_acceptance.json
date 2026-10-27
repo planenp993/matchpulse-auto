@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "source_observed_utc": "2026-10-27T15:58:24+00:00",
-  "stage": "Verified fresh sources and isolated pipeline; production automation verification follows merge.",
+  "stage": "Published and verified in the production GitHub workflow",
   "tables": 27,
   "groups": 27,
   "club_rows": 538,
@@ -27,5 +27,23 @@
     "python": 129,
     "node": 158
   },
-  "scope": "Published current-season tables only. No model/scanner or historical forecast input."
+  "scope": "Published current-season tables only. No model/scanner or historical forecast input.",
+  "production_run": {
+    "id": 40538628373,
+    "url": "https://github.com/planenp993/matchpulse-auto/actions/runs/40538628373",
+    "conclusion": "success",
+    "request_commit": "57792749b312ac5c6adb9d42f7a233dc578b8c62",
+    "data_commit": "82cec1869079d86bcd4c4c75e219b4c57b464782",
+    "observed_at_utc": "2026-10-27T16:13:41+00:00",
+    "sources_ok": 27,
+    "changed_results": 0,
+    "replay_changed_json_files": []
+  },
+  "browser_verification": {
+    "run_id": 40538120289,
+    "head": "cb164d34e4a88bbdefd52177da7cc6c866e72e30",
+    "desktop_rows": 20,
+    "highlighted_fixture_clubs": 2,
+    "mobile_layout": "pass"
+  }
 }
