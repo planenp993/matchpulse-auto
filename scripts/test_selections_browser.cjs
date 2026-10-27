@@ -48,6 +48,14 @@
  await desktop.locator('[data-selection-tab="builders"]').click();assert.ok(await desktop.locator('.selection-builder').count()>0);
  const builder=desktop.locator('.selection-builder').first(),builderKey=await builder.locator('[data-selection-market]').getAttribute('data-selection-market');
  assert.ok(builderKey.split('+').length===2);await desktop.screenshot({path:'scout-builders.png',fullPage:false});
+ await builder.locator('.selection-compare summary').click();const builderInput=builder.locator('[data-selection-input]');
+ await builderInput.fill('4.00');await builderInput.blur();await selectionReady(desktop);
+ await desktop.locator('#selectionQuality').selectOption('price');
+ assert.ok(await desktop.locator('.selection-builder').count()>0);
+ assert.ok((await desktop.locator('#selectionList').textContent()).includes('Въведена от теб'));
+ const comparedBuilder=desktop.locator('.selection-builder').first();await comparedBuilder.locator('.selection-compare summary').click();
+ await comparedBuilder.locator('[data-selection-input]').fill('');await comparedBuilder.locator('[data-selection-input]').blur();await selectionReady(desktop);
+ await desktop.locator('#selectionQuality').selectOption('all');stats.builderPriceFilter=true;
  await desktop.locator('[data-selection-tab="columns"]').click();assert.ok(await desktop.locator('.selection-column').count()>0);
  stats.columns=await desktop.locator('.selection-column').count();await desktop.screenshot({path:'scout-columns.png',fullPage:false});
  await desktop.locator('[data-selection-tab="matches"]').click();

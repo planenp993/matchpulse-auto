@@ -91,13 +91,15 @@ function brief(item){
 function paint(){
  const kind=el('selectionQuality').value;
  const visible=entries.filter(e=>kind==='all'||kind==='main'&&e.main||kind==='price'&&e.main?.quote.aboveModel);
- items=tab==='matches'?visible:tab==='builders'?visible.flatMap(entry=>entry.builders.map(pick=>({entry,pick}))):S.columns(visible,C);
+ items=tab==='matches'?visible:tab==='builders'?entries.flatMap(entry=>entry.builders.map(pick=>({entry,pick})))
+  .filter(item=>kind!=='price'||item.pick.quote.aboveModel):S.columns(visible,C);
  const main=entries.filter(e=>e.main).length;
  el('selectionSummary').textContent=entries.length+' мача · '+main+' с основна селекция · '+(entries.length-main)+' без ясен избор';
  el('selectionQuoteStatus').textContent=quoteError?'CSV цените не се заредиха. Можеш да въведеш собствена цена.':
   (quoteDoc?.checked_at_utc?'Последна CSV проверка: '+stamp(quoteDoc.checked_at_utc)+'. Часът на букмейкърската оферта е неизвестен.':'Няма запазена CSV проверка.');
  el('selectionTabNote').textContent=tab==='matches'?'Избор по данни · основна прогноза и до две различни алтернативи.':
-  tab==='builders'?'До два съвместими варианта за мач. Показани: '+items.length+'.':'Колонки с 2, 3 или 4 мача за една дата. Различните колонки могат да споделят селекции.';
+  tab==='builders'?'До два съвместими варианта за мач. Намерени: '+items.length+'.':'Колонки с 2, 3 или 4 мача за една дата. Различните колонки могат да споделят селекции.'+
+  (kind==='price'?' Всяка отделна селекция има цена над моделната; обща цена за колонката не е потвърдена.':'');
  el('selectionList').innerHTML=items.length?items.slice(0,limit).map((item,i)=>tab==='matches'?matchCard(item,i):tab==='builders'?builderCard(item,i):columnCard(item,i)).join(''):
   '<div class="empty">'+(tab==='matches'?'Няма мачове за избраните дата и филтри.':tab==='builders'?'Няма бет билдъри с достатъчна обща подкрепа.':'Няма достатъчно различни мачове с подходящи основни селекции за колонка.')+'</div>';
  el('selectionMore').classList.toggle('hidden',items.length<=limit);
@@ -132,10 +134,20 @@ function mount(context){
  app=context;engine=S.createEngine(app.history,root.MatchpulseModel,C);
  const leagues=new Map(app.fixtures.map(f=>[f[0],f[2]]));
  el('selectionLeague').innerHTML='<option value="">Всички състезания</option>'+[...leagues].sort((a,b)=>a[1].localeCompare(b[1])).map(([id,label])=>'<option value="'+esc(id)+'">'+esc(label)+'</option>').join('');
- document.querySelectorAll('[data-selection-tab]').forEach(button=>button.onclick=()=>{
-  tab=button.dataset.selectionTab;limit=24;document.querySelectorAll('[data-selection-tab]').forEach(b=>b.setAttribute('aria-selected',String(b===button)));
-  if(entries.length||el('selectionList').getAttribute('aria-busy')!=='true')paint();
+ const tabs=[...document.querySelectorAll('[data-selection-tab]')];
+ tabs.forEach((button,i)=>{
+  button.id='selectionTab-'+button.dataset.selectionTab;button.tabIndex=i===0?0:-1;
+  button.onclick=()=>{
+   tab=button.dataset.selectionTab;limit=24;tabs.forEach(b=>{b.setAttribute('aria-selected',String(b===button));b.tabIndex=b===button?0:-1;});
+   el('selectionList').setAttribute('aria-labelledby',button.id);
+   if(entries.length||el('selectionList').getAttribute('aria-busy')!=='true')paint();
+  };
+  button.onkeydown=event=>{
+   const move={ArrowRight:(i+1)%tabs.length,ArrowLeft:(i+tabs.length-1)%tabs.length,Home:0,End:tabs.length-1}[event.key];
+   if(move===undefined)return;event.preventDefault();tabs[move].focus();tabs[move].click();
+  };
  });
+ el('selectionList').setAttribute('aria-labelledby',tabs[0].id);
  document.querySelectorAll('[data-selection-period]').forEach(button=>button.onclick=()=>{
   period=+button.dataset.selectionPeriod;limit=24;
   document.querySelectorAll('[data-selection-period]').forEach(b=>{b.classList.toggle('active',b===button);b.setAttribute('aria-pressed',String(b===button));});render();
