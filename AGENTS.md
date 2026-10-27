@@ -120,3 +120,34 @@ operational push exception changes **only** `ops/sync_request.json`, has a
 commit paths/title and records the processed ID. This is a data request, not a
 code deployment. Do not commit personal seeds or credentials. Record changed measured results and
 unfinished work in `PROJECT_STATE_BG.md` so a new conversation can continue.
+
+## Calendar and market coverage (second infrastructure package)
+
+The calendar has 27 configured streams: the existing 21 plus NOR/SWE/DNK/AUT
+from ESPN and POL/SWZ from the official league sites. ESPN's Polish request
+failed and its Swiss feed returned an expired season. Never count an expired
+season as a successful empty current calendar. Official Polish rounds use
+structured Next Flight data; Swiss public calendar metadata selects its current
+season and the anonymous site calendar service. The public SFL account header
+is a site identifier, not a user token. No sign-in or paid API is involved.
+
+`docs/data/provider_clubs.json` is an ingestion-only source-ID crosswalk. All 86
+initial entries have at least three matching archived scores against at least
+two opponents. `scripts/provider_clubs.py` scopes IDs by provider and division
+and refuses unexpected renamed IDs. Do not edit the compiled model aliases or
+frozen candidate merely to normalize an ingestion label.
+
+`scripts/market_archive.py` saves supported Football-Data 1X2, O/U 2.5 and Asian
+handicap columns, keeping starting/closing names and both handicap lines. Dense
+per-season shards under `data/markets/<division>/<season>.json` are outside the
+Pages payload. Different observations append; identical values deduplicate.
+`observed_at_utc` records CSV retrieval, never a bookmaker timestamp. Historical
+prices cannot count as pre-match diary evidence. The app's 13-column views and
+model/scanner formulas remain unchanged. `docs/data/market_coverage.json` is a
+small operational summary. Corrupt market shards must block, never reset.
+
+The manual `fixtures` mode refreshes calendars and the quote CSV without history
+requests; `calendar` still makes zero Football-Data requests. If a publication
+window's CSV has no applicable future quotes while known matches are scheduled,
+record `empty_for_upcoming` and retry on a later tick with the two-hour cooldown.
+A successful HTTP download alone must not close that publication window.

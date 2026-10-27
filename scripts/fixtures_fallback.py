@@ -7,6 +7,7 @@ import datetime as dt
 import json
 from concurrent.futures import ThreadPoolExecutor
 from fixtures_espn import FEEDS as ESPN_FEEDS, collect_league as collect_espn_league
+from fixtures_official import FEEDS as OFFICIAL_FEEDS, collect_league as collect_official_league
 from zoneinfo import ZoneInfo
 
 FEEDS = {
@@ -27,12 +28,12 @@ FEEDS = {
     "UEL": "europa-league",
     "UECL": "conference-league",
 }
-CALENDAR_DIVISIONS = tuple([*FEEDS,*ESPN_FEEDS])
+CALENDAR_DIVISIONS = tuple([*FEEDS,*ESPN_FEEDS,*OFFICIAL_FEEDS])
 
 
 def is_secondary(row):
     return (len(row)>13 and isinstance(row[13],str)
-            and row[13].startswith(("FixtureDownload","ESPN")))
+            and row[13].startswith(("FixtureDownload","ESPN","Ekstraklasa","SwissFootballLeague")))
 
 
 CUP_META = {
@@ -70,13 +71,16 @@ def collect(download, today, leagues, horizon_days=30, observer=None):
     meta = {**leagues, **CUP_META}
     tasks = [(d,"FixtureDownload",slug) for d,slug in FEEDS.items() if d in meta]
     tasks += [(d,"ESPN",slug) for d,slug in ESPN_FEEDS.items() if d in meta]
+    tasks += [(d,provider,"") for d,provider in OFFICIAL_FEEDS.items() if d in meta]
 
     def one(task):
         div,provider,slug = task
         url = f"https://fixturedownload.com/feed/json/{slug}-{season_start}"
         try:
             observed = []
-            if provider=="ESPN":
+            if div in OFFICIAL_FEEDS:
+                rows = collect_official_league(download,div,meta[div],now_sofia,end,observer=observed.append if observer else None)
+            elif provider=="ESPN":
                 rows = collect_espn_league(download,div,slug,meta[div],now_sofia,end,
                     observer=observed.append) if observer else collect_espn_league(download,div,slug,meta[div],now_sofia,end)
             else:
@@ -107,7 +111,7 @@ def collect(download, today, leagues, horizon_days=30, observer=None):
                     if not scored and now_sofia<=local and today<=local.date()<=end: rows.append(row)
             return div,rows,None,observed
         except Exception as exc:
-            source = url if provider=="FixtureDownload" else "ESPN "+slug
+            source = url if provider=="FixtureDownload" else provider+" "+slug
             return div,[],f"{div} ({source}): {type(exc).__name__}: {exc}",[]
 
     counts,errors,rows = {},[],[]

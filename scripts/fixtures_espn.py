@@ -6,9 +6,11 @@ statistics and ratings are never imported by this module.
 import datetime as dt
 import gzip
 import json
+from provider_clubs import resolve
 
 
-FEEDS = {"D2":"ger.2", "I2":"ita.2", "B1":"bel.1", "SP2":"esp.2", "G1":"gre.1"}
+FEEDS = {"D2":"ger.2", "I2":"ita.2", "B1":"bel.1", "SP2":"esp.2", "G1":"gre.1",
+         "NOR":"nor.1", "SWE":"swe.1", "DNK":"den.1", "AUT":"aut.1"}
 
 
 def url_for(slug, day):
@@ -32,6 +34,8 @@ def collect_league(download, division, slug, metadata, now_sofia, end, observer=
     today = now_sofia.date()
     board = read_board(download,slug,today.isoformat())
     league = next(x for x in board["leagues"] if x.get("slug")==slug)
+    if league.get("calendarEndDate") and str(league["calendarEndDate"])[:10] < today.isoformat():
+        raise ValueError("Provider returned an expired season; not a verified empty calendar")
     if (league.get("calendarType")!="day" or league.get("calendarIsWhitelist") is not True
             or not isinstance(league.get("calendar"),list)):
         raise ValueError("No authoritative day calendar; refusing speculative date requests")
@@ -69,7 +73,7 @@ def collect_league(download, division, slug, metadata, now_sofia, end, observer=
                 team = side.get("team",{})
                 label = str(team.get("displayName","")).strip()
                 if side.get("homeAway") in ("home","away") and label:
-                    sides[side["homeAway"]] = label
+                    sides[side["homeAway"]] = resolve(division, "ESPN", team.get("id"), label)
             if set(sides)!={"home","away"} or sides["home"]==sides["away"]: continue
             row = [division,country,name,local.date().isoformat(),local.strftime("%H:%M") if time_known else "",
                    sides["home"],sides["away"],None,None,None,None,None,None,
