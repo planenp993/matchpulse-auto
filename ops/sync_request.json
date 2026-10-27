@@ -1,0 +1,7 @@
+{
+  "schema": 1,
+  "id": "2026-10-27-initial-reliability-full",
+  "mode": "full",
+  "requested_at_utc": "2026-10-27T09:57:32.665Z",
+  "purpose": "Verify the real 42-source history refresh after PR #16."
+}
