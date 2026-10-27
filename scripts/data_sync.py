@@ -20,6 +20,7 @@ import match_registry as registry
 import market_archive as markets
 import europe_archive as europe
 import results_bridge as bridge
+import standings
 from threading import Lock
 from concurrent.futures import Future
 from fixtures_fallback import collect as calendars, CALENDAR_DIVISIONS, is_secondary
@@ -28,7 +29,7 @@ ROOT = u.ROOT
 REGISTRY = "data/match_registry.json"
 LINKS = "docs/data/match_links.json"
 HEALTH = "docs/data/data_health.json"
-MODES = ("auto", "full", "history", "calendar", "fixtures", "results", "europe", "publish")
+MODES = ("auto", "full", "history", "calendar", "fixtures", "results", "europe", "standings", "publish")
 
 
 def utcnow():
@@ -74,7 +75,7 @@ def plan(status, mode, now):
     if mode not in MODES:
         raise ValueError("Unknown refresh mode")
     if mode == "publish":
-        return {"mode": mode, "history": False, "full": False, "calendar": False, "quotes": False, "results": False, "europe": False, "europe_full": False}
+        return {"mode": mode, "history": False, "full": False, "calendar": False, "quotes": False, "results": False, "europe": False, "europe_full": False, "standings": False}
     today = u.today_sofia(now)
     full_due = age(status.get("last_full_history_success_utc"), now) >= 96
     current_due = age(status.get("last_current_history_success_utc"), now) >= 20
@@ -87,7 +88,8 @@ def plan(status, mode, now):
     results = mode in ("full", "history", "results", "europe") or mode == "auto" and age(status.get("last_results_attempt_utc"), now) >= 8
     europe_due = mode in ("full", "results", "europe") or mode == "auto" and age(status.get("last_europe_attempt_utc"), now) >= 8
     europe_full = mode == "europe" or europe_due and not status.get("last_europe_backfill_success_utc")
-    return {"results": results, "europe": europe_due, "europe_full": europe_full, "mode": mode, "history": bool(history), "full": bool(full), "calendar": calendar,
+    tables = mode in ("full", "results", "europe", "standings") or mode == "auto" and age(status.get("last_standings_attempt_utc"), now) >= (2 if status.get("standings_refresh_status") in ("error","partial") else 8)
+    return {"standings": tables, "results": results, "europe": europe_due, "europe_full": europe_full, "mode": mode, "history": bool(history), "full": bool(full), "calendar": calendar,
             "quotes": quotes, "quote_window": window, "history_targets": len(targets(today, full)) if history else 0}
 
 
@@ -103,7 +105,7 @@ def requested_mode(root, event, mode, request_commit=None):
         return "publish", None
     raw = subprocess.check_output(["git", "show", request_commit+":ops/sync_request.json"], cwd=root)
     request = json.loads(raw)
-    if request.get("mode") not in ("auto", "full", "history", "calendar", "fixtures", "results", "europe") or not isinstance(request.get("id"), str) or not request["id"]:
+    if request.get("mode") not in ("auto", "full", "history", "calendar", "fixtures", "results", "europe", "standings") or not isinstance(request.get("id"), str) or not request["id"]:
         raise ValueError("Invalid explicit data request")
     return request["mode"], request["id"]
 
@@ -128,7 +130,7 @@ def collect(root, mode, now, download=u.fetch, request_id=None):
     stamp, today = iso(now), u.today_sofia(now)
     patch = {"schema": 1, "observed_at_utc": stamp, "plan": work, "request_id": request_id,
              "history": [], "checks": {}, "errors": [], "observations": [],
-             "calendar": None, "quotes": None, "markets": [], "results": None, "europe": None}
+             "calendar": None, "quotes": None, "markets": [], "results": None, "europe": None, "standings": None}
 
     def one(target):
         label, div, url = target
@@ -205,6 +207,8 @@ def collect(root, mode, now, download=u.fetch, request_id=None):
         patch["results"] = bridge.collect(download, list(history.values()), now)
     if work["europe"]:
         patch["europe"] = europe.collect(download, root, now, full=work["europe_full"])
+    if work["standings"]:
+        patch["standings"] = standings.collect(download, root, now)
     return patch
 
 
@@ -341,6 +345,13 @@ def apply(root, patch):
     latest = {}
     for row in historical:
         latest[row[0]] = max(latest.get(row[0], ""), row[3])
+    tables = standings.apply(root, patch.get("standings"), view_stamp, history=[*historical,*europe_rows])
+    if patch.get("standings") and newer("last_standings_attempt_utc"):
+        good = len(patch["standings"]["tables"])
+        status.update(last_standings_attempt_utc=stamp, standings_sources_total=len(standings.DIVISIONS),
+                      standings_sources_ok=good, standings_refresh_status="ok" if good==len(standings.DIVISIONS) and not tables["coverage"]["lagging"] else "partial" if good else "error")
+        if good==len(standings.DIVISIONS) and not tables["coverage"]["lagging"]: status["last_standings_success_utc"] = stamp
+    if tables["coverage"]["lagging"]: status["standings_refresh_status"]="partial"
     states = {}
     pending = {}
     for match in book["matches"].values():
@@ -355,7 +366,7 @@ def apply(root, patch):
               "calendar_stale_leagues": status.get("stale_secondary_leagues", []),
               "sources": status.get("source_checks", {}),
               "result_bridge_status": status.get("result_bridge_status"), "result_bridge_checks": status.get("result_bridge_checks", {}),
-              "europe_refresh_status": status.get("europe_refresh_status"), "europe_regulation_results": len(europe_rows),
+              "europe_refresh_status": status.get("europe_refresh_status"), "europe_regulation_results": len(europe_rows), "standings": tables["coverage"],
               "note": "Source date alone does not prove missing games during a break. Pending fixtures are retained; unlisted is not cancelled. UEFA regulation scores are archived separately; administrative outcomes never settle analytical picks."}
     added_markets, market_report = markets.apply(root, patch.get("markets", []), fixtures, registry.row_key, stamp, u.readjson, u.writejson, status.get("quote_check_status"), checked_stamp=view_stamp)
     health["market_archive"] = {"future_matches_with_saved_quotes": market_report["future_matches_with_saved_quotes"],
@@ -364,7 +375,7 @@ def apply(root, patch):
                        ("docs/data/status.json", status), (REGISTRY, book), (LINKS, registry.links(book)), (HEALTH, health)]:
         u.writejson(root/name, data)
     return {"history": len(historical), "fixtures": len(fixtures), "changed_results": applied,
-            "conflicts_this_patch": conflicts+bridge_conflicts, "europe_results": len(europe_rows), "registry_matches": len(book["matches"]), "new_market_snapshots": added_markets, "plan": work}
+            "conflicts_this_patch": conflicts+bridge_conflicts, "europe_results": len(europe_rows), "standings": tables["coverage"], "registry_matches": len(book["matches"]), "new_market_snapshots": added_markets, "plan": work}
 
 
 def main():

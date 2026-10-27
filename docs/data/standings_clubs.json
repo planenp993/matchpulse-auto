@@ -1,0 +1,1450 @@
+{
+  "schema": 1,
+  "basis": "Three exact dated regulation scores against at least two opponents. For two new UEFA clubs with only two main-phase matches, both different opponents plus all seven published standing totals and the unique official club ID must agree. Used only for labels/highlighting, never models.",
+  "entries": [
+    {
+      "division": "P1",
+      "provider": "ESPN",
+      "team_id": "2994",
+      "source_names": [
+        "Braga"
+      ],
+      "target": "Sp Braga",
+      "evidence": [
+        {
+          "provider_match_id": "401885416",
+          "date": "2026-10-25",
+          "home": "Nacional",
+          "away": "Sp Braga",
+          "regulation": [
+            1,
+            0
+          ],
+          "opponent_key": "nacional",
+          "archive_key": "P1|2026-10-25|nacional|sp braga"
+        },
+        {
+          "provider_match_id": "401885480",
+          "date": "2026-10-19",
+          "home": "Sp Braga",
+          "away": "Gil Vicente",
+          "regulation": [
+            1,
+            2
+          ],
+          "opponent_key": "gil vicente",
+          "archive_key": "P1|2026-10-19|sp braga|gil vicente"
+        },
+        {
+          "provider_match_id": "401885427",
+          "date": "2026-10-09",
+          "home": "Sp Braga",
+          "away": "Sp Lisbon",
+          "regulation": [
+            1,
+            3
+          ],
+          "opponent_key": "sp lisbon",
+          "archive_key": "P1|2026-10-09|sp braga|sp lisbon"
+        }
+      ],
+      "source_receipts": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/por.1/teams/2994/schedule?season=2026",
+          "sha256": "938bc6c1dbfe8814ed5785c4b4691c43534875c5e2b42fb0bc3e532c47de81ae"
+        }
+      ]
+    },
+    {
+      "division": "P1",
+      "provider": "ESPN",
+      "team_id": "5309",
+      "source_names": [
+        "Vitória de Guimaraes"
+      ],
+      "target": "Guimaraes",
+      "evidence": [
+        {
+          "provider_match_id": "401885412",
+          "date": "2026-10-23",
+          "home": "Guimaraes",
+          "away": "Maritimo",
+          "regulation": [
+            5,
+            0
+          ],
+          "opponent_key": "maritimo",
+          "archive_key": "P1|2026-10-23|guimaraes|maritimo"
+        },
+        {
+          "provider_match_id": "401885421",
+          "date": "2026-10-11",
+          "home": "Benfica",
+          "away": "Guimaraes",
+          "regulation": [
+            2,
+            0
+          ],
+          "opponent_key": "benfica",
+          "archive_key": "P1|2026-10-11|benfica|guimaraes"
+        },
+        {
+          "provider_match_id": "401885430",
+          "date": "2026-09-20",
+          "home": "Guimaraes",
+          "away": "Moreirense",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "moreirense",
+          "archive_key": "P1|2026-09-20|guimaraes|moreirense"
+        }
+      ],
+      "source_receipts": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/por.1/teams/5309/schedule?season=2026",
+          "sha256": "168869bf40a0761176f0434389091d7ee0886bac33c945a511c7bce06250d632"
+        }
+      ]
+    },
+    {
+      "division": "F2",
+      "provider": "ESPN",
+      "team_id": "10678",
+      "source_names": [
+        "Pau"
+      ],
+      "target": "Pau FC",
+      "evidence": [
+        {
+          "provider_match_id": "401876712",
+          "date": "2026-10-23",
+          "home": "Pau FC",
+          "away": "Grenoble",
+          "regulation": [
+            2,
+            1
+          ],
+          "opponent_key": "grenoble",
+          "archive_key": "F2|2026-10-23|pau fc|grenoble"
+        },
+        {
+          "provider_match_id": "401876725",
+          "date": "2026-10-16",
+          "home": "Guingamp",
+          "away": "Pau FC",
+          "regulation": [
+            1,
+            2
+          ],
+          "opponent_key": "guingamp",
+          "archive_key": "F2|2026-10-16|guingamp|pau fc"
+        },
+        {
+          "provider_match_id": "401876739",
+          "date": "2026-09-18",
+          "home": "Pau FC",
+          "away": "Dunkerque",
+          "regulation": [
+            2,
+            0
+          ],
+          "opponent_key": "dunkerque",
+          "archive_key": "F2|2026-09-18|pau fc|dunkerque"
+        }
+      ],
+      "source_receipts": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.2/teams/10678/schedule?season=2026",
+          "sha256": "9f52503f34352df6f98e3ee10211b9bab21517ff30a73f65cc3c7bbb12649748"
+        }
+      ]
+    },
+    {
+      "division": "F2",
+      "provider": "ESPN",
+      "team_id": "7719",
+      "source_names": [
+        "Rodez Aveyron"
+      ],
+      "target": "Rodez",
+      "evidence": [
+        {
+          "provider_match_id": "401876716",
+          "date": "2026-10-24",
+          "home": "Dijon",
+          "away": "Rodez",
+          "regulation": [
+            1,
+            2
+          ],
+          "opponent_key": "dijon",
+          "archive_key": "F2|2026-10-24|dijon|rodez"
+        },
+        {
+          "provider_match_id": "401876719",
+          "date": "2026-10-19",
+          "home": "Rodez",
+          "away": "Montpellier",
+          "regulation": [
+            0,
+            3
+          ],
+          "opponent_key": "montpellier",
+          "archive_key": "F2|2026-10-19|rodez|montpellier"
+        },
+        {
+          "provider_match_id": "401876729",
+          "date": "2026-10-10",
+          "home": "St Etienne",
+          "away": "Rodez",
+          "regulation": [
+            2,
+            0
+          ],
+          "opponent_key": "st etienne",
+          "archive_key": "F2|2026-10-10|st etienne|rodez"
+        }
+      ],
+      "source_receipts": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.2/teams/7719/schedule?season=2026",
+          "sha256": "a21e6196af975dce0e03e693fc76f39c5db81f52926ee80de624d94d822b4d91"
+        }
+      ]
+    },
+    {
+      "division": "F2",
+      "provider": "ESPN",
+      "team_id": "3171",
+      "source_names": [
+        "Clermont Foot"
+      ],
+      "target": "Clermont",
+      "evidence": [
+        {
+          "provider_match_id": "401876717",
+          "date": "2026-10-23",
+          "home": "Clermont",
+          "away": "Guingamp",
+          "regulation": [
+            0,
+            2
+          ],
+          "opponent_key": "guingamp",
+          "archive_key": "F2|2026-10-23|clermont|guingamp"
+        },
+        {
+          "provider_match_id": "401876736",
+          "date": "2026-10-10",
+          "home": "Clermont",
+          "away": "Red Star",
+          "regulation": [
+            2,
+            3
+          ],
+          "opponent_key": "red star",
+          "archive_key": "F2|2026-10-10|clermont|red star"
+        },
+        {
+          "provider_match_id": "401876743",
+          "date": "2026-09-18",
+          "home": "Grenoble",
+          "away": "Clermont",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "grenoble",
+          "archive_key": "F2|2026-09-18|grenoble|clermont"
+        }
+      ],
+      "source_receipts": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.2/teams/3171/schedule?season=2026",
+          "sha256": "8652f4cc78332913a2f7734cbfb98ea497f7028271673daef16f6d4900122ac6"
+        }
+      ]
+    },
+    {
+      "division": "F2",
+      "provider": "ESPN",
+      "team_id": "3266",
+      "source_names": [
+        "Stade Laval"
+      ],
+      "target": "Laval",
+      "evidence": [
+        {
+          "provider_match_id": "401876713",
+          "date": "2026-10-23",
+          "home": "Nancy",
+          "away": "Laval",
+          "regulation": [
+            1,
+            0
+          ],
+          "opponent_key": "nancy",
+          "archive_key": "F2|2026-10-23|nancy|laval"
+        },
+        {
+          "provider_match_id": "401876724",
+          "date": "2026-10-16",
+          "home": "Laval",
+          "away": "Clermont",
+          "regulation": [
+            3,
+            3
+          ],
+          "opponent_key": "clermont",
+          "archive_key": "F2|2026-10-16|laval|clermont"
+        },
+        {
+          "provider_match_id": "401876730",
+          "date": "2026-10-09",
+          "home": "Pau FC",
+          "away": "Laval",
+          "regulation": [
+            3,
+            2
+          ],
+          "opponent_key": "pau fc",
+          "archive_key": "F2|2026-10-09|pau fc|laval"
+        }
+      ],
+      "source_receipts": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/fra.2/teams/3266/schedule?season=2026",
+          "sha256": "2d434437a7ff72058bb1c62ddd39aa49768282e42e03ef6e6439ebf6bb804f99"
+        }
+      ]
+    },
+    {
+      "division": "T1",
+      "provider": "ESPN",
+      "team_id": "132335",
+      "source_names": [
+        "Amed SFK"
+      ],
+      "target": "Amedspor",
+      "evidence": [
+        {
+          "provider_match_id": "401888375",
+          "date": "2026-10-24",
+          "home": "Samsunspor",
+          "away": "Amedspor",
+          "regulation": [
+            1,
+            2
+          ],
+          "opponent_key": "samsunspor",
+          "archive_key": "T1|2026-10-24|samsunspor|amedspor"
+        },
+        {
+          "provider_match_id": "401888378",
+          "date": "2026-10-17",
+          "home": "Amedspor",
+          "away": "Konyaspor",
+          "regulation": [
+            1,
+            0
+          ],
+          "opponent_key": "konyaspor",
+          "archive_key": "T1|2026-10-17|amedspor|konyaspor"
+        },
+        {
+          "provider_match_id": "401888379",
+          "date": "2026-10-10",
+          "home": "Genclerbirligi",
+          "away": "Amedspor",
+          "regulation": [
+            2,
+            2
+          ],
+          "opponent_key": "genclerbirligi",
+          "archive_key": "T1|2026-10-10|genclerbirligi|amedspor"
+        }
+      ],
+      "source_receipts": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/tur.1/teams/132335/schedule?season=2026",
+          "sha256": "52d7443d8829eacb14a13b8964127dfccef8fdb7c300fe2bc6b6678152adb73e"
+        }
+      ]
+    },
+    {
+      "division": "T1",
+      "provider": "ESPN",
+      "team_id": "19267",
+      "source_names": [
+        "Erzurum BB"
+      ],
+      "target": "Erzurumspor",
+      "evidence": [
+        {
+          "provider_match_id": "401888270",
+          "date": "2026-10-24",
+          "home": "Gaziantep",
+          "away": "Erzurumspor",
+          "regulation": [
+            1,
+            3
+          ],
+          "opponent_key": "gaziantep",
+          "archive_key": "T1|2026-10-24|gaziantep|erzurumspor"
+        },
+        {
+          "provider_match_id": "401888271",
+          "date": "2026-10-17",
+          "home": "Erzurumspor",
+          "away": "Eyupspor",
+          "regulation": [
+            2,
+            0
+          ],
+          "opponent_key": "eyupspor",
+          "archive_key": "T1|2026-10-17|erzurumspor|eyupspor"
+        },
+        {
+          "provider_match_id": "401888283",
+          "date": "2026-10-10",
+          "home": "Alanyaspor",
+          "away": "Erzurumspor",
+          "regulation": [
+            0,
+            0
+          ],
+          "opponent_key": "alanyaspor",
+          "archive_key": "T1|2026-10-10|alanyaspor|erzurumspor"
+        }
+      ],
+      "source_receipts": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/tur.1/teams/19267/schedule?season=2026",
+          "sha256": "d0ed0418c88d2b3ac1bd020ec88871435a63351c2e3bb1a4fb48552b38e8df42"
+        }
+      ]
+    },
+    {
+      "division": "T1",
+      "provider": "ESPN",
+      "team_id": "132334",
+      "source_names": [
+        "Çorum FK"
+      ],
+      "target": "Corum",
+      "evidence": [
+        {
+          "provider_match_id": "401888376",
+          "date": "2026-10-25",
+          "home": "Goztep",
+          "away": "Corum",
+          "regulation": [
+            2,
+            0
+          ],
+          "opponent_key": "goztep",
+          "archive_key": "T1|2026-10-25|goztep|corum"
+        },
+        {
+          "provider_match_id": "401888377",
+          "date": "2026-10-16",
+          "home": "Corum",
+          "away": "Rizespor",
+          "regulation": [
+            2,
+            1
+          ],
+          "opponent_key": "rizespor",
+          "archive_key": "T1|2026-10-16|corum|rizespor"
+        },
+        {
+          "provider_match_id": "401888380",
+          "date": "2026-10-11",
+          "home": "Gaziantep",
+          "away": "Corum",
+          "regulation": [
+            0,
+            3
+          ],
+          "opponent_key": "gaziantep",
+          "archive_key": "T1|2026-10-11|gaziantep|corum"
+        }
+      ],
+      "source_receipts": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/tur.1/teams/132334/schedule?season=2026",
+          "sha256": "792687fa1b139c15ba9db816df1c55213b30819e6ac5bb522721ec0bb8b445b5"
+        }
+      ]
+    },
+    {
+      "division": "SP1",
+      "provider": "ESPN",
+      "team_id": "85",
+      "source_names": [
+        "Celta Vigo"
+      ],
+      "target": "Celta",
+      "evidence": [
+        {
+          "provider_match_id": "401882833",
+          "date": "2026-10-25",
+          "home": "Celta",
+          "away": "Betis",
+          "regulation": [
+            0,
+            0
+          ],
+          "opponent_key": "betis",
+          "archive_key": "SP1|2026-10-25|celta|betis"
+        },
+        {
+          "provider_match_id": "401882845",
+          "date": "2026-10-18",
+          "home": "Celta",
+          "away": "Alaves",
+          "regulation": [
+            2,
+            1
+          ],
+          "opponent_key": "alaves",
+          "archive_key": "SP1|2026-10-18|celta|alaves"
+        },
+        {
+          "provider_match_id": "401882854",
+          "date": "2026-10-11",
+          "home": "Elche",
+          "away": "Celta",
+          "regulation": [
+            0,
+            0
+          ],
+          "opponent_key": "elche",
+          "archive_key": "SP1|2026-10-11|elche|celta"
+        }
+      ],
+      "source_receipts": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/teams/85/schedule?season=2026",
+          "sha256": "1bb2e24acaa28837c8d8aa21662b653b4b6268708ca49c4848f2ca251349790d"
+        }
+      ]
+    },
+    {
+      "division": "SP1",
+      "provider": "ESPN",
+      "team_id": "90",
+      "source_names": [
+        "Deportivo"
+      ],
+      "target": "La Coruna",
+      "evidence": [
+        {
+          "provider_match_id": "401882834",
+          "date": "2026-10-24",
+          "home": "Ath Madrid",
+          "away": "La Coruna",
+          "regulation": [
+            1,
+            0
+          ],
+          "opponent_key": "ath madrid",
+          "archive_key": "SP1|2026-10-24|ath madrid|la coruna"
+        },
+        {
+          "provider_match_id": "401882844",
+          "date": "2026-10-16",
+          "home": "La Coruna",
+          "away": "Levante",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "levante",
+          "archive_key": "SP1|2026-10-16|la coruna|levante"
+        },
+        {
+          "provider_match_id": "401882847",
+          "date": "2026-10-11",
+          "home": "Sociedad",
+          "away": "La Coruna",
+          "regulation": [
+            3,
+            2
+          ],
+          "opponent_key": "sociedad",
+          "archive_key": "SP1|2026-10-11|sociedad|la coruna"
+        }
+      ],
+      "source_receipts": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/teams/90/schedule?season=2026",
+          "sha256": "78b3f07c854e09d5a16553efa9c506384bba39d65f1c9d37e48141dd6f7d5a4c"
+        }
+      ]
+    },
+    {
+      "division": "SP1",
+      "provider": "ESPN",
+      "team_id": "88",
+      "source_names": [
+        "Espanyol"
+      ],
+      "target": "Espanol",
+      "evidence": [
+        {
+          "provider_match_id": "401882831",
+          "date": "2026-10-24",
+          "home": "Santander",
+          "away": "Espanol",
+          "regulation": [
+            2,
+            1
+          ],
+          "opponent_key": "santander",
+          "archive_key": "SP1|2026-10-24|santander|espanol"
+        },
+        {
+          "provider_match_id": "401882843",
+          "date": "2026-10-17",
+          "home": "Espanol",
+          "away": "Ath Madrid",
+          "regulation": [
+            0,
+            1
+          ],
+          "opponent_key": "ath madrid",
+          "archive_key": "SP1|2026-10-17|espanol|ath madrid"
+        },
+        {
+          "provider_match_id": "401882851",
+          "date": "2026-10-09",
+          "home": "Malaga",
+          "away": "Espanol",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "malaga",
+          "archive_key": "SP1|2026-10-09|malaga|espanol"
+        }
+      ],
+      "source_receipts": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/teams/88/schedule?season=2026",
+          "sha256": "ae49e4a6a3f276f81b93f47a3e9205a2c24c3c7fc202ba43dfab076b1c19298c"
+        }
+      ]
+    },
+    {
+      "division": "D1",
+      "provider": "ESPN",
+      "team_id": "122",
+      "source_names": [
+        "FC Cologne"
+      ],
+      "target": "FC Koln",
+      "evidence": [
+        {
+          "provider_match_id": "401884756",
+          "date": "2026-10-24",
+          "home": "FC Koln",
+          "away": "Schalke 04",
+          "regulation": [
+            0,
+            0
+          ],
+          "opponent_key": "schalke 04",
+          "archive_key": "D1|2026-10-24|fc koln|schalke 04"
+        },
+        {
+          "provider_match_id": "401884770",
+          "date": "2026-10-16",
+          "home": "Ein Frankfurt",
+          "away": "FC Koln",
+          "regulation": [
+            1,
+            0
+          ],
+          "opponent_key": "ein frankfurt",
+          "archive_key": "D1|2026-10-16|ein frankfurt|fc koln"
+        },
+        {
+          "provider_match_id": "401884774",
+          "date": "2026-10-11",
+          "home": "FC Koln",
+          "away": "M'gladbach",
+          "regulation": [
+            2,
+            1
+          ],
+          "opponent_key": "m gladbach",
+          "archive_key": "D1|2026-10-11|fc koln|m gladbach"
+        }
+      ],
+      "source_receipts": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/teams/122/schedule?season=2026",
+          "sha256": "21786ceee2d41f45e52dc5c418e42d3227a0dbdb7a1b9802138c8ed460e9c267"
+        }
+      ]
+    },
+    {
+      "division": "UCL",
+      "provider": "ESPN",
+      "team_id": "4411",
+      "source_names": [
+        "LASK Linz"
+      ],
+      "target": "LASK",
+      "evidence": [
+        {
+          "provider_match_id": "401915391",
+          "date": "2026-10-21",
+          "home": "Sporting CP",
+          "away": "LASK",
+          "regulation": [
+            2,
+            3
+          ],
+          "opponent_key": "sp lisbon",
+          "archive_key": "UCL|2026-10-21|sp lisbon|lask"
+        },
+        {
+          "provider_match_id": "401915415",
+          "date": "2026-10-14",
+          "home": "LASK",
+          "away": "Liverpool FC",
+          "regulation": [
+            3,
+            6
+          ],
+          "opponent_key": "liverpool",
+          "archive_key": "UCL|2026-10-14|lask|liverpool"
+        },
+        {
+          "provider_match_id": "401915452",
+          "date": "2026-09-08",
+          "home": "AEK",
+          "away": "LASK",
+          "regulation": [
+            1,
+            0
+          ],
+          "opponent_key": "aek",
+          "archive_key": "UCL|2026-09-08|aek|lask"
+        }
+      ],
+      "source_receipts": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/teams/4411/schedule?season=2026",
+          "sha256": "5115bb24484d976d9f8e69063b903aa2115c80083c13f1abb8082220c255e82e"
+        },
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions_qual/teams/4411/schedule?season=2026",
+          "sha256": "3667de2e2a10273b323afb542d156817cae9056a3956f07f947cbcd40b6f0cbc"
+        }
+      ]
+    },
+    {
+      "division": "UCL",
+      "provider": "ESPN",
+      "team_id": "2980",
+      "source_names": [
+        "Bodo/Glimt"
+      ],
+      "target": "Bodø/Glimt",
+      "evidence": [
+        {
+          "provider_match_id": "401915400",
+          "date": "2026-10-20",
+          "home": "SSC Napoli",
+          "away": "Bodø/Glimt",
+          "regulation": [
+            4,
+            3
+          ],
+          "opponent_key": "napoli",
+          "archive_key": "UCL|2026-10-20|napoli|bodø glimt"
+        },
+        {
+          "provider_match_id": "401915393",
+          "date": "2026-10-14",
+          "home": "Bodø/Glimt",
+          "away": "Dortmund",
+          "regulation": [
+            1,
+            0
+          ],
+          "opponent_key": "dortmund",
+          "archive_key": "UCL|2026-10-14|bodø glimt|dortmund"
+        },
+        {
+          "provider_match_id": "401915443",
+          "date": "2026-09-10",
+          "home": "Bayern Munich",
+          "away": "Bodø/Glimt",
+          "regulation": [
+            5,
+            0
+          ],
+          "opponent_key": "bayern munich",
+          "archive_key": "UCL|2026-09-10|bayern munich|bodø glimt"
+        }
+      ],
+      "source_receipts": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/teams/2980/schedule?season=2026",
+          "sha256": "c207e996ac238dc6b29c75ea571507c75828d45a95bd4ab9a70e4e62e3484996"
+        },
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions_qual/teams/2980/schedule?season=2026",
+          "sha256": "4d2323eb7bf9cad7d928add1e3ca20126d49275efe0acb5973ecad8e3d7dc607"
+        }
+      ]
+    },
+    {
+      "division": "UCL",
+      "provider": "ESPN",
+      "team_id": "494",
+      "source_names": [
+        "Slavia Prague"
+      ],
+      "target": "Slavia Praha",
+      "evidence": [
+        {
+          "provider_match_id": "401915403",
+          "date": "2026-10-20",
+          "home": "Fenerbahce",
+          "away": "Slavia Praha",
+          "regulation": [
+            2,
+            2
+          ],
+          "opponent_key": "fenerbahce",
+          "archive_key": "UCL|2026-10-20|fenerbahce|slavia praha"
+        },
+        {
+          "provider_match_id": "401915436",
+          "date": "2026-10-13",
+          "home": "Sabah",
+          "away": "Slavia Praha",
+          "regulation": [
+            2,
+            0
+          ],
+          "opponent_key": "sabah",
+          "archive_key": "UCL|2026-10-13|sabah|slavia praha"
+        },
+        {
+          "provider_match_id": "401915440",
+          "date": "2026-09-10",
+          "home": "Slavia Praha",
+          "away": "RC Lens",
+          "regulation": [
+            2,
+            3
+          ],
+          "opponent_key": "lens",
+          "archive_key": "UCL|2026-09-10|slavia praha|lens"
+        }
+      ],
+      "source_receipts": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/teams/494/schedule?season=2026",
+          "sha256": "361c1c454668791e0219cd673f06f38e858d39bd15c940233649938b7785ff2a"
+        },
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions_qual/teams/494/schedule?season=2026",
+          "sha256": "bf876de759d97004afcbeeec063e96c875162dc05dc070baf5f0e11e435ff4e6"
+        }
+      ]
+    },
+    {
+      "division": "UEL",
+      "provider": "ESPN",
+      "team_id": "433",
+      "source_names": [
+        "Sparta Prague"
+      ],
+      "target": "Sparta Praha",
+      "evidence": [
+        {
+          "provider_match_id": "401915554",
+          "date": "2026-10-22",
+          "home": "Olympiakos",
+          "away": "Sparta Praha",
+          "regulation": [
+            1,
+            0
+          ],
+          "opponent_key": "olympiakos",
+          "archive_key": "UEL|2026-10-22|olympiakos|sparta praha"
+        },
+        {
+          "provider_match_id": "401915567",
+          "date": "2026-10-15",
+          "home": "Sparta Praha",
+          "away": "Lillestrom",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "lillestrom",
+          "archive_key": "UEL|2026-10-15|sparta praha|lillestrom"
+        },
+        {
+          "provider_match_id": "401915594",
+          "date": "2026-09-16",
+          "home": "Ararat-Armenia",
+          "away": "Sparta Praha",
+          "regulation": [
+            1,
+            4
+          ],
+          "opponent_key": "ararat armenia",
+          "archive_key": "UEL|2026-09-16|ararat armenia|sparta praha"
+        }
+      ],
+      "source_receipts": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/teams/433/schedule?season=2026",
+          "sha256": "67ef01a45f6c625d97460b60a120e80428df3f818efcbb5b692cba4ce3eb3aa1"
+        },
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa_qual/teams/433/schedule?season=2026",
+          "sha256": "76ba7462fd68a1a9fca97a42ac074db863393db25c39a17457e459148145c070"
+        }
+      ]
+    },
+    {
+      "division": "UEL",
+      "provider": "ESPN",
+      "team_id": "2790",
+      "source_names": [
+        "RB Salzburg"
+      ],
+      "target": "Salzburg",
+      "evidence": [
+        {
+          "provider_match_id": "401915541",
+          "date": "2026-10-22",
+          "home": "Celje",
+          "away": "Salzburg",
+          "regulation": [
+            2,
+            2
+          ],
+          "opponent_key": "celje",
+          "archive_key": "UEL|2026-10-22|celje|salzburg"
+        },
+        {
+          "provider_match_id": "401915568",
+          "date": "2026-10-15",
+          "home": "Salzburg",
+          "away": "AC Milan",
+          "regulation": [
+            0,
+            4
+          ],
+          "opponent_key": "milan",
+          "archive_key": "UEL|2026-10-15|salzburg|milan"
+        },
+        {
+          "provider_match_id": "401915584",
+          "date": "2026-09-17",
+          "home": "Levski Sofia",
+          "away": "Salzburg",
+          "regulation": [
+            0,
+            1
+          ],
+          "opponent_key": "levski sofia",
+          "archive_key": "UEL|2026-09-17|levski sofia|salzburg"
+        }
+      ],
+      "source_receipts": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/teams/2790/schedule?season=2026",
+          "sha256": "8365a5893a656d23fba08820ad0b7045dd4c42aa61f8e653b064de2f11529bc5"
+        },
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa_qual/teams/2790/schedule?season=2026",
+          "sha256": "345814c87e4da3664b9ea89fc1bec47a116a9f702c5cd0525612f671b6fb2fe4"
+        }
+      ]
+    },
+    {
+      "division": "UEL",
+      "provider": "ESPN",
+      "team_id": "85",
+      "source_names": [
+        "Celta Vigo"
+      ],
+      "target": "RC Celta de Vigo",
+      "evidence": [
+        {
+          "provider_match_id": "401915555",
+          "date": "2026-10-22",
+          "home": "Celtic",
+          "away": "RC Celta de Vigo",
+          "regulation": [
+            1,
+            2
+          ],
+          "opponent_key": "celtic",
+          "archive_key": "UEL|2026-10-22|celtic|celta"
+        },
+        {
+          "provider_match_id": "401915560",
+          "date": "2026-10-15",
+          "home": "RC Celta de Vigo",
+          "away": "Juventus FC",
+          "regulation": [
+            1,
+            2
+          ],
+          "opponent_key": "juventus",
+          "archive_key": "UEL|2026-10-15|celta|juventus"
+        },
+        {
+          "provider_match_id": "401915611",
+          "date": "2026-09-16",
+          "home": "Omonia",
+          "away": "RC Celta de Vigo",
+          "regulation": [
+            1,
+            0
+          ],
+          "opponent_key": "omonia",
+          "archive_key": "UEL|2026-09-16|omonia|celta"
+        }
+      ],
+      "source_receipts": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/teams/85/schedule?season=2026",
+          "sha256": "7015e70f34c64cc957acdcbe7e40785e1a3e69ad6431f6167055e8ef46b6d4c6"
+        },
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa_qual/teams/85/schedule?season=2026",
+          "sha256": "9fd52097c7fdfd772ea6016514098faec632fdb68bdfd4baeb973a7faf93ad02"
+        }
+      ]
+    },
+    {
+      "division": "UEL",
+      "provider": "ESPN",
+      "team_id": "13083",
+      "source_names": [
+        "Hapoel Be'er"
+      ],
+      "target": "H. Beer-Sheva",
+      "evidence": [
+        {
+          "provider_match_id": "401915545",
+          "date": "2026-10-22",
+          "home": "St. Gilloise",
+          "away": "H. Beer-Sheva",
+          "regulation": [
+            4,
+            0
+          ],
+          "opponent_key": "st gilloise",
+          "archive_key": "UEL|2026-10-22|st gilloise|h beer sheva"
+        },
+        {
+          "provider_match_id": "401915573",
+          "date": "2026-10-15",
+          "home": "AZ Alkmaar",
+          "away": "H. Beer-Sheva",
+          "regulation": [
+            2,
+            1
+          ],
+          "opponent_key": "az",
+          "archive_key": "UEL|2026-10-15|az|h beer sheva"
+        },
+        {
+          "provider_match_id": "401915589",
+          "date": "2026-09-16",
+          "home": "H. Beer-Sheva",
+          "away": "GNK Dinamo",
+          "regulation": [
+            0,
+            0
+          ],
+          "opponent_key": "gnk dinamo",
+          "archive_key": "UEL|2026-09-16|h beer sheva|gnk dinamo"
+        }
+      ],
+      "source_receipts": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/teams/13083/schedule?season=2026",
+          "sha256": "fa6b8ce6c64d45f8e421c4639c94bce8c2bbdb2789793de9f840baaf1891a3b4"
+        },
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa_qual/teams/13083/schedule?season=2026",
+          "sha256": "8a88f1add109f68254aa6edd8cae7af565bc7d929d5d1a407a7f6f2122f356ee"
+        }
+      ]
+    },
+    {
+      "division": "UECL",
+      "provider": "ESPN",
+      "team_id": "909",
+      "source_names": [
+        "F.C. København"
+      ],
+      "target": "FC Copenhagen",
+      "evidence": [
+        {
+          "provider_match_id": "401915843",
+          "date": "2026-10-22",
+          "home": "Crvena Zvezda",
+          "away": "FC Copenhagen",
+          "regulation": [
+            2,
+            2
+          ],
+          "opponent_key": "red star belgrade",
+          "archive_key": "UECL|2026-10-22|red star belgrade|fc copenhagen"
+        },
+        {
+          "provider_match_id": "401915852",
+          "date": "2026-10-15",
+          "home": "FC Copenhagen",
+          "away": "Sporting Braga",
+          "regulation": [
+            3,
+            0
+          ],
+          "opponent_key": "sp braga",
+          "archive_key": "UECL|2026-10-15|fc copenhagen|sp braga"
+        },
+        {
+          "provider_match_id": "401909621",
+          "date": "2026-08-27",
+          "home": "FC Copenhagen",
+          "away": "Inter Turku",
+          "regulation": [
+            4,
+            1
+          ],
+          "opponent_key": "inter turku",
+          "archive_key": "UECL|2026-08-27|fc copenhagen|inter turku"
+        }
+      ],
+      "source_receipts": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa.conf/teams/909/schedule?season=2026",
+          "sha256": "5419ae6907290c509e81e58c2b4ff5c693397fb6b25774fe75e50a1f52e99cd7"
+        },
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa.conf_qual/teams/909/schedule?season=2026",
+          "sha256": "8c0ecc30d027c951338bbfce5b678c36644461caa5f4c67c75346668e00d82b2"
+        }
+      ]
+    },
+    {
+      "division": "UECL",
+      "provider": "ESPN",
+      "team_id": "8089",
+      "source_names": [
+        "CSU Craiova"
+      ],
+      "target": "Univ. Craiova",
+      "evidence": [
+        {
+          "provider_match_id": "401915854",
+          "date": "2026-10-15",
+          "home": "Univ. Craiova",
+          "away": "Getafe CF",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "getafe",
+          "archive_key": "UECL|2026-10-15|univ craiova|getafe"
+        },
+        {
+          "provider_match_id": "758056",
+          "date": "2025-12-18",
+          "home": "AEK",
+          "away": "Univ. Craiova",
+          "regulation": [
+            3,
+            2
+          ],
+          "opponent_key": "aek",
+          "archive_key": "UECL|2025-12-18|aek|univ craiova"
+        },
+        {
+          "provider_match_id": "758026",
+          "date": "2025-11-27",
+          "home": "Univ. Craiova",
+          "away": "1. FSV Mainz 05",
+          "regulation": [
+            1,
+            0
+          ],
+          "opponent_key": "mainz",
+          "archive_key": "UECL|2025-11-27|univ craiova|mainz"
+        }
+      ],
+      "source_receipts": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa.conf/teams/8089/schedule?season=2026",
+          "sha256": "019166dc377cd8810526de00790a788967033c142a4c3510ba2e70bcdd985ac0"
+        },
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa.conf_qual/teams/8089/schedule?season=2026",
+          "sha256": "ab9dd622e20edad5faf98503d1db98cfb814ed4a233b3d78e53e5399ae2be332"
+        },
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa.conf/teams/8089/schedule?season=2025",
+          "sha256": "d27025947ae1e681536544c837a78c593a712d5c25b21d4e58c0bea644f76b85"
+        }
+      ]
+    },
+    {
+      "division": "UECL",
+      "provider": "ESPN",
+      "team_id": "17856",
+      "source_names": [
+        "Lincoln Red Imps"
+      ],
+      "target": "L. Red Imps",
+      "evidence": [
+        {
+          "provider_match_id": "401915833",
+          "date": "2026-10-22",
+          "home": "L. Red Imps",
+          "away": "Twente",
+          "regulation": [
+            1,
+            4
+          ],
+          "opponent_key": "twente",
+          "archive_key": "UECL|2026-10-22|l red imps|twente"
+        },
+        {
+          "provider_match_id": "401915847",
+          "date": "2026-10-15",
+          "home": "Brann",
+          "away": "L. Red Imps",
+          "regulation": [
+            2,
+            1
+          ],
+          "opponent_key": "brann",
+          "archive_key": "UECL|2026-10-15|brann|l red imps"
+        },
+        {
+          "provider_match_id": "401910970",
+          "date": "2026-08-20",
+          "home": "L. Red Imps",
+          "away": "Larne",
+          "regulation": [
+            0,
+            2
+          ],
+          "opponent_key": "larne",
+          "archive_key": "UECL|2026-08-20|l red imps|larne"
+        }
+      ],
+      "source_receipts": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa.conf/teams/17856/schedule?season=2026",
+          "sha256": "fc95f48a7b837d70de12df3c1a4e64a9c56fe4049f32e3903ddccc2a62eb9f55"
+        },
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa.conf_qual/teams/17856/schedule?season=2026",
+          "sha256": "9272507fc1b8773244edc1dd9e1b4476810cb3ddcda620b499d0e43fc4d55b4f"
+        }
+      ]
+    },
+    {
+      "division": "UECL",
+      "provider": "ESPN",
+      "team_id": "20703",
+      "source_names": [
+        "Inter D'Escaldes"
+      ],
+      "target": "Inter Escaldes",
+      "evidence": [
+        {
+          "provider_match_id": "401915839",
+          "date": "2026-10-22",
+          "home": "Inter Escaldes",
+          "away": "Univ. Craiova",
+          "regulation": [
+            1,
+            3
+          ],
+          "opponent_key": "univ craiova",
+          "archive_key": "UECL|2026-10-22|inter escaldes|univ craiova"
+        },
+        {
+          "provider_match_id": "401915857",
+          "date": "2026-10-15",
+          "home": "Mjallby",
+          "away": "Inter Escaldes",
+          "regulation": [
+            2,
+            0
+          ],
+          "opponent_key": "mjallby",
+          "archive_key": "UECL|2026-10-15|mjallby|inter escaldes"
+        },
+        {
+          "provider_match_id": "401902955",
+          "date": "2026-08-13",
+          "home": "Flora Tallinn",
+          "away": "Inter Escaldes",
+          "regulation": [
+            0,
+            4
+          ],
+          "opponent_key": "flora tallinn",
+          "archive_key": "UECL|2026-08-13|flora tallinn|inter escaldes"
+        }
+      ],
+      "source_receipts": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa.conf/teams/20703/schedule?season=2026",
+          "sha256": "f421bb10ff66f5a14511d71d20b815ba27a65d34a238e1154aaed7362295d398"
+        },
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa.conf_qual/teams/20703/schedule?season=2026",
+          "sha256": "2846976806ae7cdae8d062092c1ae778a75119c5d87e4204a67dc55dc73674a5"
+        }
+      ]
+    },
+    {
+      "full_phase_verification": {
+        "method": "Two distinct official match opponents plus every published current main-phase standing total; only two games have been played.",
+        "official_club_id": "50019",
+        "matching_totals": {
+          "played": 2,
+          "won": 0,
+          "drawn": 1,
+          "lost": 1,
+          "gf": 1,
+          "ga": 2,
+          "gd": -1
+        }
+      },
+      "division": "UECL",
+      "provider": "ESPN",
+      "team_id": "7853",
+      "source_names": [
+        "AGF"
+      ],
+      "target": "Aarhus",
+      "evidence": [
+        {
+          "provider_match_id": "401915744",
+          "date": "2026-10-22",
+          "home": "Aarhus",
+          "away": "Egnatia",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "egnatia",
+          "archive_key": "UECL|2026-10-22|aarhus|egnatia"
+        },
+        {
+          "provider_match_id": "401915860",
+          "date": "2026-10-15",
+          "home": "Gent",
+          "away": "Aarhus",
+          "regulation": [
+            1,
+            0
+          ],
+          "opponent_key": "gent",
+          "archive_key": "UECL|2026-10-15|gent|aarhus"
+        }
+      ],
+      "source_receipts": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa.conf/teams/7853/schedule?season=2026",
+          "sha256": "042562be26317fc4f9d2bbab3f39c31ccfbcd7fda9069cc1c50873465e50d224"
+        },
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa.conf_qual/teams/7853/schedule?season=2026",
+          "sha256": "4f4468e4ab40226fcb011ed2a0c5ee4d76fd5b268294d0c029e88be6a2c1021b"
+        },
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa.conf/teams/7853/schedule?season=2025",
+          "sha256": "1e21ec9f99b3a149c93a453330667afd1df0f205eb6a5eb74d146e12292662d6"
+        }
+      ]
+    },
+    {
+      "full_phase_verification": {
+        "method": "Two distinct official match opponents plus every published current main-phase standing total; only two games have been played.",
+        "official_club_id": "2605905",
+        "matching_totals": {
+          "played": 2,
+          "won": 0,
+          "drawn": 1,
+          "lost": 1,
+          "gf": 1,
+          "ga": 3,
+          "gd": -2
+        }
+      },
+      "division": "UECL",
+      "provider": "ESPN",
+      "team_id": "20025",
+      "source_names": [
+        "Iberia 1999"
+      ],
+      "target": "Iberia Tbilisi",
+      "evidence": [
+        {
+          "provider_match_id": "401915845",
+          "date": "2026-10-22",
+          "home": "Iberia Tbilisi",
+          "away": "Mjallby",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "mjallby",
+          "archive_key": "UECL|2026-10-22|iberia tbilisi|mjallby"
+        },
+        {
+          "provider_match_id": "401915849",
+          "date": "2026-10-15",
+          "home": "St Truiden",
+          "away": "Iberia Tbilisi",
+          "regulation": [
+            2,
+            0
+          ],
+          "opponent_key": "st truiden",
+          "archive_key": "UECL|2026-10-15|st truiden|iberia tbilisi"
+        }
+      ],
+      "source_receipts": [
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa.conf/teams/20025/schedule?season=2026",
+          "sha256": "f2d78d42231fbc1fb01005b1bb5ab802ff2b3c613ebcd64029a4913f99f3fe42"
+        },
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa.conf_qual/teams/20025/schedule?season=2026",
+          "sha256": "c89e7a9d754c2d786327b5728a6f1be24103b358defd342d7dc6097516f68abc"
+        },
+        {
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa.conf/teams/20025/schedule?season=2025",
+          "sha256": "0947ccad00286f8b10cabf12faa3395b18352aac42fdded791b4cb56d4e840ca"
+        }
+      ]
+    }
+  ]
+}

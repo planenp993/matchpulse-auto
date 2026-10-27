@@ -5,7 +5,7 @@
   <meta name="theme-color" content="#0b1523">
   <meta name="description" content="Футболна програма, статистика и анализ на мачове.">
   <title>MATCHPULSE SCOUT · Футболни анализи</title>
-  <link rel="stylesheet" href="scout.css">
+  <link rel="stylesheet" href="scout.css?v=f54830cefc07">
 </head>
 <body>
 <div class="shell">
@@ -29,6 +29,10 @@
       <div class="toolbar">
         <div class="days" aria-label="Дата"><button type="button" data-day="0" class="active">Днес</button><button type="button" data-day="1">Утре</button><button type="button" data-day="7">7 дни</button><label class="date-wrap" title="Избери дата"><input type="date" id="dateInput" aria-label="Избери дата"></label></div>
         <div class="filterbar"><label class="control-label">Първенство<select id="leagueSelect"><option value="">Всички първенства</option></select></label><label class="control-label">Търси<input id="searchInput" type="search" placeholder="Отбор или лига" autocomplete="off"></label><label class="control-label">Покажи<select id="qualitySelect"><option value="all">Всички срещи</option><option value="qualified">С достатъчна история</option><option value="trending">С голов тренд</option></select></label></div>
+      <details class="card detail-card schedule-standings" id="scheduleStandings"><summary>Класиране</summary>
+        <label class="control-label standings-select">Състезание<select id="standingsLeague" aria-label="Състезание за класиране"></select></label>
+        <div id="standingsContent"><p class="footnote">Избери състезание.</p></div>
+      </details>
       </div>
       <div class="section-heading"><div><h2 id="programTitle">Днешната програма</h2><span id="programSummary">—</span></div><small class="timezone-label">Часове: София</small></div>
       <div id="scheduleList" class="league-list"><div class="empty">Зареждане на програмата…</div></div>
@@ -82,5 +86,6 @@
 <script src="scout-patterns.js"></script>
 <script src="scout-markets.js"></script>
 <script src="scout-archive.js"></script>
-<script src="scout.js?v=a3ee1aafe3af"></script>
+<script src="scout-standings.js?v=3203c03c0852"></script>
+<script src="scout.js?v=893a24471373"></script>
 </body></html>
