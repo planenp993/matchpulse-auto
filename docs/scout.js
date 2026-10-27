@@ -32,10 +32,10 @@ function writePicks(v){try{localStorage.setItem(PICK_KEY,JSON.stringify(v));retu
 function profile(f){const k=Scout.keyFixture(f)+'|'+windowSize;if(!PROFILE_CACHE.has(k))PROFILE_CACHE.set(k,archive.profile(f,{windowSize}));return PROFILE_CACHE.get(k)}
 function setView(next){
  active=next;
- for(const view of ['schedule','scanner','picks','diary'])el('view-'+view).classList.toggle('hidden',view!==next);
+ for(const view of ['schedule','scanner','picks','diary','selections'])el('view-'+view).classList.toggle('hidden',view!==next);
  document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.view===next));
- el('pageTitle').textContent={schedule:'Програма',scanner:'Trend Scanner',picks:'Моите прогнози',diary:'Автоматичен дневник'}[next];
- if(next==='schedule')renderSchedule();else if(next==='scanner')renderScanner();else if(next==='diary')loadDiary();else renderPicks();
+ el('pageTitle').textContent={schedule:'Програма',scanner:'Trend Scanner',picks:'Моите прогнози',diary:'Автоматичен дневник',selections:'Селекции'}[next];
+ if(next==='schedule')renderSchedule();else if(next==='scanner')renderScanner();else if(next==='diary')loadDiary();else if(next==='selections')window.MatchpulseSelectionUI.render();else renderPicks();
 }
 function syncResearchControls(){
  for(const id of ['researchWindow','drawerWindow'])el(id).value=String(windowSize);
@@ -390,6 +390,7 @@ async function load(){
     fetch('data/'+name+'?scout=1',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(name+' HTTP '+r.status);return r.json()}))).then(([europe,links,europeNames])=>({europe,links,europeNames}));
   archive=window.MatchpulseArchive.build(Scout,h,extra.europe||[],extra.links||{},extra.europeNames||{});
   history=h;fixtures=f;status=s;index=archive.main;eloIndex=Elo.build(h,Scout.keyTeam);syncResearchControls();
+  window.MatchpulseSelectionUI.mount({history,fixtures,status,archive,openMatch});
   const lg=new Map();f.forEach(row=>lg.set(row[0],row[2]));
   const options='<option value="">Всички първенства</option>'+[...lg.entries()].sort((a,b)=>a[1].localeCompare(b[1])).map(([code,name])=>'<option value="'+esc(code)+'">'+esc(name)+'</option>').join('');
   el('leagueSelect').innerHTML=options;el('scanLeague').innerHTML=options;
