@@ -321,15 +321,15 @@ def apply(root, batch, book, stamp):
 
 
 def registry_aliases(book, rows, clubs, stamp):
-    """Exact date + both official club labels links a pre-existing calendar key."""
+    """Keep the oldest calendar identity when both official club labels prove a join."""
     import match_registry as registry
     aliases, observations = {}, []
     by_day = collections.defaultdict(list)
-    for match in book['matches'].values():
+    for identity, match in list(book['matches'].items()):
         if match['division'] in FEEDS:
             for key in match['legacy_keys']:
                 parts = key.split('|')
-                if len(parts) == 4: by_day[tuple(parts[:2])].append((key, parts[2:]))
+                if len(parts) == 4: by_day[tuple(parts[:2])].append((identity, key, parts[2:]))
     labels_by_name = {}
     for club in clubs.values():
         labels_by_name.setdefault(club_key(club['name']), set()).update(club_key(n) for n in club_labels(club))
@@ -337,12 +337,29 @@ def registry_aliases(book, rows, clubs, stamp):
         actual = row_key(row)
         home = labels_by_name.get(club_key(row[5]), {club_key(row[5])})
         away = labels_by_name.get(club_key(row[6]), {club_key(row[6])})
-        for old_key, pair in by_day[(row[0], row[3])]:
-            if pair[0] in home and pair[1] in away:
+        candidates = {}
+        for identity, old_key, pair in by_day[(row[0], row[3])]:
+            if identity in book['matches'] and pair[0] in home and pair[1] in away:
                 if old_key in aliases and aliases[old_key] != actual:
                     raise ValueError('Ambiguous UEFA calendar identity')
                 aliases[old_key] = actual
-        observations.append({'row': row, 'provider_id': row[13]['SRC'].removeprefix('UEFA/'), 'phase': row[13]['PHASE'], 'round': row[13]['ROUND']})
+                candidates[identity] = book['matches'][identity]
+        provider = row[13]['SRC'].removeprefix('UEFA/')
+        if not candidates:
+            observations.append({'row': row, 'provider_id': provider, 'phase': row[13]['PHASE'], 'round': row[13]['ROUND']})
+            continue
+        ordered = sorted(candidates.values(), key=lambda m:(m['first_seen_utc'], m['id']))
+        kept = ordered[0]
+        if any(m.get('result') not in (None, row[7:9]) for m in ordered):
+            raise ValueError('Conflicting scores on verified UEFA identity join')
+        for retired in ordered[1:]:
+            kept['legacy_keys'] = sorted(set(kept['legacy_keys']+retired['legacy_keys']))
+            kept['provider_ids'] = sorted(set(kept['provider_ids']+retired['provider_ids']))
+            kept['merged_ids'] = sorted(set(kept.get('merged_ids', [])+[retired['id']]+retired.get('merged_ids', [])))
+            del book['matches'][retired['id']]
+        kept['legacy_keys'] = sorted(set(kept['legacy_keys']+[actual]))
+        kept['provider_ids'] = sorted(set(kept['provider_ids']+[provider]))
+        kept['last_seen_utc'] = max(kept['last_seen_utc'], stamp)
     registry.observe(book, observations, stamp)
     return aliases
 
