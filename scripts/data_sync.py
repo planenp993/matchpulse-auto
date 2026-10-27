@@ -225,7 +225,7 @@ def apply(root, patch):
         good = sum(c["status"] == "ok" for c in patch["checks"].values())
         complete = good == work["history_targets"] and conflicts == 0
         status.update(last_history_attempt_utc=stamp, history_sources_total=work["history_targets"], history_sources_ok=good,
-                      history_refresh_status="ok" if complete else "partial", errors=patch["errors"][:100],
+                      history_refresh_status="ok" if complete else "partial" if good else "error", errors=patch["errors"][:100],
                       by_source={k: c["rows"] for k, c in patch["checks"].items() if c["status"] == "ok"})
         if complete:
             status.update(last_history_success_utc=stamp, last_current_history_success_utc=stamp)
