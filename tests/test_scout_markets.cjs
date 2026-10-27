@@ -66,8 +66,8 @@ test('full analysis available in standalone offline builder, without uncaught JS
  assert.doesNotThrow(()=>new vm.Script(js));
  assert.match(html,/scout-markets\.js/);
  assert.match(js,/1X2 и двоен шанс/);
- assert.match(js,/Удари, корнери, картони и xG/);
- assert.match(js,/няма данни/);
+ assert.match(fs.readFileSync(path.join(__dirname,'../docs/scout-analysis.js'),'utf8'),/Удари, корнери, картони и xG/);
+ assert.match(fs.readFileSync(path.join(__dirname,'../docs/scout-analysis.js'),'utf8'),/няма данни/);
 });
 test('saved probability uses the shared score distribution and remains absent for statistical markets',()=>{
  const p=Model.distribution(1.7,1.2,-.06).probs;

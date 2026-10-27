@@ -109,4 +109,11 @@ jobs:
             scout-diary.png
             scout-standings.png
             scout-standings-mobile.png
+            scout-form.png
+            scout-form-mobile.png
+            scout-tendencies.png
+            scout-statistics.png
+            scout-results.png
+            scout-xg-mobile.png
+            scout-result-mobile.png
           retention-days: 7
