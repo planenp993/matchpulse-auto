@@ -18,13 +18,17 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import update as u
 import match_registry as registry
 import market_archive as markets
+import europe_archive as europe
+import results_bridge as bridge
+from threading import Lock
+from concurrent.futures import Future
 from fixtures_fallback import collect as calendars, CALENDAR_DIVISIONS, is_secondary
 
 ROOT = u.ROOT
 REGISTRY = "data/match_registry.json"
 LINKS = "docs/data/match_links.json"
 HEALTH = "docs/data/data_health.json"
-MODES = ("auto", "full", "history", "calendar", "fixtures", "publish")
+MODES = ("auto", "full", "history", "calendar", "fixtures", "results", "europe", "publish")
 
 
 def utcnow():
@@ -70,7 +74,7 @@ def plan(status, mode, now):
     if mode not in MODES:
         raise ValueError("Unknown refresh mode")
     if mode == "publish":
-        return {"mode": mode, "history": False, "full": False, "calendar": False, "quotes": False}
+        return {"mode": mode, "history": False, "full": False, "calendar": False, "quotes": False, "results": False, "europe": False, "europe_full": False}
     today = u.today_sofia(now)
     full_due = age(status.get("last_full_history_success_utc"), now) >= 96
     current_due = age(status.get("last_current_history_success_utc"), now) >= 20
@@ -80,7 +84,10 @@ def plan(status, mode, now):
     calendar = mode in ("full", "calendar", "fixtures") or mode == "auto" and age(status.get("last_fixture_attempt_utc"), now) >= 8
     window = quote_window(now)
     quotes = mode in ("full", "fixtures") or mode == "auto" and status.get("quote_window") != window and age(status.get("last_quote_attempt_utc"), now) >= 2
-    return {"mode": mode, "history": bool(history), "full": bool(full), "calendar": calendar,
+    results = mode in ("full", "history", "results", "europe") or mode == "auto" and age(status.get("last_results_attempt_utc"), now) >= 8
+    europe_due = mode in ("full", "results", "europe") or mode == "auto" and age(status.get("last_europe_attempt_utc"), now) >= 8
+    europe_full = mode == "europe" or europe_due and not status.get("last_europe_backfill_success_utc")
+    return {"results": results, "europe": europe_due, "europe_full": europe_full, "mode": mode, "history": bool(history), "full": bool(full), "calendar": calendar,
             "quotes": quotes, "quote_window": window, "history_targets": len(targets(today, full)) if history else 0}
 
 
@@ -96,12 +103,23 @@ def requested_mode(root, event, mode, request_commit=None):
         return "publish", None
     raw = subprocess.check_output(["git", "show", request_commit+":ops/sync_request.json"], cwd=root)
     request = json.loads(raw)
-    if request.get("mode") not in ("auto", "full", "history", "calendar", "fixtures") or not isinstance(request.get("id"), str) or not request["id"]:
+    if request.get("mode") not in ("auto", "full", "history", "calendar", "fixtures", "results", "europe") or not isinstance(request.get("id"), str) or not request["id"]:
         raise ValueError("Invalid explicit data request")
     return request["mode"], request["id"]
 
 
 def collect(root, mode, now, download=u.fetch, request_id=None):
+    underlying, cache, lock = download, {}, Lock()
+    def download(url, **kwargs):
+        key = (url, registry.encoded(kwargs))
+        with lock:
+            owner = key not in cache
+            if owner: cache[key] = Future()
+            future = cache[key]
+        if owner:
+            try: future.set_result(underlying(url, **kwargs))
+            except Exception as error: future.set_exception(error)
+        return future.result()
     status = u.readjson(root/"docs/data/status.json", {})
     if request_id and request_id in status.get("processed_sync_requests", []):
         mode = "publish"
@@ -110,7 +128,7 @@ def collect(root, mode, now, download=u.fetch, request_id=None):
     stamp, today = iso(now), u.today_sofia(now)
     patch = {"schema": 1, "observed_at_utc": stamp, "plan": work, "request_id": request_id,
              "history": [], "checks": {}, "errors": [], "observations": [],
-             "calendar": None, "quotes": None, "markets": []}
+             "calendar": None, "quotes": None, "markets": [], "results": None, "europe": None}
 
     def one(target):
         label, div, url = target
@@ -183,6 +201,10 @@ def collect(root, mode, now, download=u.fetch, request_id=None):
             patch["markets"].extend(prices)
         except Exception as error:
             patch["quotes"] = {"error": f"{type(error).__name__}: {error}"}
+    if work["results"]:
+        patch["results"] = bridge.collect(download, list(history.values()), now)
+    if work["europe"]:
+        patch["europe"] = europe.collect(download, root, now, full=work["europe_full"])
     return patch
 
 
@@ -223,6 +245,26 @@ def apply(root, patch):
         except ValueError:
             conflicts += 1
             registry.record_conflict(book, "final_score_conflict", {"key": registry.row_key(row), "kept": old, "incoming": row})
+    bridge_changed, bridge_conflicts = [], 0
+    if patch.get("results"):
+        bridge_changed, bridge_conflicts = bridge.apply(root, patch["results"], history, book, stamp)
+        changed.extend(bridge_changed);applied += len(bridge_changed)
+    newer = lambda field: not status.get(field) or status[field] <= stamp
+    if patch.get("results") and newer("last_results_attempt_utc"):
+        checks = patch["results"]["checks"]
+        complete = len(checks) == 6 and all(c["status"] == "ok" and not c.get("quarantined") for c in checks.values()) and not bridge_conflicts
+        status.update(last_results_attempt_utc=stamp, result_bridge_checks=checks,
+                      result_bridge_status="ok" if complete else "partial", result_bridge_errors=patch["results"]["errors"])
+        if complete: status["last_results_success_utc"] = stamp
+        if bridge_changed: status["last_result_bridge_change_utc"] = stamp
+    europe_rows = registry.read_strict(root/europe.VIEW, [])
+    europe_clubs = registry.read_strict(root/europe.CLUBS, {})
+    if patch.get("europe") is not None and newer("last_europe_attempt_utc"):
+        europe_rows, europe_clubs, receipt = europe.apply(root, patch["europe"], book, stamp)
+        status.update(last_europe_attempt_utc=stamp, europe_refresh_status="ok" if receipt["complete"] else "partial", europe_errors=receipt["errors"])
+        if receipt["complete"]:
+            status["last_europe_success_utc"] = stamp
+            if work.get("europe_full"): status["last_europe_backfill_success_utc"] = stamp
     # Newly completed fixtures and any enrichment retain identity and provenance.
     registry.observe(book, patch["observations"], stamp)
     registry.observe(book, [{"row": row} for row in changed], stamp)
@@ -288,9 +330,12 @@ def apply(root, patch):
     fixtures = u.merge_fixtures([r for r in fixtures if future(r) and u.key(r) not in history])
     registry.observe(book, [{"row": row} for row in fixtures], stamp)
     historical = sorted(history.values(), key=lambda r: (r[3], r[0], r[5], r[6]))
-    registry.reconcile(book, historical, fixtures, view_stamp)
+    europe.fixture_names(root, fixtures, europe_clubs)
+    aliases = europe.registry_aliases(book, europe_rows, europe_clubs, stamp)
+    europe.reconcile_administrative(root, book, europe_clubs)
+    registry.reconcile(book, [*historical, *europe_rows], fixtures, view_stamp, aliases=aliases)
     status.update(schema_version=3, history_count=len(historical), fixtures_count=len(fixtures),
-                  calendar_only=not work["history"], last_build_utc=max(stamp, status.get("last_build_utc", "")))
+                  calendar_only=not work["history"] and not work.get("results") and not work.get("europe"), last_build_utc=max(stamp, status.get("last_build_utc", "")))
     if patch.get("request_id"):
         status["processed_sync_requests"] = sorted(set(status.get("processed_sync_requests", [])+[patch["request_id"]]))
     latest = {}
@@ -309,7 +354,9 @@ def apply(root, patch):
               "history_refresh_status": status.get("history_refresh_status", "not_checked"),
               "calendar_stale_leagues": status.get("stale_secondary_leagues", []),
               "sources": status.get("source_checks", {}),
-              "note": "Source date alone does not prove missing games during a break. Pending fixtures are retained; unlisted is not cancelled. UEFA result coverage is a separate unfinished stage."}
+              "result_bridge_status": status.get("result_bridge_status"), "result_bridge_checks": status.get("result_bridge_checks", {}),
+              "europe_refresh_status": status.get("europe_refresh_status"), "europe_regulation_results": len(europe_rows),
+              "note": "Source date alone does not prove missing games during a break. Pending fixtures are retained; unlisted is not cancelled. UEFA regulation scores are archived separately; administrative outcomes never settle analytical picks."}
     added_markets, market_report = markets.apply(root, patch.get("markets", []), fixtures, registry.row_key, stamp, u.readjson, u.writejson, status.get("quote_check_status"), checked_stamp=view_stamp)
     health["market_archive"] = {"future_matches_with_saved_quotes": market_report["future_matches_with_saved_quotes"],
                                 "quote_check_status": status.get("quote_check_status")}
@@ -317,7 +364,7 @@ def apply(root, patch):
                        ("docs/data/status.json", status), (REGISTRY, book), (LINKS, registry.links(book)), (HEALTH, health)]:
         u.writejson(root/name, data)
     return {"history": len(historical), "fixtures": len(fixtures), "changed_results": applied,
-            "conflicts_this_patch": conflicts, "registry_matches": len(book["matches"]), "new_market_snapshots": added_markets, "plan": work}
+            "conflicts_this_patch": conflicts+bridge_conflicts, "europe_results": len(europe_rows), "registry_matches": len(book["matches"]), "new_market_snapshots": added_markets, "plan": work}
 
 
 def main():
