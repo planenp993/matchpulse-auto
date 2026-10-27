@@ -183,6 +183,7 @@
  await mobile.locator('.xg-block').screenshot({path:'scout-xg-mobile.png'});
  await mobile.locator('.history-section > summary').click();
  await mobile.locator('.result-summary').first().click();
+ if(await mobile.locator('.result-teams').first().evaluate(el=>getComputedStyle(el).whiteSpace==='nowrap'||getComputedStyle(el).overflow==='hidden'))throw new Error('Full match team names are still clipped instead of wrapping');
  if(await mobile.locator('.drawer').evaluate(el=>el.scrollWidth>el.clientWidth+1))throw new Error('Mobile match facts overflow');
  await mobile.locator('.result-detail').first().screenshot({path:'scout-result-mobile.png'});
  await mobile.locator('.history-section > summary').click();
