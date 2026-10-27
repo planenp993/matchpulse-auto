@@ -21,6 +21,7 @@ import market_archive as markets
 import europe_archive as europe
 import results_bridge as bridge
 import standings
+import selection_quotes
 from threading import Lock
 from concurrent.futures import Future
 from fixtures_fallback import collect as calendars, CALENDAR_DIVISIONS, is_secondary
@@ -369,6 +370,7 @@ def apply(root, patch):
               "europe_refresh_status": status.get("europe_refresh_status"), "europe_regulation_results": len(europe_rows), "standings": tables["coverage"],
               "note": "Source date alone does not prove missing games during a break. Pending fixtures are retained; unlisted is not cancelled. UEFA regulation scores are archived separately; administrative outcomes never settle analytical picks."}
     added_markets, market_report = markets.apply(root, patch.get("markets", []), fixtures, registry.row_key, stamp, u.readjson, u.writejson, status.get("quote_check_status"), checked_stamp=view_stamp)
+    selection_quotes.write(root, fixtures, status)
     health["market_archive"] = {"future_matches_with_saved_quotes": market_report["future_matches_with_saved_quotes"],
                                 "quote_check_status": status.get("quote_check_status")}
     for name, data in [("docs/data/history.json", historical), ("docs/data/fixtures.json", fixtures),

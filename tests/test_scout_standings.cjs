@@ -34,8 +34,9 @@ test('Unreviewed clubs remain unhighlighted and provider HTML or hostile URLs ca
  const html=T.render(d,'E0',{home:'Home',keyTeam:x=>x.toLowerCase(),now});
  assert.ok(!html.includes('<img'));assert.ok(!html.includes('javascript:'));assert.ok(!html.includes('standing-selected'));assert.ok(html.includes('&lt;img'));
 });
-test('Missing tables explain availability without manufactured standings or extra screens',()=>{
+test('Missing tables explain availability and standings remain inside existing panels',()=>{
  assert.match(T.render({tables:{}},'E0',{now}),/още не е налично/);
- const fs=require('node:fs'),html=fs.readFileSync('docs/scout.html','utf8');assert.equal((html.match(/class="nav(?:\s|")/g)||[]).length,4);
+ const fs=require('node:fs'),html=fs.readFileSync('docs/scout.html','utf8');
+ assert.equal((html.match(/class="nav(?:\s|")/g)||[]).length,5);assert.ok(!html.includes('data-view="standings"'));
  assert.ok(html.includes('scheduleStandings'));assert.ok(html.includes('standingsLeague'));
 });

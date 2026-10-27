@@ -47,6 +47,8 @@ jobs:
         run: python scripts/standings.py --check
       - name: Smoke check real history and fixtures
         run: node scripts/smoke_scout.cjs
+      - name: Verify upcoming prices against saved fixture CSV observations
+        run: python scripts/selection_quotes.py --check
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -97,7 +99,9 @@ jobs:
           python -m http.server 8765 --directory docs > /tmp/scout-http.log 2>&1 &
           python -c 'import time,urllib.request; exec("for attempt in range(50):\n try:\n  urllib.request.urlopen(\"http://127.0.0.1:8765/scout.html\",timeout=1); break\n except OSError: time.sleep(0.1)\nelse: raise RuntimeError(\"Preview server did not start\")")'
           node scripts/test_scout_browser.cjs
+          node scripts/test_selections_browser.cjs
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: SCOUT-VERIFIED-PREVIEW
           path: |
@@ -122,4 +126,11 @@ jobs:
             scout-current-form.png
             scout-current-reading.png
             scout-current-tendencies.png
+            scout-selections.png
+            scout-selections-mobile.png
+            scout-selection-card.png
+            scout-selection-card-mobile.png
+            scout-builders.png
+            scout-columns.png
+            scout-selections-browser.json
           retention-days: 7

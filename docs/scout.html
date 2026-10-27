@@ -5,7 +5,7 @@
   <meta name="theme-color" content="#0b1523">
   <meta name="description" content="Футболна програма, статистика и анализ на мачове.">
   <title>MATCHPULSE SCOUT · Футболни анализи</title>
-  <link rel="stylesheet" href="scout.css?v=0b3cc510788e">
+  <link rel="stylesheet" href="scout.css?v=d886c7603b62">
 </head>
 <body>
 <div class="shell">
@@ -16,6 +16,7 @@
       <button type="button" class="nav" data-view="scanner"><span>◎</span> Trend Scanner</button>
       <button type="button" class="nav" data-view="picks"><span>▤</span> Моите прогнози</button>
       <button type="button" class="nav" data-view="diary"><span>◷</span> Дневник</button>
+      <button type="button" class="nav" data-view="selections"><span>◇</span> Селекции</button>
     </nav>
     <div class="sidebar-bottom"><div class="source-status" id="sourceStatus">Зареждане…</div></div>
   </aside>
@@ -66,6 +67,35 @@
       <div class="section-heading"><h2>Последни записи</h2><small class="timezone-label">Записани преди мача</small></div>
       <div id="diaryList"><div class="empty">Зареждане…</div></div>
     </section>
+    <section class="view hidden" id="view-selections" aria-label="Селекции">
+      <div class="toolbar selection-toolbar">
+        <div class="selection-topline"><div class="selection-tabs" role="tablist" aria-label="Вид селекции">
+          <button type="button" role="tab" data-selection-tab="matches" aria-selected="true" aria-controls="selectionList">Мачове</button>
+          <button type="button" role="tab" data-selection-tab="builders" aria-selected="false" aria-controls="selectionList">Бет билдъри</button>
+          <button type="button" role="tab" data-selection-tab="columns" aria-selected="false" aria-controls="selectionList">Колонки</button>
+        </div><div class="days selection-days" aria-label="Период за селекции">
+          <button type="button" data-selection-period="1" class="active" aria-pressed="true">Днес</button>
+          <button type="button" data-selection-period="2" aria-pressed="false">Днес + утре</button>
+          <button type="button" data-selection-period="7" aria-pressed="false">7 дни</button>
+          <button type="button" data-selection-period="30" aria-pressed="false">30 дни</button>
+        </div></div>
+        <div class="filterbar"><label class="control-label">Състезание<select id="selectionLeague"><option value="">Всички състезания</option></select></label>
+          <label class="control-label">Търси<input id="selectionSearch" type="search" placeholder="Отбор или лига" autocomplete="off"></label>
+          <label class="control-label">Покажи<select id="selectionQuality"><option value="all">Всички мачове</option><option value="main">С основна селекция</option><option value="price">С цена над моделната</option></select></label></div>
+      </div>
+      <div class="section-heading"><span id="selectionSummary" role="status">Подбор от наличните данни</span><small class="timezone-label">Часове: София</small></div>
+      <p id="selectionTabNote" class="selection-intro"></p>
+      <details class="card detail-card selection-method"><summary>Как се избират предложенията</summary>
+        <p>Използват се до 30 мача за съществуващия модел и фиксирани последни 10 срещи от първенствата за подбора. Основният избор отчита отклонението спрямо лигата, по-слабата подкрепа от двата клуба и домакинства/гостувания. Подредбата е нова и предстои да се оцени с бъдещи резултати.</p>
+        <p>Моделна вероятност 45–88%, поне 5 срещи на клуб, 50 в лигата и последен резултат до 45 дни. Алтернативите са от различни семейства; свободните места остават празни при слаба подкрепа. За УЕФА засега има само описателен анализ.</p>
+        <p>Честен коефициент = 1 / моделната вероятност. Ценова разлика = вероятност × въведен коефициент − 1. Разлика поне +5% при скорошна цена дава предимство в подредбата; тя не доказва доходност. CSV и въведените цени над 72 часа се обозначават като стари.</p>
+        <p>Бет билдърите се оценяват като общо събитие в резултатната матрица. Колонките използват приближение за независимост между различните мачове. Корнерите, картоните и ударите остават описателни показатели.</p>
+        <p id="selectionQuoteStatus" class="footnote"></p><button type="button" class="button secondary" id="selectionRetryQuotes">Презареди CSV цените</button>
+      </details>
+      <p id="selectionFeedback" class="selection-feedback" role="status"></p>
+      <div id="selectionList" class="selection-grid" role="tabpanel" aria-label="Предложения" aria-busy="false"><div class="empty">Зареждане на селекциите…</div></div>
+      <button type="button" id="selectionMore" class="button secondary selection-more hidden">Покажи още</button>
+    </section>
     <details class="coverage-details"><summary>Данни и обновяване</summary>
       <div id="syncContent" class="coverage-content">Зареждане…</div>
       <div id="coverageContent" class="coverage-content">Зареждане на покритието…</div>
@@ -88,5 +118,7 @@
 <script src="scout-archive.js?v=6bb2b510343d"></script>
 <script src="scout-standings.js?v=3203c03c0852"></script>
 <script src="scout-analysis.js?v=50b706934372"></script>
-<script src="scout.js?v=ffa9d42a7386"></script>
+<script src="scout-selections.js?v=73955070aabc"></script>
+<script src="scout-selection-ui.js?v=1a0eb6e93f69"></script>
+<script src="scout.js?v=6d6d16f37fc4"></script>
 </body></html>

@@ -249,3 +249,34 @@ an older longest streak. Missing latest statistics or a newer unresolved match
 block a current claim. Show the actual series dates and confirming matches.
 Keep the intro and copied brief consistent with this same selected view, while
 explicitly preserving the domestic model's separate input history.
+
+## Selection view
+
+The user authorized a fifth screen, `Селекции`, below the diary. The three tabs
+are matches, same-game builders and cross-match columns. `scout-selections.js`
+is a versioned heuristic ranking layer, not a new probability model. Its fixed
+rules and limitations are in `docs/selections-method.md`. Standard model matrices
+remain the only predictive probabilities. Fixed last-10 domestic descriptive
+cohorts are separate from the dossier's 5/10/20 selection. Missing support yields
+abstention or fewer alternatives, never fabricated picks.
+
+Same-game joint probability sums the intersecting score cells. Reject identical,
+contradictory and logically redundant builder conditions. Columns use one date,
+unique fixtures and unique canonical clubs, with an explicit independence
+approximation; columns can overlap each other. Do not label ranking as confidence
+or present a model/price difference as validated profit. Existing frozen studies,
+model/scanner code, personal picks and append-only diary records stay unchanged.
+
+`selection_quotes.py` derives `docs/data/selection_quotes.json` solely from exact
+fixture-date/club keys and saved `fixture_csv` observations. Ignore historical,
+closing and handicap columns. Preserve the actual bookmaker/aggregate, source
+column and CSV retrieval time; the bookmaker quote time is unknown. The refresh
+retry loop rebuilds and stages this small view. `--check` is provider-free.
+Manual comparison prices stay separately in browser local storage; they never
+enter the model or the original saved-pick key. Old/future/invalid quote clocks
+cannot create a positive-price ranking priority.
+
+Version both new scripts by content and include them and their quote data in the
+offline builder. `test_selections.cjs`, `test_selection_quotes.py` and
+`scripts/test_selections_browser.cjs` verify the probabilities, identity/time
+gates, comparisons, duplicate prevention, responsive view and offline path.
