@@ -91,3 +91,12 @@ class MarketArchiveTests(unittest.TestCase):
         plan=sync.plan({},'fixtures',dt.datetime.fromisoformat(STAMP))
         self.assertFalse(plan['history']);self.assertFalse(plan['full'])
         self.assertTrue(plan['calendar']);self.assertTrue(plan['quotes']);self.assertEqual(plan['history_targets'],0)
+
+    def test_rebased_patch_keeps_original_observation_time_and_current_report_time(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);later='2026-10-28T12:00:00+00:00'
+            markets.apply(root,[self.sample()],[],registry.row_key,STAMP,u.readjson,u.writejson,checked_stamp=later)
+            shard=json.loads((root/'data/markets/E0/2026-27.json').read_text())
+            saved=next(iter(next(iter(shard['matches'].values())).values()))
+            self.assertEqual(saved['observed_at_utc'],STAMP)
+            self.assertEqual(json.loads((root/markets.SUMMARY).read_text())['checked_utc'],later)
