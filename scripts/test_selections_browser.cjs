@@ -45,6 +45,9 @@
  await desktop.locator('#selectionQuality').selectOption('price');
  assert.ok(await desktop.locator('.selection-primary').count()>0);assert.ok((await desktop.locator('#selectionList').textContent()).includes('Цена над моделната')||(await desktop.locator('#selectionList').textContent()).includes('цена над моделната'));
  await desktop.locator('#selectionQuality').selectOption('all');
+ await desktop.locator('[data-selection-period="30"]').click();await selectionReady(desktop);
+ stats.fullCalendar=Number((await desktop.locator('#selectionSummary').textContent()).split(' ')[0]);assert.ok(stats.fullCalendar>257);
+ await desktop.locator('[data-selection-period="7"]').click();await selectionReady(desktop);
  await desktop.locator('[data-selection-tab="builders"]').click();assert.ok(await desktop.locator('.selection-builder').count()>0);
  const builder=desktop.locator('.selection-builder').first(),builderKey=await builder.locator('[data-selection-market]').getAttribute('data-selection-market');
  assert.ok(builderKey.split('+').length===2);await desktop.screenshot({path:'scout-builders.png',fullPage:false});
