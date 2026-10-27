@@ -87,6 +87,10 @@ class EuropeTests(unittest.TestCase):
             aliases=e.registry_aliases(book,rows,clubs,sync.iso(NOW));reg.reconcile(book,rows,[],sync.iso(NOW),aliases)
             self.assertEqual(reg.links(book)['matches'][reg.row_key(fixture)]['result_key'],reg.row_key(rows[0]))
             self.assertEqual(reg.links(book)['matches'][reg.row_key(fixture)]['state'],'final')
+            self.assertEqual(len(book['matches']),1)
+            identity=next(iter(book['matches']));other=reg.empty();reg.observe(other,[{'row':rows[0]}],sync.iso(NOW));book['matches'].update(other['matches'])
+            # A pre-existing canonical record also joins back to the oldest calendar identity.
+            e.registry_aliases(book,rows,clubs,sync.iso(NOW));self.assertEqual(list(book['matches']),[identity])
 
     def test_corrupt_shard_is_never_reinitialized(self):
         with tempfile.TemporaryDirectory() as folder:
