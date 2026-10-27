@@ -83,3 +83,8 @@ class ESPNCalendarTests(unittest.TestCase):
         event=copy.deepcopy(self.event);event["competitions"][0]["date"]="2026-10-24T21:30Z"
         rows=self.collect(lambda _:json.dumps(self.board([event])).encode())
         self.assertEqual(rows[0][3:5],["2026-10-25","00:30"])
+
+    def test_expired_provider_season_is_not_a_successful_empty_calendar(self):
+        board=self.board();board['leagues'][0]['calendarEndDate']='2026-06-01T03:59Z'
+        with self.assertRaisesRegex(ValueError,'expired season'):
+            self.collect(lambda _:json.dumps(board).encode())

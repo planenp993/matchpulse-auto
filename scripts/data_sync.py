@@ -17,13 +17,14 @@ from zoneinfo import ZoneInfo
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import update as u
 import match_registry as registry
+import market_archive as markets
 from fixtures_fallback import collect as calendars, CALENDAR_DIVISIONS, is_secondary
 
 ROOT = u.ROOT
 REGISTRY = "data/match_registry.json"
 LINKS = "docs/data/match_links.json"
 HEALTH = "docs/data/data_health.json"
-MODES = ("auto", "full", "history", "calendar", "publish")
+MODES = ("auto", "full", "history", "calendar", "fixtures", "publish")
 
 
 def utcnow():
@@ -76,9 +77,9 @@ def plan(status, mode, now):
     can_history = age(status.get("last_history_attempt_utc"), now) >= 2
     full = mode == "full" or mode == "auto" and full_due and can_history
     history = mode in ("full", "history") or mode == "auto" and (full or current_due and can_history)
-    calendar = mode in ("full", "calendar") or mode == "auto" and age(status.get("last_fixture_attempt_utc"), now) >= 8
+    calendar = mode in ("full", "calendar", "fixtures") or mode == "auto" and age(status.get("last_fixture_attempt_utc"), now) >= 8
     window = quote_window(now)
-    quotes = mode == "full" or mode == "auto" and status.get("quote_window") != window and age(status.get("last_quote_attempt_utc"), now) >= 2
+    quotes = mode in ("full", "fixtures") or mode == "auto" and status.get("quote_window") != window and age(status.get("last_quote_attempt_utc"), now) >= 2
     return {"mode": mode, "history": bool(history), "full": bool(full), "calendar": calendar,
             "quotes": quotes, "quote_window": window, "history_targets": len(targets(today, full)) if history else 0}
 
@@ -95,7 +96,7 @@ def requested_mode(root, event, mode, request_commit=None):
         return "publish", None
     raw = subprocess.check_output(["git", "show", request_commit+":ops/sync_request.json"], cwd=root)
     request = json.loads(raw)
-    if request.get("mode") not in ("auto", "full", "history", "calendar") or not isinstance(request.get("id"), str) or not request["id"]:
+    if request.get("mode") not in ("auto", "full", "history", "calendar", "fixtures") or not isinstance(request.get("id"), str) or not request["id"]:
         raise ValueError("Invalid explicit data request")
     return request["mode"], request["id"]
 
@@ -109,7 +110,7 @@ def collect(root, mode, now, download=u.fetch, request_id=None):
     stamp, today = iso(now), u.today_sofia(now)
     patch = {"schema": 1, "observed_at_utc": stamp, "plan": work, "request_id": request_id,
              "history": [], "checks": {}, "errors": [], "observations": [],
-             "calendar": None, "quotes": None}
+             "calendar": None, "quotes": None, "markets": []}
 
     def one(target):
         label, div, url = target
@@ -117,7 +118,9 @@ def collect(root, mode, now, download=u.fetch, request_id=None):
         try:
             raw = download(url)
             rows = u.parse_csv(raw)
-            parsed = []
+            parsed, prices, invalid_prices = [], [], 0
+            source_hash = hashlib.sha256(raw).hexdigest()
+            columns = markets.market_columns(rows[0])
             for item in rows:
                 row = u.make_row(item, div)
                 if not row:
@@ -136,23 +139,27 @@ def collect(root, mode, now, download=u.fetch, request_id=None):
                     if row[i] is not None and (not math.isfinite(row[i]) or not 1 < row[i] < 1001):
                         row[i] = None
                 parsed.append({"row": row, "base_sha256": registry.digest(history.get(u.key(row)))})
+                price, invalid = markets.observation(item, row, columns, url, source_hash, "historical_csv", registry.row_key(row))
+                invalid_prices += len(invalid)
+                if price: prices.append(price)
             if not parsed:
                 raise ValueError("No valid completed matches")
-            check.update(status="ok", rows=len(parsed), sha256=hashlib.sha256(raw).hexdigest(),
+            check.update(status="ok", rows=len(parsed), sha256=source_hash, market_rows=len(prices), invalid_market_values=invalid_prices,
                          last_result_date=max(x["row"][3] for x in parsed))
-            return label, check, parsed, None
+            return label, check, parsed, None, prices
         except Exception as error:
             check.update(status="error", error=f"{type(error).__name__}: {error}")
-            return label, check, [], f"{label}: {check['error']}"
+            return label, check, [], f"{label}: {check['error']}", []
 
     if work["history"]:
         with ThreadPoolExecutor(max_workers=4) as pool:
-            for label, check, rows, error in pool.map(one, targets(today, work["full"])):
+            for label, check, rows, error, prices in pool.map(one, targets(today, work["full"])):
                 patch["checks"][label] = check
                 if error:
                     patch["errors"].append(error)
                 else:
                     patch["history"].extend(rows)
+                    patch["markets"].extend(prices)
     if work["calendar"]:
         observed = []
         rows, counts, errors = calendars(download, today, u.LEAGUES, observer=observed.append)
@@ -161,12 +168,19 @@ def collect(root, mode, now, download=u.fetch, request_id=None):
     if work["quotes"]:
         try:
             raw = download("https://www.football-data.co.uk/fixtures.csv")
-            rows = []
-            for item in u.parse_csv(raw):
+            source_rows = u.parse_csv(raw)
+            rows, prices, invalid_prices = [], [], 0
+            source_hash = hashlib.sha256(raw).hexdigest()
+            columns = markets.market_columns(source_rows[0])
+            for item in source_rows:
                 row = u.make_row(item, fixture=True)
                 if row and today.isoformat() <= row[3] <= (today+dt.timedelta(days=15)).isoformat():
                     rows.append([*row[:13], "Football-Data"])
-            patch["quotes"] = {"rows": rows, "sha256": hashlib.sha256(raw).hexdigest()}
+                    price, invalid = markets.observation(item, row, columns, "https://www.football-data.co.uk/fixtures.csv", source_hash, "fixture_csv", registry.row_key(row))
+                    invalid_prices += len(invalid)
+                    if price: prices.append(price)
+            patch["quotes"] = {"rows": rows, "sha256": source_hash, "market_rows": len(prices), "invalid_market_values": invalid_prices}
+            patch["markets"].extend(prices)
         except Exception as error:
             patch["quotes"] = {"error": f"{type(error).__name__}: {error}"}
     return patch
@@ -247,7 +261,7 @@ def apply(root, patch):
                       secondary_fixture_sources_total=len(CALENDAR_DIVISIONS), secondary_fixture_errors=calendar["errors"],
                       stale_secondary_leagues=sorted(set(CALENDAR_DIVISIONS)-set(calendar["counts"])),
                       fixtures_feed_status=("partial_secondary" if calendar["errors"] else "ok_secondary") if calendar["counts"] else "stale_secondary",
-                      fixtures_source="Football-Data + FixtureDownload + ESPN (keyless)")
+                      fixtures_source="Football-Data + FixtureDownload + ESPN + official league calendars")
         if calendar["counts"]:
             status["fixtures_updated_utc"] = stamp
     quotes = patch["quotes"]
@@ -263,7 +277,13 @@ def apply(root, patch):
             # Fresh quotes overwrite older primary snapshots; kickoff remains Sofia.
             fresh_keys = {u.key(r) for r in primary}
             fixtures = u.confirmed_kickoffs(u.merge_fixtures([*primary, *[r for r in fixtures if u.key(r) not in fresh_keys]]), secondary)
-            status.update(last_quote_success_utc=stamp, quote_window=work["quote_window"], quote_sha256=quotes["sha256"], quote_error=None)
+            priced_keys = {m["key"] for m in patch.get("markets", []) if m["kind"] == "fixture_csv"}
+            applicable = any(registry.row_key(r) in priced_keys or r[11] is not None or r[12] is not None for r in primary)
+            upcoming_core = any(r[0] in u.CSV_LEAGUES and r[3] <= (today+dt.timedelta(days=15)).isoformat() for r in fixtures)
+            status.update(last_quote_success_utc=stamp, quote_checked_window=work["quote_window"], quote_sha256=quotes["sha256"], quote_error=None,
+                          quote_check_status="ok" if applicable else "empty_for_upcoming" if upcoming_core else "no_scheduled_matches")
+            if applicable or not upcoming_core:
+                status["quote_window"] = work["quote_window"]
     # Exports are rolling views; the book above never drops old pending matches.
     fixtures = u.merge_fixtures([r for r in fixtures if future(r) and u.key(r) not in history])
     registry.observe(book, [{"row": row} for row in fixtures], stamp)
@@ -289,12 +309,15 @@ def apply(root, patch):
               "history_refresh_status": status.get("history_refresh_status", "not_checked"),
               "calendar_stale_leagues": status.get("stale_secondary_leagues", []),
               "sources": status.get("source_checks", {}),
-              "note": "Source date alone does not prove missing games during a break. Pending fixtures are retained; unlisted is not cancelled. UEFA results and six missing domestic calendars are separate unfinished coverage stages."}
+              "note": "Source date alone does not prove missing games during a break. Pending fixtures are retained; unlisted is not cancelled. UEFA result coverage is a separate unfinished stage."}
+    added_markets, market_report = markets.apply(root, patch.get("markets", []), fixtures, registry.row_key, view_stamp, u.readjson, u.writejson, status.get("quote_check_status"))
+    health["market_archive"] = {"future_matches_with_saved_quotes": market_report["future_matches_with_saved_quotes"],
+                                "quote_check_status": status.get("quote_check_status")}
     for name, data in [("docs/data/history.json", historical), ("docs/data/fixtures.json", fixtures),
                        ("docs/data/status.json", status), (REGISTRY, book), (LINKS, registry.links(book)), (HEALTH, health)]:
         u.writejson(root/name, data)
     return {"history": len(historical), "fixtures": len(fixtures), "changed_results": applied,
-            "conflicts_this_patch": conflicts, "registry_matches": len(book["matches"]), "plan": work}
+            "conflicts_this_patch": conflicts, "registry_matches": len(book["matches"]), "new_market_snapshots": added_markets, "plan": work}
 
 
 def main():

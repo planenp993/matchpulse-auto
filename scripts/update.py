@@ -216,7 +216,9 @@ def confirmed_kickoffs(rows, secondary):
             row = list(row)
             row[4] = verified[4]
             # This remains a primary CSV snapshot, with a secondary kickoff source.
-            provider = "site.api.espn.com" if verified[13].startswith("ESPN") else "fixturedownload.com"
+            provider = next((host for prefix,host in (("ESPN","site.api.espn.com"),
+                ("Ekstraklasa","ekstraklasa.org"),("SwissFootballLeague","sfl.ch"))
+                if verified[13].startswith(prefix)),"fixturedownload.com")
             source = f"Football-Data / UTC→Europe-Sofia ({provider} kickoff)"
             if len(row)>13: row[13] = source
             else: row.append(source)
@@ -224,10 +226,10 @@ def confirmed_kickoffs(rows, secondary):
     return out
 
 
-def fetch(url):
+def fetch(url, headers=None):
     req=urllib.request.Request(url,headers={
         "User-Agent":"Mozilla/5.0 MatchpulseOpenCSVResearch/1.0",
-        "Accept":"text/csv,text/plain,*/*"
+        "Accept":"text/csv,text/plain,*/*", **(headers or {})
     })
     with urllib.request.urlopen(req,timeout=25) as response:
         return response.read(15_000_000)

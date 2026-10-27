@@ -1,0 +1,4414 @@
+{
+  "schema": 1,
+  "entries": [
+    {
+      "division": "NOR",
+      "provider": "ESPN",
+      "team_id": "5270",
+      "source_name": "Tromso",
+      "target": "Tromso",
+      "evidence": [
+        {
+          "event_id": "401843445",
+          "date": "2026-09-20",
+          "home": "Tromso",
+          "away": "HamKam",
+          "score": [
+            3,
+            2
+          ]
+        },
+        {
+          "event_id": "401843454",
+          "date": "2026-10-11",
+          "home": "Fredrikstad",
+          "away": "Tromso",
+          "score": [
+            1,
+            1
+          ]
+        },
+        {
+          "event_id": "401843460",
+          "date": "2026-10-18",
+          "home": "Tromso",
+          "away": "KFUM Oslo",
+          "score": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "division": "NOR",
+      "provider": "ESPN",
+      "team_id": "2980",
+      "source_name": "Bodo/Glimt",
+      "target": "Bodo/Glimt",
+      "evidence": [
+        {
+          "event_id": "401843435",
+          "date": "2026-09-14",
+          "home": "Bodo/Glimt",
+          "away": "Sandefjord",
+          "score": [
+            3,
+            2
+          ]
+        },
+        {
+          "event_id": "401843443",
+          "date": "2026-09-20",
+          "home": "Brann",
+          "away": "Bodo/Glimt",
+          "score": [
+            2,
+            1
+          ]
+        },
+        {
+          "event_id": "401843456",
+          "date": "2026-10-10",
+          "home": "Bodo/Glimt",
+          "away": "Kristiansund",
+          "score": [
+            3,
+            1
+          ]
+        },
+        {
+          "event_id": "401843465",
+          "date": "2026-10-17",
+          "home": "HamKam",
+          "away": "Bodo/Glimt",
+          "score": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "NOR",
+      "provider": "ESPN",
+      "team_id": "21380",
+      "source_name": "Hamarkameratene",
+      "target": "HamKam",
+      "evidence": [
+        {
+          "event_id": "401843445",
+          "date": "2026-09-20",
+          "home": "Tromso",
+          "away": "HamKam",
+          "score": [
+            3,
+            2
+          ]
+        },
+        {
+          "event_id": "401843458",
+          "date": "2026-10-11",
+          "home": "Start",
+          "away": "HamKam",
+          "score": [
+            2,
+            4
+          ]
+        },
+        {
+          "event_id": "401843465",
+          "date": "2026-10-17",
+          "home": "HamKam",
+          "away": "Bodo/Glimt",
+          "score": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "NOR",
+      "provider": "ESPN",
+      "team_id": "5002",
+      "source_name": "Sarpsborg FK",
+      "target": "Sarpsborg 08",
+      "evidence": [
+        {
+          "event_id": "401873932",
+          "date": "2026-09-18",
+          "home": "Sarpsborg 08",
+          "away": "KFUM Oslo",
+          "score": [
+            1,
+            3
+          ]
+        },
+        {
+          "event_id": "401843457",
+          "date": "2026-10-11",
+          "home": "Aalesund",
+          "away": "Sarpsborg 08",
+          "score": [
+            2,
+            4
+          ]
+        },
+        {
+          "event_id": "401843461",
+          "date": "2026-10-18",
+          "home": "Sarpsborg 08",
+          "away": "Rosenborg",
+          "score": [
+            0,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "division": "NOR",
+      "provider": "ESPN",
+      "team_id": "987",
+      "source_name": "Lillestrom",
+      "target": "Lillestrom",
+      "evidence": [
+        {
+          "event_id": "401843444",
+          "date": "2026-09-20",
+          "home": "Viking",
+          "away": "Lillestrom",
+          "score": [
+            3,
+            0
+          ]
+        },
+        {
+          "event_id": "401843452",
+          "date": "2026-10-11",
+          "home": "Lillestrom",
+          "away": "Molde",
+          "score": [
+            2,
+            2
+          ]
+        },
+        {
+          "event_id": "401843462",
+          "date": "2026-10-18",
+          "home": "Sandefjord",
+          "away": "Lillestrom",
+          "score": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "NOR",
+      "provider": "ESPN",
+      "team_id": "3278",
+      "source_name": "Aalesund",
+      "target": "Aalesund",
+      "evidence": [
+        {
+          "event_id": "401873903",
+          "date": "2026-09-19",
+          "home": "Molde",
+          "away": "Aalesund",
+          "score": [
+            1,
+            2
+          ]
+        },
+        {
+          "event_id": "401843457",
+          "date": "2026-10-11",
+          "home": "Aalesund",
+          "away": "Sarpsborg 08",
+          "score": [
+            2,
+            4
+          ]
+        },
+        {
+          "event_id": "401843464",
+          "date": "2026-10-17",
+          "home": "Kristiansund",
+          "away": "Aalesund",
+          "score": [
+            1,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "division": "NOR",
+      "provider": "ESPN",
+      "team_id": "3279",
+      "source_name": "Sandefjord",
+      "target": "Sandefjord",
+      "evidence": [
+        {
+          "event_id": "401843435",
+          "date": "2026-09-14",
+          "home": "Bodo/Glimt",
+          "away": "Sandefjord",
+          "score": [
+            3,
+            2
+          ]
+        },
+        {
+          "event_id": "401843447",
+          "date": "2026-09-20",
+          "home": "Sandefjord",
+          "away": "Start",
+          "score": [
+            3,
+            0
+          ]
+        },
+        {
+          "event_id": "401843451",
+          "date": "2026-10-10",
+          "home": "Rosenborg",
+          "away": "Sandefjord",
+          "score": [
+            1,
+            1
+          ]
+        },
+        {
+          "event_id": "401843462",
+          "date": "2026-10-18",
+          "home": "Sandefjord",
+          "away": "Lillestrom",
+          "score": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "NOR",
+      "provider": "ESPN",
+      "team_id": "2715",
+      "source_name": "Molde",
+      "target": "Molde",
+      "evidence": [
+        {
+          "event_id": "401873903",
+          "date": "2026-09-19",
+          "home": "Molde",
+          "away": "Aalesund",
+          "score": [
+            1,
+            2
+          ]
+        },
+        {
+          "event_id": "401843452",
+          "date": "2026-10-11",
+          "home": "Lillestrom",
+          "away": "Molde",
+          "score": [
+            2,
+            2
+          ]
+        },
+        {
+          "event_id": "401843463",
+          "date": "2026-10-18",
+          "home": "Molde",
+          "away": "Start",
+          "score": [
+            6,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "division": "NOR",
+      "provider": "ESPN",
+      "team_id": "510",
+      "source_name": "Viking FK",
+      "target": "Viking",
+      "evidence": [
+        {
+          "event_id": "401843444",
+          "date": "2026-09-20",
+          "home": "Viking",
+          "away": "Lillestrom",
+          "score": [
+            3,
+            0
+          ]
+        },
+        {
+          "event_id": "401843455",
+          "date": "2026-10-09",
+          "home": "Brann",
+          "away": "Viking",
+          "score": [
+            0,
+            2
+          ]
+        },
+        {
+          "event_id": "401843459",
+          "date": "2026-10-17",
+          "home": "Viking",
+          "away": "Fredrikstad",
+          "score": [
+            3,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "NOR",
+      "provider": "ESPN",
+      "team_id": "22165",
+      "source_name": "KFUM Oslo",
+      "target": "KFUM Oslo",
+      "evidence": [
+        {
+          "event_id": "401873932",
+          "date": "2026-09-18",
+          "home": "Sarpsborg 08",
+          "away": "KFUM Oslo",
+          "score": [
+            1,
+            3
+          ]
+        },
+        {
+          "event_id": "401843453",
+          "date": "2026-10-12",
+          "home": "KFUM Oslo",
+          "away": "Valerenga",
+          "score": [
+            2,
+            1
+          ]
+        },
+        {
+          "event_id": "401843460",
+          "date": "2026-10-18",
+          "home": "Tromso",
+          "away": "KFUM Oslo",
+          "score": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "division": "NOR",
+      "provider": "ESPN",
+      "team_id": "3039",
+      "source_name": "Fredrikstad",
+      "target": "Fredrikstad",
+      "evidence": [
+        {
+          "event_id": "401843450",
+          "date": "2026-09-20",
+          "home": "Valerenga",
+          "away": "Fredrikstad",
+          "score": [
+            1,
+            1
+          ]
+        },
+        {
+          "event_id": "401843454",
+          "date": "2026-10-11",
+          "home": "Fredrikstad",
+          "away": "Tromso",
+          "score": [
+            1,
+            1
+          ]
+        },
+        {
+          "event_id": "401843459",
+          "date": "2026-10-17",
+          "home": "Viking",
+          "away": "Fredrikstad",
+          "score": [
+            3,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "NOR",
+      "provider": "ESPN",
+      "team_id": "620",
+      "source_name": "SK Brann",
+      "target": "Brann",
+      "evidence": [
+        {
+          "event_id": "401843443",
+          "date": "2026-09-20",
+          "home": "Brann",
+          "away": "Bodo/Glimt",
+          "score": [
+            2,
+            1
+          ]
+        },
+        {
+          "event_id": "401843455",
+          "date": "2026-10-09",
+          "home": "Brann",
+          "away": "Viking",
+          "score": [
+            0,
+            2
+          ]
+        },
+        {
+          "event_id": "401843466",
+          "date": "2026-10-18",
+          "home": "Valerenga",
+          "away": "Brann",
+          "score": [
+            3,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "division": "NOR",
+      "provider": "ESPN",
+      "team_id": "6672",
+      "source_name": "Kristiansund BK",
+      "target": "Kristiansund",
+      "evidence": [
+        {
+          "event_id": "401873922",
+          "date": "2026-09-19",
+          "home": "Kristiansund",
+          "away": "Rosenborg",
+          "score": [
+            1,
+            3
+          ]
+        },
+        {
+          "event_id": "401843456",
+          "date": "2026-10-10",
+          "home": "Bodo/Glimt",
+          "away": "Kristiansund",
+          "score": [
+            3,
+            1
+          ]
+        },
+        {
+          "event_id": "401843464",
+          "date": "2026-10-17",
+          "home": "Kristiansund",
+          "away": "Aalesund",
+          "score": [
+            1,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "division": "NOR",
+      "provider": "ESPN",
+      "team_id": "438",
+      "source_name": "Rosenborg",
+      "target": "Rosenborg",
+      "evidence": [
+        {
+          "event_id": "401873922",
+          "date": "2026-09-19",
+          "home": "Kristiansund",
+          "away": "Rosenborg",
+          "score": [
+            1,
+            3
+          ]
+        },
+        {
+          "event_id": "401843451",
+          "date": "2026-10-10",
+          "home": "Rosenborg",
+          "away": "Sandefjord",
+          "score": [
+            1,
+            1
+          ]
+        },
+        {
+          "event_id": "401843461",
+          "date": "2026-10-18",
+          "home": "Sarpsborg 08",
+          "away": "Rosenborg",
+          "score": [
+            0,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "division": "NOR",
+      "provider": "ESPN",
+      "team_id": "6750",
+      "source_name": "IK Start",
+      "target": "Start",
+      "evidence": [
+        {
+          "event_id": "401843447",
+          "date": "2026-09-20",
+          "home": "Sandefjord",
+          "away": "Start",
+          "score": [
+            3,
+            0
+          ]
+        },
+        {
+          "event_id": "401843458",
+          "date": "2026-10-11",
+          "home": "Start",
+          "away": "HamKam",
+          "score": [
+            2,
+            4
+          ]
+        },
+        {
+          "event_id": "401843463",
+          "date": "2026-10-18",
+          "home": "Molde",
+          "away": "Start",
+          "score": [
+            6,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "division": "NOR",
+      "provider": "ESPN",
+      "team_id": "2791",
+      "source_name": "Vålerenga",
+      "target": "Valerenga",
+      "evidence": [
+        {
+          "event_id": "401843450",
+          "date": "2026-09-20",
+          "home": "Valerenga",
+          "away": "Fredrikstad",
+          "score": [
+            1,
+            1
+          ]
+        },
+        {
+          "event_id": "401843453",
+          "date": "2026-10-12",
+          "home": "KFUM Oslo",
+          "away": "Valerenga",
+          "score": [
+            2,
+            1
+          ]
+        },
+        {
+          "event_id": "401843466",
+          "date": "2026-10-18",
+          "home": "Valerenga",
+          "away": "Brann",
+          "score": [
+            3,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWE",
+      "provider": "ESPN",
+      "team_id": "994",
+      "source_name": "AIK",
+      "target": "AIK",
+      "evidence": [
+        {
+          "event_id": "401842832",
+          "date": "2026-09-20",
+          "home": "Halmstad",
+          "away": "AIK",
+          "score": [
+            2,
+            1
+          ]
+        },
+        {
+          "event_id": "401874022",
+          "date": "2026-10-10",
+          "home": "AIK",
+          "away": "Brommapojkarna",
+          "score": [
+            5,
+            6
+          ]
+        },
+        {
+          "event_id": "401842848",
+          "date": "2026-10-17",
+          "home": "AIK",
+          "away": "Goteborg",
+          "score": [
+            2,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWE",
+      "provider": "ESPN",
+      "team_id": "20856",
+      "source_name": "Degerfors IF",
+      "target": "Degerfors",
+      "evidence": [
+        {
+          "event_id": "401842827",
+          "date": "2026-09-20",
+          "home": "Degerfors",
+          "away": "Hammarby",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "401874087",
+          "date": "2026-10-10",
+          "home": "Mjallby",
+          "away": "Degerfors",
+          "score": [
+            1,
+            1
+          ]
+        },
+        {
+          "event_id": "401842846",
+          "date": "2026-10-19",
+          "home": "Degerfors",
+          "away": "Kalmar",
+          "score": [
+            1,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWE",
+      "provider": "ESPN",
+      "team_id": "20301",
+      "source_name": "Mjällby AIF",
+      "target": "Mjallby",
+      "evidence": [
+        {
+          "event_id": "401842830",
+          "date": "2026-09-20",
+          "home": "Mjallby",
+          "away": "GAIS",
+          "score": [
+            0,
+            3
+          ]
+        },
+        {
+          "event_id": "401874087",
+          "date": "2026-10-10",
+          "home": "Mjallby",
+          "away": "Degerfors",
+          "score": [
+            1,
+            1
+          ]
+        },
+        {
+          "event_id": "401842842",
+          "date": "2026-10-18",
+          "home": "Vasteras SK",
+          "away": "Mjallby",
+          "score": [
+            1,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWE",
+      "provider": "ESPN",
+      "team_id": "2720",
+      "source_name": "Malmö FF",
+      "target": "Malmo FF",
+      "evidence": [
+        {
+          "event_id": "401874081",
+          "date": "2026-09-19",
+          "home": "Vasteras SK",
+          "away": "Malmo FF",
+          "score": [
+            2,
+            0
+          ]
+        },
+        {
+          "event_id": "401874018",
+          "date": "2026-10-12",
+          "home": "Malmo FF",
+          "away": "Kalmar",
+          "score": [
+            1,
+            0
+          ]
+        },
+        {
+          "event_id": "401842844",
+          "date": "2026-10-18",
+          "home": "Malmo FF",
+          "away": "Hacken",
+          "score": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWE",
+      "provider": "ESPN",
+      "team_id": "8222",
+      "source_name": "GAIS",
+      "target": "GAIS",
+      "evidence": [
+        {
+          "event_id": "401842830",
+          "date": "2026-09-20",
+          "home": "Mjallby",
+          "away": "GAIS",
+          "score": [
+            0,
+            3
+          ]
+        },
+        {
+          "event_id": "401874016",
+          "date": "2026-10-10",
+          "home": "GAIS",
+          "away": "Sirius",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "401842849",
+          "date": "2026-10-18",
+          "home": "Orgryte",
+          "away": "GAIS",
+          "score": [
+            4,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWE",
+      "provider": "ESPN",
+      "team_id": "22163",
+      "source_name": "Västerås SK",
+      "target": "Vasteras SK",
+      "evidence": [
+        {
+          "event_id": "401874081",
+          "date": "2026-09-19",
+          "home": "Vasteras SK",
+          "away": "Malmo FF",
+          "score": [
+            2,
+            0
+          ]
+        },
+        {
+          "event_id": "401874089",
+          "date": "2026-10-09",
+          "home": "Goteborg",
+          "away": "Vasteras SK",
+          "score": [
+            1,
+            0
+          ]
+        },
+        {
+          "event_id": "401842842",
+          "date": "2026-10-18",
+          "home": "Vasteras SK",
+          "away": "Mjallby",
+          "score": [
+            1,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWE",
+      "provider": "ESPN",
+      "team_id": "2495",
+      "source_name": "Hammarby IF",
+      "target": "Hammarby",
+      "evidence": [
+        {
+          "event_id": "401842827",
+          "date": "2026-09-20",
+          "home": "Degerfors",
+          "away": "Hammarby",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "401842837",
+          "date": "2026-10-11",
+          "home": "Hammarby",
+          "away": "Djurgarden",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "401842845",
+          "date": "2026-10-18",
+          "home": "Halmstad",
+          "away": "Hammarby",
+          "score": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWE",
+      "provider": "ESPN",
+      "team_id": "2556",
+      "source_name": "IFK Göteborg",
+      "target": "Goteborg",
+      "evidence": [
+        {
+          "event_id": "401873990",
+          "date": "2026-09-19",
+          "home": "Brommapojkarna",
+          "away": "Goteborg",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "401874089",
+          "date": "2026-10-09",
+          "home": "Goteborg",
+          "away": "Vasteras SK",
+          "score": [
+            1,
+            0
+          ]
+        },
+        {
+          "event_id": "401842848",
+          "date": "2026-10-17",
+          "home": "AIK",
+          "away": "Goteborg",
+          "score": [
+            2,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWE",
+      "provider": "ESPN",
+      "team_id": "131552",
+      "source_name": "Örgryte IS",
+      "target": "Orgryte",
+      "evidence": [
+        {
+          "event_id": "401874085",
+          "date": "2026-09-19",
+          "home": "Orgryte",
+          "away": "Sirius",
+          "score": [
+            1,
+            2
+          ]
+        },
+        {
+          "event_id": "401842836",
+          "date": "2026-10-11",
+          "home": "Hacken",
+          "away": "Orgryte",
+          "score": [
+            3,
+            0
+          ]
+        },
+        {
+          "event_id": "401842849",
+          "date": "2026-10-18",
+          "home": "Orgryte",
+          "away": "GAIS",
+          "score": [
+            4,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWE",
+      "provider": "ESPN",
+      "team_id": "3052",
+      "source_name": "Kalmar FF",
+      "target": "Kalmar",
+      "evidence": [
+        {
+          "event_id": "401842831",
+          "date": "2026-09-20",
+          "home": "Kalmar",
+          "away": "Hacken",
+          "score": [
+            0,
+            5
+          ]
+        },
+        {
+          "event_id": "401874018",
+          "date": "2026-10-12",
+          "home": "Malmo FF",
+          "away": "Kalmar",
+          "score": [
+            1,
+            0
+          ]
+        },
+        {
+          "event_id": "401842846",
+          "date": "2026-10-19",
+          "home": "Degerfors",
+          "away": "Kalmar",
+          "score": [
+            1,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWE",
+      "provider": "ESPN",
+      "team_id": "529",
+      "source_name": "IF Elfsborg",
+      "target": "Elfsborg",
+      "evidence": [
+        {
+          "event_id": "401842828",
+          "date": "2026-09-20",
+          "home": "Djurgarden",
+          "away": "Elfsborg",
+          "score": [
+            1,
+            2
+          ]
+        },
+        {
+          "event_id": "401874019",
+          "date": "2026-10-12",
+          "home": "Elfsborg",
+          "away": "Halmstad",
+          "score": [
+            4,
+            0
+          ]
+        },
+        {
+          "event_id": "401842843",
+          "date": "2026-10-18",
+          "home": "Sirius",
+          "away": "Elfsborg",
+          "score": [
+            2,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWE",
+      "provider": "ESPN",
+      "team_id": "3017",
+      "source_name": "Halmstads BK",
+      "target": "Halmstad",
+      "evidence": [
+        {
+          "event_id": "401842832",
+          "date": "2026-09-20",
+          "home": "Halmstad",
+          "away": "AIK",
+          "score": [
+            2,
+            1
+          ]
+        },
+        {
+          "event_id": "401874019",
+          "date": "2026-10-12",
+          "home": "Elfsborg",
+          "away": "Halmstad",
+          "score": [
+            4,
+            0
+          ]
+        },
+        {
+          "event_id": "401842845",
+          "date": "2026-10-18",
+          "home": "Halmstad",
+          "away": "Hammarby",
+          "score": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWE",
+      "provider": "ESPN",
+      "team_id": "8547",
+      "source_name": "IK Sirius",
+      "target": "Sirius",
+      "evidence": [
+        {
+          "event_id": "401874085",
+          "date": "2026-09-19",
+          "home": "Orgryte",
+          "away": "Sirius",
+          "score": [
+            1,
+            2
+          ]
+        },
+        {
+          "event_id": "401874016",
+          "date": "2026-10-10",
+          "home": "GAIS",
+          "away": "Sirius",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "401842843",
+          "date": "2026-10-18",
+          "home": "Sirius",
+          "away": "Elfsborg",
+          "score": [
+            2,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWE",
+      "provider": "ESPN",
+      "team_id": "2339",
+      "source_name": "Djurgården",
+      "target": "Djurgarden",
+      "evidence": [
+        {
+          "event_id": "401842828",
+          "date": "2026-09-20",
+          "home": "Djurgarden",
+          "away": "Elfsborg",
+          "score": [
+            1,
+            2
+          ]
+        },
+        {
+          "event_id": "401842837",
+          "date": "2026-10-11",
+          "home": "Hammarby",
+          "away": "Djurgarden",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "401842847",
+          "date": "2026-10-16",
+          "home": "Brommapojkarna",
+          "away": "Djurgarden",
+          "score": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWE",
+      "provider": "ESPN",
+      "team_id": "7834",
+      "source_name": "BK Häcken",
+      "target": "Hacken",
+      "evidence": [
+        {
+          "event_id": "401842831",
+          "date": "2026-09-20",
+          "home": "Kalmar",
+          "away": "Hacken",
+          "score": [
+            0,
+            5
+          ]
+        },
+        {
+          "event_id": "401842836",
+          "date": "2026-10-11",
+          "home": "Hacken",
+          "away": "Orgryte",
+          "score": [
+            3,
+            0
+          ]
+        },
+        {
+          "event_id": "401842844",
+          "date": "2026-10-18",
+          "home": "Malmo FF",
+          "away": "Hacken",
+          "score": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWE",
+      "provider": "ESPN",
+      "team_id": "8221",
+      "source_name": "IF Brommapojkarna",
+      "target": "Brommapojkarna",
+      "evidence": [
+        {
+          "event_id": "401873990",
+          "date": "2026-09-19",
+          "home": "Brommapojkarna",
+          "away": "Goteborg",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "401874022",
+          "date": "2026-10-10",
+          "home": "AIK",
+          "away": "Brommapojkarna",
+          "score": [
+            5,
+            6
+          ]
+        },
+        {
+          "event_id": "401842847",
+          "date": "2026-10-16",
+          "home": "Brommapojkarna",
+          "away": "Djurgarden",
+          "score": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "DNK",
+      "provider": "ESPN",
+      "team_id": "11550",
+      "source_name": "Odense Boldklub",
+      "target": "Odense",
+      "evidence": [
+        {
+          "event_id": "401874536",
+          "date": "2026-09-19",
+          "home": "Odense",
+          "away": "Midtjylland",
+          "score": [
+            1,
+            1
+          ]
+        },
+        {
+          "event_id": "401874517",
+          "date": "2026-10-09",
+          "home": "Nordsjaelland",
+          "away": "Odense",
+          "score": [
+            0,
+            0
+          ]
+        },
+        {
+          "event_id": "401874548",
+          "date": "2026-10-18",
+          "home": "Odense",
+          "away": "Brondby",
+          "score": [
+            2,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "division": "DNK",
+      "provider": "ESPN",
+      "team_id": "3153",
+      "source_name": "Viborg FF",
+      "target": "Viborg",
+      "evidence": [
+        {
+          "event_id": "401874495",
+          "date": "2026-09-20",
+          "home": "Viborg",
+          "away": "Nordsjaelland",
+          "score": [
+            4,
+            1
+          ]
+        },
+        {
+          "event_id": "401874724",
+          "date": "2026-10-11",
+          "home": "Randers FC",
+          "away": "Viborg",
+          "score": [
+            0,
+            2
+          ]
+        },
+        {
+          "event_id": "401874524",
+          "date": "2026-10-19",
+          "home": "Viborg",
+          "away": "Midtjylland",
+          "score": [
+            1,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "DNK",
+      "provider": "ESPN",
+      "team_id": "7853",
+      "source_name": "AGF",
+      "target": "Aarhus",
+      "evidence": [
+        {
+          "event_id": "401874529",
+          "date": "2026-09-20",
+          "home": "Horsens",
+          "away": "Aarhus",
+          "score": [
+            2,
+            2
+          ]
+        },
+        {
+          "event_id": "401874516",
+          "date": "2026-10-12",
+          "home": "Aarhus",
+          "away": "Sonderjyske",
+          "score": [
+            3,
+            0
+          ]
+        },
+        {
+          "event_id": "401874551",
+          "date": "2026-10-18",
+          "home": "FC Copenhagen",
+          "away": "Aarhus",
+          "score": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "division": "DNK",
+      "provider": "ESPN",
+      "team_id": "7860",
+      "source_name": "Lyngby Boldklub",
+      "target": "Lyngby",
+      "evidence": [
+        {
+          "event_id": "401874503",
+          "date": "2026-09-18",
+          "home": "Lyngby",
+          "away": "Silkeborg",
+          "score": [
+            0,
+            4
+          ]
+        },
+        {
+          "event_id": "401874521",
+          "date": "2026-10-11",
+          "home": "Brondby",
+          "away": "Lyngby",
+          "score": [
+            5,
+            2
+          ]
+        },
+        {
+          "event_id": "401874542",
+          "date": "2026-10-18",
+          "home": "Lyngby",
+          "away": "Nordsjaelland",
+          "score": [
+            3,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "division": "DNK",
+      "provider": "ESPN",
+      "team_id": "572",
+      "source_name": "FC Midtjylland",
+      "target": "Midtjylland",
+      "evidence": [
+        {
+          "event_id": "401874539",
+          "date": "2026-09-14",
+          "home": "Midtjylland",
+          "away": "Brondby",
+          "score": [
+            4,
+            1
+          ]
+        },
+        {
+          "event_id": "401874536",
+          "date": "2026-09-19",
+          "home": "Odense",
+          "away": "Midtjylland",
+          "score": [
+            1,
+            1
+          ]
+        },
+        {
+          "event_id": "401874498",
+          "date": "2026-10-11",
+          "home": "Midtjylland",
+          "away": "FC Copenhagen",
+          "score": [
+            2,
+            1
+          ]
+        },
+        {
+          "event_id": "401874524",
+          "date": "2026-10-19",
+          "home": "Viborg",
+          "away": "Midtjylland",
+          "score": [
+            1,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "DNK",
+      "provider": "ESPN",
+      "team_id": "607",
+      "source_name": "Silkeborg IF",
+      "target": "Silkeborg",
+      "evidence": [
+        {
+          "event_id": "401874503",
+          "date": "2026-09-18",
+          "home": "Lyngby",
+          "away": "Silkeborg",
+          "score": [
+            0,
+            4
+          ]
+        },
+        {
+          "event_id": "401874726",
+          "date": "2026-10-11",
+          "home": "Silkeborg",
+          "away": "Horsens",
+          "score": [
+            3,
+            3
+          ]
+        },
+        {
+          "event_id": "401874565",
+          "date": "2026-10-18",
+          "home": "Sonderjyske",
+          "away": "Silkeborg",
+          "score": [
+            4,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "division": "DNK",
+      "provider": "ESPN",
+      "team_id": "3132",
+      "source_name": "Randers FC",
+      "target": "Randers FC",
+      "evidence": [
+        {
+          "event_id": "401874534",
+          "date": "2026-09-20",
+          "home": "Sonderjyske",
+          "away": "Randers FC",
+          "score": [
+            4,
+            2
+          ]
+        },
+        {
+          "event_id": "401874724",
+          "date": "2026-10-11",
+          "home": "Randers FC",
+          "away": "Viborg",
+          "score": [
+            0,
+            2
+          ]
+        },
+        {
+          "event_id": "401874728",
+          "date": "2026-10-16",
+          "home": "Horsens",
+          "away": "Randers FC",
+          "score": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "division": "DNK",
+      "provider": "ESPN",
+      "team_id": "3585",
+      "source_name": "AC Horsens",
+      "target": "Horsens",
+      "evidence": [
+        {
+          "event_id": "401874529",
+          "date": "2026-09-20",
+          "home": "Horsens",
+          "away": "Aarhus",
+          "score": [
+            2,
+            2
+          ]
+        },
+        {
+          "event_id": "401874726",
+          "date": "2026-10-11",
+          "home": "Silkeborg",
+          "away": "Horsens",
+          "score": [
+            3,
+            3
+          ]
+        },
+        {
+          "event_id": "401874728",
+          "date": "2026-10-16",
+          "home": "Horsens",
+          "away": "Randers FC",
+          "score": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "division": "DNK",
+      "provider": "ESPN",
+      "team_id": "575",
+      "source_name": "Brøndby IF",
+      "target": "Brondby",
+      "evidence": [
+        {
+          "event_id": "401874539",
+          "date": "2026-09-14",
+          "home": "Midtjylland",
+          "away": "Brondby",
+          "score": [
+            4,
+            1
+          ]
+        },
+        {
+          "event_id": "401874554",
+          "date": "2026-09-20",
+          "home": "Brondby",
+          "away": "FC Copenhagen",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "401874521",
+          "date": "2026-10-11",
+          "home": "Brondby",
+          "away": "Lyngby",
+          "score": [
+            5,
+            2
+          ]
+        },
+        {
+          "event_id": "401874548",
+          "date": "2026-10-18",
+          "home": "Odense",
+          "away": "Brondby",
+          "score": [
+            2,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "division": "DNK",
+      "provider": "ESPN",
+      "team_id": "909",
+      "source_name": "F.C. København",
+      "target": "FC Copenhagen",
+      "evidence": [
+        {
+          "event_id": "401874554",
+          "date": "2026-09-20",
+          "home": "Brondby",
+          "away": "FC Copenhagen",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "401874498",
+          "date": "2026-10-11",
+          "home": "Midtjylland",
+          "away": "FC Copenhagen",
+          "score": [
+            2,
+            1
+          ]
+        },
+        {
+          "event_id": "401874551",
+          "date": "2026-10-18",
+          "home": "FC Copenhagen",
+          "away": "Aarhus",
+          "score": [
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "division": "DNK",
+      "provider": "ESPN",
+      "team_id": "3101",
+      "source_name": "FC Nordsjælland",
+      "target": "Nordsjaelland",
+      "evidence": [
+        {
+          "event_id": "401874495",
+          "date": "2026-09-20",
+          "home": "Viborg",
+          "away": "Nordsjaelland",
+          "score": [
+            4,
+            1
+          ]
+        },
+        {
+          "event_id": "401874517",
+          "date": "2026-10-09",
+          "home": "Nordsjaelland",
+          "away": "Odense",
+          "score": [
+            0,
+            0
+          ]
+        },
+        {
+          "event_id": "401874542",
+          "date": "2026-10-18",
+          "home": "Lyngby",
+          "away": "Nordsjaelland",
+          "score": [
+            3,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "division": "DNK",
+      "provider": "ESPN",
+      "team_id": "8118",
+      "source_name": "Sønderjyske Fodbold",
+      "target": "Sonderjyske",
+      "evidence": [
+        {
+          "event_id": "401874534",
+          "date": "2026-09-20",
+          "home": "Sonderjyske",
+          "away": "Randers FC",
+          "score": [
+            4,
+            2
+          ]
+        },
+        {
+          "event_id": "401874516",
+          "date": "2026-10-12",
+          "home": "Aarhus",
+          "away": "Sonderjyske",
+          "score": [
+            3,
+            0
+          ]
+        },
+        {
+          "event_id": "401874565",
+          "date": "2026-10-18",
+          "home": "Sonderjyske",
+          "away": "Silkeborg",
+          "score": [
+            4,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "division": "AUT",
+      "provider": "ESPN",
+      "team_id": "21540",
+      "source_name": "Austria Lustenau",
+      "target": "A. Lustenau",
+      "evidence": [
+        {
+          "event_id": "401881788",
+          "date": "2026-09-13",
+          "home": "Austria Vienna",
+          "away": "A. Lustenau",
+          "score": [
+            2,
+            1
+          ]
+        },
+        {
+          "event_id": "401881780",
+          "date": "2026-09-19",
+          "home": "A. Lustenau",
+          "away": "Altach",
+          "score": [
+            2,
+            0
+          ]
+        },
+        {
+          "event_id": "401881778",
+          "date": "2026-10-11",
+          "home": "Hartberg",
+          "away": "A. Lustenau",
+          "score": [
+            4,
+            3
+          ]
+        },
+        {
+          "event_id": "401881768",
+          "date": "2026-10-17",
+          "home": "A. Lustenau",
+          "away": "LASK",
+          "score": [
+            0,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "division": "AUT",
+      "provider": "ESPN",
+      "team_id": "21846",
+      "source_name": "Grazer AK",
+      "target": "Grazer AK",
+      "evidence": [
+        {
+          "event_id": "401881781",
+          "date": "2026-09-19",
+          "home": "Grazer AK",
+          "away": "Austria Vienna",
+          "score": [
+            2,
+            2
+          ]
+        },
+        {
+          "event_id": "401881776",
+          "date": "2026-10-10",
+          "home": "Grazer AK",
+          "away": "Salzburg",
+          "score": [
+            0,
+            0
+          ]
+        },
+        {
+          "event_id": "401881773",
+          "date": "2026-10-18",
+          "home": "Sturm Graz",
+          "away": "Grazer AK",
+          "score": [
+            6,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "division": "AUT",
+      "provider": "ESPN",
+      "team_id": "3759",
+      "source_name": "SV Josko Ried",
+      "target": "Ried",
+      "evidence": [
+        {
+          "event_id": "401881782",
+          "date": "2026-09-20",
+          "home": "Ried",
+          "away": "Wolfsberger AC",
+          "score": [
+            4,
+            1
+          ]
+        },
+        {
+          "event_id": "401881774",
+          "date": "2026-10-10",
+          "home": "Tirol",
+          "away": "Ried",
+          "score": [
+            1,
+            2
+          ]
+        },
+        {
+          "event_id": "401881770",
+          "date": "2026-10-17",
+          "home": "Ried",
+          "away": "Austria Vienna",
+          "score": [
+            3,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "AUT",
+      "provider": "ESPN",
+      "team_id": "4411",
+      "source_name": "LASK Linz",
+      "target": "LASK",
+      "evidence": [
+        {
+          "event_id": "401881791",
+          "date": "2026-09-13",
+          "home": "Sturm Graz",
+          "away": "LASK",
+          "score": [
+            2,
+            1
+          ]
+        },
+        {
+          "event_id": "401881783",
+          "date": "2026-09-20",
+          "home": "Hartberg",
+          "away": "LASK",
+          "score": [
+            3,
+            3
+          ]
+        },
+        {
+          "event_id": "401881779",
+          "date": "2026-10-11",
+          "home": "LASK",
+          "away": "SK Rapid",
+          "score": [
+            0,
+            2
+          ]
+        },
+        {
+          "event_id": "401881768",
+          "date": "2026-10-17",
+          "home": "A. Lustenau",
+          "away": "LASK",
+          "score": [
+            0,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "division": "AUT",
+      "provider": "ESPN",
+      "team_id": "6907",
+      "source_name": "TSV Hartberg",
+      "target": "Hartberg",
+      "evidence": [
+        {
+          "event_id": "401881786",
+          "date": "2026-09-13",
+          "home": "Tirol",
+          "away": "Hartberg",
+          "score": [
+            2,
+            2
+          ]
+        },
+        {
+          "event_id": "401881783",
+          "date": "2026-09-20",
+          "home": "Hartberg",
+          "away": "LASK",
+          "score": [
+            3,
+            3
+          ]
+        },
+        {
+          "event_id": "401881778",
+          "date": "2026-10-11",
+          "home": "Hartberg",
+          "away": "A. Lustenau",
+          "score": [
+            4,
+            3
+          ]
+        },
+        {
+          "event_id": "401881771",
+          "date": "2026-10-16",
+          "home": "SK Rapid",
+          "away": "Hartberg",
+          "score": [
+            3,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "division": "AUT",
+      "provider": "ESPN",
+      "team_id": "519",
+      "source_name": "Rapid Vienna",
+      "target": "SK Rapid",
+      "evidence": [
+        {
+          "event_id": "401881784",
+          "date": "2026-09-18",
+          "home": "SK Rapid",
+          "away": "Tirol",
+          "score": [
+            3,
+            0
+          ]
+        },
+        {
+          "event_id": "401881779",
+          "date": "2026-10-11",
+          "home": "LASK",
+          "away": "SK Rapid",
+          "score": [
+            0,
+            2
+          ]
+        },
+        {
+          "event_id": "401881771",
+          "date": "2026-10-16",
+          "home": "SK Rapid",
+          "away": "Hartberg",
+          "score": [
+            3,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "division": "AUT",
+      "provider": "ESPN",
+      "team_id": "18794",
+      "source_name": "WSG Swarovski Tirol",
+      "target": "Tirol",
+      "evidence": [
+        {
+          "event_id": "401881786",
+          "date": "2026-09-13",
+          "home": "Tirol",
+          "away": "Hartberg",
+          "score": [
+            2,
+            2
+          ]
+        },
+        {
+          "event_id": "401881784",
+          "date": "2026-09-18",
+          "home": "SK Rapid",
+          "away": "Tirol",
+          "score": [
+            3,
+            0
+          ]
+        },
+        {
+          "event_id": "401881774",
+          "date": "2026-10-10",
+          "home": "Tirol",
+          "away": "Ried",
+          "score": [
+            1,
+            2
+          ]
+        },
+        {
+          "event_id": "401881769",
+          "date": "2026-10-18",
+          "home": "Wolfsberger AC",
+          "away": "Tirol",
+          "score": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "AUT",
+      "provider": "ESPN",
+      "team_id": "13294",
+      "source_name": "Wolfsberger",
+      "target": "Wolfsberger AC",
+      "evidence": [
+        {
+          "event_id": "401881782",
+          "date": "2026-09-20",
+          "home": "Ried",
+          "away": "Wolfsberger AC",
+          "score": [
+            4,
+            1
+          ]
+        },
+        {
+          "event_id": "401881775",
+          "date": "2026-10-11",
+          "home": "Altach",
+          "away": "Wolfsberger AC",
+          "score": [
+            3,
+            0
+          ]
+        },
+        {
+          "event_id": "401881769",
+          "date": "2026-10-18",
+          "home": "Wolfsberger AC",
+          "away": "Tirol",
+          "score": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "AUT",
+      "provider": "ESPN",
+      "team_id": "2790",
+      "source_name": "RB Salzburg",
+      "target": "Salzburg",
+      "evidence": [
+        {
+          "event_id": "401881785",
+          "date": "2026-09-20",
+          "home": "Salzburg",
+          "away": "Sturm Graz",
+          "score": [
+            3,
+            0
+          ]
+        },
+        {
+          "event_id": "401881776",
+          "date": "2026-10-10",
+          "home": "Grazer AK",
+          "away": "Salzburg",
+          "score": [
+            0,
+            0
+          ]
+        },
+        {
+          "event_id": "401881772",
+          "date": "2026-10-18",
+          "home": "Salzburg",
+          "away": "Altach",
+          "score": [
+            3,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "division": "AUT",
+      "provider": "ESPN",
+      "team_id": "3746",
+      "source_name": "SK Sturm Graz",
+      "target": "Sturm Graz",
+      "evidence": [
+        {
+          "event_id": "401881791",
+          "date": "2026-09-13",
+          "home": "Sturm Graz",
+          "away": "LASK",
+          "score": [
+            2,
+            1
+          ]
+        },
+        {
+          "event_id": "401881785",
+          "date": "2026-09-20",
+          "home": "Salzburg",
+          "away": "Sturm Graz",
+          "score": [
+            3,
+            0
+          ]
+        },
+        {
+          "event_id": "401881777",
+          "date": "2026-10-10",
+          "home": "Austria Vienna",
+          "away": "Sturm Graz",
+          "score": [
+            0,
+            2
+          ]
+        },
+        {
+          "event_id": "401881773",
+          "date": "2026-10-18",
+          "home": "Sturm Graz",
+          "away": "Grazer AK",
+          "score": [
+            6,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "division": "AUT",
+      "provider": "ESPN",
+      "team_id": "1382",
+      "source_name": "Austria Vienna",
+      "target": "Austria Vienna",
+      "evidence": [
+        {
+          "event_id": "401881788",
+          "date": "2026-09-13",
+          "home": "Austria Vienna",
+          "away": "A. Lustenau",
+          "score": [
+            2,
+            1
+          ]
+        },
+        {
+          "event_id": "401881781",
+          "date": "2026-09-19",
+          "home": "Grazer AK",
+          "away": "Austria Vienna",
+          "score": [
+            2,
+            2
+          ]
+        },
+        {
+          "event_id": "401881777",
+          "date": "2026-10-10",
+          "home": "Austria Vienna",
+          "away": "Sturm Graz",
+          "score": [
+            0,
+            2
+          ]
+        },
+        {
+          "event_id": "401881770",
+          "date": "2026-10-17",
+          "home": "Ried",
+          "away": "Austria Vienna",
+          "score": [
+            3,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "AUT",
+      "provider": "ESPN",
+      "team_id": "4405",
+      "source_name": "SC Rheindorf Altach",
+      "target": "Altach",
+      "evidence": [
+        {
+          "event_id": "401881780",
+          "date": "2026-09-19",
+          "home": "A. Lustenau",
+          "away": "Altach",
+          "score": [
+            2,
+            0
+          ]
+        },
+        {
+          "event_id": "401881775",
+          "date": "2026-10-11",
+          "home": "Altach",
+          "away": "Wolfsberger AC",
+          "score": [
+            3,
+            0
+          ]
+        },
+        {
+          "event_id": "401881772",
+          "date": "2026-10-18",
+          "home": "Salzburg",
+          "away": "Altach",
+          "score": [
+            3,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "division": "POL",
+      "provider": "Ekstraklasa",
+      "team_id": "a04a3cb5-3b8b-4206-afff-228601719ae4",
+      "source_name": "Cracovia",
+      "target": "Cracovia",
+      "evidence": [
+        {
+          "event_id": "26434c93-7b44-4496-b209-157d36d86669",
+          "date": "2024-02-23",
+          "home": "Piast Gliwice",
+          "away": "Cracovia",
+          "score": [
+            0,
+            0
+          ]
+        },
+        {
+          "event_id": "f33fbf02-cc94-4e89-835b-6ca665acd1ef",
+          "date": "2024-07-21",
+          "home": "Cracovia",
+          "away": "Piast Gliwice",
+          "score": [
+            1,
+            1
+          ]
+        },
+        {
+          "event_id": "1efee6a1-2990-4d81-9210-df8fbed26de4",
+          "date": "2024-10-26",
+          "home": "Cracovia",
+          "away": "Motor Lublin",
+          "score": [
+            6,
+            2
+          ]
+        },
+        {
+          "event_id": "36e8af01-eed2-4dcc-8c54-b743fa9a5c81",
+          "date": "2024-12-08",
+          "home": "Piast Gliwice",
+          "away": "Cracovia",
+          "score": [
+            0,
+            0
+          ]
+        },
+        {
+          "event_id": "fda114bc-acd9-46f2-aa08-88c3e407a6aa",
+          "date": "2025-04-26",
+          "home": "Motor Lublin",
+          "away": "Cracovia",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "69c3a8a5-57d1-402c-8202-88f7de57f147",
+          "date": "2025-08-24",
+          "home": "Piast Gliwice",
+          "away": "Cracovia",
+          "score": [
+            0,
+            0
+          ]
+        }
+      ],
+      "source_names": [
+        "Cracovia"
+      ]
+    },
+    {
+      "division": "POL",
+      "provider": "Ekstraklasa",
+      "team_id": "479fd831-1b80-4b1a-8dcc-97fe92354518",
+      "source_name": "Motor Lublin",
+      "target": "Motor Lublin",
+      "evidence": [
+        {
+          "event_id": "1efee6a1-2990-4d81-9210-df8fbed26de4",
+          "date": "2024-10-26",
+          "home": "Cracovia",
+          "away": "Motor Lublin",
+          "score": [
+            6,
+            2
+          ]
+        },
+        {
+          "event_id": "8db4af5a-ab19-4291-8034-d761f0dbdb06",
+          "date": "2024-11-22",
+          "home": "Zaglebie",
+          "away": "Motor Lublin",
+          "score": [
+            1,
+            2
+          ]
+        },
+        {
+          "event_id": "fda114bc-acd9-46f2-aa08-88c3e407a6aa",
+          "date": "2025-04-26",
+          "home": "Motor Lublin",
+          "away": "Cracovia",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "5542feec-b13d-497b-bed0-435f6601a889",
+          "date": "2025-05-18",
+          "home": "Motor Lublin",
+          "away": "Zaglebie",
+          "score": [
+            1,
+            0
+          ]
+        },
+        {
+          "event_id": "527e8049-fa02-46b6-9cd2-5b7fb47742fe",
+          "date": "2025-09-21",
+          "home": "Zaglebie",
+          "away": "Motor Lublin",
+          "score": [
+            2,
+            2
+          ]
+        },
+        {
+          "event_id": "aee45991-cba8-4c60-890f-a90020a0014c",
+          "date": "2025-11-22",
+          "home": "Cracovia",
+          "away": "Motor Lublin",
+          "score": [
+            1,
+            2
+          ]
+        }
+      ],
+      "source_names": [
+        "Motor Lublin"
+      ]
+    },
+    {
+      "division": "POL",
+      "provider": "Ekstraklasa",
+      "team_id": "45f44045-c6d4-4579-921b-1fc607c974bc",
+      "source_name": "Górnik Zabrze",
+      "target": "Gornik Zabrze",
+      "evidence": [
+        {
+          "event_id": "04da4f34-55e9-44c7-9415-db333f1f4ebc",
+          "date": "2024-02-19",
+          "home": "Gornik Zabrze",
+          "away": "Korona Kielce",
+          "score": [
+            3,
+            1
+          ]
+        },
+        {
+          "event_id": "2f0d9f44-cb6e-485d-9b09-45d8becd1aab",
+          "date": "2024-02-25",
+          "home": "Widzew Lodz",
+          "away": "Gornik Zabrze",
+          "score": [
+            3,
+            1
+          ]
+        },
+        {
+          "event_id": "2f221d67-69c9-46fb-8f67-ada65276bd7a",
+          "date": "2024-04-01",
+          "home": "Gornik Zabrze",
+          "away": "Legia",
+          "score": [
+            1,
+            3
+          ]
+        },
+        {
+          "event_id": "6b6aaa07-06de-4d2e-91f1-d8cde4482f3c",
+          "date": "2024-04-19",
+          "home": "Rakow",
+          "away": "Gornik Zabrze",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "2e1132d6-5966-4818-b4fa-058b532b3e14",
+          "date": "2024-08-18",
+          "home": "Gornik Zabrze",
+          "away": "Rakow",
+          "score": [
+            0,
+            0
+          ]
+        },
+        {
+          "event_id": "ababfe07-d4ea-4963-a34b-f8634b63667b",
+          "date": "2024-09-28",
+          "home": "Legia",
+          "away": "Gornik Zabrze",
+          "score": [
+            1,
+            1
+          ]
+        }
+      ],
+      "source_names": [
+        "Górnik Zabrze"
+      ]
+    },
+    {
+      "division": "POL",
+      "provider": "Ekstraklasa",
+      "team_id": "ddde9bd0-db53-4bcf-a732-5cce1458a3e3",
+      "source_name": "Legia Warszawa",
+      "target": "Legia",
+      "evidence": [
+        {
+          "event_id": "2f221d67-69c9-46fb-8f67-ada65276bd7a",
+          "date": "2024-04-01",
+          "home": "Gornik Zabrze",
+          "away": "Legia",
+          "score": [
+            1,
+            3
+          ]
+        },
+        {
+          "event_id": "f3bd5d73-2cee-4a8d-af19-0446420ff4ac",
+          "date": "2024-05-12",
+          "home": "Lech Poznan",
+          "away": "Legia",
+          "score": [
+            1,
+            2
+          ]
+        },
+        {
+          "event_id": "ababfe07-d4ea-4963-a34b-f8634b63667b",
+          "date": "2024-09-28",
+          "home": "Legia",
+          "away": "Gornik Zabrze",
+          "score": [
+            1,
+            1
+          ]
+        },
+        {
+          "event_id": "b932665b-db3c-49e0-a3e3-04c5da48e74c",
+          "date": "2024-11-10",
+          "home": "Lech Poznan",
+          "away": "Legia",
+          "score": [
+            5,
+            2
+          ]
+        },
+        {
+          "event_id": "adc87389-111c-4ef9-8599-4038dcfe765b",
+          "date": "2025-04-06",
+          "home": "Gornik Zabrze",
+          "away": "Legia",
+          "score": [
+            1,
+            2
+          ]
+        },
+        {
+          "event_id": "2f4e0b74-2365-4353-adcd-46b951d879bb",
+          "date": "2025-05-11",
+          "home": "Legia",
+          "away": "Lech Poznan",
+          "score": [
+            0,
+            1
+          ]
+        }
+      ],
+      "source_names": [
+        "Legia Warszawa"
+      ]
+    },
+    {
+      "division": "POL",
+      "provider": "Ekstraklasa",
+      "team_id": "21fb5fb9-fd84-418f-a27e-0ea3b500f7cf",
+      "source_name": "Wisła Płock",
+      "target": "Wisla Plock",
+      "evidence": [
+        {
+          "event_id": "c9670076-05d8-4339-bca2-de996cedf1e3",
+          "date": "2022-02-13",
+          "home": "Wisla Plock",
+          "away": "Piast Gliwice",
+          "score": [
+            0,
+            2
+          ]
+        },
+        {
+          "event_id": "c8afd6a6-b4d2-452d-b9d1-61ab69a5d307",
+          "date": "2022-03-13",
+          "home": "Jagiellonia",
+          "away": "Wisla Plock",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "609af850-a1f4-4627-ad8a-b3d2d92cf471",
+          "date": "2022-09-30",
+          "home": "Wisla Plock",
+          "away": "Piast Gliwice",
+          "score": [
+            1,
+            0
+          ]
+        },
+        {
+          "event_id": "7ab08c63-e189-461d-b637-b7935ea9638a",
+          "date": "2022-10-07",
+          "home": "Jagiellonia",
+          "away": "Wisla Plock",
+          "score": [
+            1,
+            1
+          ]
+        },
+        {
+          "event_id": "535590cd-87c4-4f18-8b00-bd9569fbbccd",
+          "date": "2023-04-16",
+          "home": "Piast Gliwice",
+          "away": "Wisla Plock",
+          "score": [
+            1,
+            0
+          ]
+        },
+        {
+          "event_id": "78db5bed-7c1b-4217-9159-5349d2f958fc",
+          "date": "2023-04-21",
+          "home": "Wisla Plock",
+          "away": "Jagiellonia",
+          "score": [
+            2,
+            4
+          ]
+        }
+      ],
+      "source_names": [
+        "Wisła Płock"
+      ]
+    },
+    {
+      "division": "POL",
+      "provider": "Ekstraklasa",
+      "team_id": "d688cd60-0118-4e40-b781-d1d5dbcf44b2",
+      "source_name": "Piast Gliwice",
+      "target": "Piast Gliwice",
+      "evidence": [
+        {
+          "event_id": "c9670076-05d8-4339-bca2-de996cedf1e3",
+          "date": "2022-02-13",
+          "home": "Wisla Plock",
+          "away": "Piast Gliwice",
+          "score": [
+            0,
+            2
+          ]
+        },
+        {
+          "event_id": "609af850-a1f4-4627-ad8a-b3d2d92cf471",
+          "date": "2022-09-30",
+          "home": "Wisla Plock",
+          "away": "Piast Gliwice",
+          "score": [
+            1,
+            0
+          ]
+        },
+        {
+          "event_id": "535590cd-87c4-4f18-8b00-bd9569fbbccd",
+          "date": "2023-04-16",
+          "home": "Piast Gliwice",
+          "away": "Wisla Plock",
+          "score": [
+            1,
+            0
+          ]
+        },
+        {
+          "event_id": "26434c93-7b44-4496-b209-157d36d86669",
+          "date": "2024-02-23",
+          "home": "Piast Gliwice",
+          "away": "Cracovia",
+          "score": [
+            0,
+            0
+          ]
+        },
+        {
+          "event_id": "f33fbf02-cc94-4e89-835b-6ca665acd1ef",
+          "date": "2024-07-21",
+          "home": "Cracovia",
+          "away": "Piast Gliwice",
+          "score": [
+            1,
+            1
+          ]
+        },
+        {
+          "event_id": "36e8af01-eed2-4dcc-8c54-b743fa9a5c81",
+          "date": "2024-12-08",
+          "home": "Piast Gliwice",
+          "away": "Cracovia",
+          "score": [
+            0,
+            0
+          ]
+        }
+      ],
+      "source_names": [
+        "Piast Gliwice"
+      ]
+    },
+    {
+      "division": "POL",
+      "provider": "Ekstraklasa",
+      "team_id": "ceabe72c-74da-4f2e-b81c-6b12164888f7",
+      "source_name": "Wieczysta Kraków",
+      "target": "Wieczysta Krakow",
+      "evidence": [
+        {
+          "event_id": "b812f378-8eed-4faa-b65e-a039bd34c16d",
+          "date": "2026-08-01",
+          "home": "Wieczysta Krakow",
+          "away": "Lech Poznan",
+          "score": [
+            1,
+            2
+          ]
+        },
+        {
+          "event_id": "70eb334c-11a9-4cb5-8879-f388d34fa4d2",
+          "date": "2026-08-21",
+          "home": "Cracovia",
+          "away": "Wieczysta Krakow",
+          "score": [
+            3,
+            2
+          ]
+        },
+        {
+          "event_id": "90fbaf8b-3431-46e0-94e8-be1fa4b07ffe",
+          "date": "2026-08-29",
+          "home": "Wisla",
+          "away": "Wieczysta Krakow",
+          "score": [
+            2,
+            0
+          ]
+        },
+        {
+          "event_id": "1d9a8182-3495-426f-9ddc-e264f3327cd7",
+          "date": "2026-09-07",
+          "home": "Wieczysta Krakow",
+          "away": "Zaglebie",
+          "score": [
+            1,
+            1
+          ]
+        },
+        {
+          "event_id": "f2fccac5-4e48-458f-866b-d26a0bbb11f3",
+          "date": "2026-09-13",
+          "home": "Pogon Szczecin",
+          "away": "Wieczysta Krakow",
+          "score": [
+            2,
+            0
+          ]
+        },
+        {
+          "event_id": "1434a4dc-50b9-4587-ac17-20fe74a6fd83",
+          "date": "2026-09-18",
+          "home": "Widzew Lodz",
+          "away": "Wieczysta Krakow",
+          "score": [
+            2,
+            2
+          ]
+        }
+      ],
+      "source_names": [
+        "Wieczysta Kraków"
+      ]
+    },
+    {
+      "division": "POL",
+      "provider": "Ekstraklasa",
+      "team_id": "53c89ed4-ac0e-4ae0-b87f-66fdc414a4fe",
+      "source_name": "Jagiellonia Białystok",
+      "target": "Jagiellonia",
+      "evidence": [
+        {
+          "event_id": "c8afd6a6-b4d2-452d-b9d1-61ab69a5d307",
+          "date": "2022-03-13",
+          "home": "Jagiellonia",
+          "away": "Wisla Plock",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "7ab08c63-e189-461d-b637-b7935ea9638a",
+          "date": "2022-10-07",
+          "home": "Jagiellonia",
+          "away": "Wisla Plock",
+          "score": [
+            1,
+            1
+          ]
+        },
+        {
+          "event_id": "78db5bed-7c1b-4217-9159-5349d2f958fc",
+          "date": "2023-04-21",
+          "home": "Wisla Plock",
+          "away": "Jagiellonia",
+          "score": [
+            2,
+            4
+          ]
+        },
+        {
+          "event_id": "6b3b36ab-9fbf-47b2-99d0-e89bd53a2d5b",
+          "date": "2024-02-17",
+          "home": "Jagiellonia",
+          "away": "Lech Poznan",
+          "score": [
+            1,
+            2
+          ]
+        },
+        {
+          "event_id": "5f6a82e9-7593-4f9a-951a-ce7a886bd518",
+          "date": "2024-09-14",
+          "home": "Lech Poznan",
+          "away": "Jagiellonia",
+          "score": [
+            5,
+            0
+          ]
+        },
+        {
+          "event_id": "96c7b9e0-d2c1-44c2-a4af-4b9115df661c",
+          "date": "2025-03-16",
+          "home": "Jagiellonia",
+          "away": "Lech Poznan",
+          "score": [
+            2,
+            1
+          ]
+        }
+      ],
+      "source_names": [
+        "Jagiellonia Białystok"
+      ]
+    },
+    {
+      "division": "POL",
+      "provider": "Ekstraklasa",
+      "team_id": "21e8863c-fe40-45a7-b203-ead0a5ae65fd",
+      "source_name": "Lech Poznań",
+      "target": "Lech Poznan",
+      "evidence": [
+        {
+          "event_id": "99c702a8-2371-4cae-af2e-2f2194385413",
+          "date": "2020-03-08",
+          "home": "Wisla",
+          "away": "Lech Poznan",
+          "score": [
+            1,
+            1
+          ]
+        },
+        {
+          "event_id": "88bdbc1c-0bd4-48ad-bdc2-987169fdd96f",
+          "date": "2020-12-19",
+          "home": "Lech Poznan",
+          "away": "Wisla",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "c48a91d0-1096-44be-8790-78df38229b5d",
+          "date": "2021-05-08",
+          "home": "Wisla",
+          "away": "Lech Poznan",
+          "score": [
+            1,
+            2
+          ]
+        },
+        {
+          "event_id": "8e6645a9-a694-454f-9fb7-d772e2c3dd3a",
+          "date": "2021-09-17",
+          "home": "Lech Poznan",
+          "away": "Wisla",
+          "score": [
+            5,
+            0
+          ]
+        },
+        {
+          "event_id": "bfaedca5-d634-47b0-af5a-5ddf829685c6",
+          "date": "2022-03-13",
+          "home": "Wisla",
+          "away": "Lech Poznan",
+          "score": [
+            1,
+            1
+          ]
+        },
+        {
+          "event_id": "6b3b36ab-9fbf-47b2-99d0-e89bd53a2d5b",
+          "date": "2024-02-17",
+          "home": "Jagiellonia",
+          "away": "Lech Poznan",
+          "score": [
+            1,
+            2
+          ]
+        }
+      ],
+      "source_names": [
+        "Lech Poznań"
+      ]
+    },
+    {
+      "division": "POL",
+      "provider": "Ekstraklasa",
+      "team_id": "fa64c74b-210d-473e-b7c2-d4067f52faf4",
+      "source_name": "Wisła Kraków",
+      "target": "Wisla",
+      "evidence": [
+        {
+          "event_id": "99c702a8-2371-4cae-af2e-2f2194385413",
+          "date": "2020-03-08",
+          "home": "Wisla",
+          "away": "Lech Poznan",
+          "score": [
+            1,
+            1
+          ]
+        },
+        {
+          "event_id": "41b3f11f-b8fc-4334-8611-5d806facd05e",
+          "date": "2020-06-20",
+          "home": "Rakow",
+          "away": "Wisla",
+          "score": [
+            3,
+            1
+          ]
+        },
+        {
+          "event_id": "dae0fd9a-e661-49dc-a26e-42ff99f7316d",
+          "date": "2020-11-08",
+          "home": "Rakow",
+          "away": "Wisla",
+          "score": [
+            0,
+            0
+          ]
+        },
+        {
+          "event_id": "88bdbc1c-0bd4-48ad-bdc2-987169fdd96f",
+          "date": "2020-12-19",
+          "home": "Lech Poznan",
+          "away": "Wisla",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "21e46e92-1a27-4e21-b0f6-4dceda08eae5",
+          "date": "2021-04-09",
+          "home": "Wisla",
+          "away": "Rakow",
+          "score": [
+            1,
+            2
+          ]
+        },
+        {
+          "event_id": "c48a91d0-1096-44be-8790-78df38229b5d",
+          "date": "2021-05-08",
+          "home": "Wisla",
+          "away": "Lech Poznan",
+          "score": [
+            1,
+            2
+          ]
+        }
+      ],
+      "source_names": [
+        "Wisła Kraków"
+      ]
+    },
+    {
+      "division": "POL",
+      "provider": "Ekstraklasa",
+      "team_id": "1a2ecd0e-7a69-431e-abc3-b423bd9387d0",
+      "source_name": "GKS Katowice",
+      "target": "GKS Katowice",
+      "evidence": [
+        {
+          "event_id": "4c320189-7bf1-4e2d-bb7c-2dcfe1a50839",
+          "date": "2024-09-13",
+          "home": "GKS Katowice",
+          "away": "Widzew Lodz",
+          "score": [
+            2,
+            2
+          ]
+        },
+        {
+          "event_id": "cf84f31c-a7a1-4702-8357-ca79ed8be51d",
+          "date": "2024-11-04",
+          "home": "GKS Katowice",
+          "away": "Korona Kielce",
+          "score": [
+            1,
+            2
+          ]
+        },
+        {
+          "event_id": "289411ba-2aed-468a-bfc9-80d8e9e34642",
+          "date": "2025-03-15",
+          "home": "Widzew Lodz",
+          "away": "GKS Katowice",
+          "score": [
+            1,
+            0
+          ]
+        },
+        {
+          "event_id": "b5e5d001-6eb8-4b27-bd4b-6bc72b96e155",
+          "date": "2025-05-05",
+          "home": "Korona Kielce",
+          "away": "GKS Katowice",
+          "score": [
+            2,
+            1
+          ]
+        },
+        {
+          "event_id": "b401449b-e03b-4529-83e3-3bf5f8eecf4c",
+          "date": "2025-08-02",
+          "home": "Widzew Lodz",
+          "away": "GKS Katowice",
+          "score": [
+            3,
+            0
+          ]
+        },
+        {
+          "event_id": "a5fe2700-8ef7-4ab0-83ba-e36cc22fe2dc",
+          "date": "2025-10-25",
+          "home": "GKS Katowice",
+          "away": "Korona Kielce",
+          "score": [
+            1,
+            0
+          ]
+        }
+      ],
+      "source_names": [
+        "GKS Katowice"
+      ]
+    },
+    {
+      "division": "POL",
+      "provider": "Ekstraklasa",
+      "team_id": "a41101c4-68da-4f16-a0ce-2edcc9f7534c",
+      "source_name": "Widzew Łódź",
+      "target": "Widzew Lodz",
+      "evidence": [
+        {
+          "event_id": "2f0d9f44-cb6e-485d-9b09-45d8becd1aab",
+          "date": "2024-02-25",
+          "home": "Widzew Lodz",
+          "away": "Gornik Zabrze",
+          "score": [
+            3,
+            1
+          ]
+        },
+        {
+          "event_id": "4c320189-7bf1-4e2d-bb7c-2dcfe1a50839",
+          "date": "2024-09-13",
+          "home": "GKS Katowice",
+          "away": "Widzew Lodz",
+          "score": [
+            2,
+            2
+          ]
+        },
+        {
+          "event_id": "d6886f6e-3c0d-4a9c-8fef-63c444c408f9",
+          "date": "2024-10-27",
+          "home": "Widzew Lodz",
+          "away": "Gornik Zabrze",
+          "score": [
+            0,
+            2
+          ]
+        },
+        {
+          "event_id": "289411ba-2aed-468a-bfc9-80d8e9e34642",
+          "date": "2025-03-15",
+          "home": "Widzew Lodz",
+          "away": "GKS Katowice",
+          "score": [
+            1,
+            0
+          ]
+        },
+        {
+          "event_id": "1bbb25d1-3d58-4361-b7d6-238245faecf1",
+          "date": "2025-04-27",
+          "home": "Gornik Zabrze",
+          "away": "Widzew Lodz",
+          "score": [
+            0,
+            0
+          ]
+        },
+        {
+          "event_id": "b401449b-e03b-4529-83e3-3bf5f8eecf4c",
+          "date": "2025-08-02",
+          "home": "Widzew Lodz",
+          "away": "GKS Katowice",
+          "score": [
+            3,
+            0
+          ]
+        }
+      ],
+      "source_names": [
+        "Widzew Łódź"
+      ]
+    },
+    {
+      "division": "POL",
+      "provider": "Ekstraklasa",
+      "team_id": "d1e4f1f1-116f-4a1e-9b79-d4f856cfba99",
+      "source_name": "Zagłębie Lubin",
+      "target": "Zaglebie",
+      "evidence": [
+        {
+          "event_id": "bb27dd5a-fd78-467f-9824-4c39d2508130",
+          "date": "2024-03-03",
+          "home": "Zaglebie",
+          "away": "Korona Kielce",
+          "score": [
+            1,
+            0
+          ]
+        },
+        {
+          "event_id": "ba89b0c8-f975-4eb6-83c4-c42c1c17fec8",
+          "date": "2024-05-04",
+          "home": "Zaglebie",
+          "away": "Rakow",
+          "score": [
+            2,
+            0
+          ]
+        },
+        {
+          "event_id": "19951f20-a482-474b-b551-0026e6e7aa3b",
+          "date": "2024-09-15",
+          "home": "Korona Kielce",
+          "away": "Zaglebie",
+          "score": [
+            2,
+            0
+          ]
+        },
+        {
+          "event_id": "2393bc40-3117-4f89-9601-4baf2feef5b5",
+          "date": "2024-09-22",
+          "home": "Rakow",
+          "away": "Zaglebie",
+          "score": [
+            5,
+            1
+          ]
+        },
+        {
+          "event_id": "8db4af5a-ab19-4291-8034-d761f0dbdb06",
+          "date": "2024-11-22",
+          "home": "Zaglebie",
+          "away": "Motor Lublin",
+          "score": [
+            1,
+            2
+          ]
+        },
+        {
+          "event_id": "5abe9b32-7a89-42c2-86a2-4af638b85a52",
+          "date": "2025-03-16",
+          "home": "Zaglebie",
+          "away": "Korona Kielce",
+          "score": [
+            1,
+            1
+          ]
+        }
+      ],
+      "source_names": [
+        "Zagłębie Lubin"
+      ]
+    },
+    {
+      "division": "POL",
+      "provider": "Ekstraklasa",
+      "team_id": "02b3b729-d94f-4212-bc0e-8bca0da50489",
+      "source_name": "Korona Kielce",
+      "target": "Korona Kielce",
+      "evidence": [
+        {
+          "event_id": "04da4f34-55e9-44c7-9415-db333f1f4ebc",
+          "date": "2024-02-19",
+          "home": "Gornik Zabrze",
+          "away": "Korona Kielce",
+          "score": [
+            3,
+            1
+          ]
+        },
+        {
+          "event_id": "bb27dd5a-fd78-467f-9824-4c39d2508130",
+          "date": "2024-03-03",
+          "home": "Zaglebie",
+          "away": "Korona Kielce",
+          "score": [
+            1,
+            0
+          ]
+        },
+        {
+          "event_id": "19951f20-a482-474b-b551-0026e6e7aa3b",
+          "date": "2024-09-15",
+          "home": "Korona Kielce",
+          "away": "Zaglebie",
+          "score": [
+            2,
+            0
+          ]
+        },
+        {
+          "event_id": "cf84f31c-a7a1-4702-8357-ca79ed8be51d",
+          "date": "2024-11-04",
+          "home": "GKS Katowice",
+          "away": "Korona Kielce",
+          "score": [
+            1,
+            2
+          ]
+        },
+        {
+          "event_id": "908935b7-f5fa-49ca-a74f-2e54b2a0b6fd",
+          "date": "2024-12-01",
+          "home": "Korona Kielce",
+          "away": "Gornik Zabrze",
+          "score": [
+            2,
+            4
+          ]
+        },
+        {
+          "event_id": "5abe9b32-7a89-42c2-86a2-4af638b85a52",
+          "date": "2025-03-16",
+          "home": "Zaglebie",
+          "away": "Korona Kielce",
+          "score": [
+            1,
+            1
+          ]
+        }
+      ],
+      "source_names": [
+        "Korona Kielce"
+      ]
+    },
+    {
+      "division": "POL",
+      "provider": "Ekstraklasa",
+      "team_id": "ac07f16b-e3f9-4dee-aaa6-01ef4cbb6f80",
+      "source_name": "Radomiak Radom",
+      "target": "Radomiak Radom",
+      "evidence": [
+        {
+          "event_id": "144ad854-822d-435e-9be5-1cbe77d23811",
+          "date": "2023-04-30",
+          "home": "Slask Wroclaw",
+          "away": "Radomiak Radom",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "834a3c26-4e5c-4bae-a4a5-d67c5a060ce9",
+          "date": "2023-11-27",
+          "home": "Radomiak Radom",
+          "away": "Slask Wroclaw",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "63b8c352-7df2-4542-9c55-642fa82aa7e4",
+          "date": "2024-02-16",
+          "home": "Radomiak Radom",
+          "away": "Pogon Szczecin",
+          "score": [
+            0,
+            4
+          ]
+        },
+        {
+          "event_id": "fded6eda-66fc-48e8-836e-7db81cf5a864",
+          "date": "2024-05-18",
+          "home": "Slask Wroclaw",
+          "away": "Radomiak Radom",
+          "score": [
+            2,
+            0
+          ]
+        },
+        {
+          "event_id": "18ffb32f-e1ea-4dd2-834e-715e8b3830f9",
+          "date": "2024-11-08",
+          "home": "Pogon Szczecin",
+          "away": "Radomiak Radom",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "7447d64e-0275-4dc9-bcec-095fd0887097",
+          "date": "2024-12-14",
+          "home": "Slask Wroclaw",
+          "away": "Radomiak Radom",
+          "score": [
+            1,
+            2
+          ]
+        }
+      ],
+      "source_names": [
+        "Radomiak Radom"
+      ]
+    },
+    {
+      "division": "POL",
+      "provider": "Ekstraklasa",
+      "team_id": "e4de53a8-f4d1-43ef-9678-b42e4dc3470c",
+      "source_name": "Śląsk Wrocław",
+      "target": "Slask Wroclaw",
+      "evidence": [
+        {
+          "event_id": "144ad854-822d-435e-9be5-1cbe77d23811",
+          "date": "2023-04-30",
+          "home": "Slask Wroclaw",
+          "away": "Radomiak Radom",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "834a3c26-4e5c-4bae-a4a5-d67c5a060ce9",
+          "date": "2023-11-27",
+          "home": "Radomiak Radom",
+          "away": "Slask Wroclaw",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "fded6eda-66fc-48e8-836e-7db81cf5a864",
+          "date": "2024-05-18",
+          "home": "Slask Wroclaw",
+          "away": "Radomiak Radom",
+          "score": [
+            2,
+            0
+          ]
+        },
+        {
+          "event_id": "7447d64e-0275-4dc9-bcec-095fd0887097",
+          "date": "2024-12-14",
+          "home": "Slask Wroclaw",
+          "away": "Radomiak Radom",
+          "score": [
+            1,
+            2
+          ]
+        },
+        {
+          "event_id": "af7c2be4-294f-4650-93f8-14e0cab0b658",
+          "date": "2025-02-08",
+          "home": "Radomiak Radom",
+          "away": "Slask Wroclaw",
+          "score": [
+            1,
+            1
+          ]
+        },
+        {
+          "event_id": "48ee4085-6ff6-413e-ac32-c2530a174b87",
+          "date": "2026-07-25",
+          "home": "Gornik Zabrze",
+          "away": "Slask Wroclaw",
+          "score": [
+            2,
+            1
+          ]
+        }
+      ],
+      "source_names": [
+        "Śląsk Wrocław"
+      ]
+    },
+    {
+      "division": "POL",
+      "provider": "Ekstraklasa",
+      "team_id": "7b13fbc8-6442-4357-bebd-c2bd20d43a10",
+      "source_name": "Raków Częstochowa",
+      "target": "Rakow",
+      "evidence": [
+        {
+          "event_id": "41b3f11f-b8fc-4334-8611-5d806facd05e",
+          "date": "2020-06-20",
+          "home": "Rakow",
+          "away": "Wisla",
+          "score": [
+            3,
+            1
+          ]
+        },
+        {
+          "event_id": "dae0fd9a-e661-49dc-a26e-42ff99f7316d",
+          "date": "2020-11-08",
+          "home": "Rakow",
+          "away": "Wisla",
+          "score": [
+            0,
+            0
+          ]
+        },
+        {
+          "event_id": "21e46e92-1a27-4e21-b0f6-4dceda08eae5",
+          "date": "2021-04-09",
+          "home": "Wisla",
+          "away": "Rakow",
+          "score": [
+            1,
+            2
+          ]
+        },
+        {
+          "event_id": "97748d14-6ffc-4d04-8323-428ebd761e95",
+          "date": "2021-08-08",
+          "home": "Wisla",
+          "away": "Rakow",
+          "score": [
+            1,
+            2
+          ]
+        },
+        {
+          "event_id": "b860de5d-903e-446d-8b64-604a7136c661",
+          "date": "2022-02-06",
+          "home": "Rakow",
+          "away": "Wisla",
+          "score": [
+            2,
+            0
+          ]
+        },
+        {
+          "event_id": "6b6aaa07-06de-4d2e-91f1-d8cde4482f3c",
+          "date": "2024-04-19",
+          "home": "Rakow",
+          "away": "Gornik Zabrze",
+          "score": [
+            0,
+            1
+          ]
+        }
+      ],
+      "source_names": [
+        "Raków Częstochowa"
+      ]
+    },
+    {
+      "division": "POL",
+      "provider": "Ekstraklasa",
+      "team_id": "32c2bcc6-1bb7-4bb3-80dd-c952673d6a1b",
+      "source_name": "Pogoń Szczecin",
+      "target": "Pogon Szczecin",
+      "evidence": [
+        {
+          "event_id": "63b8c352-7df2-4542-9c55-642fa82aa7e4",
+          "date": "2024-02-16",
+          "home": "Radomiak Radom",
+          "away": "Pogon Szczecin",
+          "score": [
+            0,
+            4
+          ]
+        },
+        {
+          "event_id": "cf9417e9-2ce7-4859-a5af-c8db1787fbbd",
+          "date": "2024-05-11",
+          "home": "Rakow",
+          "away": "Pogon Szczecin",
+          "score": [
+            2,
+            1
+          ]
+        },
+        {
+          "event_id": "796454a2-0b0a-4dfe-9165-ac89da198c0c",
+          "date": "2024-10-20",
+          "home": "Rakow",
+          "away": "Pogon Szczecin",
+          "score": [
+            1,
+            0
+          ]
+        },
+        {
+          "event_id": "18ffb32f-e1ea-4dd2-834e-715e8b3830f9",
+          "date": "2024-11-08",
+          "home": "Pogon Szczecin",
+          "away": "Radomiak Radom",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "f3a3257f-af5c-48ab-8d79-c7d850923864",
+          "date": "2025-04-19",
+          "home": "Pogon Szczecin",
+          "away": "Rakow",
+          "score": [
+            1,
+            0
+          ]
+        },
+        {
+          "event_id": "fb88eda6-a7c9-4054-9842-8315d71f3549",
+          "date": "2025-05-10",
+          "home": "Radomiak Radom",
+          "away": "Pogon Szczecin",
+          "score": [
+            2,
+            0
+          ]
+        }
+      ],
+      "source_names": [
+        "Pogoń Szczecin"
+      ]
+    },
+    {
+      "division": "SWZ",
+      "provider": "SwissFootballLeague",
+      "team_id": "ccwv4ymbs3u0q8xaby4hqb0jz",
+      "source_name": "Servette FC",
+      "target": "Servette",
+      "evidence": [
+        {
+          "event_id": "1f6xff5kx1fu236jywuzrlrmc",
+          "date": "2026-07-25",
+          "home": "Servette",
+          "away": "Basel",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "1hsyc0n7ig040rwx8519flfro",
+          "date": "2026-08-01",
+          "home": "Zurich",
+          "away": "Servette",
+          "score": [
+            2,
+            1
+          ]
+        },
+        {
+          "event_id": "1kfz06hudv7o9c8ib4e8t96hg",
+          "date": "2026-08-08",
+          "home": "Servette",
+          "away": "Grasshoppers",
+          "score": [
+            2,
+            1
+          ]
+        },
+        {
+          "event_id": "1ohawlcrjdeggyir13n3wg7is",
+          "date": "2026-08-29",
+          "home": "Servette",
+          "away": "Luzern",
+          "score": [
+            1,
+            1
+          ]
+        },
+        {
+          "event_id": "1s4g3c9voyv7ot37z14qqd0k4",
+          "date": "2026-09-03",
+          "home": "Lugano",
+          "away": "Servette",
+          "score": [
+            1,
+            0
+          ]
+        },
+        {
+          "event_id": "1tks9o4m1ipzpq7gkee2o9v6c",
+          "date": "2026-09-06",
+          "home": "Servette",
+          "away": "St. Gallen",
+          "score": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWZ",
+      "provider": "SwissFootballLeague",
+      "team_id": "5u18kvqiqhup2vd345dci1069",
+      "source_name": "FC Basel 1893",
+      "target": "Basel",
+      "evidence": [
+        {
+          "event_id": "1f6xff5kx1fu236jywuzrlrmc",
+          "date": "2026-07-25",
+          "home": "Servette",
+          "away": "Basel",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "1hf2bi351vi3q162cz56i3kt0",
+          "date": "2026-08-01",
+          "home": "Basel",
+          "away": "Lausanne",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "1jowcswpttyu7toat38cvljpw",
+          "date": "2026-08-09",
+          "home": "Basel",
+          "away": "Thun",
+          "score": [
+            4,
+            2
+          ]
+        },
+        {
+          "event_id": "1m9upo3ex0stz8m8yp7grrw2c",
+          "date": "2026-08-22",
+          "home": "Zurich",
+          "away": "Basel",
+          "score": [
+            1,
+            2
+          ]
+        },
+        {
+          "event_id": "1ouhnt7krbd9hxf2sspm6prmc",
+          "date": "2026-08-29",
+          "home": "Young Boys",
+          "away": "Basel",
+          "score": [
+            3,
+            3
+          ]
+        },
+        {
+          "event_id": "1rrf5xoznbwicezm3a4vfowlw",
+          "date": "2026-09-03",
+          "home": "Basel",
+          "away": "Sion",
+          "score": [
+            1,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWZ",
+      "provider": "SwissFootballLeague",
+      "team_id": "96jxcq0onij7zd9rwwkal8q1l",
+      "source_name": "FC Lausanne-Sport",
+      "target": "Lausanne",
+      "evidence": [
+        {
+          "event_id": "1emwsoiw002ru6g4cgs4vw9as",
+          "date": "2026-07-25",
+          "home": "Lausanne",
+          "away": "Grasshoppers",
+          "score": [
+            1,
+            1
+          ]
+        },
+        {
+          "event_id": "1hf2bi351vi3q162cz56i3kt0",
+          "date": "2026-08-01",
+          "home": "Basel",
+          "away": "Lausanne",
+          "score": [
+            0,
+            1
+          ]
+        },
+        {
+          "event_id": "1k2bo1s861mjmrtuetzqbnjmc",
+          "date": "2026-08-08",
+          "home": "Lausanne",
+          "away": "Young Boys",
+          "score": [
+            2,
+            2
+          ]
+        },
+        {
+          "event_id": "1lwqjy52dxilta524bzoc9pn8",
+          "date": "2026-08-22",
+          "home": "Luzern",
+          "away": "Lausanne",
+          "score": [
+            1,
+            0
+          ]
+        },
+        {
+          "event_id": "1o42owyshw2x07vsmkzll8bo4",
+          "date": "2026-08-29",
+          "home": "Lausanne",
+          "away": "Zurich",
+          "score": [
+            2,
+            3
+          ]
+        },
+        {
+          "event_id": "1reaywl2ptcmu347fcjpa4lxw",
+          "date": "2026-09-02",
+          "home": "Thun",
+          "away": "Lausanne",
+          "score": [
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWZ",
+      "provider": "SwissFootballLeague",
+      "team_id": "9dqlf92t42brv71kvaet67tm4",
+      "source_name": "Grasshopper Club Zürich",
+      "target": "Grasshoppers",
+      "evidence": [
+        {
+          "event_id": "1emwsoiw002ru6g4cgs4vw9as",
+          "date": "2026-07-25",
+          "home": "Lausanne",
+          "away": "Grasshoppers",
+          "score": [
+            1,
+            1
+          ]
+        },
+        {
+          "event_id": "1ixrdwb2hobnkfe30flguyjo4",
+          "date": "2026-08-02",
+          "home": "Grasshoppers",
+          "away": "Lugano",
+          "score": [
+            1,
+            4
+          ]
+        },
+        {
+          "event_id": "1kfz06hudv7o9c8ib4e8t96hg",
+          "date": "2026-08-08",
+          "home": "Servette",
+          "away": "Grasshoppers",
+          "score": [
+            2,
+            1
+          ]
+        },
+        {
+          "event_id": "1pxpnvha4cglractmyrs03pxw",
+          "date": "2026-08-30",
+          "home": "Vaduz",
+          "away": "Grasshoppers",
+          "score": [
+            5,
+            2
+          ]
+        },
+        {
+          "event_id": "1qo4iuwerdr4rrbstzko9kpas",
+          "date": "2026-09-02",
+          "home": "Grasshoppers",
+          "away": "St. Gallen",
+          "score": [
+            2,
+            0
+          ]
+        },
+        {
+          "event_id": "1t7orm5omhb2huxwxqu9gn9xw",
+          "date": "2026-09-05",
+          "home": "Grasshoppers",
+          "away": "Zurich",
+          "score": [
+            2,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWZ",
+      "provider": "SwissFootballLeague",
+      "team_id": "dk531bvjn5bmeonqs9hbbmfgr",
+      "source_name": "FC Luzern",
+      "target": "Luzern",
+      "evidence": [
+        {
+          "event_id": "1fnjqo0ysqnsiupmmlr5nlb10",
+          "date": "2026-07-25",
+          "home": "Luzern",
+          "away": "Thun",
+          "score": [
+            1,
+            3
+          ]
+        },
+        {
+          "event_id": "1jbnv7c93b6qmynt2jpv11d78",
+          "date": "2026-08-02",
+          "home": "Sion",
+          "away": "Luzern",
+          "score": [
+            3,
+            0
+          ]
+        },
+        {
+          "event_id": "1ljl51o6tne2kfcjop1qutes4",
+          "date": "2026-08-09",
+          "home": "St. Gallen",
+          "away": "Luzern",
+          "score": [
+            2,
+            2
+          ]
+        },
+        {
+          "event_id": "1lwqjy52dxilta524bzoc9pn8",
+          "date": "2026-08-22",
+          "home": "Luzern",
+          "away": "Lausanne",
+          "score": [
+            1,
+            0
+          ]
+        },
+        {
+          "event_id": "1ohawlcrjdeggyir13n3wg7is",
+          "date": "2026-08-29",
+          "home": "Servette",
+          "away": "Luzern",
+          "score": [
+            1,
+            1
+          ]
+        },
+        {
+          "event_id": "1r1a5em5rls1gb1gcyem1ezv8",
+          "date": "2026-09-02",
+          "home": "Luzern",
+          "away": "Vaduz",
+          "score": [
+            2,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWZ",
+      "provider": "SwissFootballLeague",
+      "team_id": "6u0uaryouca843tojxzgwulr2",
+      "source_name": "FC Thun",
+      "target": "Thun",
+      "evidence": [
+        {
+          "event_id": "1fnjqo0ysqnsiupmmlr5nlb10",
+          "date": "2026-07-25",
+          "home": "Luzern",
+          "away": "Thun",
+          "score": [
+            1,
+            3
+          ]
+        },
+        {
+          "event_id": "1i6sy302pbkoa02celdz0mvpw",
+          "date": "2026-08-01",
+          "home": "Thun",
+          "away": "Young Boys",
+          "score": [
+            0,
+            6
+          ]
+        },
+        {
+          "event_id": "1jowcswpttyu7toat38cvljpw",
+          "date": "2026-08-09",
+          "home": "Basel",
+          "away": "Thun",
+          "score": [
+            4,
+            2
+          ]
+        },
+        {
+          "event_id": "1pkko92se0xeckbp2bh6jbh1w",
+          "date": "2026-08-30",
+          "home": "St. Gallen",
+          "away": "Thun",
+          "score": [
+            3,
+            4
+          ]
+        },
+        {
+          "event_id": "1reaywl2ptcmu347fcjpa4lxw",
+          "date": "2026-09-02",
+          "home": "Thun",
+          "away": "Lausanne",
+          "score": [
+            0,
+            0
+          ]
+        },
+        {
+          "event_id": "1ub4abxtqhfigwbthkid7qkno",
+          "date": "2026-09-06",
+          "home": "Sion",
+          "away": "Thun",
+          "score": [
+            3,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWZ",
+      "provider": "SwissFootballLeague",
+      "team_id": "5fd9f9bti2cdgb6r1lf8l2bc7",
+      "source_name": "BSC Young Boys",
+      "target": "Young Boys",
+      "evidence": [
+        {
+          "event_id": "1g41we0l3etq7wuo5e29j0lxw",
+          "date": "2026-07-26",
+          "home": "Young Boys",
+          "away": "Sion",
+          "score": [
+            4,
+            2
+          ]
+        },
+        {
+          "event_id": "1i6sy302pbkoa02celdz0mvpw",
+          "date": "2026-08-01",
+          "home": "Thun",
+          "away": "Young Boys",
+          "score": [
+            0,
+            6
+          ]
+        },
+        {
+          "event_id": "1k2bo1s861mjmrtuetzqbnjmc",
+          "date": "2026-08-08",
+          "home": "Lausanne",
+          "away": "Young Boys",
+          "score": [
+            2,
+            2
+          ]
+        },
+        {
+          "event_id": "1mn1g1nhch4zjastpt1jeaihg",
+          "date": "2026-08-23",
+          "home": "Young Boys",
+          "away": "Vaduz",
+          "score": [
+            4,
+            2
+          ]
+        },
+        {
+          "event_id": "1ouhnt7krbd9hxf2sspm6prmc",
+          "date": "2026-08-29",
+          "home": "Young Boys",
+          "away": "Basel",
+          "score": [
+            3,
+            3
+          ]
+        },
+        {
+          "event_id": "1qawuyyadbxbvmkvn022ijqc4",
+          "date": "2026-09-01",
+          "home": "Zurich",
+          "away": "Young Boys",
+          "score": [
+            2,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWZ",
+      "provider": "SwissFootballLeague",
+      "team_id": "b9fc1umgats16gk6wr769wh8a",
+      "source_name": "FC Sion",
+      "target": "Sion",
+      "evidence": [
+        {
+          "event_id": "1g41we0l3etq7wuo5e29j0lxw",
+          "date": "2026-07-26",
+          "home": "Young Boys",
+          "away": "Sion",
+          "score": [
+            4,
+            2
+          ]
+        },
+        {
+          "event_id": "1jbnv7c93b6qmynt2jpv11d78",
+          "date": "2026-08-02",
+          "home": "Sion",
+          "away": "Luzern",
+          "score": [
+            3,
+            0
+          ]
+        },
+        {
+          "event_id": "1l6f59ps81f32dsudp2hp6pzo",
+          "date": "2026-08-09",
+          "home": "Sion",
+          "away": "Vaduz",
+          "score": [
+            3,
+            2
+          ]
+        },
+        {
+          "event_id": "1p7jlbf8xlcda067ydt2nqn10",
+          "date": "2026-08-30",
+          "home": "Sion",
+          "away": "Lugano",
+          "score": [
+            1,
+            2
+          ]
+        },
+        {
+          "event_id": "1rrf5xoznbwicezm3a4vfowlw",
+          "date": "2026-09-03",
+          "home": "Basel",
+          "away": "Sion",
+          "score": [
+            1,
+            2
+          ]
+        },
+        {
+          "event_id": "1ub4abxtqhfigwbthkid7qkno",
+          "date": "2026-09-06",
+          "home": "Sion",
+          "away": "Thun",
+          "score": [
+            3,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWZ",
+      "provider": "SwissFootballLeague",
+      "team_id": "dty3ktxspuo8ayudnf0egkvx5",
+      "source_name": "FC St.Gallen 1879",
+      "target": "St. Gallen",
+      "evidence": [
+        {
+          "event_id": "1h18b3dqf7dk0n33g4etgftas",
+          "date": "2026-07-26",
+          "home": "St. Gallen",
+          "away": "Zurich",
+          "score": [
+            2,
+            1
+          ]
+        },
+        {
+          "event_id": "1ikn2x3es05ph3poeap4p2044",
+          "date": "2026-08-02",
+          "home": "Vaduz",
+          "away": "St. Gallen",
+          "score": [
+            2,
+            3
+          ]
+        },
+        {
+          "event_id": "1ljl51o6tne2kfcjop1qutes4",
+          "date": "2026-08-09",
+          "home": "St. Gallen",
+          "away": "Luzern",
+          "score": [
+            2,
+            2
+          ]
+        },
+        {
+          "event_id": "1pkko92se0xeckbp2bh6jbh1w",
+          "date": "2026-08-30",
+          "home": "St. Gallen",
+          "away": "Thun",
+          "score": [
+            3,
+            4
+          ]
+        },
+        {
+          "event_id": "1qo4iuwerdr4rrbstzko9kpas",
+          "date": "2026-09-02",
+          "home": "Grasshoppers",
+          "away": "St. Gallen",
+          "score": [
+            2,
+            0
+          ]
+        },
+        {
+          "event_id": "1tks9o4m1ipzpq7gkee2o9v6c",
+          "date": "2026-09-06",
+          "home": "Servette",
+          "away": "St. Gallen",
+          "score": [
+            0,
+            2
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWZ",
+      "provider": "SwissFootballLeague",
+      "team_id": "3sb3j9l7dbjcalwpirp3u2f9g",
+      "source_name": "FC Zürich",
+      "target": "Zurich",
+      "evidence": [
+        {
+          "event_id": "1h18b3dqf7dk0n33g4etgftas",
+          "date": "2026-07-26",
+          "home": "St. Gallen",
+          "away": "Zurich",
+          "score": [
+            2,
+            1
+          ]
+        },
+        {
+          "event_id": "1hsyc0n7ig040rwx8519flfro",
+          "date": "2026-08-01",
+          "home": "Zurich",
+          "away": "Servette",
+          "score": [
+            2,
+            1
+          ]
+        },
+        {
+          "event_id": "1kt51rbd3oi51q0ow056vh0yc",
+          "date": "2026-08-09",
+          "home": "Lugano",
+          "away": "Zurich",
+          "score": [
+            5,
+            0
+          ]
+        },
+        {
+          "event_id": "1m9upo3ex0stz8m8yp7grrw2c",
+          "date": "2026-08-22",
+          "home": "Zurich",
+          "away": "Basel",
+          "score": [
+            1,
+            2
+          ]
+        },
+        {
+          "event_id": "1o42owyshw2x07vsmkzll8bo4",
+          "date": "2026-08-29",
+          "home": "Lausanne",
+          "away": "Zurich",
+          "score": [
+            2,
+            3
+          ]
+        },
+        {
+          "event_id": "1qawuyyadbxbvmkvn022ijqc4",
+          "date": "2026-09-01",
+          "home": "Zurich",
+          "away": "Young Boys",
+          "score": [
+            2,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWZ",
+      "provider": "SwissFootballLeague",
+      "team_id": "btqfm8txcvhi29sddmc9nr68",
+      "source_name": "FC Lugano",
+      "target": "Lugano",
+      "evidence": [
+        {
+          "event_id": "1gkq6w0iyll2rv8zf4r12zdp0",
+          "date": "2026-07-26",
+          "home": "Lugano",
+          "away": "Vaduz",
+          "score": [
+            2,
+            1
+          ]
+        },
+        {
+          "event_id": "1ixrdwb2hobnkfe30flguyjo4",
+          "date": "2026-08-02",
+          "home": "Grasshoppers",
+          "away": "Lugano",
+          "score": [
+            1,
+            4
+          ]
+        },
+        {
+          "event_id": "1kt51rbd3oi51q0ow056vh0yc",
+          "date": "2026-08-09",
+          "home": "Lugano",
+          "away": "Zurich",
+          "score": [
+            5,
+            0
+          ]
+        },
+        {
+          "event_id": "1p7jlbf8xlcda067ydt2nqn10",
+          "date": "2026-08-30",
+          "home": "Sion",
+          "away": "Lugano",
+          "score": [
+            1,
+            2
+          ]
+        },
+        {
+          "event_id": "1s4g3c9voyv7ot37z14qqd0k4",
+          "date": "2026-09-03",
+          "home": "Lugano",
+          "away": "Servette",
+          "score": [
+            1,
+            0
+          ]
+        },
+        {
+          "event_id": "1txy35hhaca7qu0dqhb37yfis",
+          "date": "2026-09-06",
+          "home": "Basel",
+          "away": "Lugano",
+          "score": [
+            1,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "division": "SWZ",
+      "provider": "SwissFootballLeague",
+      "team_id": "9kxht4usspzkeyosl567vjrs2",
+      "source_name": "FC Vaduz",
+      "target": "Vaduz",
+      "evidence": [
+        {
+          "event_id": "1gkq6w0iyll2rv8zf4r12zdp0",
+          "date": "2026-07-26",
+          "home": "Lugano",
+          "away": "Vaduz",
+          "score": [
+            2,
+            1
+          ]
+        },
+        {
+          "event_id": "1ikn2x3es05ph3poeap4p2044",
+          "date": "2026-08-02",
+          "home": "Vaduz",
+          "away": "St. Gallen",
+          "score": [
+            2,
+            3
+          ]
+        },
+        {
+          "event_id": "1l6f59ps81f32dsudp2hp6pzo",
+          "date": "2026-08-09",
+          "home": "Sion",
+          "away": "Vaduz",
+          "score": [
+            3,
+            2
+          ]
+        },
+        {
+          "event_id": "1mn1g1nhch4zjastpt1jeaihg",
+          "date": "2026-08-23",
+          "home": "Young Boys",
+          "away": "Vaduz",
+          "score": [
+            4,
+            2
+          ]
+        },
+        {
+          "event_id": "1pxpnvha4cglractmyrs03pxw",
+          "date": "2026-08-30",
+          "home": "Vaduz",
+          "away": "Grasshoppers",
+          "score": [
+            5,
+            2
+          ]
+        },
+        {
+          "event_id": "1r1a5em5rls1gb1gcyem1ezv8",
+          "date": "2026-09-02",
+          "home": "Luzern",
+          "away": "Vaduz",
+          "score": [
+            2,
+            1
+          ]
+        }
+      ]
+    }
+  ],
+  "note": "Ingestion-only provider identities checked against at least three archived results and two opponents. Compiled model aliases and frozen candidate code are unchanged."
+}
