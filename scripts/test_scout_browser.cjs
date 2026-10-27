@@ -1,7 +1,8 @@
 /* Browser smoke test for Scout, run by branch-only GH Action. */
 (async()=>{
  const {chromium}=require('playwright');
- const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+ const browser=await chromium.launch({headless:true,args:['--no-sandbox'],...(process.env.SCOUT_BROWSER_EXECUTABLE?{executablePath:process.env.SCOUT_BROWSER_EXECUTABLE}:{})});
+ console.log('Scout browser: '+browser.version());
  const base='http://127.0.0.1:8765/scout.html';
  const failures=[],stats={};
  const desktop=await browser.newPage({viewport:{width:1365,height:920},deviceScaleFactor:1});

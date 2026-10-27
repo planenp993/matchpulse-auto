@@ -80,8 +80,14 @@ jobs:
         run: python scripts/build_scout_preview.py
       - name: Install the pinned browser test dependency
         run: |
-          npm install --no-save playwright@1.56.1
-          npx playwright install --with-deps chromium
+          npm install --no-save --fetch-retries=1 --fetch-timeout=60000 playwright@1.56.1
+          browser_path="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          if [ -n "$browser_path" ]; then
+            echo "SCOUT_BROWSER_EXECUTABLE=$browser_path" >> "$GITHUB_ENV"
+            "$browser_path" --version
+          else
+            timeout 180s npx playwright install --with-deps chromium
+          fi
       - name: Verify real match data, markets and identities on desktop and mobile
         run: |
           python -m http.server 8765 --directory docs > /tmp/scout-http.log 2>&1 &
