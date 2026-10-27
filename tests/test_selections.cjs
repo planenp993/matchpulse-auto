@@ -43,6 +43,16 @@ test('Primary rank can select a more informative event over the highest probabil
  assert.equal(S.select([{...specific,eligible:false}],matrix).main,null);
 });
 
+test('Indexed selection replay preserves the live model across all covered domestic divisions',()=>{
+ const samples=[...new Set(fixtures.map(f=>f[0]))].filter(d=>!['UCL','UEL','UECL'].includes(d))
+  .map(d=>fixtures.find(f=>f[0]===d&&f[3]>='2026-10-29')).filter(Boolean);
+ let compared=0;
+ for(const f of samples){const candidate=evaluate(f);if(!candidate.model)continue;
+  assert.deepEqual(candidate.model.distribution,M.evaluate(history,f,'standard').distribution,f[0]);compared++;
+ }
+ assert.ok(compared>=18);
+});
+
 test('Price comparison rejects missing, old, future and historical prices and retains unrounded probability',()=>{
  const q={odds:1.9,kind:'fixture_csv',observed_at_utc:'2026-10-27T13:00:00Z',book:'bet365'};
  assert.equal(S.quoteAssessment(q,.6,now).edge,.6*1.9-1);

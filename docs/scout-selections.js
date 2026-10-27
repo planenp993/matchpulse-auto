@@ -96,9 +96,18 @@ function select(candidates,matrix){
 }
 function createEngine(history,model,core){
  const bases=new Map(),teams=new Map(),leagueRows=new Map(),references=new Map();
+ const timelines=new Map();
+ for(const row of history){
+  if(!model.isPlayed(row))continue;
+  for(const key of new Set([model.clubKey(row[5]),model.clubKey(row[6])])){
+   if(!timelines.has(key))timelines.set(key,[]);timelines.get(key).push(row);
+  }
+ }
+ // Same membership, stable ordering and strict date cutoff as Model.teamMatches.
+ for(const rows of timelines.values())rows.sort((a,b)=>b[3].localeCompare(a[3])||String(b[4]||'').localeCompare(String(a[4]||'')));
  function context(f){
   if(!bases.has(f[3]))bases.set(f[3],model.leagueBases(history,f[3]));
-  const get=name=>{const key=core.keyTeam(name)+'|'+f[3];if(!teams.has(key))teams.set(key,model.teamMatches(history,name,f[3]));return teams.get(key);};
+  const get=name=>{const club=model.clubKey(name),key=club+'|'+f[3];if(!teams.has(key))teams.set(key,(timelines.get(club)||[]).filter(r=>r[3]<f[3]));return teams.get(key);};
   return {bases:bases.get(f[3]),homeMatches:get(f[5]),awayMatches:get(f[6])};
  }
  function reference(f,test,eventId){
