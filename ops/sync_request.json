@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "id": "2026-10-27-initial-reliability-full",
+  "id": "2026-10-27-calendar-odds-initial-full",
   "mode": "full",
-  "requested_at_utc": "2026-10-27T09:57:32.665Z",
-  "purpose": "Verify the real 42-source history refresh after PR #16."
+  "requested_at_utc": "2026-10-27T10:54:04.144Z",
+  "purpose": "Verify all 27 configured calendars and populate opening/closing market shards after PR #18."
 }
