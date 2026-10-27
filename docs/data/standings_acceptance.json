@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "source_observed_utc": "2026-10-27T15:58:24+00:00",
+  "stage": "Verified fresh sources and isolated pipeline; production automation verification follows merge.",
+  "tables": 27,
+  "groups": 27,
+  "club_rows": 538,
+  "matched_club_rows": 538,
+  "providers": {
+    "ESPN": 25,
+    "Ekstraklasa": 1,
+    "SwissFootballLeague": 1
+  },
+  "source_errors": {},
+  "archive_lag_warnings": [],
+  "reviewed_name_links": 26,
+  "frozen_inputs_unchanged": {
+    "domestic_history": true,
+    "uefa_history": true,
+    "fixtures": true,
+    "model_scanner_code": true,
+    "paired_configuration": true,
+    "diary_prefixes": true
+  },
+  "replay_changed_json_files": [],
+  "tests": {
+    "python": 129,
+    "node": 158
+  },
+  "scope": "Published current-season tables only. No model/scanner or historical forecast input."
+}

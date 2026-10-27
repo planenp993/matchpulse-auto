@@ -138,3 +138,21 @@
 @media(max-width:1120px){.scanner-toolbar{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:810px){.navigation{margin-top:12px}.main{padding-top:20px}.sidebar{padding-bottom:12px}.drawer-bar{flex-wrap:nowrap}.drawer-controls{order:0;flex-basis:auto;justify-content:flex-end}}
 @media(max-width:550px){.topbar{gap:10px}.top-right{padding:7px 10px}.drawer-bar{padding:10px 14px;gap:9px}.drawer-bar>strong{font-size:11px}.match-header{padding:17px 14px}.team-panel h3{padding-right:0;margin-top:9px;min-height:36px}.team-elo{position:static;display:flex;align-items:baseline;gap:6px;justify-content:flex-start;margin:6px 0}.team-elo b{font-size:18px}.rating-context{min-height:30px}.team-metrics{grid-template-columns:1fr}.team-metrics .metric{display:flex;align-items:center;justify-content:space-between;gap:4px;padding:7px}.metric b{font-size:16px}.metric small{font-size:9px}.goal-chart{height:60px;gap:2px}.model-markets{grid-template-columns:repeat(2,minmax(0,1fr))}.model-markets>div{font-size:11px}.sync-grid{grid-template-columns:1fr}.scanner-more-grid{grid-template-columns:1fr}.extra-analytics summary{flex-wrap:wrap}.extra-analytics summary small{max-width:none;text-align:left}.streak-table{font-size:11px}.time{font-size:11px}}
+
+/* Published tables fit the existing expandable cards. */
+.schedule-standings{margin:12px 0 0;padding:0;border:0;box-shadow:none;background:transparent}.schedule-standings>summary{font-size:13px}
+.standings-select{max-width:340px;margin-bottom:14px}
+.standings-meta{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;font-size:11px;color:#728991;margin-bottom:12px}
+.standings-meta a{color:#167958}
+.standings-warning{font-size:12px;color:#8b611a;background:#fff8e8;padding:10px;border-radius:8px}
+.standings-scroll{width:100%;max-width:100%;overflow-x:auto}
+.standings-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:12px;font-variant-numeric:tabular-nums}
+.standings-table th,.standings-table td{padding:9px 4px;text-align:center;border-bottom:1px solid #e7eef0;width:34px}
+.standings-table thead th{font-size:10px;color:#728991;font-weight:650}
+.standings-table .standings-team{width:auto;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.standings-table .standings-detail:nth-last-child(3){width:56px}
+.standing-selected{background:#edf8f2;color:#146449}
+.standing-points{font-weight:850}
+.standing-points abbr{text-decoration:none;margin-left:1px}
+.standing-role{font-size:9px;font-weight:800;color:#167958;margin-right:5px}
+@media(max-width:550px){.standings-table .standings-detail{display:none}.standings-table{font-size:11px}.standings-table th,.standings-table td{width:29px;padding:9px 3px}.standings-meta{display:block;line-height:1.7}.standings-meta span{display:block}.standings-table .standings-team{width:auto}.schedule-standings{margin-bottom:0}}

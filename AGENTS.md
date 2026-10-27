@@ -181,3 +181,35 @@ dossiers/direct meetings and personal pick settlement. Exact official date and
 both club labels connect calendar names to official IDs; the one reviewed
 FixtureDownload abbreviation is documented in `data/europe_calendar_aliases.json`.
 Missing statistics remain missing. Standings are a later package.
+
+
+## Published standings (fourth infrastructure package)
+
+`scripts/standings.py` collects 27 current competition tables: 25 from ESPN and
+POL/SWZ from the official league sites. Rank, points, goal difference and groups
+are provider values. Never recreate an official table by sorting the archive;
+head-to-head rules, deductions and split phases differ. Point adjustment versus
+3 wins + draws is descriptive, not an assumed sanction. Swiss rankings do not
+provide goals for/against: those remain null, while the official difference is kept.
+
+`docs/data/standings.json` is a separate descriptive view; no model, scanner,
+Elo, sealed forecast or candidate reads it. Exact source-ID/name links are in
+`standings_clubs.json`, separate from frozen compiled aliases. Twenty-four use
+three exact completed scores against two opponents; two newly observed UEFA
+clubs additionally require both distinct opponents, their unique official club ID
+and all seven full main-phase totals to agree, because only two games exist.
+No unmatched or ambiguous name may be highlighted as a different club.
+
+Use `python scripts/standings.py --check` in provider-free CI/publication. A failed
+provider retains the last good table and its observation time; an older patch
+cannot replace a newer one. Old-season tables are retained but labelled explicitly.
+New results overtaking a comparable table produce an archive-ahead warning.
+Manual `standings` refreshes only tables; it makes no Football-Data/history/calendar
+requests. `full`, `results` and `europe` also refresh tables. Auto checks after at
+least eight hours since the last attempt (two after a partial/error result), at the
+existing three daily GitHub ticks. Ordinary code pushes/CI remain provider-free.
+
+The existing Program filters include a collapsed standings panel; match analysis
+has its own collapsed table with the two reviewed club rows highlighted. There is
+no new navigation screen. Tables load lazily, and the offline builder embeds them.
+CSS, the table renderer and the UI use content versions to avoid stale phone assets.

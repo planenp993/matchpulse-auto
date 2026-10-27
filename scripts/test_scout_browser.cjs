@@ -116,6 +116,25 @@
  }
  await desktop.screenshot({path:'scout-diary.png',fullPage:false});
  stats.diaryForecasts=diaryDoc.totals.recorded;
+ await desktop.locator('[data-view="schedule"]').click();
+ await desktop.locator('#scheduleStandings > summary').click();
+ await desktop.waitForFunction(()=>!document.getElementById('standingsContent').textContent.includes('Зареждане'));
+ const publishedTables=JSON.parse(require('node:fs').readFileSync('docs/data/standings.json','utf8'));
+ if(publishedTables.tables.E0){
+  await desktop.locator('#standingsLeague').selectOption('E0');
+  await desktop.waitForFunction(()=>document.querySelectorAll('#standingsContent tbody tr').length===20);
+  stats.standingsRows=await desktop.locator('#standingsContent tbody tr').count();
+  await desktop.locator('#scheduleStandings').screenshot({path:'scout-standings.png'});
+  await desktop.locator('#scheduleStandings > summary').click();
+  await desktop.locator('[data-day="7"]').click();
+  await desktop.locator('#leagueSelect').selectOption('E0');
+  await desktop.locator('.fixture-row').first().click();
+  await desktop.locator('#matchStandingsDetails > summary').click();
+  await desktop.waitForFunction(()=>document.querySelectorAll('#matchStandingsContent .standing-selected').length===2);
+  stats.standingsHighlighted=await desktop.locator('#matchStandingsContent .standing-selected').count();
+  await desktop.locator('#closeMatch').click();
+ }else await desktop.locator('#scheduleStandings > summary').click();
+
  const mobile=await browser.newPage({viewport:{width:393,height:852},deviceScaleFactor:1,isMobile:true,hasTouch:true});
  mobile.on('pageerror',e=>failures.push('mobile: '+String(e)));
  await mobile.goto(base,{waitUntil:'domcontentloaded',timeout:60000});
@@ -127,6 +146,13 @@
  await mobile.locator('.fixture-row').first().click();
  await mobile.locator('#drawerWindow').selectOption('20');
  if(await mobile.locator('.drawer').evaluate(el=>el.scrollWidth>el.clientWidth+1))throw new Error('Mobile analysis overflows horizontally');
+ if(publishedTables.tables[await mobile.evaluate(()=>activeMatch[0])]){
+  await mobile.locator('#matchStandingsDetails > summary').click();
+  await mobile.waitForFunction(()=>document.querySelectorAll('#matchStandingsContent tbody tr').length>0);
+  if(await mobile.locator('.drawer').evaluate(el=>el.scrollWidth>el.clientWidth+1))throw new Error('Mobile standings overflow the analysis');
+  await mobile.locator('#matchStandingsDetails').screenshot({path:'scout-standings-mobile.png'});
+  if(await mobile.locator('#matchStandingsContent .standings-table th').first().boundingBox()===null)throw new Error('Mobile standings are hidden');
+ }
  await mobile.locator('#closeMatch').click();
  stats.mobileFixtures=await mobile.locator('.fixture-row').count();
  if(!stats.mobileFixtures)throw new Error('Mobile day program is empty');

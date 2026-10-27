@@ -19,13 +19,14 @@ bundle={
  "links":json.loads((DOC/"data/match_links.json").read_text(encoding="utf-8")),
  "europeNames":json.loads((DOC/"data/europe_fixture_names.json").read_text(encoding="utf-8")),
  "fixtures":json.loads((DOC/"data/fixtures.json").read_text(encoding="utf-8")),
+ "standings":json.loads((DOC/"data/standings.json").read_text(encoding="utf-8")),
  "status":json.loads((DOC/"data/status.json").read_text(encoding="utf-8")),
  "coverage":json.loads((DOC/"data/coverage_audit.json").read_text(encoding="utf-8")) if (DOC/"data/coverage_audit.json").exists() else None,
  "diary":json.loads((DOC/"data/diary_report.json").read_text(encoding="utf-8")) if (DOC/"data/diary_report.json").exists() else None,
 }
 payload=json.dumps(bundle,ensure_ascii=False,separators=(",",":")).replace("</","<\\/")
-html=html.replace('<link rel="stylesheet" href="scout.css">','<style>'+css+'</style>')
-for n,source in [("club-aliases.js",aliases),("model-core.js",model),("scout-core.js",core),("scout-markets.js",markets),("scout-elo.js",elo),("scout-patterns.js",patterns),("scout-archive.js",(DOC/"scout-archive.js").read_text(encoding="utf-8")),("scout.js",ui)]:
+html=re.sub(r'<link rel="stylesheet" href="scout\.css(?:\?[^"<>]*)?">',lambda m:'<style>'+css+'</style>',html)
+for n,source in [("club-aliases.js",aliases),("model-core.js",model),("scout-core.js",core),("scout-markets.js",markets),("scout-elo.js",elo),("scout-patterns.js",patterns),("scout-archive.js",(DOC/"scout-archive.js").read_text(encoding="utf-8")),("scout-standings.js",(DOC/"scout-standings.js").read_text(encoding="utf-8")),("scout.js",ui)]:
  marker=re.search(r'<script src="'+re.escape(n)+r'(?:\?[^"<>]*)?"></script>',html)
  replacement='<script>'+source.replace("</script","<\\/script")+'</script>'
  if n=="scout.js":
