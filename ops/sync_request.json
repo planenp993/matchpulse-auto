@@ -1,7 +1,5 @@
 {
-  "schema": 1,
-  "id": "2026-10-27-calendar-odds-initial-full",
-  "mode": "full",
-  "requested_at_utc": "2026-10-27T10:54:04.144Z",
-  "purpose": "Verify all 27 configured calendars and populate opening/closing market shards after PR #18."
+  "id": "uefa-archive-2026-10-27-1793110071111",
+  "mode": "europe",
+  "reason": "Verify six recent result feeds and official UEFA 2021/22 through current season after PR 20"
 }
