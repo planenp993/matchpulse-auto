@@ -1,5 +1,5 @@
 {
-  "id": "uefa-archive-2026-10-27-1793110071111",
-  "mode": "europe",
-  "reason": "Verify six recent result feeds and official UEFA 2021/22 through current season after PR 20"
+  "id": "standings-2026-10-27-1793117548184",
+  "mode": "standings",
+  "reason": "Verify all 27 published standings feeds after PR 22 without result/history requests"
 }
