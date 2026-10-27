@@ -101,6 +101,7 @@ jobs:
           node scripts/test_scout_browser.cjs
           node scripts/test_selections_browser.cjs
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: SCOUT-VERIFIED-PREVIEW
           path: |
