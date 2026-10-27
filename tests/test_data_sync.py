@@ -164,7 +164,7 @@ class DataSyncTests(unittest.TestCase):
         self.assertEqual(match["result"], [0, 0])
         self.assertEqual(match["kickoff_utc"], "2026-10-25T16:00:00+00:00")
         self.assertEqual(self.read("docs/data/history.json")[0][13], {})
-        final[13] = {k: 0 for k in ("HS", "AS", "HC", "AC", "HY", "AY", "HR", "AR")}
+        final[13] = {k: 0 for k in ("HS", "AS", "HST", "AST", "HC", "AC", "HY", "AY", "HR", "AR")}
         batch["history"] = [{"row": final, "base_sha256": reg.digest(self.read("docs/data/history.json")[0])}]
         sync.apply(self.root, batch)
         self.assertEqual(next(iter(self.read(sync.REGISTRY)["matches"].values()))["state"], "final")
@@ -183,6 +183,28 @@ class DataSyncTests(unittest.TestCase):
         self.assertEqual(len(book["matches"]), 2)
         reg.observe(book, [{"row": row(home="Tottenham"), "provider_id": "ESPN:eng.1:123"}], STAMP)
         self.assertEqual(len(book["conflicts"]), 1)
+
+    def test_generic_export_keeps_round_and_missing_on_target_is_still_pending(self):
+        book = reg.empty()
+        fixture = row()
+        reg.observe(book, [{"row": fixture, "phase": "League stage", "round": 4}], STAMP)
+        reg.observe(book, [{"row": fixture}], STAMP)
+        match = next(iter(book["matches"].values()))
+        self.assertEqual((match["phase"], match["round"]), ("League stage", 4))
+        final = row(score=[2, 1])
+        final[13] = {k: 1 for k in ("HS", "AS", "HC", "AC", "HY", "AY", "HR", "AR")}
+        reg.reconcile(book, [final], [], STAMP)
+        self.assertEqual(match["state"], "final_awaiting_stats")
+
+    def test_complete_provider_failure_is_error_and_keeps_last_good_receipt(self):
+        previous = "2026-10-24T12:00:00+00:00"
+        u.writejson(self.root/"docs/data/status.json", {"last_history_success_utc": previous})
+        batch = self.batch(history=True, full=True, history_targets=1)
+        batch["checks"] = {"E0-2627": {"status": "error", "attempt_utc": STAMP}}
+        sync.apply(self.root, batch)
+        status = self.read("docs/data/status.json")
+        self.assertEqual(status["history_refresh_status"], "error")
+        self.assertEqual(status["last_history_success_utc"], previous)
 
     def test_revised_provider_date_links_to_actual_history_without_duplicate(self):
         old, new = row("2026-10-25"), row("2026-10-27")

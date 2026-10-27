@@ -86,8 +86,9 @@ def observe(registry, observations, stamp):
             if match["result"] is None and not (type(row[7]) is int and type(row[8]) is int):
                 match["schedule"] = row[:7]
                 match["kickoff_utc"] = kickoff(row)
-                match["phase"] = observation.get("phase")
-                match["round"] = observation.get("round")
+                for field in ("phase", "round"):
+                    if observation.get(field) is not None:
+                        match[field] = observation[field]
                 if observation.get("status") in ("postponed", "cancelled", "provisional_result"):
                     match["state"] = observation["status"]
                 else:
@@ -114,7 +115,7 @@ def reconcile(registry, history, fixtures, stamp):
             # Results dates never replace the immutable captured forecast date.
             match["actual_date"] = result[3]
             match["state"] = ("awarded" if stats.get("AWARDED") else "final" if result[0] in u.EXTRA or
-                all(k in stats for k in ("HS", "AS", "HC", "AC", "HY", "AY", "HR", "AR")) else "final_awaiting_stats")
+                all(k in stats for k in ("HS", "AS", "HST", "AST", "HC", "AC", "HY", "AY", "HR", "AR")) else "final_awaiting_stats")
         elif match["state"] not in ("cancelled", "postponed", "provisional_result"):
             start = match.get("kickoff_utc")
             date = match["schedule"][3]
