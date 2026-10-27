@@ -232,3 +232,20 @@ Never imply an unchecked lineup, injury, news item or current bookmaker price.
 Version `scout-analysis.js`, `scout.js` and CSS by content, including the offline
 builder. Browser checks cover touch/form inspection, expandable match facts,
 clipboard export, small screens and unchanged saved picks.
+
+
+## Recent-form refinement
+
+The user explicitly requested UEFA matches in the last 5/10/20 displayed games.
+Use `archive.recentProfile()` only for the descriptive dossier, not for scanner,
+model, Elo or diary inputs. Preserve `archive.profile()` and its original scope.
+The mixed view uses canonical clubs and known domestic countries; ambiguous
+identities stay separate. It does not claim coverage of national cup fixtures.
+
+The form curve is a signed cumulative result walk (+1 win, 0 draw, -1 loss),
+starting at zero, with a shared scale. It is not Elo, league points or probability.
+Current tendencies only use consecutive known observations within 30 days, never
+an older longest streak. Missing latest statistics or a newer unresolved match
+block a current claim. Show the actual series dates and confirming matches.
+Keep the intro and copied brief consistent with this same selected view, while
+explicitly preserving the domestic model's separate input history.

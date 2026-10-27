@@ -119,4 +119,7 @@ jobs:
             scout-reading.png
             scout-shots.png
             scout-corners-mobile.png
+            scout-current-form.png
+            scout-current-reading.png
+            scout-current-tendencies.png
           retention-days: 7

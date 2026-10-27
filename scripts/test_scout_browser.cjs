@@ -30,7 +30,7 @@
  if((await lists[0].locator('.result-detail').count())!==20)throw new Error('The 20-game result list is truncated');
  await lists[0].locator('.result-summary').first().click();
  if(!(await lists[0].locator('.result-detail').first().textContent()).includes('Точни удари'))throw new Error('Per-match statistical expansion missing');
- const firstResult=await desktop.evaluate(()=>profile(activeMatch).home.all[0]);
+ const firstResult=await desktop.evaluate(()=>dossier(activeMatch).home.all[0]);
  const names=await lists[0].locator('.result-summary').first().locator('.result-teams').textContent();
  if(!names.includes(firstResult[5])||!names.includes(firstResult[6])||!names.includes(firstResult[7]+':'+firstResult[8]))throw new Error('Result row changed the actual home-away orientation');
  await desktop.locator('.history-section').screenshot({path:'scout-results.png'});
@@ -47,7 +47,8 @@
  if(!(await desktop.locator('#matchContent').textContent()).includes('Двоен шанс 1X'))throw new Error('Missing double chance');
  const chip=desktop.locator('.form-chip').first();await chip.click();
  if((await desktop.locator('.form-inspection').first().textContent())!==(await chip.getAttribute('title')))throw new Error('Touched form chip does not reveal its match');
- if(!(await desktop.locator('.match-reading').textContent()).includes('Моделът оценява'))throw new Error('Descriptive intro missing existing model estimates');
+ if(!(await desktop.locator('.match-reading').textContent()).includes('модела'))throw new Error('Descriptive intro missing existing model estimates');
+ if((await desktop.locator('.form-curve svg').count())!==2||(await desktop.locator('.form-points').count()))throw new Error('Signed form curves did not replace the two five-game bars');
  stats.formChips=await desktop.locator('.form-overview').first().locator('.form-chip').count();
  await desktop.locator('.duel').screenshot({path:'scout-form.png'});
  await desktop.locator('.match-reading').screenshot({path:'scout-reading.png'});
@@ -217,6 +218,27 @@
   if(!(await desktop.locator('#matchContent').textContent()).includes('няма моделни проценти'))throw new Error('UEFA model guard disappeared');
   const scope=await desktop.evaluate(()=>({home:profile(activeMatch).home.all.map(r=>r[0]),away:profile(activeMatch).away.all.map(r=>r[0]),div:activeMatch[0]}));
   if(!scope.home.length||!scope.away.length||[...scope.home,...scope.away].some(d=>d!==scope.div))throw new Error('UEFA dossier mixed domestic or other tournament form');
+  await desktop.locator('#closeMatch').click();
+ }
+ const milanFixture=await desktop.evaluate(()=>fixtures.find(f=>Scout.keyTeam(f[5])==='milan'&&Scout.keyTeam(f[6])==='bologna'));
+ if(milanFixture){
+  await desktop.evaluate(f=>openMatch(f),milanFixture);
+  const recent=await desktop.evaluate(()=>{
+   const d=dossier(activeMatch),m=Model.evaluate(history,activeMatch,'standard');
+   return {n:d.home.all.length,europe:d.home.all.filter(r=>MatchpulseArchive.european(r)).length,
+    modelSame:JSON.stringify(d.model.distribution.probs)===JSON.stringify(m.distribution.probs),
+    sourceIsolated:profile(activeMatch).home.all.every(r=>r[0]===activeMatch[0]),
+    allCurrent:d.tendencies.every(v=>v.sides.every(s=>s.rows.every(r=>r[3]>=new Date(Date.parse(d.asOfDate+'T12:00:00Z')-30*86400000).toISOString().slice(0,10))))};
+  });
+  if(!recent.europe||!recent.modelSame||!recent.sourceIsolated||!recent.allCurrent)throw new Error('Recent UEFA form leaked into the model, or active runs include older periods');
+  const point=desktop.locator('.form-dot').last();await point.click();
+  if((await desktop.locator('.form-inspection').last().textContent())!==(await point.getAttribute('data-form-message')))throw new Error('Curve point inspection failed');
+  await desktop.locator('.duel').screenshot({path:'scout-current-form.png'});
+  await desktop.locator('.match-reading').screenshot({path:'scout-current-reading.png'});
+  await desktop.locator('.tendencies').screenshot({path:'scout-current-tendencies.png'});
+  await desktop.locator('.history-section > summary').click();
+  if(!(await desktop.locator('.result-competition').allTextContents()).some(div=>['UCL','UEL','UECL'].includes(div)))throw new Error('UEFA games are absent from the actual recent-result list');
+  stats.recentMilan=recent;
   await desktop.locator('#closeMatch').click();
  }
  if(failures.length)throw new Error('Browser JS errors: '+failures.join(' | '));

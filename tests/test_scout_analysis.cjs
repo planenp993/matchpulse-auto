@@ -4,7 +4,7 @@ const A=require('../docs/scout-analysis.js'),S=require('../docs/scout-core.js'),
 const row=(date,home,away,hg,ag,extra={},hx=null,ax=null)=>['E0','England','Premier League',date,'15:00',home,away,hg,ag,hx,ax,null,null,extra];
 const fixture=row('2026-10-28','Alpha','Beta',null,null);
 function history(){return Array.from({length:10},(_,i)=>row('2026-10-'+String(27-i).padStart(2,'0'),i%2?'Other':'Alpha',i%2?'Alpha':'Other',i%2?0:2,i%2?2:0,{HS:12,AS:6,HC:6,AC:2,HY:0,AY:1,HR:0,AR:0},1.5,.5));}
-function dossier(rows=history(),f=fixture){const all=[...rows,...rows.map(r=>{const q=[...r];q[5]=q[5]===f[5]?f[6]:q[5];q[6]=q[6]===f[5]?f[6]:q[6];return q;})];return A.describe(S.profile(S.build(all),f,{windowSize:10}),{keyTeam:S.keyTeam,patterns:P,model:{lambdaHome:1.5,lambdaAway:1,total:2.5,distribution:Model.distribution(1.5,1,-.06)}});}
+function dossier(rows=history(),f=fixture){const all=[...rows,...rows.map(r=>{const q=[...r];q[5]=q[5]===f[5]?f[6]:q[5];q[6]=q[6]===f[5]?f[6]:q[6];return q;})];return A.describe(S.profile(S.build(all),f,{windowSize:10}),{keyTeam:S.keyTeam,patterns:P,now:new Date('2026-10-27T20:00:00Z'),model:{lambdaHome:1.5,lambdaAway:1,total:2.5,distribution:Model.distribution(1.5,1,-.06)}});}
 test('Form preserves selected order and counts draws, losses and real 5-game point blocks',()=>{
  const rows=history();rows[0][7]=0;rows[0][8]=0;rows[1][7]=2;rows[1][8]=0;
  const before=JSON.stringify(rows),f=A.form(rows,'Alpha',S.keyTeam);
@@ -32,9 +32,9 @@ test('xG and actual goals share identical per-direction cohorts, including valid
  assert.ok(!A.statsHTML(dossier(rows)).includes('NaN'));
 });
 test('Narrative respects small samples, model availability and explicit UEFA fallback scopes',()=>{
- let d=dossier(history().slice(0,2));const text=A.intro(d).join(' ');assert.match(text,/Извадката е малка/);assert.ok(!text.includes('чести мачове'));
+ let d=dossier(history().slice(0,2));const text=A.intro(d).join(' ');assert.match(text,/малка извадка/);assert.ok(!text.includes('чести мачове'));
  d=dossier();d.international=true;d.model=null;d.home.proxy=true;const euro=A.intro(d).join(' ');
- assert.match(euro,/няма моделни проценти/);assert.match(euro,/не са пряко съпоставими/);
+ assert.match(euro,/няма моделни проценти/i);assert.match(euro,/нееднозначна клубна идентичност/);
 });
 test('Source profile excludes same-day, future and awarded matches from every dossier summary',()=>{
  const rows=history(),later=row('2026-10-29','Alpha','Other',100,0,{HS:999,AS:999}),same=row(fixture[3],'Alpha','Other',100,0),awarded=row('2026-10-25','Alpha','Other',100,0,{AWARDED:true});
@@ -71,8 +71,33 @@ test('Provider and club text is escaped in chips, match expansions, trends and i
  for(const html of [A.formHTML(d.home),A.historyHTML(d.home.all,name,S.keyTeam),A.trendsHTML(d),A.introHTML(d),A.statsHTML(d)]){assert.ok(!html.includes('<img'),html.slice(0,100));assert.ok(html.includes('&lt;img'));}
 });
 test('UI module and stylesheet have content versions and the offline preview embeds the dossier module',()=>{
- const html=fs.readFileSync('docs/scout.html','utf8');for(const name of ['scout-analysis.js','scout.js','scout.css']){
+ const html=fs.readFileSync('docs/scout.html','utf8');for(const name of ['scout-analysis.js','scout-archive.js','scout.js','scout.css']){
   const version=crypto.createHash('sha256').update(fs.readFileSync('docs/'+name)).digest('hex').slice(0,12);assert.ok(html.includes(name+'?v='+version),name);
  }
  assert.ok(fs.readFileSync('scripts/build_scout_preview.py','utf8').includes('scout-analysis.js'));
+});
+test('Form curve rises on wins, remains level on draws and falls on losses without altering results',()=>{
+ const rows=[row('2026-10-23','Alpha','Other',0,2),row('2026-10-22','Other','Alpha',1,1),row('2026-10-21','Alpha','Other',2,0)];
+ const f=A.form(rows,'Alpha',S.keyTeam),before=JSON.stringify(f),curve=A.formCurve(f);
+ assert.deepEqual(curve.map(x=>x.value),[1,1,0]);assert.equal(JSON.stringify(f),before);
+ const html=A.formHTML({form:f});assert.match(html,/<svg/);assert.match(html,/polyline/);assert.ok(!html.includes('Предишни 5'));assert.ok(!html.includes('form-points'));
+});
+test('Current tendencies are dated live runs only, exclude old-season runs and honor missing newest values',()=>{
+ const recent=history().slice(0,5),d=dossier(recent);
+ const current=A.trendsHTML(d);assert.ok(current.includes('active-match-date'));assert.ok(!current.includes('event-trail'));assert.ok(!current.includes('trail-no'));
+ for(const v of d.tendencies)for(const side of v.sides){assert.equal(side.rows.length,side.measure.currentStreak);assert.equal(side.until,side.rows[0][3]);}
+ const old=dossier(history().map(r=>{const q=[...r];q[3]=r[3].replace('2026-10','2026-05');return q;}));
+ assert.equal(old.tendencies.length,0);assert.match(A.trendsHTML(old),/Няма потвърдена продължаваща серия/);
+});
+test('A pending newer result suppresses the affected club current runs without fabricating a loss',()=>{
+ const d=dossier(),p={fixture:d.fixture,windowSize:10,home:{...d.home,pendingLatest:{date:'2026-10-27'}},away:d.away};
+ const trends=A.tendencies(p,P,S.keyTeam,'2026-10-27');
+ assert.ok(trends.every(t=>t.sides.every(s=>s.side!=='home')));
+ const out=A.trendsHTML({...d,tendencies:trends,home:p.home});assert.match(out,/очаква се резултат/);assert.equal(d.home.form.losses,0);
+});
+test('Intro interprets close model outcomes and a balanced total without inventing a strong favorite',()=>{
+ const d=dossier(),prob={...d.model.distribution.probs,homeWin:.38,draw:.25,awayWin:.37,over25:.49};
+ d.model={...d.model,distribution:{probs:prob}};const text=A.intro(d).join(' ');
+ assert.match(text,/няма отчетлив фаворит/);assert.match(text,/49% за над 2,5 и 51% за под 2,5/);
+ assert.ok(!text.includes('Съществуващият модел'));assert.equal((A.introHTML(d).match(/<p>/g)||[]).length,3);
 });
