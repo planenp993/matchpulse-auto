@@ -50,11 +50,19 @@
  if(!(await desktop.locator('.match-reading').textContent()).includes('Моделът оценява'))throw new Error('Descriptive intro missing existing model estimates');
  stats.formChips=await desktop.locator('.form-overview').first().locator('.form-chip').count();
  await desktop.locator('.duel').screenshot({path:'scout-form.png'});
+ await desktop.locator('.match-reading').screenshot({path:'scout-reading.png'});
  await desktop.locator('.tendencies').screenshot({path:'scout-tendencies.png'});
  await desktop.locator('.extra-analytics summary').click();
  if(!(await desktop.locator('.extra-analytics').textContent()).includes('На съперниците'))throw new Error('Team statistics and match totals are not distinguished');
  if(!(await desktop.locator('.xg-block').textContent()).includes('Допуснат xG'))throw new Error('xGA sample missing');
  await desktop.locator('.extra-analytics').screenshot({path:'scout-statistics.png'});
+ await desktop.locator('.stat-block').nth(3).screenshot({path:'scout-shots.png'});
+ await desktop.context().grantPermissions(['clipboard-read','clipboard-write']);
+ await desktop.locator('#copyMatch').click();
+ await desktop.waitForFunction(()=>document.getElementById('copyStatus').textContent.includes('копирано'));
+ const realCopied=await desktop.evaluate(()=>navigator.clipboard.readText());
+ if(!realCopied.includes('ТЕКУЩО КЛАСИРАНЕ')||!realCopied.includes('Наблюдаван xGA'))throw new Error('Native async ClipboardItem lost dossier content');
+ stats.nativeClipboard=true;
  await desktop.evaluate(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async text=>{window.__copiedBrief=text;}}}));
  await desktop.locator('#copyMatch').click();
  await desktop.waitForFunction(()=>window.__copiedBrief?.includes('ТЕКУЩО КЛАСИРАНЕ'));
@@ -171,6 +179,7 @@
  await mobile.locator('.duel').screenshot({path:'scout-form-mobile.png'});
  await mobile.locator('.extra-analytics summary').click();
  if(await mobile.locator('.drawer').evaluate(el=>el.scrollWidth>el.clientWidth+1))throw new Error('Mobile statistics overflow');
+ await mobile.locator('.stat-block').nth(1).screenshot({path:'scout-corners-mobile.png'});
  await mobile.locator('.xg-block').screenshot({path:'scout-xg-mobile.png'});
  await mobile.locator('.history-section > summary').click();
  await mobile.locator('.result-summary').first().click();

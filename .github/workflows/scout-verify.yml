@@ -116,4 +116,7 @@ jobs:
             scout-results.png
             scout-xg-mobile.png
             scout-result-mobile.png
+            scout-reading.png
+            scout-shots.png
+            scout-corners-mobile.png
           retention-days: 7
