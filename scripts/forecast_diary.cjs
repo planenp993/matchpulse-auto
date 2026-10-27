@@ -116,13 +116,16 @@ function report(forecasts,events,now=new Date(),run={}){
    immutable_forecasts:true,append_only_result_revisions:true,missing_statistics:'pending, never losses',
    note:'Forecasts use only the archived inputs available at capture. Results arrive with historical refreshes. Earlier historical backtests are not included. Baselines, code versions and inputs are frozen with each forecast.'}};
 }
-function advance({history,fixtures,forecasts=[],events=[],now=new Date(),sources={},versions=codeVersions(),capture=true}){
+function readMatchLinks(){const file=path.join(DATA,'match_links.json');return fs.existsSync(file)?JSON.parse(fs.readFileSync(file,'utf8')).matches||{}:{};}
+function advance({history,fixtures,forecasts=[],events=[],now=new Date(),sources={},versions=codeVersions(),capture=true,matchLinks={}}){
  const {latest}=validate(forecasts,events),today=sofiaDate(now),nowISO=now.toISOString();
  if(history.some(r=>M.isPlayed(r)&&r[3]>today))throw Error('Future scores in diary inputs');
  if(forecasts.some(f=>Date.parse(f.captured_at_utc)>+now)||events.some(e=>Date.parse(e.observed_at_utc)>+now))throw Error('Diary clock moved backwards');
  const source={history_sha256:sources.history_sha256||sha(canonical(history)),fixtures_sha256:sources.fixtures_sha256||sha(canonical(fixtures)),
-  ...(sources.status_sha256?{status_sha256:sources.status_sha256,calendar_stamp_utc:sources.calendar_stamp_utc}: {})};
+  ...(sources.status_sha256?{status_sha256:sources.status_sha256,calendar_stamp_utc:sources.calendar_stamp_utc}: {}),
+  ...(Object.keys(matchLinks).length?{match_links_sha256:sha(canonical(matchLinks))}:{})};
  const index=S.build(history),replay=D.createReplay(history),captured=new Set(forecasts.map(f=>fixtureKey(f.fixture))),newForecasts=[],newEvents=[];
+ const capturedMatches=new Set(forecasts.map(f=>matchLinks[fixtureKey(f.fixture)]?.id).filter(Boolean));
  const knownResults=new Set(history.filter(r=>Number.isInteger(r[7])&&Number.isInteger(r[8])).map(S.keyFixture));
  const awardedResults=new Map(history.filter(r=>r[13]?.AWARDED===true).map(r=>[S.keyFixture(r),r]));
  const latestLeagueDate=new Map();for(const row of history)if(M.isPlayed(row)&&row[3]>(latestLeagueDate.get(row[0])||''))latestLeagueDate.set(row[0],row[3]);
@@ -133,7 +136,7 @@ function advance({history,fixtures,forecasts=[],events=[],now=new Date(),sources
  for(const f of (capture?fixtures:[]).slice().sort((a,b)=>String(a[3]+' '+a[4]).localeCompare(String(b[3]+' '+b[4]))||S.keyFixture(a).localeCompare(S.keyFixture(b)))){
   if(f[3]<today||f[3]>last)continue;
   const key=S.keyFixture(f);
-  if(captured.has(key)){skipped.already_recorded++;continue;}
+  if(captured.has(key)||(matchLinks[key]?.id&&capturedMatches.has(matchLinks[key].id))){skipped.already_recorded++;continue;}
   if(knownResults.has(key)||M.isPlayed(f)){skipped.already_played++;continue;}
   if(INTERNATIONAL.has(f[0])){skipped.international++;continue;}
   const kickoff=confirmedKickoff(f);
@@ -148,29 +151,32 @@ function advance({history,fixtures,forecasts=[],events=[],now=new Date(),sources
     samples:{home:model.quality.homeN,away:model.quality.awayN,league:model.bases.count,xg:model.quality.coverage}},
    scanner:scan?{window_size:10,streak:3,venue:false,both:false,position:scan.position,candidate_count:scans.length,
     primary:signalSnapshot(scan.signal),signals:scan.signals.map(signalSnapshot)}:null});
-  newForecasts.push(entry);captured.add(key);
+  newForecasts.push(entry);captured.add(key);if(matchLinks[key]?.id)capturedMatches.add(matchLinks[key].id);
  }
  const allForecasts=[...forecasts,...newForecasts],currentFixtures=new Map(fixtures.map(f=>[S.keyFixture(f),f]));
  for(const entry of allForecasts){
-  const previous=latest.get(entry.id),old=previous?.state||initialState(entry),state={...old},key=fixtureKey(entry.fixture),actual=index.lookup.get(key);
+  const previous=latest.get(entry.id),old=previous?.state||initialState(entry),state={...old},key=fixtureKey(entry.fixture),link=matchLinks[key];
+  const resultKey=link?.result_key||key,actual=index.lookup.get(resultKey);
+  if(resultKey.split('|').filter((_,i)=>i!==1).join('|')!==key.split('|').filter((_,i)=>i!==1).join('|'))throw Error('Registry result changes fixture identity');
   // lookup intentionally excludes awarded scores; inspect the raw same-key row too.
-  const awarded=awardedResults.get(key);
-  const changed=confirmedKickoff(currentFixtures.get(key)||[]);
+  const awarded=awardedResults.get(resultKey);
+  const changed=confirmedKickoff(currentFixtures.get(link?.current_key||key)||[])||link?.kickoff_utc;
   if(changed&&old.status!=='settled'&&old.reason!=='kickoff_revised_before_capture')state.kickoff_utc=changed;
   if(old.reason==='kickoff_revised_before_capture'||Date.parse(state.kickoff_utc)<=Date.parse(entry.captured_at_utc)){
    state.status='excluded';state.reason='kickoff_revised_before_capture';state.result=null;
   }else if(awarded){state.status='excluded';state.reason='administrative_result';state.result=null;}
-  else if(actual&&+now>=Date.parse(state.kickoff_utc)+RESULT_WAIT_MINUTES*60000){
+  else if(link?.state==='cancelled'){state.status='excluded';state.reason='fixture_cancelled';state.result=null;}
+  else if(actual&&+now>=Date.parse(actual[3]!==entry.fixture.date&&!changed?actual[3]+'T23:59:59Z':state.kickoff_utc)+RESULT_WAIT_MINUTES*60000){
    const extra=actual[13]&&typeof actual[13]==='object'?actual[13]:{};
-   state.status='settled';state.reason=null;state.result={score:actual.slice(7,9),stats:Object.fromEntries(STAT_FIELDS.filter(f=>Number.isInteger(extra[f])&&extra[f]>=0).map(f=>[f,extra[f]]))};
-  }else if(!actual&&latestLeagueDate.has(entry.fixture.div)&&
+   state.status='settled';state.reason=null;state.result={score:actual.slice(7,9),stats:Object.fromEntries(STAT_FIELDS.filter(f=>Number.isInteger(extra[f])&&extra[f]>=0).map(f=>[f,extra[f]])),...(resultKey!==key?{fixture_key:resultKey,actual_date:actual[3]}:{})};
+  }else if(!actual&&!link&&latestLeagueDate.has(entry.fixture.div)&&
    Date.parse(latestLeagueDate.get(entry.fixture.div))-Date.parse(entry.fixture.date)>=MISSING_RESULT_GRACE_DAYS*86400000){
    state.status='unmatched';state.reason='result_not_found_after_archive_advanced';state.result=null;
   }else if(old.status==='settled'||old.status==='unmatched'){
    state.status='unmatched';state.reason='previous_result_missing_or_unconfirmed';state.result=null;
   }else{state.status='pending';state.reason=null;state.result=null;}
   if(canonical(state)!==canonical(old))newEvents.push(seal({schema:1,forecast_id:entry.id,revision:(previous?.revision||0)+1,
-   observed_at_utc:nowISO,history_sha256:source.history_sha256,state}));
+   observed_at_utc:nowISO,history_sha256:source.history_sha256,...(source.match_links_sha256?{match_links_sha256:source.match_links_sha256}:{}),state}));
  }
  const allEvents=[...events,...newEvents],run={new_forecasts:newForecasts.length,new_events:newEvents.length,skipped};
  return {newForecasts,newEvents,report:report(allForecasts,allEvents,now,run)};
@@ -212,7 +218,7 @@ function main(){
  if(!args.includes('--write'))throw Error('Use --check or --write');
  const historyRaw=fs.readFileSync(path.join(DATA,'history.json'),'utf8'),fixturesRaw=fs.readFileSync(path.join(DATA,'fixtures.json'),'utf8');
  const statusRaw=fs.readFileSync(path.join(DATA,'status.json'),'utf8'),now=new Date(),calendar=calendarSnapshot(JSON.parse(statusRaw),JSON.parse(fixturesRaw),now);
- const result=advance({...ledger,now,history:JSON.parse(historyRaw),fixtures:calendar.fixtures,sources:{history_sha256:sha(historyRaw),fixtures_sha256:sha(fixturesRaw),status_sha256:sha(statusRaw),calendar_stamp_utc:calendar.stamp}});
+ const result=advance({...ledger,now,history:JSON.parse(historyRaw),fixtures:calendar.fixtures,matchLinks:readMatchLinks(),sources:{history_sha256:sha(historyRaw),fixtures_sha256:sha(fixturesRaw),status_sha256:sha(statusRaw),calendar_stamp_utc:calendar.stamp}});
  result.report.last_run.calendar={fresh:calendar.fresh,blocked_fixtures:calendar.blocked,stamp:calendar.stamp};
  appendRecords(LEDGER,'forecasts',result.newForecasts);
  const forecastMap=new Map([...ledger.forecasts,...result.newForecasts].map(f=>[f.id,f]));
@@ -221,4 +227,4 @@ function main(){
  console.log(JSON.stringify({...result.report.last_run,totals:result.report.totals,ledger_sha256:result.report.integrity.ledger_sha256}));
 }
 if(require.main===module)main();
-module.exports={advance,report,validate,seal,sha,canonical,confirmedKickoff,calendarSnapshot,sofiaDate,readLedger,appendRecords,checkPrefixes,ledgerHash,MARGIN_MINUTES,HORIZON_DAYS,RESULT_WAIT_MINUTES};
+module.exports={advance,report,validate,seal,sha,canonical,confirmedKickoff,calendarSnapshot,sofiaDate,readMatchLinks,readLedger,appendRecords,checkPrefixes,ledgerHash,MARGIN_MINUTES,HORIZON_DAYS,RESULT_WAIT_MINUTES};

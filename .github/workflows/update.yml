@@ -6,11 +6,16 @@ on:
     paths-ignore:
       - 'docs/data/**'
   workflow_dispatch:
+    inputs:
+      mode:
+        description: 'auto catches missed work; full checks 42 historical sources'
+        type: choice
+        options: [auto, full, history, calendar, publish]
+        default: auto
   schedule:
-    - cron: '17 05 * * 2,5'       # Historical CSV: Tuesday and Friday only
-    - cron: '17 05 * * 0,1,3,4,6' # Daily calendars on all other mornings
-    - cron: '17 17 * * *'         # Every evening: calendars only
-    - cron: '41 04 * * 6'         # Saturday: keyless CC0 matches in open-only leagues
+    - cron: '17 05 * * *' # Due-state catch-up, not an exact-cron mode switch
+    - cron: '47 13 * * *' # After Tuesday UK quote publication
+    - cron: '47 17 * * *' # After Friday UK quote publication (including winter)
 
 permissions:
   contents: write
@@ -30,6 +35,8 @@ jobs:
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -40,63 +47,36 @@ jobs:
         run: node --test tests/*.cjs
       - name: Verify CSV import
         run: python -m unittest discover -s tests -v
-      - name: Refresh calendar daily, history only twice weekly
+      - name: Collect only explicitly requested or overdue data
         env:
           RUN_EVENT: ${{ github.event_name }}
-          RUN_CRON: ${{ github.event.schedule }}
-        run: |
-          if [ "$RUN_CRON" = "17 05 * * 2,5" ]; then
-            echo "Permitted full historical refresh (Tuesday/Friday)"
-            python scripts/update.py --online
-          elif [ "$RUN_CRON" = "41 04 * * 6" ]; then
-            echo "Weekly CC0-only Bundesliga and Serie A; no Football-Data"
-            python scripts/refresh_openfootball.py
-            python scripts/update_calendar.py
-          elif [ "$RUN_EVENT" = "push" ]; then
-            echo "Code-only deployment; do not request any provider data"
-          else
-            echo "Calendar-only: zero requests to football-data.co.uk"
-            python scripts/update_calendar.py
-          fi
-      - name: Multi-market model audit with fixed historical periods
-        run: python scripts/evaluate.py
-      - name: Independent Scout data coverage and quality audit
-        run: python scripts/audit_scout.py
-      - name: Persist verified results
+          REQUESTED_MODE: ${{ inputs.mode || 'auto' }}
+        run: python scripts/data_sync.py collect --event "$RUN_EVENT" --mode "$REQUESTED_MODE" --commit "$GITHUB_SHA" --patch /tmp/mp-patch.json
+      - name: Verify frozen registered studies without delaying live data
+        run: python scripts/check_research.py
+      - name: Apply, audit and persist on the latest main
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          mkdir -p /tmp/mp-refresh
-          cp docs/data/history.json docs/data/fixtures.json docs/data/status.json docs/data/model_report.json docs/data/coverage_audit.json /tmp/mp-refresh/
-          cp docs/model-quality.md /tmp/mp-refresh/
           for attempt in 1 2 3; do
             git fetch origin main
             git reset --hard origin/main
-            cp /tmp/mp-refresh/history.json /tmp/mp-refresh/fixtures.json /tmp/mp-refresh/status.json /tmp/mp-refresh/model_report.json /tmp/mp-refresh/coverage_audit.json docs/data/
-            cp /tmp/mp-refresh/model-quality.md docs/model-quality.md
-            # Reuse the comparison only when the exact history, code and protocol
-            # match. Run after reset so another writer's latest code is respected.
-            node scripts/compare_goal_models.cjs --write --if-needed --progress
-            node scripts/compare_goal_models.cjs --check
-            # Read the latest committed ledger only after resetting to main.
-            # Rejected pushes repeat capture/settlement from that latest ledger.
+            # Reapply observations to the newest files; never copy an old whole
+            # history or calendar over another writer's newer publication.
+            python scripts/data_sync.py apply --patch /tmp/mp-patch.json
+            python scripts/audit_scout.py
+            python scripts/check_research.py
             node scripts/forecast_diary.cjs --check --base-ref origin/main
+            node scripts/paired_model_diary.cjs --check --base-ref origin/main
             node scripts/forecast_diary.cjs --write
             node scripts/paired_model_diary.cjs --write --base-ref origin/main
-            node scripts/paired_model_diary.cjs --check
             node scripts/forecast_diary.cjs --check
-            # Separate offline study; never changes the frozen paired candidate.
-            node scripts/compare_shot_models.cjs --write --if-needed --progress
-            node scripts/compare_shot_models.cjs --check
-            node scripts/evaluate_scanner.cjs --write --if-needed --progress
-            node scripts/evaluate_scanner.cjs --check
-            git add docs/data/history.json docs/data/fixtures.json docs/data/status.json docs/data/model_report.json docs/data/coverage_audit.json docs/model-quality.md
-            git add docs/data/diary docs/data/diary_report.json
-            git add docs/data/model_comparison.json docs/model-comparison.md
-            git add docs/data/paired_model_report.json
-            git add docs/data/shot_model_comparison.json docs/shot-model-comparison.md
-            git add docs/data/scanner_validation.json docs/scanner-validation.md
+            node scripts/paired_model_diary.cjs --check
+            node scripts/smoke_scout.cjs
+            git add data/match_registry.json docs/data/history.json docs/data/fixtures.json docs/data/status.json docs/data/coverage_audit.json
+            git add docs/data/match_links.json docs/data/data_health.json
+            git add docs/data/diary docs/data/diary_report.json docs/data/paired_model_report.json
             if git diff --staged --quiet; then
               echo "No data changes"
               break
@@ -110,8 +90,18 @@ jobs:
               echo "::error::Failed to persist data after 3 retries"
               exit 1
             fi
-            echo "Concurrent change detected; retrying on latest main"
+            echo "Concurrent change detected; reapplying to latest main"
           done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: MATCHPULSE-DATA-HEALTH
+          path: |
+            docs/data/data_health.json
+            docs/data/coverage_audit.json
+            /tmp/mp-patch.json
+          retention-days: 7
+          if-no-files-found: warn
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

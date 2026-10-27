@@ -28,7 +28,7 @@ def read_board(download, slug, day):
     return data
 
 
-def collect_league(download, division, slug, metadata, now_sofia, end):
+def collect_league(download, division, slug, metadata, now_sofia, end, observer=None):
     today = now_sofia.date()
     board = read_board(download,slug,today.isoformat())
     league = next(x for x in board["leagues"] if x.get("slug")==slug)
@@ -50,16 +50,20 @@ def collect_league(download, division, slug, metadata, now_sofia, end):
         for game in event.get("competitions",[]):
             if not isinstance(game,dict): continue
             status = game.get("status",event.get("status",{})).get("type",{})
-            if status.get("state")!="pre" or status.get("completed") is not False: continue
-            if status.get("name") not in ("STATUS_SCHEDULED","STATUS_TIME_TBD"): continue
+            scheduled=(status.get("state")=="pre" and status.get("completed") is False and
+                       status.get("name") in ("STATUS_SCHEDULED","STATUS_TIME_TBD"))
+            exceptional={"STATUS_POSTPONED":"postponed", "STATUS_CANCELED":"cancelled", "STATUS_CANCELLED":"cancelled"}.get(status.get("name"))
+            if not scheduled and not (observer and exceptional): continue
             if game.get("dateValid") is False: continue
             try:
                 kickoff = dt.datetime.fromisoformat(str(game.get("date",event.get("date",""))).replace("Z","+00:00"))
                 if kickoff.tzinfo is None: continue
                 local = kickoff.astimezone(now_sofia.tzinfo)
             except (ValueError,TypeError,OverflowError): continue
-            time_known = game.get("timeValid") is not False and status.get("name")!="STATUS_TIME_TBD"
-            if not today<=local.date()<=end or (time_known and local<now_sofia): continue
+            time_known = scheduled and game.get("timeValid") is not False and status.get("name")!="STATUS_TIME_TBD"
+            if not today-dt.timedelta(days=7 if observer else 0)<=local.date()<=end: continue
+            publish=scheduled and today<=local.date()<=end and (not time_known or local>=now_sofia)
+            if not publish and not observer: continue
             sides = {}
             for side in game.get("competitors",[]):
                 team = side.get("team",{})
@@ -70,5 +74,9 @@ def collect_league(download, division, slug, metadata, now_sofia, end):
             row = [division,country,name,local.date().isoformat(),local.strftime("%H:%M") if time_known else "",
                    sides["home"],sides["away"],None,None,None,None,None,None,
                    "ESPN / UTC→Europe-Sofia"+("; kickoff unconfirmed" if not time_known else "")]
-            rows[str(game.get("id") or event.get("id") or (row[3],row[5],row[6]))] = row
+            if observer:
+                identity=game.get("id") or event.get("id")
+                observer({"row":row,"provider_id":"ESPN:"+slug+":"+str(identity) if identity else None,
+                    "status":exceptional or "scheduled"})
+            if publish: rows[str(game.get("id") or event.get("id") or (row[3],row[5],row[6]))] = row
     return sorted(rows.values(),key=lambda r:(r[3],r[4],r[5]))
