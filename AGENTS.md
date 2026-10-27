@@ -213,3 +213,22 @@ The existing Program filters include a collapsed standings panel; match analysis
 has its own collapsed table with the two reviewed club rows highlighted. There is
 no new navigation screen. Tables load lazily, and the offline builder embeds them.
 CSS, the table renderer and the UI use content versions to avoid stale phone assets.
+
+
+## Descriptive match dossier
+
+`docs/scout-analysis.js` is a separate presentation/readout module. It must not
+feed model, Elo, scanner, frozen research or diary writers. Preserve the existing
+model percentages and report pre-match historical frequencies as observations.
+Team counts, opponent counts and match totals need explicit labels. xG and actual
+goals are compared only on the same per-direction observation cohort. Missing
+values remain missing; an absent newest statistic interrupts a streak. Match
+result rows always retain actual home-away order, with names on both sides.
+
+The rule-based introduction and copied Bulgarian dossier use the same description
+object. Export the selected window, venue cohorts with dates, existing model,
+per-match facts, source clocks, and current (not retrospectively pre-match) tables.
+Never imply an unchecked lineup, injury, news item or current bookmaker price.
+Version `scout-analysis.js`, `scout.js` and CSS by content, including the offline
+builder. Browser checks cover touch/form inspection, expandable match facts,
+clipboard export, small screens and unchanged saved picks.

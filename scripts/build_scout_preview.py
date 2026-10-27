@@ -26,7 +26,7 @@ bundle={
 }
 payload=json.dumps(bundle,ensure_ascii=False,separators=(",",":")).replace("</","<\\/")
 html=re.sub(r'<link rel="stylesheet" href="scout\.css(?:\?[^"<>]*)?">',lambda m:'<style>'+css+'</style>',html)
-for n,source in [("club-aliases.js",aliases),("model-core.js",model),("scout-core.js",core),("scout-markets.js",markets),("scout-elo.js",elo),("scout-patterns.js",patterns),("scout-archive.js",(DOC/"scout-archive.js").read_text(encoding="utf-8")),("scout-standings.js",(DOC/"scout-standings.js").read_text(encoding="utf-8")),("scout.js",ui)]:
+for n,source in [("club-aliases.js",aliases),("model-core.js",model),("scout-core.js",core),("scout-markets.js",markets),("scout-elo.js",elo),("scout-patterns.js",patterns),("scout-archive.js",(DOC/"scout-archive.js").read_text(encoding="utf-8")),("scout-standings.js",(DOC/"scout-standings.js").read_text(encoding="utf-8")),("scout-analysis.js",(DOC/"scout-analysis.js").read_text(encoding="utf-8")),("scout.js",ui)]:
  marker=re.search(r'<script src="'+re.escape(n)+r'(?:\?[^"<>]*)?"></script>',html)
  replacement='<script>'+source.replace("</script","<\\/script")+'</script>'
  if n=="scout.js":
