@@ -7,11 +7,11 @@ const percent=v=>Number.isFinite(v)?fmt(v*100,0)+'%':'—';
 const localISO=(d=new Date())=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Sofia',year:'numeric',month:'2-digit',day:'2-digit'}).format(d);
 function offsetISO(n){const a=new Date(localISO()+'T12:00:00Z');a.setUTCDate(a.getUTCDate()+n);return a.toISOString().slice(0,10)}
 let history=[],fixtures=[],status={},index=null,eloIndex=null,windowSize=10,active='schedule',fixtureRows=[],scannerRows=[],mode='today',customDate='',activeMatch=null;
-let diaryLoaded=false,diaryLoading=false;
+let diaryLoaded=false,diaryLoading=false,archive=null;
 const PROFILE_CACHE=new Map(),PICK_KEY='matchpulse-scout-picks-v1';
 function readPicks(){try{const v=JSON.parse(localStorage.getItem(PICK_KEY)||'[]');return Array.isArray(v)?v:[]}catch{return []}}
 function writePicks(v){try{localStorage.setItem(PICK_KEY,JSON.stringify(v));return true}catch{return false}}
-function profile(f){const k=Scout.keyFixture(f)+'|'+windowSize;if(!PROFILE_CACHE.has(k))PROFILE_CACHE.set(k,Scout.profile(index,f,{windowSize}));return PROFILE_CACHE.get(k)}
+function profile(f){const k=Scout.keyFixture(f)+'|'+windowSize;if(!PROFILE_CACHE.has(k))PROFILE_CACHE.set(k,archive.profile(f,{windowSize}));return PROFILE_CACHE.get(k)}
 function setView(next){
  active=next;
  for(const view of ['schedule','scanner','picks','diary'])el('view-'+view).classList.toggle('hidden',view!==next);
@@ -45,7 +45,7 @@ function fixtureHint(f){
  const p=profile(f),s=Scout.trend(p,'o25',8),b=Scout.trend(p,'btts',8);
  if(s.signalFound)return {label:'Над 2,5 · '+s.homeCount+'/'+s.homeTotal+' и '+s.awayCount+'/'+s.awayTotal,css:'green'};
  if(b.signalFound)return {label:'Гол/гол · '+b.homeCount+'/'+b.homeTotal+' и '+b.awayCount+'/'+b.awayTotal,css:'green'};
- if(p.international)return {label:'Евротурнир · ограничени данни',css:'amber'};
+ if(p.international)return {label:p.home.proxy||p.away.proxy?'Евротурнир · ограничени данни':'Евротурнир · история за 90 мин.',css:p.home.proxy||p.away.proxy?'amber':''};
  if(fixtureQualified(f))return {label:'Статистика налична',css:''};
  return {label:'Непълни данни',css:'amber'};
 }
@@ -95,7 +95,7 @@ function matchRows(rows,team){
  if(!rows.length)return '<div class="empty">Няма достатъчно данни.</div>';
  return rows.slice(0,windowSize).map(r=>{
    const home=Scout.keyTeam(r[5])===Scout.keyTeam(team),op=home?r[6]:r[5],gf=home?r[7]:r[8],ga=home?r[8]:r[7];
-   return '<div class="match-history"><time>'+esc(r[3].slice(5))+'</time><span title="'+esc(op)+'">'+(home?'Д ':'Г ')+esc(op)+'</span><b>'+gf+':'+ga+'</b></div>'
+   return '<div class="match-history"><time>'+esc(r[3].slice(5))+'</time><span title="'+esc(op)+'">'+(home?'Д ':'Г ')+esc(op)+(r[13]?.PHASE==='QUALIFYING'?' · квал.':'')+'</span><b>'+gf+':'+ga+'</b></div>'
  }).join('');
 }
 function signalTiles(p){
@@ -124,8 +124,8 @@ function venueTiles(p){
  ).join('');
 }
 function directMeetings(f){
- const h=Scout.keyTeam(f[5]),a=Scout.keyTeam(f[6]);
- const rows=index.byDivision.get(f[0]+'|'+h)||[];
+ const mapped=archive.direct(f),h=Scout.keyTeam(mapped.home),a=Scout.keyTeam(mapped.away);
+ const rows=mapped.index.byDivision.get(f[0]+'|'+h)||[];
  const direct=rows.filter(r=>r[3]<f[3]&&
    ((Scout.keyTeam(r[5])===h&&Scout.keyTeam(r[6])===a)||
     (Scout.keyTeam(r[5])===a&&Scout.keyTeam(r[6])===h))).slice(0,6);
@@ -212,7 +212,7 @@ function openMatch(f){
   '<details class="card detail-card"><summary>Как се изчислява анализът</summary>'+
    '<p class="footnote">Elo е ориентир от архива на показаното първенство. Начална стойност 1500; рейтинги от различни първенства не са пряко сравними.</p>'+
    '<p class="footnote">Моделните вероятности за резултат и голове идват от една резултатна матрица (Поасон с Dixon–Coles корекция), с до 30 предишни срещи. Изборът 5/10/20 променя статистиките и сериите.</p>'+
-   '<p class="footnote">Честотите и сериите описват историята. Липсващите данни остават празни. При евротурнири историята може да е от вътрешно първенство.</p></details></div>';
+   '<p class="footnote">Честотите и сериите описват историята. Липсващите данни остават празни. Евротурнирите използват резултатите след 90 минути от същия турнир, включително квалификациите. При липса се показва вътрешното първенство.</p></details></div>';
  el('savePick').onclick=savePick;el('copyMatch').onclick=copyMatch;
 }
 function closeMatch(){el('matchOverlay').classList.add('hidden');document.body.style.overflow=''}
@@ -285,7 +285,7 @@ const marketNames=Object.fromEntries(Patterns.MARKETS.map(v=>[v.id,v.label]));
 Object.assign(marketNames,{'1':'Победа домакин','2':'Победа гост','1X':'Двоен шанс 1X','X2':'Двоен шанс X2',home2:'Домакин 2+',away2:'Гост 2+'});
 function renderPicks(){
  const list=readPicks(),resolved=list.map(p=>{
-  const done=index.lookup.get(Scout.keyPick(p)),settled=done?Scout.marketSettled(p,done):null;
+  const done=archive.result(p),settled=done?Scout.marketSettled(p,done):null;
   return {...p,settled,score:done?done[7]+':'+done[8]:null}
  });
  const done=resolved.filter(x=>x.settled!==null);
@@ -305,7 +305,7 @@ function exportPicks(){
  const picks=readPicks();if(!picks.length){alert('Няма прогнози за експорт.');return}
  const cols=['date','home','away','market','odds','modelProbability','analysisWindow','createdAt','score','result'];
  const csv=[cols.join(',')].concat(picks.map(p=>cols.map(k=>{
-  const done=index.lookup.get(Scout.keyPick(p)),settled=done?Scout.marketSettled(p,done):null;
+  const done=archive.result(p),settled=done?Scout.marketSettled(p,done):null;
   const v=k==='result'?(settled===null?'pending':settled?'win':'loss'):k==='score'?(done?done[7]+':'+done[8]:''):(p[k]??'');
   return '"'+String(v).replace(/"/g,'""')+'"';
  }).join(','))).join('\r\n');
@@ -365,10 +365,13 @@ async function loadCoverage(){
         return r.json();
       });
    if(!doc||!doc.leagues)throw Error('Липсва отчет за покритието');
-   const rows=Object.entries(doc.leagues).sort((a,b)=>(b[1].future_fixtures||0)-(a[1].future_fixtures||0)||b[1].matches-a[1].matches);
+   const leagues=structuredClone(doc.leagues);
+   const europeRows=archive.international.history.filter(r=>window.MatchpulseArchive.european(r));
+   for(const r of europeRows){if(!leagues[r[0]])leagues[r[0]]={matches:0,future_fixtures:0};leagues[r[0]].matches=(leagues[r[0]].matches||0)+1;}
+   const rows=Object.entries(leagues).sort((a,b)=>(b[1].future_fixtures||0)-(a[1].future_fixtures||0)||b[1].matches-a[1].matches);
    const coverage=(v,k)=>v.coverage?.[k]?.percentage===undefined?'—':v.coverage[k].percentage+'%';
-   target.innerHTML='<p><b>'+doc.historical_matches.toLocaleString('bg-BG')+' мача</b> · '+doc.historical_leagues+
-    ' първенства · одит '+esc(doc.checked_utc?.slice(0,10)||'—')+'</p>'+
+   target.innerHTML='<p><b>'+(doc.historical_matches+europeRows.length).toLocaleString('bg-BG')+' мача</b> · '+doc.historical_leagues+
+    ' първенства'+(europeRows.length?' + 3 евротурнира':'')+' · одит '+esc(doc.checked_utc?.slice(0,10)||'—')+'</p>'+
     '<p>Покритието на статистиките е показано по първенство.</p>'+
     '<div class="coverage-scroll"><table><thead><tr><th>Лига</th><th>Мачове</th><th>Бъдещи</th><th>Удари</th><th>Корнери</th><th>Жълти</th><th>xG</th></tr></thead><tbody>'+
     rows.map(([code,v])=>'<tr><td>'+esc(code)+'</td><td>'+v.matches+'</td><td>'+v.future_fixtures+
@@ -385,24 +388,29 @@ async function load(){
     await Promise.all(['history.json','fixtures.json','status.json'].map(name=>
       fetch('data/'+name+'?scout=1',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(name+' HTTP '+r.status);return r.json()})));
   if(!Array.isArray(h)||!Array.isArray(f))throw Error('Невалиден формат на базата');
-  history=h;fixtures=f;status=s;index=Scout.build(h);eloIndex=Elo.build(h,Scout.keyTeam);syncResearchControls();
+  const extra=window.SCOUT_EMBEDDED_DATA || await Promise.all(['europe_history.json','match_links.json','europe_fixture_names.json'].map(name=>
+    fetch('data/'+name+'?scout=1',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error(name+' HTTP '+r.status);return r.json()}))).then(([europe,links,europeNames])=>({europe,links,europeNames}));
+  archive=window.MatchpulseArchive.build(Scout,h,extra.europe||[],extra.links||{},extra.europeNames||{});
+  history=h;fixtures=f;status=s;index=archive.main;eloIndex=Elo.build(h,Scout.keyTeam);syncResearchControls();
   const lg=new Map();f.forEach(row=>lg.set(row[0],row[2]));
   const options='<option value="">Всички първенства</option>'+[...lg.entries()].sort((a,b)=>a[1].localeCompare(b[1])).map(([code,name])=>'<option value="'+esc(code)+'">'+esc(name)+'</option>').join('');
   el('leagueSelect').innerHTML=options;el('scanLeague').innerHTML=options;
   const calendarStamp=s.fixtures_updated_utc||s.last_build_utc;
   const showStamp=value=>value?new Date(value).toLocaleString('bg-BG',{timeZone:'Europe/Sofia',dateStyle:'short',timeStyle:'short'}):'неизвестно';
-  const historyStamp=[s.last_history_success_utc,s.csv_archive_backfill?.checked_utc,s.openfootball_backfill?.checked_utc,s.openfootball_txt_backfill?.checked_utc].filter(v=>Number.isFinite(Date.parse(v))).sort((a,b)=>Date.parse(b)-Date.parse(a))[0];
+  const historyStamp=[s.last_history_success_utc,s.last_results_success_utc,s.csv_archive_backfill?.checked_utc,s.openfootball_backfill?.checked_utc,s.openfootball_txt_backfill?.checked_utc].filter(v=>Number.isFinite(Date.parse(v))).sort((a,b)=>Date.parse(b)-Date.parse(a))[0];
   const age=Date.now()-new Date(calendarStamp||0).getTime();
   const stale=!Number.isFinite(age)||age>36*3600000;
-  const errors=s.secondary_fixture_errors||[];
-  const partial=errors.length>0||['partial_secondary','stale_secondary'].includes(s.fixtures_feed_status);
+  const errors=[...(s.secondary_fixture_errors||[]),...(s.result_bridge_errors||[]),...(s.europe_errors||[])];
+  const partial=errors.length>0||['partial_secondary','stale_secondary'].includes(s.fixtures_feed_status)||['partial','error'].includes(s.result_bridge_status)||['partial','error'].includes(s.europe_refresh_status);
   el('lastSync').textContent='Програма: '+showStamp(calendarStamp);
   el('syncBadge').classList.toggle('sync-warning',stale||partial);
-  el('sourceStatus').textContent=history.length.toLocaleString('bg-BG')+' мача в архива';
+  el('sourceStatus').textContent=(history.length+(extra.europe||[]).length).toLocaleString('bg-BG')+' мача в архива';
   el('notice').classList.toggle('hidden',!stale&&!partial);
-  el('notice').textContent=stale?'Календарът не е обновяван скоро. Провери „Данни и обновяване“.':partial?'Част от програмата е от кеш. Виж „Данни и обновяване“.':'';
+  el('notice').textContent=stale?'Календарът не е обновяван скоро. Провери „Данни и обновяване“.':partial?'Част от източниците не са обновени. Виж „Данни и обновяване“.':'';
   el('syncContent').innerHTML='<div class="sync-grid"><div><strong>Програма</strong><span>'+esc(showStamp(calendarStamp))+'</span></div>'+
-   '<div><strong>Резултати</strong><span>'+esc(showStamp(historyStamp))+'</span></div>'+
+   '<div><strong>Основен архив</strong><span>'+esc(showStamp(s.last_history_success_utc||historyStamp))+'</span></div>'+
+   '<div><strong>Допълнителни лиги</strong><span>'+esc(showStamp(s.last_results_success_utc))+'</span></div>'+
+   '<div><strong>Евротурнири</strong><span>'+esc(showStamp(s.last_europe_success_utc))+'</span></div>'+
    '<div><strong>Календарни източници</strong><span>'+(s.secondary_fixture_sources_ok??'—')+' / '+(s.secondary_fixture_sources_total??'—')+'</span></div></div>'+
    (errors.length?'<p>'+errors.map(esc).join(' · ')+'</p>':'');
   setView('schedule');

@@ -139,6 +139,18 @@
  await mobile.waitForFunction(()=>document.querySelectorAll('.diary-entry').length>0,{timeout:20000});
  if(paired)await mobile.locator('#view-diary summary').click();
  if(await mobile.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth+1))throw new Error('Mobile diary overflows horizontally');
+ stats.europeArchive=await desktop.evaluate(()=>({domestic:index.history.length,total:archive.international.history.length,
+  europeanInDomestic:index.history.some(r=>MatchpulseArchive.european(r))}));
+ if(stats.europeArchive.europeanInDomestic)throw new Error('UEFA rows contaminated the domestic index');
+ if(stats.europeArchive.total>stats.europeArchive.domestic){
+  const euroFixture=await desktop.evaluate(()=>fixtures.find(f=>MatchpulseArchive.european(f)&&!profile(f).home.proxy&&!profile(f).away.proxy));
+  if(!euroFixture)throw new Error('Imported UEFA archive is unavailable to all future dossiers');
+  await desktop.evaluate(f=>openMatch(f),euroFixture);
+  if(!(await desktop.locator('#matchContent').textContent()).includes('няма моделни проценти'))throw new Error('UEFA model guard disappeared');
+  const scope=await desktop.evaluate(()=>({home:profile(activeMatch).home.all.map(r=>r[0]),away:profile(activeMatch).away.all.map(r=>r[0]),div:activeMatch[0]}));
+  if(!scope.home.length||!scope.away.length||[...scope.home,...scope.away].some(d=>d!==scope.div))throw new Error('UEFA dossier mixed domestic or other tournament form');
+  await desktop.locator('#closeMatch').click();
+ }
  if(failures.length)throw new Error('Browser JS errors: '+failures.join(' | '));
  console.log('SCOUT_BROWSER_OK '+JSON.stringify(stats));
  await browser.close();

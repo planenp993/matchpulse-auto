@@ -9,6 +9,13 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import update as u
 
 
+def read_strict(path, default):
+    if not path.exists(): return default
+    value = json.loads(path.read_text(encoding="utf-8-sig"))
+    if not isinstance(value, type(default)): raise ValueError("Invalid archive type: "+str(path))
+    return value
+
+
 def encoded(value):
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)
 
@@ -96,9 +103,14 @@ def observe(registry, observations, stamp):
     return registry
 
 
-def reconcile(registry, history, fixtures, stamp):
+def reconcile(registry, history, fixtures, stamp, aliases=None):
     now = dt.datetime.fromisoformat(stamp.replace("Z", "+00:00"))
     lookup = {row_key(r): r for r in history}
+    for alias, actual in (aliases or {}).items():
+        if actual not in lookup: raise ValueError("Missing verified result alias target")
+        if alias in lookup and lookup[alias][7:9] != lookup[actual][7:9]:
+            raise ValueError("Conflicting verified result alias")
+        lookup[alias] = lookup[actual]
     visible = {row_key(r) for r in fixtures}
     for match in registry["matches"].values():
         results = [lookup[k] for k in match["legacy_keys"] if k in lookup]
@@ -114,7 +126,7 @@ def reconcile(registry, history, fixtures, stamp):
             match["result"] = result[7:9]
             # Results dates never replace the immutable captured forecast date.
             match["actual_date"] = result[3]
-            match["state"] = ("awarded" if stats.get("AWARDED") else "final" if result[0] in u.EXTRA or
+            match["state"] = ("awarded" if stats.get("AWARDED") else "final" if result[0] in (*u.EXTRA, "UCL", "UEL", "UECL") or
                 all(k in stats for k in ("HS", "AS", "HST", "AST", "HC", "AC", "HY", "AY", "HR", "AR")) else "final_awaiting_stats")
         elif match["state"] not in ("cancelled", "postponed", "provisional_result"):
             start = match.get("kickoff_utc")

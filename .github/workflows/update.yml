@@ -10,7 +10,7 @@ on:
       mode:
         description: 'auto catches missed work; full checks 42 historical sources'
         type: choice
-        options: [auto, full, history, calendar, fixtures, publish]
+        options: [auto, full, history, calendar, fixtures, results, europe, publish]
         default: auto
   schedule:
     - cron: '17 05 * * *' # Due-state catch-up, not an exact-cron mode switch
@@ -66,6 +66,7 @@ jobs:
             # history or calendar over another writer's newer publication.
             python scripts/data_sync.py apply --patch /tmp/mp-patch.json
             python scripts/audit_scout.py
+            python scripts/europe_archive.py --check
             python scripts/check_research.py
             node scripts/forecast_diary.cjs --check --base-ref origin/main
             node scripts/paired_model_diary.cjs --check --base-ref origin/main
@@ -76,6 +77,11 @@ jobs:
             node scripts/smoke_scout.cjs
             git add data/match_registry.json docs/data/history.json docs/data/fixtures.json docs/data/status.json docs/data/coverage_audit.json
             git add docs/data/match_links.json docs/data/data_health.json
+            git add docs/data/europe_history.json docs/data/europe_coverage.json docs/data/europe_fixture_names.json
+            if [ -d data/europe ]; then git add data/europe; fi
+            for file in data/europe_clubs.json data/europe_schedule.json data/result_provenance.json; do
+              if [ -f "$file" ]; then git add "$file"; fi
+            done
             git add docs/data/market_coverage.json
             if [ -d data/markets ]; then git add data/markets; fi
             git add docs/data/diary docs/data/diary_report.json docs/data/paired_model_report.json

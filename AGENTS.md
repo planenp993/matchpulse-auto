@@ -151,3 +151,33 @@ requests; `calendar` still makes zero Football-Data requests. If a publication
 window's CSV has no applicable future quotes while known matches are scheduled,
 record `empty_for_upcoming` and retry on a later tick with the two-hour cooldown.
 A successful HTTP download alone must not close that publication window.
+
+
+## UEFA and recent domestic results (third infrastructure package)
+
+Manual `results` refreshes six recent domestic result feeds and the current UEFA
+season without Football-Data requests. Manual `europe` additionally checks UEFA
+2021/22 through the current season. Auto retries both at the next eligible tick
+(at least eight hours after the last attempt); first initialization backfills all
+six seasons. Normal code pushes and CI remain provider-free.
+
+The recent result bridge uses ESPN for NOR/SWE/DNK/AUT and official Polish/Swiss
+league feeds for POL/SWZ. Only explicit completed regulation matches enter history;
+no aggregate score, live placeholder or extra-time result is accepted. Primary
+CSV statistics can enrich these goal-only rows later. Existing scores never change
+silently. Evidence is retained in `data/result_provenance.json`.
+
+UEFA's official public match service supplies stable FAME club and match IDs.
+Rich per-season shards under `data/europe` preserve 90-minute, after-play,
+shootout, aggregate and administrative outcomes separately. Complete balanced
+official goal timelines arbitrate contradictory 90-minute fields; every such
+resolution retains the originally reported value. The public regulation view
+`docs/data/europe_history.json` excludes administrative matches. Validate it with
+`python scripts/europe_archive.py --check`. Corrupt archives block publication.
+
+Keep UEFA separate from `history.json`, the domestic model/scanner index and the
+frozen paired experiment. `scout-archive.js` wires the UEFA view only into European
+dossiers/direct meetings and personal pick settlement. Exact official date and
+both club labels connect calendar names to official IDs; the one reviewed
+FixtureDownload abbreviation is documented in `data/europe_calendar_aliases.json`.
+Missing statistics remain missing. Standings are a later package.

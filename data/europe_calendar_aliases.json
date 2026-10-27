@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "entries": [
+    {
+      "official_club_id": "2606501",
+      "calendar_label": "U. Craiova",
+      "provider": "FixtureDownload",
+      "division": "UECL",
+      "official_name": "Univ. Craiova",
+      "basis": "Reviewed exact match date and both opponents in three independent fixtures; no fuzzy matching.",
+      "calendar_url": "https://fixturedownload.com/feed/json/conference-league-2026",
+      "matches": [
+        {
+          "date": "2026-10-22",
+          "uefa_match_id": "2050341",
+          "opponent_id": "63401"
+        },
+        {
+          "date": "2026-11-05",
+          "uefa_match_id": "2050358",
+          "opponent_id": "88148"
+        },
+        {
+          "date": "2026-11-26",
+          "uefa_match_id": "2050368",
+          "opponent_id": "2601105"
+        }
+      ]
+    }
+  ]
+}

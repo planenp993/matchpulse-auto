@@ -15,6 +15,9 @@ patterns=(DOC/"scout-patterns.js").read_text(encoding="utf-8")
 ui=(DOC/"scout.js").read_text(encoding="utf-8")
 bundle={
  "history":json.loads((DOC/"data/history.json").read_text(encoding="utf-8")),
+ "europe":json.loads((DOC/"data/europe_history.json").read_text(encoding="utf-8")),
+ "links":json.loads((DOC/"data/match_links.json").read_text(encoding="utf-8")),
+ "europeNames":json.loads((DOC/"data/europe_fixture_names.json").read_text(encoding="utf-8")),
  "fixtures":json.loads((DOC/"data/fixtures.json").read_text(encoding="utf-8")),
  "status":json.loads((DOC/"data/status.json").read_text(encoding="utf-8")),
  "coverage":json.loads((DOC/"data/coverage_audit.json").read_text(encoding="utf-8")) if (DOC/"data/coverage_audit.json").exists() else None,
@@ -22,7 +25,7 @@ bundle={
 }
 payload=json.dumps(bundle,ensure_ascii=False,separators=(",",":")).replace("</","<\\/")
 html=html.replace('<link rel="stylesheet" href="scout.css">','<style>'+css+'</style>')
-for n,source in [("club-aliases.js",aliases),("model-core.js",model),("scout-core.js",core),("scout-markets.js",markets),("scout-elo.js",elo),("scout-patterns.js",patterns),("scout.js",ui)]:
+for n,source in [("club-aliases.js",aliases),("model-core.js",model),("scout-core.js",core),("scout-markets.js",markets),("scout-elo.js",elo),("scout-patterns.js",patterns),("scout-archive.js",(DOC/"scout-archive.js").read_text(encoding="utf-8")),("scout.js",ui)]:
  marker=re.search(r'<script src="'+re.escape(n)+r'(?:\?[^"<>]*)?"></script>',html)
  replacement='<script>'+source.replace("</script","<\\/script")+'</script>'
  if n=="scout.js":
