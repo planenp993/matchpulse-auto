@@ -109,7 +109,7 @@ function modelFor(f,p){
  return MODEL_RESULTS.get(p);
 }
 function dossier(f,p=profile(f)){
- if(!DOSSIERS.has(p))DOSSIERS.set(p,Analysis.describe(p,{keyTeam:Scout.keyTeam,patterns:Patterns,model:modelFor(f,p),ratings:{
+ if(!DOSSIERS.has(p))DOSSIERS.set(p,Analysis.describe(archive.recentProfile(f,{windowSize}),{keyTeam:Scout.keyTeam,patterns:Patterns,model:modelFor(f,p),ratings:{
   home:Elo.reference(eloIndex,f[0],p.home.name,f[3]),away:Elo.reference(eloIndex,f[0],p.away.name,f[3])}}));
  return DOSSIERS.get(p);
 }
@@ -153,7 +153,7 @@ function miniBar(name,value,total,alt=false){
  const frac=total?value/total:0;
  return '<div class="bar-row"><span>'+esc(name)+'</span><div class="bar-track"><div class="bar-fill '+(alt?'alt':'')+'" style="width:'+(frac*100)+'%"></div></div><strong>'+(total?value+'/'+total:'—')+'</strong></div>';
 }
-function extraReport(p){return Analysis.statsHTML(dossier(p.fixture,p));}
+function extraReport(d){return Analysis.statsHTML(d);}
 function modelReport(f,p){
  if(p.international)return '<div class="warn">За този евротурнир няма моделни проценти. Показана е наличната клубна история.</div>';
  const z=modelFor(f,p);
@@ -174,7 +174,7 @@ function openMatch(f){
  el('matchOverlay').classList.remove('hidden');document.body.style.overflow='hidden';
  const time=(f[4]||'—')+((f[13]||'').includes('Sofia')?'':'*');
  const date=f[3]+' · '+time+' · '+f[2];
- const m=[['Домакин',p.home],['Гост',p.away]].map(([role,data])=>{
+ const m=[['Домакин',d.home],['Гост',d.away]].map(([role,data])=>{
   const v=data.overall;
   return '<section class="team-panel"><div class="role">'+role+'</div><h3>'+esc(data.name)+'</h3>'+eloReference(f,data.name)+
    '<div class="team-metrics"><div class="metric"><b>'+(v.n?fmt(v.gf,2):'—')+'</b><small>Вкарани</small></div>'+
@@ -184,15 +184,15 @@ function openMatch(f){
  }).join('');
  el('matchContent').innerHTML='<div class="match-header"><div class="match-date">'+esc(date)+'</div>'+
   '<h2 class="match-heading" id="matchHeading">'+esc(f[5])+' <span>–</span> '+esc(f[6])+'</h2>'+
-  '<div class="match-sample">Извадка: '+p.home.overall.n+' / '+p.away.overall.n+' мача</div></div>'+
-  '<div class="match-inner"><div class="duel">'+m+'</div>'+modelReport(f,p)+Analysis.introHTML(d)+streakReport(p)+
+  '<div class="match-sample">Извадка: '+d.home.overall.n+' / '+d.away.overall.n+' мача · налични първенства + УЕФА</div></div>'+
+  '<div class="match-inner"><div class="duel">'+m+'</div>'+modelReport(f,p)+Analysis.introHTML(d)+streakReport(d)+
   '<details class="card detail-card"><summary>Форма и голове · последните '+windowSize+' мача</summary>'+
-   '<h4>Всички срещи</h4><div class="trend-grid">'+signalTiles(p)+'</div>'+
-   '<h4>Домакинства / гостувания</h4><div class="trend-grid">'+venueTiles(p)+'</div></details>'+
-  extraReport(p)+
-  '<details class="card detail-card history-section"><summary>Последни резултати · '+windowSize+'</summary><div class="history-grid">'+
-   '<div><h4>'+esc(f[5])+'</h4>'+Analysis.historyHTML(p.home.all,p.home.name,Scout.keyTeam)+'</div>'+
-   '<div><h4>'+esc(f[6])+'</h4>'+Analysis.historyHTML(p.away.all,p.away.name,Scout.keyTeam)+'</div></div></details>'+
+   '<h4>Всички срещи</h4><div class="trend-grid">'+signalTiles(d)+'</div>'+
+   '<h4>Домакинства / гостувания</h4><div class="trend-grid">'+venueTiles(d)+'</div></details>'+
+  extraReport(d)+
+  '<details class="card detail-card history-section"><summary>Последни резултати · '+windowSize+'</summary><p class="footnote history-scope">'+esc(d.coverageNote)+'</p><div class="history-grid">'+
+   '<div><h4>'+esc(f[5])+'</h4>'+Analysis.historyHTML(d.home.all,d.home.name,Scout.keyTeam)+'</div>'+
+   '<div><h4>'+esc(f[6])+'</h4>'+Analysis.historyHTML(d.away.all,d.away.name,Scout.keyTeam)+'</div></div></details>'+
   '<details class="card detail-card"><summary>Директни срещи</summary>'+directMeetings(f)+'</details>'+
   '<details class="card detail-card" id="matchStandingsDetails"><summary>Класиране</summary><div id="matchStandingsContent"></div></details>'+
   '<div class="card"><h3>Запази прогноза</h3><div class="pick-form"><label>Пазар<select id="pickMarket">'+
@@ -203,12 +203,16 @@ function openMatch(f){
   '<details class="card detail-card"><summary>Как се изчислява анализът</summary>'+
    '<p class="footnote">Elo е ориентир от архива на показаното първенство. Начална стойност 1500; рейтинги от различни първенства не са пряко сравними.</p>'+
    '<p class="footnote">Моделните вероятности за резултат и голове идват от една резултатна матрица (Поасон с Dixon–Coles корекция), с до 30 предишни срещи. Изборът 5/10/20 променя статистиките и сериите.</p>'+
-   '<p class="footnote">Честотите и сериите описват историята. Липсващите данни остават празни. Евротурнирите използват резултатите след 90 минути от същия турнир, включително квалификациите. При липса се показва вътрешното първенство.</p></details></div>';
+   '<p class="footnote">Честотите и сериите описват историята. Липсващите данни остават празни. Досието включва наличните първенства и евротурнири за 90 минути, включително квалификациите. Националните купи не са в този архив. Моделът и Elo използват отделно историята на първенството. Актуалните серии са само от последните 30 дни; липсващ последен показател прекъсва серията.</p></details></div>';
  el('matchStandingsDetails').addEventListener('toggle',()=>{if(el('matchStandingsDetails').open)showStandings(el('matchStandingsContent'),f[0],f)});
- el('matchContent').querySelectorAll('.form-chip').forEach(button=>button.onclick=()=>{
-  const box=button.closest('.form-overview');
-  box.querySelector('.form-inspection').textContent=button.title;
-  box.querySelectorAll('.form-chip').forEach(chip=>chip.setAttribute('aria-pressed',String(chip===button)));
+ el('matchContent').querySelectorAll('.form-chip,.form-dot').forEach(button=>{
+  const inspect=()=>{
+   const box=button.closest('.form-overview');
+   box.querySelector('.form-inspection').textContent=button.dataset.formMessage;
+   box.querySelectorAll('.form-chip,.form-dot').forEach(point=>point.setAttribute('aria-pressed',String(point===button)));
+  };
+  button.onclick=inspect;button.onpointerenter=()=>{if(button.matches('.form-dot'))inspect();};
+  if(button.matches('.form-dot'))button.onkeydown=e=>{if(['Enter',' '].includes(e.key)){e.preventDefault();inspect();}};
  });
  el('savePick').onclick=savePick;el('copyMatch').onclick=copyMatch;
 }
@@ -274,7 +278,7 @@ function renderScanner(){
  }).join('');
  el('scannerList').querySelectorAll('[data-scan]').forEach(x=>x.onclick=()=>openMatch(scannerRows[+x.dataset.scan].fixture));
 }
-function streakReport(p){return Analysis.trendsHTML(dossier(p.fixture,p));}
+function streakReport(d){return Analysis.trendsHTML(d);}
 const marketNames=Object.fromEntries(Patterns.MARKETS.map(v=>[v.id,v.label]));
 Object.assign(marketNames,{'1':'Победа домакин','2':'Победа гост','1X':'Двоен шанс 1X','X2':'Двоен шанс X2',home2:'Домакин 2+',away2:'Гост 2+'});
 function renderPicks(){
