@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "checked_utc": "2026-10-27T14:14:53.062333+00:00",
+  "source_run": {
+    "id": 40518186291,
+    "url": "https://github.com/planenp993/matchpulse-auto/actions/runs/40518186291",
+    "source_commit": "a44d7b326c4823ed0ee6b69f984ba7fb13476af3",
+    "data_commit": "56a3a15a3ae8210cc27c8fc1645123bc6cbd42b9",
+    "collected_utc": "2026-10-27T14:11:47+00:00",
+    "conclusion": "success"
+  },
+  "domestic": {
+    "before": 54850,
+    "after": 54893,
+    "added": 43,
+    "old_records_changed": 0,
+    "six_bridge_feeds_ok": 6,
+    "latest_results": {
+      "NOR": "2026-10-25",
+      "SWE": "2026-10-25",
+      "DNK": "2026-10-26",
+      "SWZ": "2026-10-25",
+      "AUT": "2026-10-25",
+      "POL": "2026-10-25"
+    }
+  },
+  "europe": {
+    "official_records": 4918,
+    "regulation_results": 4913,
+    "administrative_excluded": 5,
+    "competition_seasons": 18,
+    "closed_main_phases_verified": 15,
+    "timeline_regulation_corrections": 9,
+    "future_names_verified": 108,
+    "source_errors": []
+  },
+  "registry": {
+    "matches": 8918,
+    "pending_over_24h": {},
+    "unresolved_conflicts": 0,
+    "legacy_duplicate_ids_joined": 8,
+    "migration_verification": "Production patch replay against the new identity join; publication applies the same provider-free migration."
+  },
+  "replay": {
+    "changed_results": 0,
+    "changed_json_files": [],
+    "new_market_observations": 0
+  },
+  "validation": {
+    "python_tests": 113,
+    "node_tests": 151,
+    "models_scanner_and_aliases_unchanged": true,
+    "both_diary_prefixes_unchanged": true,
+    "paired_configuration_unchanged": true
+  },
+  "scope": "UEFA used only by European dossiers and personal settlement. Domestic models and scanner formulas frozen. Standings remain pending."
+}
