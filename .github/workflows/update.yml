@@ -126,3 +126,11 @@ jobs:
       - name: Deploy site
         uses: actions/deploy-pages@v4
         id: deploy
+      - name: Prune only the reviewed merged heads when their recovery map is introduced
+        if: github.event_name == 'push'
+        run: |
+          if git diff --quiet "$GITHUB_SHA^" "$GITHUB_SHA" -- ops/merged-branch-recovery.json; then
+            echo "No new reviewed branch cleanup request"
+          else
+            python scripts/prune_merged_branches.py --apply
+          fi

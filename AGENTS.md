@@ -305,3 +305,8 @@ See `docs/selections-diary-method.md` for the fixed first-capture/column cohort.
 
 Legacy workflow files live outside the active Actions directory. Keep the full
 provider-free CI on pull requests and manual dispatch without duplicate pushes.
+
+Branch cleanup is a one-time reviewed request: only when the push introduces
+changes to `ops/merged-branch-recovery.json`, after successful deployment. The
+script checks exact heads, ancestry in current main and a push deletion lease.
+Never remove an unlisted or changed head; preserve the recovery SHAs and PRs.
