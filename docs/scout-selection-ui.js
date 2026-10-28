@@ -74,6 +74,7 @@ function planRisk(p){
 function planHTML(entry){
  const f=entry.fixture;
  return '<h3>Прогноза за мача</h3>'+(entry.main?
+  (entry.main.quote.status==='available'&&entry.main.quote.edge<0?'<p class="selection-status selection-status-below">Наличната цена е под моделната · основна посока по данни</p>':'')+
   pickHTML(f,entry.main,'Основна')+'<p class="plan-explanation">'+esc(planReason(entry,entry.main))+'</p>'+
   '<p class="plan-risk"><strong>Къде е рискът:</strong> '+esc(planRisk(entry.main))+'</p>'+
   (entry.alternatives.length?'<details class="plan-alternatives"><summary>Алтернативи · '+entry.alternatives.length+'</summary><p class="footnote">Отделни варианти за този мач. Избираш един; не се събират автоматично в залог.</p><div class="selection-alternatives">'+entry.alternatives.map((p,i)=>'<div class="plan-alternative">'+pickHTML(f,p,'Алтернатива '+(i+1))+'<p class="plan-alternative-risk">'+esc(planRisk(p))+'</p></div>').join('')+'</div></details>':'<p class="footnote">Няма достатъчно различна подкрепа за алтернатива.</p>')+
@@ -108,7 +109,7 @@ function planBrief(entry){
  return ['ПРОГНОЗА ЗА МАЧА',f[5]+' – '+f[6],entry.main?'Основна: '+entry.main.label:'Без достатъчна основа за прогноза: '+entry.reason,
   ...[entry.main,...entry.alternatives].filter(Boolean).flatMap((p,i)=>[(i?'Алтернатива '+i+': '+p.label:planReason(entry,p)),
    'Моделна вероятност '+pct(p.probability)+' · честен коефициент '+price(p.fair),planRisk(p),
-   p.quote.status==='available'?'Цена '+price(p.quote.odds)+' · '+sourceText(p.quote):'Няма актуална пазарна цена.']),
+   p.quote.status==='available'?'Цена '+price(p.quote.odds)+' · моделна разлика '+(100*p.quote.edge).toFixed(1)+'% · '+sourceText(p.quote)+(p.quote.edge<0?' · цената е под моделната.':''):'Няма актуална пазарна цена.']),
   'Фиксирани последни 10 вътрешни срещи за подбора. Алтернативите са отделни идеи. '+S.VERSION+' · '+entry.generatedAt].join('\n');
 }
 function builderCard(item,index){
