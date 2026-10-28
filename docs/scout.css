@@ -189,3 +189,20 @@
 .selection-legs{padding-left:21px;margin:20px 0}.selection-legs li{padding:0 0 13px 4px;color:#79928c}.selection-legs strong{font-size:13px;line-height:1.6;display:block;color:#325d65;overflow-wrap:anywhere}.selection-legs span{font-size:12px;line-height:1.7;display:flex;gap:9px;justify-content:space-between;color:#6b858b}.selection-legs b{color:#277b64;white-space:nowrap}.selection-column>.selection-metrics{border-top:1px solid #e4eeea;padding-top:16px}.selection-more{display:block;margin:22px auto 0}
 @media(max-width:1150px){.selection-grid{grid-template-columns:1fr}.selection-alternatives .selection-pick-title>strong{min-height:0}}
 @media(max-width:550px){.navigation{grid-template-columns:repeat(6,minmax(0,1fr))}.navigation .nav{grid-column:span 2;padding:9px 6px;font-size:11px;white-space:normal;line-height:1.35;min-height:36px;justify-content:center;gap:4px}.navigation .nav>span{display:none}.navigation .nav[data-view=diary],.navigation .nav[data-view=selections]{grid-column:span 3}.selection-toolbar{padding:13px}.selection-topline{display:grid;gap:13px;margin-bottom:15px}.selection-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.selection-tabs button{font-size:11px;padding:10px 7px}.selection-days{display:flex;gap:6px}.selection-days>button{padding:9px 10px;font-size:11px}.selection-grid{gap:13px}.selection-card{padding:16px}.selection-card h3.selection-teams{font-size:17px;margin:10px 0}.selection-meta{font-size:9px;gap:4px}.selection-meta time{font-size:10px}.selection-alternatives{grid-template-columns:1fr}.selection-alternatives .selection-pick{padding:12px}.selection-alternatives .selection-pick-title>strong{font-size:13px}.selection-alternatives .selection-metrics{margin:10px 0;gap:10px}.selection-alternatives .selection-metrics span{font-size:9px}.selection-alternatives .selection-metrics b{font-size:22px}.selection-method p{font-size:11px}.selection-primary .selection-pick-title>strong{font-size:17px}.selection-intro{font-size:12px}}
+
+/* Audit polish: retain layout and palette, improve supporting text. */
+.footnote,.form-notice,.chart-legend,.scan-context,.scan-date,.selection-meta,.selection-quote small,.selection-compare small,.selection-intro,.timezone-label,.match-sample,.coverage-content,.sync-state{font-size:12px;line-height:1.6}
+.footnote,.form-notice,.chart-legend,.scan-context,.scan-date,.selection-meta,.selection-quote small,.selection-compare small,.timezone-label{color:#607783}
+.control-label,.research-settings label,.research-settings>span{font-size:12px}
+.sync-state{color:#487361;margin-top:3px}.sync-state-warning{color:#90641d}
+.selection-status-below{color:#984c37;background:#fff3ec}
+.selection-meta time,.selection-metrics span,.selection-no-price,.match-date,.series-period,.current-series-context,.model-kpis span{font-size:12px;line-height:1.5}
+.selection-metrics span,.selection-no-price,.series-period,.current-series-context{color:#607783}
+.selection-role{font-size:11px}
+.selection-filters>summary{cursor:pointer;font-size:12px;font-weight:750;color:#476873;margin-top:14px}
+.selection-filters .filterbar{margin-top:12px}
+.bar-row{grid-template-columns:minmax(0,1.5fr) minmax(35px,1fr) auto;gap:9px}
+.bar-row>span{font-size:12px;overflow-wrap:anywhere;line-height:1.5}
+button:focus-visible,summary:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid #168365;outline-offset:3px}
+@media(min-width:551px){.selection-filters>summary{display:none}}
+@media(max-width:550px){.selection-toolbar{padding:12px}.selection-intro{margin:8px 0}.selection-method{margin-top:10px}.match-sample{font-size:12px}}

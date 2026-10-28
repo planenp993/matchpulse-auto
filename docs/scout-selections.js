@@ -47,8 +47,9 @@ function probability(matrix,ids){
 }
 function quoteAssessment(quote,p,now=new Date()){
  if(!quote||!Number.isFinite(quote.odds)||quote.odds<=1||quote.odds>1000)return {status:'missing',odds:null,edge:null,aboveModel:false};
- const hours=(now.getTime()-Date.parse(quote.observed_at_utc))/3600000;
- const usable=Number.isFinite(hours)&&hours>=0&&hours<=RULES.quoteMaxHours&&['fixture_csv','manual'].includes(quote.kind);
+ const first=Date.parse(quote.observed_at_utc),confirmed=quote.kind==='fixture_csv'?Date.parse(quote.last_confirmed_at_utc||quote.observed_at_utc):first;
+ const hours=(now.getTime()-confirmed)/3600000;
+ const usable=Number.isFinite(first)&&confirmed>=first&&first<=now.getTime()&&Number.isFinite(hours)&&hours>=0&&hours<=RULES.quoteMaxHours&&['fixture_csv','manual'].includes(quote.kind);
  const edge=usable&&fair(p)!==null?p*quote.odds-1:null;
  return {...quote,status:usable?'available':'stale',edge,aboveModel:edge!==null&&edge>=RULES.priceBuffer};
 }

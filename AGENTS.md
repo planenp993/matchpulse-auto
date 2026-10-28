@@ -2,8 +2,8 @@
 
 Read `PROJECT_STATE_BG.md` before changing the project. It records the verified
 continuation point, branch differences, automation and remaining data gaps.
-`README_BG.md` and `SCOUT_START_BG.md` describe earlier releases and have stale
-counts and branch instructions.
+Use the current `README_BG.md` and `SCOUT_START_BG.md` for entry points.
+Earlier milestones are preserved in `docs/archive/PROJECT_HISTORY_BG.md`.
 
 ## Structure
 
@@ -106,8 +106,8 @@ allows both append-only diaries to settle rescheduled matches without rewriting
 forecasts. Provider absence alone is neither a cancellation nor a final score.
 
 Auto mode checks successful receipts: current 24 history sources daily (20h),
-two-season 42-source catch-up at least every four days, calendars every eight
-hours, and quotes after Tuesday 13:10 / Friday 17:10 Europe/London. Failed jobs
+two-season 42-source catch-up at least every four days, calendars about every eight
+hours (7.5h minimum with queue tolerance), and quotes after Tuesday 13:10 / Friday 17:10 Europe/London. Failed jobs
 are retried by a later tick, with a two-hour history/quote cooldown. No same-day
 result is promised before the upstream provider publishes it. Manual modes are
 `auto`, `full`, `history`, `calendar`, and `publish`. Calendar mode has no
@@ -158,7 +158,7 @@ A successful HTTP download alone must not close that publication window.
 Manual `results` refreshes six recent domestic result feeds and the current UEFA
 season without Football-Data requests. Manual `europe` additionally checks UEFA
 2021/22 through the current season. Auto retries both at the next eligible tick
-(at least eight hours after the last attempt); first initialization backfills all
+(about eight hours after the last attempt; 7.5h tolerance); first initialization backfills all
 six seasons. Normal code pushes and CI remain provider-free.
 
 The recent result bridge uses ESPN for NOR/SWE/DNK/AUT and official Polish/Swiss
@@ -207,7 +207,7 @@ New results overtaking a comparable table produce an archive-ahead warning.
 Manual `standings` refreshes only tables; it makes no Football-Data/history/calendar
 requests. `full`, `results` and `europe` also refresh tables. Auto checks after at
 least eight hours since the last attempt (two after a partial/error result), at the
-existing three daily GitHub ticks. Ordinary code pushes/CI remain provider-free.
+three regular daily GitHub ticks (7.5h minimum with queue tolerance). Ordinary code pushes/CI remain provider-free.
 
 The existing Program filters include a collapsed standings panel; match analysis
 has its own collapsed table with the two reviewed club rows highlighted. There is
@@ -280,3 +280,33 @@ Version both new scripts by content and include them and their quote data in the
 offline builder. `test_selections.cjs`, `test_selection_quotes.py` and
 `scripts/test_selections_browser.cjs` verify the probabilities, identity/time
 gates, comparisons, duplicate prevention, responsive view and offline path.
+
+
+## Post-audit maintenance (28 October 2026)
+
+The existing concept, model and scanner formulas are preserved. Source health
+is presentation-only (`scout-health.js`). Failed optional files must leave the
+basic schedule usable, but disable dependent claims and settlement safely.
+
+Three regular ticks run eight hours apart (05:47/13:47/21:47 UTC), with a Friday
+17:47 quote catch-up. Automatic regular feeds allow 30 minutes of queue drift
+(7.5h minimum); the Friday four-hour tick does not force regular feeds.
+
+Market first-observation evidence is immutable. Only a matching retrieved CSV
+row can advance `last_confirmed_at_utc`; late replayed patches cannot move it
+backwards. A global CSV receipt cannot renew all prices.
+
+The separate selection diary is `docs/data/diary/selections/selections-v1`. Its
+config is immutable; forecasts/events are append-only. Check with
+`node scripts/selection_diary.cjs --check --base-ref origin/main`. Run its writer
+after both existing diaries inside the same post-reset retry loop. Do not import
+old diary forecasts or browser/manual prices. Code drift pauses new captures.
+See `docs/selections-diary-method.md` for the fixed first-capture/column cohort.
+
+Legacy workflow files live outside the active Actions directory. Keep the full
+provider-free CI on pull requests and manual dispatch without duplicate pushes.
+
+Branch cleanup is a one-time reviewed request: only when the push introduces
+changes to `ops/merged-branch-recovery.json`, after successful deployment. The
+script checks exact heads, ancestry in current main and a push deletion lease.
+Never remove an unlisted or changed head; preserve the recovery SHAs and PRs.

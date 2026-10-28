@@ -27,7 +27,7 @@ def build(root, fixtures, status):
                 if snap['kind'] != 'fixture_csv':
                     continue
                 try:
-                    stamp = dt.datetime.fromisoformat(snap['observed_at_utc'].replace('Z', '+00:00'))
+                    stamp = dt.datetime.fromisoformat(snap.get('last_confirmed_at_utc', snap['observed_at_utc']).replace('Z', '+00:00'))
                     if stamp.tzinfo is None:
                         continue
                 except (ValueError, TypeError, KeyError):
@@ -46,6 +46,10 @@ def build(root, fixtures, status):
                             quotes[market] = {'odds': value, 'kind': 'fixture_csv', 'book': label,
                                               'column': column, 'source_url': snap['source_url'],
                                               'observed_at_utc': snap['observed_at_utc']}
+                            if snap.get('last_confirmed_at_utc'):
+                                quotes[market].update(last_confirmed_at_utc=snap['last_confirmed_at_utc'],
+                                                     confirmation_source_url=snap.get('last_confirmed_source_url', snap['source_url']),
+                                                     confirmation_source_sha256=snap.get('last_confirmed_source_sha256', snap['source_sha256']))
                             break
             if quotes:
                 result[key] = quotes

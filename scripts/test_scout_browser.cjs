@@ -137,14 +137,18 @@
  if(JSON.stringify(privateAfterDiary)!==JSON.stringify(retained))throw new Error('Automatic diary changed private picks');
  const paired=diaryDoc.paired_model_test;
  if(paired){
-  await desktop.locator('#view-diary summary').click();
+ await desktop.getByText('Качество по пазари',{exact:true}).click();
   const quality=desktop.locator('#diaryQuality');
   if(!(await quality.textContent()).includes('Паралелна проверка: '+paired.totals.recorded))throw new Error('Paired comparison count is missing');
   if(!(await quality.locator('thead').textContent()).includes('Кандидат'))throw new Error('Paired model columns are missing');
   const ns=await quality.locator('tbody tr td:nth-child(2)').allTextContents();
   if(ns.some(n=>n!==String(paired.totals.settled)))throw new Error('Paired quality table mixes different cohorts');
-  await desktop.locator('#view-diary summary').click();
+  await desktop.getByText('Качество по пазари',{exact:true}).click();
  }
+ await desktop.locator('#selectionDiary > summary').click();
+ await desktop.waitForFunction(()=>document.getElementById('selectionDiaryContent').textContent.includes('предмачови записа'));
+ if(!(await desktop.locator('#selectionDiaryContent').textContent()).includes('Старите дневници са отделни'))throw Error('Separate selection diary summary is missing');
+ await desktop.locator('#selectionDiary > summary').click();
  await desktop.screenshot({path:'scout-diary.png',fullPage:false});
  stats.diaryForecasts=diaryDoc.totals.recorded;
  await desktop.locator('[data-view="schedule"]').click();
@@ -206,7 +210,7 @@
  await mobile.screenshot({path:'scout-scanner.png',fullPage:false});
  await mobile.locator('[data-view="diary"]').click();
  await mobile.waitForFunction(()=>document.querySelectorAll('.diary-entry').length>0,{timeout:20000});
- if(paired)await mobile.locator('#view-diary summary').click();
+ if(paired)await mobile.getByText('Качество по пазари',{exact:true}).click();
  if(await mobile.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth+1))throw new Error('Mobile diary overflows horizontally');
  stats.europeArchive=await desktop.evaluate(()=>({domestic:index.history.length,total:archive.international.history.length,
   europeanInDomestic:index.history.some(r=>MatchpulseArchive.european(r))}));
@@ -241,6 +245,38 @@
   stats.recentMilan=recent;
   await desktop.locator('#closeMatch').click();
  }
+ // Independent source failures must not blank a valid domestic calendar.
+ for(const filename of ['europe_history.json','match_links.json','europe_fixture_names.json']){
+  const fault=await browser.newPage({viewport:{width:1280,height:900}});
+  await fault.route('**/data/'+filename+'*',route=>route.fulfill({status:503,body:'unavailable'}));
+  await fault.goto(base,{waitUntil:'domcontentloaded'});
+  await fault.waitForFunction(()=>document.getElementById('lastSync').textContent.includes('Програма:'));
+  await fault.locator('[data-day="7"]').click();
+  if(!await fault.locator('.fixture-row').count())throw Error('Optional file failure blanked program: '+filename);
+  if(!await fault.locator('#notice').isVisible())throw Error('Missing optional data was hidden: '+filename);
+  const trigger=fault.locator('.fixture-row').first();await trigger.click();
+  if(!await fault.locator('#matchOverlay').evaluate(el=>el.contains(document.activeElement)))throw Error('Analysis did not take focus');
+  await fault.keyboard.press('Shift+Tab');
+  if(!await fault.locator('#matchOverlay').evaluate(el=>el.contains(document.activeElement)))throw Error('Focus escaped analysis');
+  await fault.keyboard.press('Escape');
+  if(!await trigger.evaluate(el=>el===document.activeElement))throw Error('Analysis did not restore focus');
+  await fault.locator('[data-view="selections"]').click();
+  if(await fault.locator('.selection-primary').count())throw Error('Selection claims survived missing dependency');
+  await fault.close();
+ }
+ const historyFault=await browser.newPage();
+ await historyFault.route('**/data/status.json*',async route=>{
+  const response=await route.fetch(),doc=await response.json();
+  doc.history_refresh_status='error';doc.errors=['audit regression: history failed'];
+  await route.fulfill({response,json:doc});
+ });
+ await historyFault.goto(base,{waitUntil:'domcontentloaded'});
+ await historyFault.waitForFunction(()=>document.getElementById('lastSync').textContent.includes('Програма:'));
+ if(!await historyFault.locator('#notice').isVisible()||!(await historyFault.locator('#notice').textContent()).includes('Основен архив'))throw Error('History failure was hidden by healthy calendar');
+ await historyFault.close();
+ const rootEntry=await browser.newPage();await rootEntry.goto('http://127.0.0.1:8765/',{waitUntil:'domcontentloaded'});
+ await rootEntry.waitForURL('**/scout.html');await rootEntry.close();
+ stats.optionalFailureFallback=true;stats.focusManagement=true;stats.historyWarning=true;stats.scoutDefaultEntry=true;
  if(failures.length)throw new Error('Browser JS errors: '+failures.join(' | '));
  console.log('SCOUT_BROWSER_OK '+JSON.stringify(stats));
  await browser.close();

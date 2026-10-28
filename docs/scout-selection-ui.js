@@ -29,7 +29,8 @@ function fixtureHeader(f){
 }
 function sourceText(q){
  return q.kind==='manual'?'Въведена от теб · '+stamp(q.observed_at_utc):
-  (q.book||'CSV')+(q.column?' · '+q.column:'')+' · CSV прочит '+stamp(q.observed_at_utc);
+  (q.book||'CSV')+(q.column?' · '+q.column:'')+' · CSV прочит '+stamp(q.observed_at_utc)+
+  (q.last_confirmed_at_utc&&q.last_confirmed_at_utc!==q.observed_at_utc?' · потвърдена '+stamp(q.last_confirmed_at_utc):'');
 }
 function quoteHTML(f,p){
  const q=p.quote,id=C.keyFixture(f)+'::'+p.id,stored=manual[id];
@@ -57,7 +58,7 @@ function actions(index){return '<div class="selection-actions"><button type="but
 function matchCard(entry,index){
  const f=entry.fixture;
  return '<article class="card selection-card '+(!entry.main?'selection-unavailable':'')+'" data-selection-fixture="'+esc(C.keyFixture(f))+'">'+fixtureHeader(f)+
-  (entry.main?'<div class="selection-status">'+(entry.main.quote.aboveModel?'Налична цена над моделната':'Основен избор по данни')+'</div>'+pickHTML(f,entry.main,'Основна')+
+  (entry.main?'<div class="selection-status '+(entry.main.quote.status==='available'&&entry.main.quote.edge<0?'selection-status-below':'')+'">'+(entry.main.quote.aboveModel?'Налична цена над моделната':entry.main.quote.status==='available'&&entry.main.quote.edge<0?'Цена под моделната · избор по данни':'Основен избор по данни')+'</div>'+pickHTML(f,entry.main,'Основна')+
    '<div class="selection-alternatives">'+entry.alternatives.map((p,i)=>pickHTML(f,p,'Алтернатива '+(i+1))).join('')+'</div>'+
    (entry.alternatives.length<2?'<p class="footnote">'+(entry.alternatives.length?'Втора алтернатива':'Алтернативи')+' без достатъчна различна подкрепа.</p>':'')+
    whyHTML(entry,entry.main):'<div class="selection-abstain"><strong>Без основна селекция</strong><p>'+esc(entry.reason)+'</p></div>')+
@@ -108,6 +109,11 @@ function paint(){
 }
 async function render(){
  if(!app)return;
+ if(app.availability&&Object.values(app.availability).some(v=>!v)){
+  el('selectionSummary').textContent='Селекциите изчакват допълнителните данни.';
+  el('selectionList').innerHTML='<div class="empty">Програмата и анализът са достъпни. За надежден подбор е нужна и проверката за по-нови неприключили срещи. Презареди страницата, за да опиташ отново.</div>';
+  el('selectionList').setAttribute('aria-busy','false');return;
+ }
  const request=++token,now=new Date();
  el('selectionList').setAttribute('aria-busy','true');el('selectionSummary').textContent='Преглеждам наличните срещи…';
  try{
@@ -132,7 +138,10 @@ async function render(){
 }
 function mount(context){
  app=context;engine=S.createEngine(app.history,root.MatchpulseModel,C);
- const leagues=new Map(app.fixtures.map(f=>[f[0],f[2]]));
+ const mobileFilters=root.matchMedia('(max-width:550px)');
+ el('selectionFilters').open=!mobileFilters.matches;
+ mobileFilters.addEventListener('change',event=>{el('selectionFilters').open=!event.matches;});
+ const leagues=new Map(app.fixtures.map(f=>[f[0],root.MatchpulseHealth.leagueLabel(f)]));
  el('selectionLeague').innerHTML='<option value="">Всички състезания</option>'+[...leagues].sort((a,b)=>a[1].localeCompare(b[1])).map(([id,label])=>'<option value="'+esc(id)+'">'+esc(label)+'</option>').join('');
  const tabs=[...document.querySelectorAll('[data-selection-tab]')];
  tabs.forEach((button,i)=>{
@@ -152,8 +161,12 @@ function mount(context){
   period=+button.dataset.selectionPeriod;limit=24;
   document.querySelectorAll('[data-selection-period]').forEach(b=>{b.classList.toggle('active',b===button);b.setAttribute('aria-pressed',String(b===button));});render();
  });
- for(const id of ['selectionLeague','selectionSearch'])el(id).addEventListener(id==='selectionSearch'?'input':'change',()=>{limit=24;render();});
- el('selectionQuality').onchange=()=>{limit=24;paint();};
+ const filterSummary=()=>{
+  const count=Number(!!el('selectionLeague').value)+Number(!!el('selectionSearch').value.trim())+Number(el('selectionQuality').value!=='all');
+  el('selectionFilterSummary').textContent='Филтри'+(count?' · '+count+' активни':'');
+ };
+ for(const id of ['selectionLeague','selectionSearch'])el(id).addEventListener(id==='selectionSearch'?'input':'change',()=>{limit=24;filterSummary();render();});
+ el('selectionQuality').onchange=()=>{limit=24;filterSummary();paint();};
  el('selectionMore').onclick=()=>{limit+=24;paint();};
  el('selectionRetryQuotes').onclick=()=>{quoteDoc=null;render();};
  el('selectionList').addEventListener('click',async event=>{

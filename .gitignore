@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+node_modules/
+scout-offline.html
+scout-*.png
+scout-*-browser.json
+playwright-report/
+test-results/
+.env
+.env.*
+*.log
