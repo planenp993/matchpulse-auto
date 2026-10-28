@@ -138,7 +138,9 @@ async function render(){
 }
 function mount(context){
  app=context;engine=S.createEngine(app.history,root.MatchpulseModel,C);
- el('selectionFilters').open=!root.matchMedia('(max-width:550px)').matches;
+ const mobileFilters=root.matchMedia('(max-width:550px)');
+ el('selectionFilters').open=!mobileFilters.matches;
+ mobileFilters.addEventListener('change',event=>{el('selectionFilters').open=!event.matches;});
  const leagues=new Map(app.fixtures.map(f=>[f[0],root.MatchpulseHealth.leagueLabel(f)]));
  el('selectionLeague').innerHTML='<option value="">Всички състезания</option>'+[...leagues].sort((a,b)=>a[1].localeCompare(b[1])).map(([id,label])=>'<option value="'+esc(id)+'">'+esc(label)+'</option>').join('');
  const tabs=[...document.querySelectorAll('[data-selection-tab]')];

@@ -230,7 +230,7 @@ function openMatch(f){
 }
 function closeMatch(){
  el('matchOverlay').classList.add('hidden');document.body.style.overflow='';document.querySelector('.shell').inert=false;
- if(matchTrigger?.isConnected)matchTrigger.focus();matchTrigger=null;
+ if(matchTrigger?.isConnected)matchTrigger.focus();else document.querySelector('.nav.active')?.focus();matchTrigger=null;
 }
 function savePick(){
  if(!activeMatch)return;

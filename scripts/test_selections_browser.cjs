@@ -85,6 +85,7 @@
  await mobile.screenshot({path:'scout-selections-mobile.png',fullPage:false});
  const mobileCard=mobile.locator('.selection-card').filter({has:mobile.locator('.selection-primary')}).first();
  await mobileCard.screenshot({path:'scout-selection-card-mobile.png'});
+ await mobile.setViewportSize({width:700,height:844});assert.equal(await mobile.locator('#selectionFilters').evaluate(el=>el.open),true);
  await mobile.setViewportSize({width:320,height:780});assert.equal(await mobile.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);stats.mobileWidths=[390,320];
  await mobile.locator('[data-selection-tab="builders"]').click();assert.ok(await mobile.locator('.selection-builder').count()>0);
  await mobile.locator('[data-selection-tab="columns"]').click();assert.ok(await mobile.locator('.selection-column').count()>0);

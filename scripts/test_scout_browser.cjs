@@ -137,13 +137,13 @@
  if(JSON.stringify(privateAfterDiary)!==JSON.stringify(retained))throw new Error('Automatic diary changed private picks');
  const paired=diaryDoc.paired_model_test;
  if(paired){
-  await desktop.locator('#view-diary summary').click();
+ await desktop.getByText('Качество по пазари',{exact:true}).click();
   const quality=desktop.locator('#diaryQuality');
   if(!(await quality.textContent()).includes('Паралелна проверка: '+paired.totals.recorded))throw new Error('Paired comparison count is missing');
   if(!(await quality.locator('thead').textContent()).includes('Кандидат'))throw new Error('Paired model columns are missing');
   const ns=await quality.locator('tbody tr td:nth-child(2)').allTextContents();
   if(ns.some(n=>n!==String(paired.totals.settled)))throw new Error('Paired quality table mixes different cohorts');
-  await desktop.locator('#view-diary summary').click();
+  await desktop.getByText('Качество по пазари',{exact:true}).click();
  }
  await desktop.screenshot({path:'scout-diary.png',fullPage:false});
  stats.diaryForecasts=diaryDoc.totals.recorded;
@@ -206,7 +206,7 @@
  await mobile.screenshot({path:'scout-scanner.png',fullPage:false});
  await mobile.locator('[data-view="diary"]').click();
  await mobile.waitForFunction(()=>document.querySelectorAll('.diary-entry').length>0,{timeout:20000});
- if(paired)await mobile.locator('#view-diary summary').click();
+ if(paired)await mobile.getByText('Качество по пазари',{exact:true}).click();
  if(await mobile.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth+1))throw new Error('Mobile diary overflows horizontally');
  stats.europeArchive=await desktop.evaluate(()=>({domestic:index.history.length,total:archive.international.history.length,
   europeanInDomestic:index.history.some(r=>MatchpulseArchive.european(r))}));
