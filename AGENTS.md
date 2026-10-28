@@ -322,3 +322,28 @@ GitHub upload may include personal notes/prices. Refresh the selection UI manual
 price cache after a successful import. Keep the module versioned and embedded
 in the offline builder. Browser acceptance includes export, preview, duplicate
 restore, corrupt input, reload, 390/320px, offline and blocked local storage.
+
+
+## Progressive loading and public snapshot delivery
+
+Keep `scout-data.js` separate from model/scanner and immutable diary code. The
+fixture/status stage renders first; history loads after paint; UEFA, names and
+links are requested for full analysis, selections or personal settlement. Never
+show speculative model results while dependencies are pending. Keep async
+match opening/cancellation and focus restoration correct.
+
+Generate `docs/data/client_manifest.json` LAST after all public writers inside
+the publication retry loop, and stage it with those exact files. CI checks an
+existing manifest before audit timestamps change; initial branches without one
+may generate it. The browser job generates its own matching checked-out version.
+Only verified public raw archives may use Cache Storage. Recheck the manifest
+on each online entry and SHA-256 on cache reads; unavailable manifest/cache must
+fall back to direct downloads, never an unverified previous snapshot. Personal
+data and computed predictions never enter this cache.
+
+Run `scripts/test_loading_browser.cjs` with the existing browser acceptances. It
+compares the pre-change published UI with identical current input rows under
+explicit gzip/paced-reply conditions, verifies identical probabilities and
+new-publication invalidation, and writes `scout-loading-browser.json`. Report
+controlled measurements honestly; do not claim a benchmark as a user's device
+time or change formulas to improve it. See `docs/loading-method.md`.

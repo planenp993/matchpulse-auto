@@ -26,6 +26,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - name: Verify committed client data versions before audit timestamps change
+        run: |
+          if [ -f docs/data/client_manifest.json ]; then
+            python scripts/client_manifest.py --check
+          else
+            python scripts/client_manifest.py
+          fi
       - name: All import, calendar and integrity regression tests
         run: python -m unittest discover -s tests -v
       - name: All model, Elo and trend regression tests
@@ -83,7 +90,9 @@ jobs:
         with:
           node-version: '24'
       - name: Build the self-contained preview
-        run: python scripts/build_scout_preview.py
+        run: |
+          python scripts/client_manifest.py
+          python scripts/build_scout_preview.py
       - name: Install the pinned browser test dependency
         run: |
           npm install --no-save --fetch-retries=1 --fetch-timeout=60000 playwright@1.56.1
@@ -101,6 +110,7 @@ jobs:
           node scripts/test_scout_browser.cjs
           node scripts/test_selections_browser.cjs
           node scripts/test_backup_browser.cjs
+          node scripts/test_loading_browser.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -135,4 +145,5 @@ jobs:
             scout-columns.png
             scout-selections-browser.json
             scout-backup-mobile.png
+            scout-loading-browser.json
           retention-days: 7

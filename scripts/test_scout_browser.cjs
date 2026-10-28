@@ -22,6 +22,7 @@
  stats.fixtures=fixtures;
  await desktop.screenshot({path:'scout-desktop.png',fullPage:true});
  await desktop.locator('.fixture-row').first().click();
+ await desktop.waitForFunction(()=>document.documentElement.dataset.scoutArchive==='ready');
  if((await desktop.locator('.team-elo').count())!==2)throw new Error('Each team needs its simple Elo reference');
  await desktop.locator('#drawerWindow').selectOption('20');
  if((await desktop.locator('.form-overview').first().locator('.form-chip').count())!==20)throw new Error('The 20-game form is truncated');
@@ -179,6 +180,7 @@
  if((await mobile.locator('.fixture-row').first().boundingBox()).y>700)throw new Error('Mobile program is buried below introductory copy');
  await mobile.screenshot({path:'scout-mobile.png',fullPage:true});
  await mobile.locator('.fixture-row').first().click();
+ await mobile.waitForFunction(()=>document.documentElement.dataset.scoutArchive==='ready');
  await mobile.locator('#drawerWindow').selectOption('20');
  if(await mobile.locator('.drawer').evaluate(el=>el.scrollWidth>el.clientWidth+1))throw new Error('Mobile analysis overflows horizontally');
  await mobile.locator('.duel').screenshot({path:'scout-form-mobile.png'});
@@ -253,8 +255,9 @@
   await fault.waitForFunction(()=>document.getElementById('lastSync').textContent.includes('Програма:'));
   await fault.locator('[data-day="7"]').click();
   if(!await fault.locator('.fixture-row').count())throw Error('Optional file failure blanked program: '+filename);
-  if(!await fault.locator('#notice').isVisible())throw Error('Missing optional data was hidden: '+filename);
   const trigger=fault.locator('.fixture-row').first();await trigger.click();
+  await fault.waitForFunction(()=>document.documentElement.dataset.scoutArchive==='ready');
+  if(!await fault.locator('#notice').isVisible())throw Error('Missing optional data was hidden: '+filename);
   if(!await fault.locator('#matchOverlay').evaluate(el=>el.contains(document.activeElement)))throw Error('Analysis did not take focus');
   await fault.keyboard.press('Shift+Tab');
   if(!await fault.locator('#matchOverlay').evaluate(el=>el.contains(document.activeElement)))throw Error('Focus escaped analysis');
@@ -265,11 +268,14 @@
   await fault.close();
  }
  const historyFault=await browser.newPage();
- await historyFault.route('**/data/status.json*',async route=>{
-  const response=await route.fetch(),doc=await response.json();
-  doc.history_refresh_status='error';doc.errors=['audit regression: history failed'];
-  await route.fulfill({response,json:doc});
- });
+ const faultDoc=JSON.parse(require('node:fs').readFileSync('docs/data/status.json','utf8'));
+ faultDoc.history_refresh_status='error';faultDoc.errors=['audit regression: history failed'];
+ const faultBody=JSON.stringify(faultDoc),faultManifest=JSON.parse(require('node:fs').readFileSync('docs/data/client_manifest.json','utf8'));
+ const hash=body=>require('node:crypto').createHash('sha256').update(body).digest('hex');
+ faultManifest.files['status.json'].sha256=hash(faultBody);faultManifest.files['status.json'].bytes=Buffer.byteLength(faultBody);
+ faultManifest.version=hash(require('../docs/scout-data.js').canonical(faultManifest.files));
+ await historyFault.route('**/data/status.json*',route=>route.fulfill({status:200,contentType:'application/json',body:faultBody}));
+ await historyFault.route('**/data/client_manifest.json*',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(faultManifest)}));
  await historyFault.goto(base,{waitUntil:'domcontentloaded'});
  await historyFault.waitForFunction(()=>document.getElementById('lastSync').textContent.includes('Програма:'));
  if(!await historyFault.locator('#notice').isVisible()||!(await historyFault.locator('#notice').textContent()).includes('Основен архив'))throw Error('History failure was hidden by healthy calendar');

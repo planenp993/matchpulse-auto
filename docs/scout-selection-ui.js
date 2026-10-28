@@ -118,6 +118,7 @@ async function render(){
  el('selectionList').setAttribute('aria-busy','true');el('selectionSummary').textContent='Преглеждам наличните срещи…';
  try{
   await loadQuotes();if(request!==token)return;
+  if(!engine)engine=S.createEngine(app.history,root.MatchpulseModel,C);
   const start=day(now),end=new Date(start+'T12:00:00Z');end.setUTCDate(end.getUTCDate()+period-1);
   const last=end.toISOString().slice(0,10),league=el('selectionLeague').value,search=el('selectionSearch').value.trim().toLocaleLowerCase();
   const rows=C.getUpcoming(app.fixtures,now).filter(f=>f[3]>=start&&f[3]<=last&&(!league||f[0]===league)&&
@@ -137,7 +138,7 @@ async function render(){
  }
 }
 function mount(context){
- app=context;engine=S.createEngine(app.history,root.MatchpulseModel,C);
+ app=context;engine=null;
  const mobileFilters=root.matchMedia('(max-width:550px)');
  el('selectionFilters').open=!mobileFilters.matches;
  mobileFilters.addEventListener('change',event=>{el('selectionFilters').open=!event.matches;});
