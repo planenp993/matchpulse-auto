@@ -251,7 +251,7 @@ function openMatch(f){
   '<details class="card detail-card"><summary>Как се изчислява анализът</summary>'+
    '<p class="footnote">Elo е ориентир от архива на показаното първенство. Начална стойност 1500; рейтинги от различни първенства не са пряко сравними.</p>'+
    '<p class="footnote">Моделните вероятности за резултат и голове идват от една резултатна матрица (Поасон с Dixon–Coles корекция), с до 30 предишни срещи. Изборът 5/10/20 променя статистиките и сериите.</p>'+
-   '<p class="footnote">Честотите и сериите описват историята. Липсващите данни остават празни. Досието включва наличните първенства и евротурнири за 90 минути, включително квалификациите. Националните купи не са в този архив. Моделът и Elo използват отделно историята на първенството. Тенденциите сравняват поне 5 наблюдения в последните 90 дни, със скорошен последен резултат и проверка на последните 5 и домакинства/гостувания. Кратка поредица сама по себе си не е достатъчна.</p></details></div>';
+   '<p class="footnote">Честотите и сериите описват историята. Липсващите данни остават празни. Досието включва наличните първенства и евротурнири за 90 минути, включително квалификациите. Националните купи не са в този архив. Моделът и Elo използват отделно историята на първенството. Тенденциите показват поредни известни събития отделно за всеки отбор и общо само при едно и също събитие за двата. Най-малко 3 поредни срещи в последните 90 дни и скорошен последен резултат. Липсващ показател прекъсва поредицата. Историческа поредица не е прогноза.</p></details></div>';
  window.MatchpulseSelectionUI.renderMatchPlan(el('matchPlan'),f);
  el('matchStandingsDetails').addEventListener('toggle',()=>{if(el('matchStandingsDetails').open)showStandings(el('matchStandingsContent'),f[0],f)});
  el('matchContent').querySelectorAll('.form-chip,.form-dot').forEach(button=>{
@@ -432,8 +432,9 @@ async function loadSelectionDiary(){
  }
  try{
   await initialPromise;
-  const [current,old]=await Promise.allSettled([dataSnapshot.get('match_plan_diary_report.json'),dataSnapshot.get('selection_diary_report.json')]);
-  target.innerHTML=(current.status==='fulfilled'?summary(current.value,'Текущи прогнози и комбинации · v2'):'<p>Текущият отчет временно не е достъпен.</p>')+
+  const [current,previous,old]=await Promise.allSettled([dataSnapshot.get('curated_diary_report.json'),dataSnapshot.get('match_plan_diary_report.json'),dataSnapshot.get('selection_diary_report.json')]);
+  target.innerHTML=(current.status==='fulfilled'?summary(current.value,'Текущи прогнози и комбинации · v3'):'<p>Текущият отчет временно не е достъпен.</p>')+
+   (previous.status==='fulfilled'?'<details><summary>Предишен подбор · v2</summary>'+summary(previous.value,'Комбинации v2 · отделна извадка')+'</details>':'')+
    (old.status==='fulfilled'?'<details><summary>Предишен подбор · v1</summary>'+summary(old.value,'Първоначални правила · отделна извадка')+'</details>':'');
  }catch{target.textContent='Отчетът на „Селекции“ временно не е достъпен. Основният дневник остава отделен.';}
 }

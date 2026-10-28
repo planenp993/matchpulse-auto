@@ -244,8 +244,8 @@ identities stay separate. It does not claim coverage of national cup fixtures.
 
 The form curve is a signed cumulative result walk (+1 win, 0 draw, -1 loss),
 starting at zero, with a shared scale. It is not Elo, league points or probability.
-Descriptive tendencies compare recent whole-window frequencies, last-five and
-venue support under the v2 rules below. Missing latest statistics or a newer
+Descriptive tendencies use current per-club consecutive facts under the latest
+curated v3 rules below, with common facts only for the same event in both clubs. Missing latest statistics or a newer
 unresolved match block the affected claim. Actual dates and match evidence stay
 available in expandable details; a short run alone is not sufficient.
 Keep the intro and copied brief consistent with this same selected view, while
@@ -367,3 +367,25 @@ venue context and disagreements. They do not feed model/scanner/diary decisions.
 Dates and detailed match evidence remain expandable, without default tick tiles.
 The copied readout and the displayed prose share one description. See
 `docs/match-plans-method.md` for the exact registered engineering rules.
+
+
+## Curated match view v3 (28 October 2026)
+
+`scout-curated.js` wraps immutable v2, keeps all single forecasts/probabilities,
+limits builders to two and groups both in one fixture card. Columns use model
+fair-odds bands 3–6 / 6–12 / 12–24, with 2–8 unique matches, same evidence gates,
+explicit independence and no invented market price. Never change a registered
+v1/v2 engine or writer to implement these UI changes. The separately registered
+writer is `scripts/curated_diary.cjs` with `match-plans-v3`; keep all prior
+writers, configs and ledgers intact. Run its --check/--write inside the same
+post-reset publication loop and keep its own report in the final client manifest.
+
+Descriptive trends are current consecutive facts per canonical club. A common
+trend requires the SAME semantic event in both histories, with separate lengths;
+unbeaten vs winless is never a shared event. Missing latest stats/pending matches
+block the affected claim. At least three consecutive known recent observations
+can be shown as facts, never as validated predictions. Dates/proof stay expandable.
+Rich match readouts should explain form, venue, goals, observed xG and limitations
+in connected prose, without truncating them to a few sentences. The displayed and
+copied paragraphs must agree. See `docs/curated-method.md` and run the curated
+unit, diary and browser acceptances in addition to previous checks.

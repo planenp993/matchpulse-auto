@@ -5,7 +5,7 @@
   <meta name="theme-color" content="#0b1523">
   <meta name="description" content="Футболна програма, статистика и анализ на мачове.">
   <title>MATCHPULSE SCOUT · Футболни анализи</title>
-  <link rel="stylesheet" href="scout.css?v=b38194547ef2">
+  <link rel="stylesheet" href="scout.css?v=dd6e32067e52">
 </head>
 <body>
 <div class="shell">
@@ -92,11 +92,18 @@
       </div>
       <div class="section-heading"><span id="selectionSummary" role="status">Подбор от наличните данни</span><small class="timezone-label">Часове: София</small></div>
       <p id="selectionTabNote" class="selection-intro"></p>
+      <div id="columnBands" class="column-bands hidden" role="group" aria-label="Ниво по моделен коефициент">
+        <p>Моделен общ коефициент</p><div class="column-band-buttons">
+          <button type="button" data-selection-band="3-6" aria-pressed="true" class="active">3–6 <span class="band-count">0</span></button>
+          <button type="button" data-selection-band="6-12" aria-pressed="false">6–12 <span class="band-count">0</span></button>
+          <button type="button" data-selection-band="12-24" aria-pressed="false">12–24 <span class="band-count">0</span></button>
+        </div>
+      </div>
       <details class="card detail-card selection-method"><summary>Как се избират предложенията</summary>
         <p>Използват се до 30 мача за съществуващия модел и фиксирани последни 10 срещи от първенствата за подбора. Основният избор отчита отклонението спрямо лигата, по-слабата подкрепа от двата клуба и домакинства/гостувания. Подредбата е нова и предстои да се оцени с бъдещи резултати.</p>
         <p>Моделна вероятност 45–88%, поне 5 срещи на клуб, 50 в лигата и последен резултат до 45 дни. Алтернативите са от различни семейства; свободните места остават празни при слаба подкрепа. За УЕФА засега има само описателен анализ.</p>
         <p>Честен коефициент = 1 / моделната вероятност. Ценова разлика = вероятност × въведен коефициент − 1. Разлика поне +5% при скорошна цена дава предимство в подредбата; тя не доказва доходност. CSV и въведените цени над 72 часа се обозначават като стари.</p>
-        <p>До 6 билдъра за мач, с различни семейства и ограничено припокриване на условията. Общата вероятност идва от резултатната матрица. До 6 колонки за всеки размер 2/3/4 и дата; използват се допустимите основни и алтернативни прогнози, без повторен отбор. Различните варианти могат да споделят срещи и не са независими един от друг.</p>
+        <p>До два билдъра на мач, събрани в една карта. Всеки е отделен вариант с две условия и съвместна вероятност от резултатната матрица.</p><p>Колонките са в нива 3–6, 6–12 и 12–24 по общ моделен коефициент (1 / приблизителната вероятност). До 6 варианта за всяко ниво и дата, с 2–8 различни мача и без повторен отбор. По-дългите колонки имат по-малка обща вероятност; вариантите могат да споделят срещи и не са независими един от друг.</p>
         <p>Основната прогноза и алтернативите са в анализа на всеки мач. Корнерите, картоните и ударите остават описателни показатели. Повече варианти не означава по-висока точност.</p>
         <p id="selectionQuoteStatus" class="footnote"></p><button type="button" class="button secondary" id="selectionRetryQuotes">Презареди CSV цените</button>
       </details>
@@ -126,11 +133,12 @@
 <script src="scout-archive.js?v=6bb2b510343d"></script>
 <script src="scout-health.js?v=63057d26e2f0"></script>
 <script src="scout-standings.js?v=3203c03c0852"></script>
-<script src="scout-analysis.js?v=7061c7ed4347"></script>
+<script src="scout-analysis.js?v=881d9d0214f1"></script>
 <script src="scout-selections.js?v=50b470019a05"></script>
 <script src="scout-combinations.js?v=17d77995aa5e"></script>
-<script src="scout-selection-ui.js?v=4c375bf9dbdb"></script>
-<script src="scout-data.js?v=603fc15eafc1"></script>
+<script src="scout-curated.js?v=a870a1b929c2"></script>
+<script src="scout-selection-ui.js?v=5d6e97d89a2b"></script>
+<script src="scout-data.js?v=aa2b6a399ce2"></script>
 <script src="scout-backup.js?v=fff44daaf888"></script>
-<script src="scout.js?v=74d5fd3d74c2"></script>
+<script src="scout.js?v=f86c25bfd095"></script>
 </body></html>
