@@ -187,7 +187,7 @@ function trendsHTML(d){
  }).join('');
  const delayed=['home','away'].filter(side=>d[side].pendingLatest).map(side=>'<p class="series-notice">'+esc(d[side].name)+(d[side].pendingLatest.state==='unavailable'?': допълнителните данни не са заредени.':d[side].pendingLatest.state==='conflict'?': резултатът от '+esc(d[side].pendingLatest.date)+' се уточнява.':': очаква се резултат от по-нов мач ('+esc(d[side].pendingLatest.date)+').')+' Тенденциите за отбора изчакват потвърждение.</p>').join('');
  return '<section class="card tendencies"><h3>Важни тенденции</h3><p class="current-series-context">Поредни завършили срещи от избраната история</p>'+delayed+
-  (body?'<div class="trend-groups">'+body+'</div>':'<p class="footnote">Няма потвърдена скорошна поредица от поне 3 мача.</p>')+
+  (body?'<div class="trend-groups'+(new Set(d.tendencies.filter(v=>v.scope!=='both').map(v=>v.scope)).size===1?' single-club':'')+'">'+body+'</div>':'<p class="footnote">Няма потвърдена скорошна поредица от поне 3 мача.</p>')+
   '<p class="footnote trend-caption">Само наличните първенства и УЕФА, преди този мач. Това са факти от историята, не вероятности за следващия резултат.</p></section>';
 }
 function rateBar(sample,alt=false){return sample.n?'<div class="observed-rate"><span class="bar-track"><i class="bar-fill '+(alt?'alt':'')+'" style="width:'+(sample.hits/sample.n*100)+'%"></i></span><b>'+pct(sample.hits/sample.n)+'</b><small>'+sample.hits+'/'+sample.n+'</small></div>':'<span class="extra-missing">няма данни</span>';}
@@ -240,7 +240,7 @@ function reading(d){
   const gap=p.homeWin-p.awayWin,leader=gap>=0?h:a,other=gap>=0?a:h,win=gap>=0?p.homeWin:p.awayWin;
   let text=Math.abs(gap)<.08?'Моделът вижда близък мач и няма отчетлив фаворит: '+h.name+' има '+pct(p.homeWin)+' за победа, '+a.name+' — '+pct(p.awayWin)+', а равенството е '+pct(p.draw)+'.':
    leader.name+(win<.5?' има леко предимство според модела':' е фаворит според модела')+' — '+pct(win)+' за победа. Равенството е '+pct(p.draw)+', а успехът на '+other.name+' — '+pct(gap>=0?p.awayWin:p.homeWin)+'.';
-  if(Math.abs(gap)>=.08)text+=win<.5?' Победата му остава по-малко вероятна от останалите изходи, взети заедно. Това е мач, в който чистата победа носи съществен риск въпреки преднината.':win<.65?' Преднината е видима, но оставя достатъчно място за равенство или изненада.':'Картината дава по-ясна преднина на този отбор, без да изключва другите изходи.';
+  if(Math.abs(gap)>=.08)text+=win<.5?' Победата му остава по-малко вероятна от останалите изходи, взети заедно. Това е мач, в който чистата победа носи съществен риск въпреки преднината.':win<.65?' Преднината е видима, но оставя достатъчно място за равенство или изненада.':' Картината дава по-ясна преднина на този отбор, без да изключва другите изходи.';
   else text+=' При такава малка разлика посоката за краен победител изисква повече предпазливост от самото сравнение на имената.';
   out.push({label:'Как изглежда мачът',text});
  }else out.push({label:'Как изглежда мачът',text:d.international?'За този европейски мач няма моделни проценти. Прочитът използва последните налични официални срещи за 90 минути, за да сравни формата и начина, по който двата отбора вкарват и допускат.':'Няма достатъчно съпоставима история за моделна оценка. Наличните резултати дават контекст, но не стигат за надеждно определяне на фаворит.'});
@@ -272,7 +272,7 @@ function reading(d){
   const observed=[h,a].filter(t=>t.xg.own.n>=5);
   if(observed.length){let text=observed.map(t=>t.name+' създава средно '+fmt(t.xg.own.mean,2)+' наблюдаван xG и вкарва '+fmt(t.xg.own.goals,2)+' гола в същите '+t.xg.own.n+' срещи'+(t.xg.against.n>=5?'; допуска '+fmt(t.xg.against.mean,2)+' xG в '+t.xg.against.n+' мача':'')+'.').join(' ');
    const gap=observed.find(t=>Math.abs(t.xg.own.goals-t.xg.own.mean)>=.4);
-   text+=gap?' При '+gap.name+' реалните голове са '+(gap.xg.own.goals>gap.xg.own.mean?'над':'под')+' наблюдавания xG. Това е причина резултатността да се чете внимателно, а не обещание за обрат в следващия мач.':'Няма голямо разминаване между тези голове и наблюдавания xG в сравнените извадки.';
+   text+=gap?' При '+gap.name+' реалните голове са '+(gap.xg.own.goals>gap.xg.own.mean?'над':'под')+' наблюдавания xG. Това е причина резултатността да се чете внимателно, а не обещание за обрат в следващия мач.':' Няма голямо разминаване между тези голове и наблюдавания xG в сравнените извадки.';
    out.push({label:'Какво добавят положенията',text});
   }
  }
