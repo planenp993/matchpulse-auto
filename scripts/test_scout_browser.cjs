@@ -234,7 +234,7 @@
    return {n:d.home.all.length,europe:d.home.all.filter(r=>MatchpulseArchive.european(r)).length,
     modelSame:JSON.stringify(d.model.distribution.probs)===JSON.stringify(m.distribution.probs),
     sourceIsolated:profile(activeMatch).home.all.every(r=>r[0]===activeMatch[0]),
-    allCurrent:d.tendencies.every(v=>v.sides.every(s=>s.rows.every(r=>r[3]>=new Date(Date.parse(d.asOfDate+'T12:00:00Z')-30*86400000).toISOString().slice(0,10))))};
+    allCurrent:d.tendencies.every(v=>v.sides.every(s=>s.rows.every(r=>r[3]>=new Date(Date.parse(d.asOfDate+'T12:00:00Z')-90*86400000).toISOString().slice(0,10))))};
   });
   if(!recent.europe||!recent.modelSame||!recent.sourceIsolated||!recent.allCurrent)throw new Error('Recent UEFA form leaked into the model, or active runs include older periods');
   const point=desktop.locator('.form-dot').last();await point.click();

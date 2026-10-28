@@ -232,7 +232,8 @@ function openMatch(f){
  el('matchContent').innerHTML='<div class="match-header"><div class="match-date">'+esc(date)+'</div>'+
   '<h2 class="match-heading" id="matchHeading">'+esc(f[5])+' <span>–</span> '+esc(f[6])+'</h2>'+
   '<div class="match-sample">Извадка: '+d.home.overall.n+' / '+d.away.overall.n+' мача · налични първенства + УЕФА</div></div>'+
-  '<div class="match-inner"><div class="duel">'+m+'</div>'+modelReport(f,p)+Analysis.introHTML(d)+streakReport(d)+
+  '<div class="match-inner"><div class="duel">'+m+'</div>'+Analysis.introHTML(d)+
+  '<section class="card match-plan" id="matchPlan" aria-busy="true"><h3>Прогноза за мача</h3><p class="footnote">Подготвям основния избор и алтернативите…</p></section>'+streakReport(d)+modelReport(f,p)+
   '<details class="card detail-card"><summary>Форма и голове · последните '+windowSize+' мача</summary>'+
    '<h4>Всички срещи</h4><div class="trend-grid">'+signalTiles(d)+'</div>'+
    '<h4>Домакинства / гостувания</h4><div class="trend-grid">'+venueTiles(d)+'</div></details>'+
@@ -250,7 +251,8 @@ function openMatch(f){
   '<details class="card detail-card"><summary>Как се изчислява анализът</summary>'+
    '<p class="footnote">Elo е ориентир от архива на показаното първенство. Начална стойност 1500; рейтинги от различни първенства не са пряко сравними.</p>'+
    '<p class="footnote">Моделните вероятности за резултат и голове идват от една резултатна матрица (Поасон с Dixon–Coles корекция), с до 30 предишни срещи. Изборът 5/10/20 променя статистиките и сериите.</p>'+
-   '<p class="footnote">Честотите и сериите описват историята. Липсващите данни остават празни. Досието включва наличните първенства и евротурнири за 90 минути, включително квалификациите. Националните купи не са в този архив. Моделът и Elo използват отделно историята на първенството. Актуалните серии са само от последните 30 дни; липсващ последен показател прекъсва серията.</p></details></div>';
+   '<p class="footnote">Честотите и сериите описват историята. Липсващите данни остават празни. Досието включва наличните първенства и евротурнири за 90 минути, включително квалификациите. Националните купи не са в този архив. Моделът и Elo използват отделно историята на първенството. Тенденциите сравняват поне 5 наблюдения в последните 90 дни, със скорошен последен резултат и проверка на последните 5 и домакинства/гостувания. Кратка поредица сама по себе си не е достатъчна.</p></details></div>';
+ window.MatchpulseSelectionUI.renderMatchPlan(el('matchPlan'),f);
  el('matchStandingsDetails').addEventListener('toggle',()=>{if(el('matchStandingsDetails').open)showStandings(el('matchStandingsContent'),f[0],f)});
  el('matchContent').querySelectorAll('.form-chip,.form-dot').forEach(button=>{
   const inspect=()=>{
@@ -300,7 +302,8 @@ async function copyMatch(){
   ((Scout.keyTeam(r[5])===h&&Scout.keyTeam(r[6])===a)||(Scout.keyTeam(r[5])===a&&Scout.keyTeam(r[6])===h))).slice(0,6);
  button.disabled=true;feedback.textContent='Подготвям пълното досие…';
  // Clipboard permission starts during the click; the Blob may await the table.
- const textPromise=loadStandings().catch(()=>null).then(standings=>Analysis.brief(d,{status,standings,keyTeam:Scout.keyTeam,direct}));
+ const textPromise=Promise.all([loadStandings().catch(()=>null),window.MatchpulseSelectionUI.planFor(f).catch(()=>null)])
+  .then(([standings,plan])=>Analysis.brief(d,{status,standings,keyTeam:Scout.keyTeam,direct})+(plan?'\n\n'+window.MatchpulseSelectionUI.planBrief(plan):''));
  try{
   if(navigator.clipboard?.write&&window.ClipboardItem){
    await navigator.clipboard.write([new ClipboardItem({'text/plain':textPromise.then(text=>new Blob([text],{type:'text/plain'}))})]);
@@ -418,15 +421,20 @@ async function loadDiary(){
 }
 async function loadSelectionDiary(){
  const target=el('selectionDiaryContent');
- try{
-  await initialPromise;const doc=await dataSnapshot.get('selection_diary_report.json');
+ function summary(doc,label){
   if(doc?.schema!==1||!doc.groups||!doc.totals)throw Error('diary format');
   const labels={main:'Основни',alternatives:'Алтернативи',builders:'Бет билдъри',columns:'Колонки'};
-  target.innerHTML='<p>'+doc.totals.recorded+' предмачови записа · '+doc.totals.abstained+' без основен избор. Първият автоматичен избор остава замразен; личните цени и филтри не участват.</p>'+
+  return '<h4>'+label+'</h4><p>'+doc.totals.recorded+' предмачови записа · '+doc.totals.abstained+' без основен избор. Първият автоматичен избор остава замразен; личните цени и филтри не участват.</p>'+
    '<div class="coverage-scroll"><table><thead><tr><th>Вид</th><th>Записани</th><th>Приключили</th><th>Успешни</th><th>Чакащи</th></tr></thead><tbody>'+
    Object.entries(labels).map(([key,label])=>'<tr><td>'+label+'</td>'+['recorded','settled','hits','pending'].map(k=>'<td>'+doc.groups[key][k]+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>'+
    '<p>Само бъдещи записи от регистрацията на '+new Date(doc.registered_at_utc).toLocaleDateString('bg-BG',{timeZone:'Europe/Sofia'})+'. Старите дневници са отделни. Честотата на успех още не доказва доходност.</p>'+
    (doc.last_run.capture_paused?'<p>Новите записи са спрени: кодът се различава от регистрираната версия. Съществуващите записи продължават да получават резултати.</p>':'');
+ }
+ try{
+  await initialPromise;
+  const [current,old]=await Promise.allSettled([dataSnapshot.get('match_plan_diary_report.json'),dataSnapshot.get('selection_diary_report.json')]);
+  target.innerHTML=(current.status==='fulfilled'?summary(current.value,'Текущи прогнози и комбинации · v2'):'<p>Текущият отчет временно не е достъпен.</p>')+
+   (old.status==='fulfilled'?'<details><summary>Предишен подбор · v1</summary>'+summary(old.value,'Първоначални правила · отделна извадка')+'</details>':'');
  }catch{target.textContent='Отчетът на „Селекции“ временно не е достъпен. Основният дневник остава отделен.';}
 }
 async function loadCoverage(){

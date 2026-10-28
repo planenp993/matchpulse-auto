@@ -244,16 +244,19 @@ identities stay separate. It does not claim coverage of national cup fixtures.
 
 The form curve is a signed cumulative result walk (+1 win, 0 draw, -1 loss),
 starting at zero, with a shared scale. It is not Elo, league points or probability.
-Current tendencies only use consecutive known observations within 30 days, never
-an older longest streak. Missing latest statistics or a newer unresolved match
-block a current claim. Show the actual series dates and confirming matches.
+Descriptive tendencies compare recent whole-window frequencies, last-five and
+venue support under the v2 rules below. Missing latest statistics or a newer
+unresolved match block the affected claim. Actual dates and match evidence stay
+available in expandable details; a short run alone is not sufficient.
 Keep the intro and copied brief consistent with this same selected view, while
 explicitly preserving the domestic model's separate input history.
 
 ## Selection view
 
-The user authorized a fifth screen, `Селекции`, below the diary. The three tabs
-are matches, same-game builders and cross-match columns. `scout-selections.js`
+The user authorized a fifth screen, `Селекции`, below the diary. Its two tabs
+now contain same-game builders and cross-match columns. Single forecasts and
+alternatives live in EVERY match dossier, with explicit abstention when no
+supported choice exists. `scout-selections.js`
 is a versioned heuristic ranking layer, not a new probability model. Its fixed
 rules and limitations are in `docs/selections-method.md`. Standard model matrices
 remain the only predictive probabilities. Fixed last-10 domestic descriptive
@@ -347,3 +350,20 @@ explicit gzip/paced-reply conditions, verifies identical probabilities and
 new-publication invalidation, and writes `scout-loading-browser.json`. Report
 controlled measurements honestly; do not claim a benchmark as a user's device
 time or change formulas to improve it. See `docs/loading-method.md`.
+
+## Match plans and combinations v2 (28 October 2026)
+
+`scout-combinations.js` wraps the byte-frozen v1 selection engine. Single
+forecasts/alternatives stay identical; builders and columns diversify under the
+same evidence gates. Never change registered v1 files merely to extend the UI.
+The new prospective recorder is `scripts/match_plan_diary.cjs`, with its own
+immutable `match-plans-v2` config/append-only ledger and separate public report.
+Run both selection recorders/checks in the existing post-reset writer loop.
+Never merge their scores, use browser prices in captures, or overwrite old
+registrations. Check `node scripts/match_plan_diary.cjs --check --base-ref origin/main`.
+
+The descriptive tendencies now compare full recent counts, last-five support,
+venue context and disagreements. They do not feed model/scanner/diary decisions.
+Dates and detailed match evidence remain expandable, without default tick tiles.
+The copied readout and the displayed prose share one description. See
+`docs/match-plans-method.md` for the exact registered engineering rules.
