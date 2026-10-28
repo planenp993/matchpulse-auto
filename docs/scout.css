@@ -196,6 +196,9 @@
 .control-label,.research-settings label,.research-settings>span{font-size:12px}
 .sync-state{color:#487361;margin-top:3px}.sync-state-warning{color:#90641d}
 .selection-status-below{color:#984c37;background:#fff3ec}
+.selection-meta time,.selection-metrics span,.selection-no-price,.match-date,.series-period,.current-series-context,.model-kpis span{font-size:12px;line-height:1.5}
+.selection-metrics span,.selection-no-price,.series-period,.current-series-context{color:#607783}
+.selection-role{font-size:11px}
 .selection-filters>summary{cursor:pointer;font-size:12px;font-weight:750;color:#476873;margin-top:14px}
 .selection-filters .filterbar{margin-top:12px}
 .bar-row{grid-template-columns:minmax(0,1.5fr) minmax(35px,1fr) auto;gap:9px}

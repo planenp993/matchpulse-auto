@@ -145,6 +145,10 @@
   if(ns.some(n=>n!==String(paired.totals.settled)))throw new Error('Paired quality table mixes different cohorts');
   await desktop.getByText('Качество по пазари',{exact:true}).click();
  }
+ await desktop.locator('#selectionDiary > summary').click();
+ await desktop.waitForFunction(()=>document.getElementById('selectionDiaryContent').textContent.includes('предмачови записа'));
+ if(!(await desktop.locator('#selectionDiaryContent').textContent()).includes('Старите дневници са отделни'))throw Error('Separate selection diary summary is missing');
+ await desktop.locator('#selectionDiary > summary').click();
  await desktop.screenshot({path:'scout-diary.png',fullPage:false});
  stats.diaryForecasts=diaryDoc.totals.recorded;
  await desktop.locator('[data-view="schedule"]').click();
