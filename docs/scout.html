@@ -5,7 +5,7 @@
   <meta name="theme-color" content="#0b1523">
   <meta name="description" content="Футболна програма, статистика и анализ на мачове.">
   <title>MATCHPULSE SCOUT · Футболни анализи</title>
-  <link rel="stylesheet" href="scout.css?v=e455dc8af89c">
+  <link rel="stylesheet" href="scout.css?v=115b477d802a">
 </head>
 <body>
 <div class="shell">
@@ -56,7 +56,14 @@
     <section class="view hidden" id="view-picks" aria-label="Моите прогнози">
       <div class="picks-head"><div id="picksSummary">Няма записани прогнози</div><button id="exportPicks" type="button" class="button secondary">↓ Експорт CSV</button></div>
       <div id="picksList"></div>
-      <p class="footnote">Записите са на това устройство. Експортирай CSV за резервно копие.</p>
+      <p class="footnote">Записите са на това устройство. CSV е за преглед; JSON копието отдолу служи за възстановяване.</p>
+      <details class="card detail-card personal-backup"><summary>Резервно копие и възстановяване</summary>
+        <p class="footnote">Запази личните прогнози и ръчните цени в JSON файл. Можеш да го заредиш и на друго устройство. Наличните записи се запазват при разминаване.</p>
+        <div class="backup-actions"><button type="button" class="button secondary" id="backupExport">↓ Запази JSON копие</button>
+          <label class="control-label">Зареди JSON копие<input id="backupFile" type="file" accept="application/json,.json"></label></div>
+        <div id="backupPreview" class="hidden"><p id="backupPreviewText" class="footnote"></p><div class="backup-actions"><button type="button" id="backupApply" class="button">Добави новите записи</button><button type="button" id="backupCancel" class="button secondary">Отказ</button></div></div>
+        <p class="footnote" id="backupStatus" role="status"></p>
+      </details>
     </section>
     <section class="view hidden" id="view-diary" aria-label="Автоматичен дневник">
       <div class="section-heading"><span id="diarySummary" role="status">Зареждане на дневника…</span><small class="timezone-label" id="diaryUpdated"></small></div>
@@ -121,6 +128,7 @@
 <script src="scout-standings.js?v=3203c03c0852"></script>
 <script src="scout-analysis.js?v=58cf1dec5c4c"></script>
 <script src="scout-selections.js?v=50b470019a05"></script>
-<script src="scout-selection-ui.js?v=2fed90883b02"></script>
-<script src="scout.js?v=d11cf793399b"></script>
+<script src="scout-selection-ui.js?v=718d47d6c958"></script>
+<script src="scout-backup.js?v=fff44daaf888"></script>
+<script src="scout.js?v=6aeb86328163"></script>
 </body></html>

@@ -310,3 +310,15 @@ Branch cleanup is a one-time reviewed request: only when the push introduces
 changes to `ops/merged-branch-recovery.json`, after successful deployment. The
 script checks exact heads, ancestry in current main and a push deletion lease.
 Never remove an unlisted or changed head; preserve the recovery SHAs and PRs.
+
+
+## Local personal backups
+
+`scout-backup.js` exports/imports only personal picks and manual comparison
+prices. Validate before writes, preview additions/conflicts, preserve existing
+records on collision, and retain original probabilities and quote timestamps.
+Use the recovery journal for partial storage failures. No automatic diary or
+GitHub upload may include personal notes/prices. Refresh the selection UI manual
+price cache after a successful import. Keep the module versioned and embedded
+in the offline builder. Browser acceptance includes export, preview, duplicate
+restore, corrupt input, reload, 390/320px, offline and blocked local storage.

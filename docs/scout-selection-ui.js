@@ -189,5 +189,5 @@ function mount(context){
  });
  el('selectionList').addEventListener('input',event=>{if(event.target.matches('[data-selection-input]'))event.target.setCustomValidity('');});
 }
-root.MatchpulseSelectionUI={mount,render};
+root.MatchpulseSelectionUI={mount,render,reloadManualPrices(){manual=readManual();}};
 })(window);

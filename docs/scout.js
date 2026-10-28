@@ -304,7 +304,7 @@ const marketNames=Object.fromEntries(Patterns.MARKETS.map(v=>[v.id,v.label]));
 Object.assign(marketNames,{'1':'Победа домакин','2':'Победа гост','1X':'Двоен шанс 1X','X2':'Двоен шанс X2',home2:'Домакин 2+',away2:'Гост 2+'});
 function renderPicks(){
  const list=readPicks(),resolved=list.map(p=>{
-  const done=archive.result(p),settled=done?Scout.marketSettled(p,done):null;
+  const done=archive?.result(p),settled=done?Scout.marketSettled(p,done):null;
   return {...p,settled,score:done?done[7]+':'+done[8]:null}
  });
  const done=resolved.filter(x=>x.settled!==null);
@@ -317,14 +317,14 @@ function renderPicks(){
   (p.score?' ('+esc(p.score)+')':'')+'</small></div>'+
   '<button type="button" data-del="'+esc(p.id)+'" class="button secondary">Премахни</button></div>').join('');
  el('picksList').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{
-   if(confirm('Да премахна тази лична бележка?')){writePicks(readPicks().filter(p=>p.id!==b.dataset.del));renderPicks()}
+   if(confirm('Да премахна тази лична бележка?')){writePicks(readPicks().filter(p=>String(p.id)!==b.dataset.del));renderPicks()}
  });
 }
 function exportPicks(){
  const picks=readPicks();if(!picks.length){alert('Няма прогнози за експорт.');return}
  const cols=['date','home','away','market','odds','modelProbability','analysisWindow','createdAt','score','result'];
  const csv=[cols.join(',')].concat(picks.map(p=>cols.map(k=>{
-  const done=archive.result(p),settled=done?Scout.marketSettled(p,done):null;
+  const done=archive?.result(p),settled=done?Scout.marketSettled(p,done):null;
   const v=k==='result'?(settled===null?'pending':settled?'win':'loss'):k==='score'?(done?done[7]+':'+done[8]:''):(p[k]??'');
   return '"'+String(v).replace(/"/g,'""')+'"';
  }).join(','))).join('\r\n');
@@ -488,4 +488,6 @@ document.addEventListener('keydown',e=>{
   else if(!e.shiftKey&&(document.activeElement===last||!el('matchOverlay').contains(document.activeElement))){e.preventDefault();first?.focus();}
  }
 });
+try{window.MatchpulseBackup.mount({storage:localStorage,onChanged:()=>{renderPicks();window.MatchpulseSelectionUI.reloadManualPrices();},onRecovered:()=>window.MatchpulseSelectionUI.reloadManualPrices()});}
+catch{el('backupStatus').textContent='Локалното запазване не е достъпно в този браузър.';}
 load();
