@@ -7,7 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FILES = ('history.json', 'fixtures.json', 'status.json', 'europe_history.json', 'match_links.json',
          'europe_fixture_names.json', 'standings.json', 'coverage_audit.json', 'diary_report.json',
-         'selection_diary_report.json', 'match_plan_diary_report.json', 'selection_quotes.json')
+         'selection_diary_report.json', 'match_plan_diary_report.json', 'curated_diary_report.json', 'selection_quotes.json')
 MANIFEST = 'docs/data/client_manifest.json'
 
 

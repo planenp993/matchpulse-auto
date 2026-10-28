@@ -1,7 +1,7 @@
 /* Small view controller for the separate, versioned selection rules. */
 (function(root){
 'use strict';
-const S=root.MatchpulseCombinations,C=root.MatchpulseScout;
+const S=root.MatchpulseCurated,C=root.MatchpulseScout;
 const el=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pct=p=>Number.isFinite(p)?(100*p).toFixed(1)+'%':'—',price=p=>Number.isFinite(p)?p.toFixed(2):'—';
 const stamp=v=>Number.isFinite(Date.parse(v))?new Date(v).toLocaleString('bg-BG',{timeZone:'Europe/Sofia',dateStyle:'short',timeStyle:'short'}):'неизвестен час';
@@ -10,6 +10,7 @@ const KEY='matchpulse-selection-quotes-v1';
 let app=null,engine=null,tab='builders',period=1,limit=24,token=0,quotePromise=null,quoteDoc=null,quoteError=false,entries=[],items=[];
 function readManual(){try{const v=JSON.parse(localStorage.getItem(KEY)||'{}');return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch{return {};}}
 let manual=readManual();
+let band='3-6',columnEntries=null;const columnCache=new Map();
 async function loadQuotes(){
  if(quoteDoc)return quoteDoc;
  if(!quotePromise)quotePromise=(root.SCOUT_EMBEDDED_DATA?Promise.resolve(root.SCOUT_EMBEDDED_DATA.selectionQuotes):
@@ -113,45 +114,57 @@ function planBrief(entry){
   'Фиксирани последни 10 вътрешни срещи за подбора. Алтернативите са отделни идеи. '+S.VERSION+' · '+entry.generatedAt].join('\n');
 }
 function builderCard(item,index){
- return '<article class="card selection-card selection-builder">'+fixtureHeader(item.entry.fixture)+'<div class="selection-status">Бет билдър · 2 условия в един мач</div>'+
-  pickHTML(item.entry.fixture,item.pick,'Комбинация')+'<p class="footnote">Вероятността отчита връзката между условията чрез общите точни резултати.</p>'+
-  whyHTML(item.entry,item.pick)+actions(index)+'</article>';
+ return '<article class="card selection-card selection-builder" data-selection-fixture="'+esc(C.keyFixture(item.entry.fixture))+'">'+fixtureHeader(item.entry.fixture)+
+  '<div class="selection-status">'+item.picks.length+(item.picks.length===1?' бет билдър':' бет билдъра')+' за този мач</div>'+
+  '<div class="builder-variants">'+item.picks.map((p,i)=>'<section class="builder-variant">'+pickHTML(item.entry.fixture,p,'Вариант '+(i+1))+whyHTML(item.entry,p)+'</section>').join('')+'</div>'+
+  '<p class="footnote">Всеки вариант е отделен билдър с две условия. Вероятността е за съвместното им изпълнение в този мач.</p>'+actions(index)+'</article>';
 }
 function columnCard(item,index){
- return '<article class="card selection-card selection-column"><div class="selection-meta"><span>Права колонка</span><time>'+item.date+'</time></div>'+
+ return '<article class="card selection-card selection-column" data-column-band="'+item.band+'"><div class="selection-meta"><span>Ниво '+item.bandLabel+'</span><time>'+item.date+'</time></div>'+
   '<h3>'+item.size+' мача <small>Вариант '+item.variant+'</small></h3><ol class="selection-legs">'+item.legs.map((l,i)=>'<li><button type="button" class="column-match" data-selection-leg="'+index+':'+i+'">'+esc(l.fixture[5])+' – '+esc(l.fixture[6])+'</button><span>'+esc(l.pick.label)+' <b>'+pct(l.pick.probability)+'</b></span></li>').join('')+'</ol>'+
-  '<div class="selection-metrics"><div><b>'+pct(item.probability)+'</b><span>Приблизителна вероятност</span></div><div><b>'+price(item.fair)+'</b><span>Честен коефициент</span></div></div>'+
-  '<p class="footnote">Допускане за независимост между мачовете. Няма потвърдена обща букмейкърска цена.</p>'+
+  '<div class="selection-metrics"><div><b>'+pct(item.probability)+'</b><span>Приблизителна вероятност</span></div><div><b>'+price(item.fair)+'</b><span>Моделен общ коефициент</span></div></div>'+
+  '<p class="footnote">Моделен ориентир при допускане за независимост. Общ букмейкърски коефициент за тази колонка не е проверен.</p>'+
   '<div class="selection-actions"><button type="button" class="button secondary" data-selection-copy="'+index+'">Копирай колонката</button></div></article>';
 }
 function brief(item){
  const now=new Date().toISOString();
- if(tab==='columns')return ['MATCHPULSE · ПРАВА КОЛОНКА · '+item.date,...item.legs.map(l=>l.fixture[5]+' – '+l.fixture[6]+' | '+l.pick.label+' | '+pct(l.pick.probability)),
-  'Приблизителна обща вероятност: '+pct(item.probability),'Честен коефициент: '+price(item.fair),'Допускане: независимост между мачовете. Обща букмейкърска цена не е проверена.',S.VERSION+' · '+now].join('\n');
- const entry=tab==='builders'?item.entry:item,chosen=tab==='builders'?[item.pick]:[entry.main,...entry.alternatives].filter(Boolean),f=entry.fixture;
- return ['MATCHPULSE · '+(tab==='builders'?'БЕТ БИЛДЪР':'СЕЛЕКЦИИ'),f[5]+' – '+f[6],f[2]+' · '+f[3]+' '+f[4],
-  ...chosen.flatMap((p,i)=>[(tab==='builders'?'Комбинация':i?'Алтернатива '+i:'Основна')+': '+p.label,
-   'Моделна вероятност: '+pct(p.probability)+' · честен коефициент '+price(p.fair),
+ if(tab==='columns')return ['MATCHPULSE · ПРАВА КОЛОНКА · '+item.date+' · Ниво '+item.bandLabel,...item.legs.map(l=>l.fixture[5]+' – '+l.fixture[6]+' | '+l.pick.label+' | '+pct(l.pick.probability)),
+  'Приблизителна обща вероятност: '+pct(item.probability),'Моделен общ коефициент: '+price(item.fair),'Допускане: независимост между мачовете. Общ букмейкърски коефициент не е проверен.',S.VERSION+' · '+now].join('\n');
+ const entry=item.entry,chosen=item.picks,f=entry.fixture;
+ return ['MATCHPULSE · БЕТ БИЛДЪРИ',f[5]+' – '+f[6],f[2]+' · '+f[3]+' '+f[4],
+  ...chosen.flatMap((p,i)=>['Вариант '+(i+1)+': '+p.label,'Моделна вероятност: '+pct(p.probability)+' · честен коефициент '+price(p.fair),
    p.quote.status==='available'?'Цена '+price(p.quote.odds)+' · '+sourceText(p.quote)+' · моделна разлика '+(100*p.quote.edge).toFixed(1)+'%':'Няма актуална пазарна цена.',
    'Подкрепа в последните 10: '+p.evidence.home.hits+'/'+p.evidence.home.n+' и '+p.evidence.away.hits+'/'+p.evidence.away.n+'; лига '+pct(p.evidence.baseline)+' от '+p.evidence.leagueN+'.']),
-  entry.reason,'Подбор по 10 вътрешни срещи; моделът използва до 30. Моделните цени са оценки; ценовата разлика не е доказана доходност.',
-  tab==='builders'?'Съвместна вероятност от резултатната матрица.':'Алтернативите са отделни идеи за същия мач.',S.VERSION+' · '+entry.generatedAt].filter(Boolean).join('\n');
+  'Всеки вариант е отделен билдър. Съвместна вероятност от резултатната матрица.',S.VERSION+' · '+entry.generatedAt].join('\n');
 }
 function paint(){
  const kind=el('selectionQuality').value;
- items=tab==='builders'?entries.flatMap(entry=>entry.builders.map(pick=>({entry,pick})))
-  .filter(item=>kind!=='price'||item.pick.quote.aboveModel):S.columns(entries,C,{priceOnly:kind==='price'});
+ const builderKeys=new Set();
+ const builders=entries.map(entry=>({entry,picks:entry.builders.filter(p=>kind!=='price'||p.quote.aboveModel)})).filter(item=>{
+  const key=C.keyFixture(item.entry.fixture);if(!item.picks.length||builderKeys.has(key))return false;builderKeys.add(key);return true;
+ });
+ let columns=[];
+ if(tab==='columns'){
+  if(columnEntries!==entries){columnEntries=entries;columnCache.clear();}
+  if(!columnCache.has(kind))columnCache.set(kind,S.columns(entries,C,{priceOnly:kind==='price'}));
+  columns=columnCache.get(kind);
+ }
+ items=tab==='builders'?builders:columns.filter(c=>c.band===band);
+ el('columnBands').classList.toggle('hidden',tab!=='columns');
+ document.querySelectorAll('[data-selection-band]').forEach(button=>{
+  const selected=button.dataset.selectionBand===band;button.setAttribute('aria-pressed',String(selected));button.classList.toggle('active',selected);
+  button.querySelector('.band-count').textContent=String(columns.filter(c=>c.band===button.dataset.selectionBand).length);
+ });
  const main=entries.filter(e=>e.main).length;
- el('selectionSummary').textContent=entries.length+' мача прегледани · '+items.length+(tab==='builders'?' бет билдъра':' колонки');
+ el('selectionSummary').textContent=entries.length+' мача прегледани · '+(tab==='builders'?builders.length+' мача с '+builders.reduce((n,b)=>n+b.picks.length,0)+' билдъра':items.length+' колонки · ниво '+S.BANDS.find(b=>b.id===band).label);
  el('selectionQuoteStatus').textContent=quoteError?'CSV цените не се заредиха. Можеш да въведеш собствена цена.':
   (quoteDoc?.checked_at_utc?'Последна CSV проверка: '+stamp(quoteDoc.checked_at_utc)+'. Часът на букмейкърската оферта е неизвестен.':'Няма запазена CSV проверка.');
- el('selectionTabNote').textContent=tab==='builders'?'До 6 различни билдъра за мач при достатъчна подкрепа. Основната прогноза и алтернативите са в анализа на всеки мач.':
-  'До 6 варианта с 2, 3 или 4 мача за всяка дата. Вариантите разпределят различни срещи и пазари; могат да се припокриват.'+
+ el('selectionTabNote').textContent=tab==='builders'?'До два различни бет билдъра в една карта за мача. Основната прогноза и алтернативите са в неговия анализ.':
+  'Три нива по моделен общ коефициент. До 6 варианта на ниво и дата, с 2–8 различни мача. По-високият коефициент означава по-малка моделна вероятност.'+
   (kind==='price'?' Всяка отделна селекция има цена над моделната; обща цена за колонката не е потвърдена.':'');
  el('selectionList').innerHTML=items.length?items.slice(0,limit).map((item,i)=>tab==='builders'?builderCard(item,i):columnCard(item,i)).join(''):
-  '<div class="empty">'+(tab==='builders'?'Няма бет билдъри с достатъчна обща подкрепа.':'Няма достатъчно различни мачове с подходящи селекции за колонка.')+(entries.length&&!main?' Прогнозите и причините за въздържане са в анализите на отделните мачове.':'')+'</div>';
- el('selectionMore').classList.toggle('hidden',items.length<=limit);
- el('selectionMore').textContent='Покажи още · '+Math.min(limit,items.length)+' от '+items.length;
+  '<div class="empty">'+(tab==='builders'?'Няма бет билдъри с достатъчна обща подкрепа.':'Няма достатъчно различни мачове с подходящи селекции за това ниво.')+(entries.length&&!main?' Прогнозите и причините за въздържане са в анализите на отделните мачове.':'')+'</div>';
+ el('selectionMore').classList.toggle('hidden',items.length<=limit);el('selectionMore').textContent='Покажи още · '+Math.min(limit,items.length)+' от '+items.length;
  el('selectionList').setAttribute('aria-busy','false');
 }
 async function render(){
@@ -204,6 +217,7 @@ function mount(context){
   };
  });
  el('selectionList').setAttribute('aria-labelledby',tabs[0].id);
+ document.querySelectorAll('[data-selection-band]').forEach(button=>button.onclick=()=>{band=button.dataset.selectionBand;limit=24;paint();});
  document.querySelectorAll('[data-selection-period]').forEach(button=>button.onclick=()=>{
   period=+button.dataset.selectionPeriod;limit=24;
   document.querySelectorAll('[data-selection-period]').forEach(b=>{b.classList.toggle('active',b===button);b.setAttribute('aria-pressed',String(b===button));});render();

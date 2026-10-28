@@ -44,6 +44,7 @@ jobs:
           node scripts/paired_model_diary.cjs --check --base-ref origin/main
           node scripts/selection_diary.cjs --check --base-ref origin/main
           node scripts/match_plan_diary.cjs --check --base-ref origin/main
+          node scripts/curated_diary.cjs --check --base-ref origin/main
       - name: Check registered research against its frozen inputs
         run: python scripts/check_research.py
       - name: Audit the checked-out snapshot without provider requests
@@ -70,6 +71,7 @@ jobs:
             docs/data/paired_model_report.json
             docs/data/selection_diary_report.json
             docs/data/match_plan_diary_report.json
+            docs/data/curated_diary_report.json
             docs/model-quality.md
             docs/model-comparison.md
             docs/shot-model-comparison.md
@@ -145,7 +147,7 @@ jobs:
             scout-selection-card-mobile.png
             scout-match-plan-320.png
             scout-builders.png
-            scout-columns.png
+            scout-columns*.png
             scout-selections-browser.json
             scout-backup-mobile.png
             scout-loading-browser.json

@@ -66,67 +66,68 @@ const personalEvent=id=>['home2','away2','1','2','X','1X','X2'].includes(id);
 const CURRENT_DAYS=30;
 function sofiaDay(now){return new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Sofia',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);}
 const TREND_DAYS=90;
+const TREND_EVENTS=[
+ {id:'win',family:'result',label:'Поредни победи',phrase:'печели',priority:4,test:g=>g.gf>g.ga},
+ {id:'loss',family:'result',label:'Поредни загуби',phrase:'губи',priority:4,test:g=>g.gf<g.ga},
+ {id:'draw',family:'result',label:'Поредни равенства',phrase:'завършва наравно',priority:3,test:g=>g.gf===g.ga},
+ {id:'unbeaten',family:'result',label:'Без загуба',phrase:'няма загуба',priority:2,test:g=>g.gf>=g.ga},
+ {id:'winless',family:'result',label:'Без победа',phrase:'няма победа',priority:2,test:g=>g.gf<=g.ga},
+ {id:'noDraw',family:'draw',label:'Без равенство',phrase:'няма равенство',priority:0,test:g=>g.gf!==g.ga},
+ {id:'scored',family:'attack',label:'Отбелязан гол от отбора',phrase:'отбелязва поне един гол',priority:2,test:g=>g.gf>=1},
+ {id:'team2',family:'attack',label:'Отборът вкарва 2+',phrase:'отбелязва поне два гола',priority:4,test:g=>g.gf>=2},
+ {id:'conceded',family:'defence',label:'Допуснат гол',phrase:'допуска поне един гол',priority:2,test:g=>g.ga>=1},
+ {id:'clean',family:'defence',label:'Без допуснат гол',phrase:'не допуска гол',priority:4,test:g=>g.ga===0},
+ ...[['o15','Поне 2 гола общо',2],['o25','Поне 3 гола общо',3],['o35','Поне 4 гола общо',4]].map(([id,label,line])=>({id,family:'total',label,phrase:'има поне '+line+' гола общо в мачовете си',priority:line,test:g=>g.gf+g.ga>=line})),
+ ...[['u25','Най-много 2 гола общо',2],['u35','Най-много 3 гола общо',3]].map(([id,label,line])=>({id,family:'total',label,phrase:'има най-много '+line+' гола общо в мачовете си',priority:5-line,test:g=>g.gf+g.ga<=line})),
+ {id:'btts',family:'btts',label:'Гол/гол в мачовете',phrase:'играе мачове с гол от двата отбора',priority:3,test:g=>g.gf>0&&g.ga>0},
+ {id:'bttsNo',family:'btts',label:'Без гол/гол в мачовете',phrase:'играе мачове, в които поне единият отбор не бележи',priority:2,test:g=>g.gf===0||g.ga===0},
+ ...[['corners95','corners','Поне 10 корнера общо',3],['yellow35','cards','Поне 4 жълти картона общо',2],['shots215','shots','Поне 22 удара общо',2],['ht05','firsthalf','Гол до полувремето',2]].map(([id,family,label,priority])=>({id,family,label,phrase:'има '+label.toLocaleLowerCase()+' в мачовете си',priority,stat:true}))
+];
 function tendencies(profile,patterns,keyTeam,asOfDate=sofiaDay(new Date())){
  const cutoff=profile.fixture[3]<asOfDate?profile.fixture[3]:asOfDate;
  const since=new Date(Date.parse(cutoff+'T12:00:00Z')-TREND_DAYS*86400000).toISOString().slice(0,10);
- const latest=new Date(Date.parse(cutoff+'T12:00:00Z')-30*86400000).toISOString().slice(0,10);
- const out=[];
- for(const market of patterns.MARKETS){
-  // A generic no-draw run adds little to reading this particular matchup.
-  if(market.id==='12')continue;
-  const sides=['home','away'].map(side=>{
-   const t=profile[side];if(t.proxy||t.pendingLatest)return null;
-   const rows=t.all.filter(r=>r[3]>=since&&r[3]<=cutoff&&r[3]<profile.fixture[3]&&played(r));
-   const measure=patterns.measures(rows,t.name,side,market.id,keyTeam);
-   if(measure.n<5||measure.n/Math.max(1,rows.length)<.8||measure.trail[0]===null||!rows.length||rows[0][3]<latest)return null;
-   const recent=patterns.measures(rows.slice(0,5),t.name,side,market.id,keyTeam);
-   const venueRows=t.venue.filter(r=>r[3]>=since&&r[3]<=cutoff&&r[3]<profile.fixture[3]&&played(r));
-   const venue=patterns.measures(venueRows,t.name,side,market.id,keyTeam);
-   const venueComparable=venue.n>=4&&venue.n/Math.max(1,venueRows.length)>=.8&&venue.trail[0]!==null;
-   const text=eventText(market.id,side),phrase=personalEvent(market.id)?t.name+' '+text:'В мачовете на '+t.name+': '+text;
-   return {name:t.name,side,measure,recent,venue:venueComparable?venue:null,rows,phrase,
-    from:rows.at(-1)[3],until:rows[0][3],shrunk:(measure.hits+2)/(measure.n+4),
-    sentence:phrase+' · '+measure.hits+'/'+measure.n+' срещи'};
-  }).filter(Boolean);
-  if(!sides.length)continue;
-  const strong=s=>s.measure.rate>=.7&&s.shrunk>=.6&&s.recent.n>=4&&s.recent.rate>=.6;
-  const venueOpposes=s=>s.venue&&s.venue.rate<=.25;
-  let kind='',selected=sides;
-  if(sides.length===2&&sides.every(s=>s.measure.rate>=.6&&s.recent.n>=4&&s.recent.rate>=.6)&&sides.some(strong)&&!sides.some(venueOpposes))kind='agreement';
-  else if(sides.length===2&&sides.some(s=>strong(s)&&s.measure.rate>=.75)&&sides.some(s=>s.measure.rate<=.35||venueOpposes(s)))kind='split';
-  else {
-   selected=sides.filter(s=>strong(s)&&s.measure.rate>=.8&&!venueOpposes(s));
-   if(!selected.length)continue;
-   // Keep the other club visible as context, even when it does not confirm.
-   kind='one-sided';selected=sides;
+ const latest=new Date(Date.parse(cutoff+'T12:00:00Z')-CURRENT_DAYS*86400000).toISOString().slice(0,10);
+ const samples={};
+ for(const side of ['home','away']){
+  const t=profile[side];samples[side]=new Map();if(t.proxy||t.pendingLatest)continue;
+  const rows=t.all.filter(r=>r[3]>=since&&r[3]<=cutoff&&r[3]<profile.fixture[3]&&played(r));
+  if(rows.length<3||rows[0][3]<latest)continue;
+  for(const event of TREND_EVENTS){
+   const observations=rows.map(row=>{
+    if(event.stat)return patterns.observation(row,t.name,'home',event.id,keyTeam);
+    const home=keyTeam(row[5])===keyTeam(t.name);return event.test({gf:row[home?7:8],ga:row[home?8:7]});
+   });
+   let run=0;while(observations[run]===true)run++;
+   if(run<3)continue;
+   const known=observations.filter(v=>v!==null),hits=known.filter(Boolean).length,proof=rows.slice(0,run),atLeast=run===rows.length;
+   const matchFact=event.id==='btts'?'има гол от двата отбора':event.id==='bttsNo'?'поне единият отбор не бележи':event.stat?'има '+event.label.toLocaleLowerCase():['o15','o25','o35','u25','u35'].includes(event.id)?event.phrase.replace(' в мачовете си',''):null;
+   const sentence=matchFact?(atLeast?'В поне '+run+' поредни мача на ':'В последните '+run+' мача на ')+t.name+' '+matchFact+'.':t.name+' '+event.phrase+' '+(atLeast?'в поне '+run+' поредни срещи.':'в последните си '+run+' срещи.');
+   samples[side].set(event.id,{name:t.name,side,rows:proof,sampleRows:rows,atLeast,from:proof.at(-1)[3],until:proof[0][3],sentence,
+    measure:{n:known.length,hits,rate:known.length?hits/known.length:null,currentStreak:run,total:rows.length,missing:rows.length-known.length,trail:observations}});
   }
-  const weakest=Math.min(...selected.map(s=>s.shrunk)),best=Math.max(...selected.map(s=>s.shrunk));
-  const score=(kind==='agreement'?1+weakest:kind==='split'?.85+best-weakest:best-.15)+.015*Math.min(...selected.map(s=>s.measure.n));
-  const title=market.id==='home2'?profile.home.name+' вкарва 2+':market.id==='away2'?profile.away.name+' вкарва 2+':
-   market.id==='1'?profile.home.name+' печели':market.id==='2'?profile.away.name+' печели':
-   market.id==='1X'?profile.home.name+' без загуба':market.id==='X2'?profile.away.name+' без загуба':market.label;
-  out.push({market:market.id,title,family:market.family,group:market.group,kind,sides:selected,score});
  }
- out.sort((a,b)=>b.score-a.score||a.market.localeCompare(b.market));
- const selected=[],families=new Set();
- for(const signal of out){
-  if(families.has(signal.family))continue;
-  // Nested/correlated events do not become independent confirmations merely
-  // because they have different labels. Compare their actual known outcomes.
-  const redundant=selected.some(previous=>{
-   if(previous.group!==signal.group||previous.kind!==signal.kind)return false;
-   let same=0,total=0;
-   for(const side of signal.sides){
-    if(!previous.sides.some(s=>s.side===side.side))continue;
-    for(const row of side.rows){const a=patterns.observation(row,side.name,side.side,signal.market,keyTeam),b=patterns.observation(row,side.name,side.side,previous.market,keyTeam);
-     if(a!==null&&b!==null){total++;same+=+(a===b);}}
-   }
-   return total>=5&&same/total>.9;
-  });
-  if(redundant)continue;
-  families.add(signal.family);selected.push(signal);if(selected.length===6)break;
+ const commonIds=new Set([...samples.home.keys()].filter(id=>samples.away.has(id)));
+ const candidates=TREND_EVENTS.flatMap(event=>{
+  const sides=['home','away'].map(side=>samples[side].get(event.id)).filter(Boolean);if(!sides.length)return [];
+  const scope=sides.length===2?'both':sides[0].side;
+  const length=Math.min(...sides.map(t=>t.measure.currentStreak));
+  return [{market:event.id,title:event.label,family:event.family,group:event.stat?event.family:'goals',scope,kind:'streak',sides,
+   score:2*Math.log2(length+1)+1.1*event.priority+.04*Math.max(...sides.map(t=>t.measure.currentStreak))}];
+ });
+ function choose(list){
+  const selected=[],families=new Set();
+  for(const v of list.sort((a,b)=>b.score-a.score||a.market.localeCompare(b.market))){
+   if(families.has(v.family))continue;
+   if(v.market==='noDraw'&&selected.some(k=>k.market==='win'&&k.sides.every((t,i)=>t.measure.currentStreak>=v.sides[i].measure.currentStreak)))continue;
+   selected.push(v);families.add(v.family);if(selected.length===6)break;
+  }
+  return selected;
  }
- return selected;
+ // The same semantic fact is common only when true in both clubs' OWN history.
+ // An unbeaten home club and a winless away club are never one shared trend.
+ return [...choose(candidates.filter(v=>v.scope==='both')),
+  ...choose(candidates.filter(v=>v.scope==='home'&&!commonIds.has(v.market))),
+  ...choose(candidates.filter(v=>v.scope==='away'&&!commonIds.has(v.market)))];
 }
 function describe(profile,{keyTeam,patterns,model=null,ratings={},now=new Date()}){
  const sides={};
@@ -172,26 +173,22 @@ function formHTML(t){
   '<div class="form-strip" style="--form-count:'+Math.min(10,f.n)+'">'+chips+'</div><div class="form-direction">Ред: по-стари → най-нови</div>'+
   '<div class="form-inspection" role="status">Докосни резултат или точка от графиката</div>'+graphHTML(f)+'</div>';
 }
-function trendExplanation(v){
- const names=v.sides.map(s=>s.name);
- if(v.kind==='split')return 'Отборите дават различна картина. Тази тенденция изисква внимание, преди да се използва за общ избор.';
- if(v.kind==='one-sided')return v.sides.length===1?'Има сигнал само за '+names[0]+'. За съперника няма достатъчна сравнима подкрепа.':'По-силна следа при '+v.sides.reduce((a,b)=>a.measure.rate>=b.measure.rate?a:b).name+'. Другият отбор не я потвърждава достатъчно.';
- return 'И двата отбора подкрепят посоката в скорошната извадка; тя се запазва и в последните им пет срещи.';
-}
+function trendExplanation(v){return v.sides.map(side=>side.sentence).join(' ');}
 function trendsHTML(d){
- const card=v=>'<article class="tendency-item trend-signal" data-trend-kind="'+v.kind+'"><div class="trend-heading"><h4>'+esc(v.title)+'</h4><span>'+({agreement:'Сходна посока',split:'Разминаване','one-sided':'Едностранен сигнал'})[v.kind]+'</span></div>'+
-  '<div class="trend-counts">'+v.sides.map(s=>'<span>'+esc(personalEvent(v.market)?s.phrase:s.name)+' <b>'+s.measure.hits+'/'+s.measure.n+'</b></span>').join('')+'</div>'+
-  '<p class="trend-explanation">'+esc(trendExplanation(v))+'</p>'+
-  '<details class="series-proof"><summary>Данни зад тенденцията</summary>'+v.sides.map(s=>'<div class="trend-proof-team"><strong>'+esc(s.phrase)+'</strong><p>Последни 5: '+s.recent.hits+'/'+s.recent.n+
-   (s.venue?' · '+(s.side==='home'?'Домакинства':'Гостувания')+': '+s.venue.hits+'/'+s.venue.n:' · Няма достатъчно сравними домакинства/гостувания.')+
-   (s.measure.currentStreak>=3?' · Продължаваща серия: '+s.measure.currentStreak+' мача.':'')+
-   (s.measure.missing?' · Липсват '+s.measure.missing+' наблюдения.':'')+'</p>'+s.rows.map((row,i)=>'<p>'+esc(row[3]+' · '+score(row))+' · '+(s.measure.trail[i]===null?'няма показател':s.measure.trail[i]?'събитието е налице':'събитието липсва')+'</p>').join('')+'</div>').join('')+'</details></article>';
+ const item=v=>'<article class="trend-signal" data-trend-scope="'+v.scope+'" data-trend-market="'+v.market+'">'+
+  (v.scope==='both'?'<h5>'+esc(v.title)+'</h5>':'')+
+  '<p class="trend-statement">'+esc(trendExplanation(v))+'</p>'+
+  '<details class="series-proof"><summary>Данни зад тенденцията</summary>'+v.sides.map(t=>'<div class="trend-proof-team"><strong>'+esc(t.name)+'</strong><p>Показаната поредица: '+t.measure.currentStreak+' мача. В цялата скорошна извадка: '+t.measure.hits+'/'+t.measure.n+'.'+(t.measure.missing?' Липсват '+t.measure.missing+' по-стари наблюдения.':'')+'</p>'+t.rows.map(row=>'<p>'+esc(row[3]+' · '+score(row)+' · '+row[2])+'</p>').join('')+'</div>').join('')+'</details></article>';
+ const groups=[['home',d.home.name,'Домакин'],['away',d.away.name,'Гост'],['both','Общи тенденции','Потвърдени отделно при двата отбора']];
+ const body=groups.map(([scope,label,note])=>{
+  const list=d.tendencies.filter(v=>v.scope===scope);if(!list.length)return '';
+  return '<section class="trend-group" data-trend-group="'+scope+'"><div class="trend-club-heading"><h4>'+esc(label)+'</h4><span>'+note+'</span></div>'+list.slice(0,3).map(item).join('')+
+   (list.length>3?'<details class="tendencies-more"><summary>Още тенденции · '+(list.length-3)+'</summary>'+list.slice(3).map(item).join('')+'</details>':'')+'</section>';
+ }).join('');
  const delayed=['home','away'].filter(side=>d[side].pendingLatest).map(side=>'<p class="series-notice">'+esc(d[side].name)+(d[side].pendingLatest.state==='unavailable'?': допълнителните данни не са заредени.':d[side].pendingLatest.state==='conflict'?': резултатът от '+esc(d[side].pendingLatest.date)+' се уточнява.':': очаква се резултат от по-нов мач ('+esc(d[side].pendingLatest.date)+').')+' Тенденциите за отбора изчакват потвърждение.</p>').join('');
- const signals=d.tendencies||[],main=signals.slice(0,3),more=signals.slice(3);
- return '<section class="card tendencies"><h3>Важни тенденции</h3><p class="current-series-context">Повтарящи се събития и разминавания · последни '+d.windowSize+' мача</p>'+delayed+
-  (main.length?main.map(card).join(''):'<p class="footnote">Няма достатъчно ясна скорошна тенденция в избраната извадка.</p>')+
-  (more.length?'<details class="tendencies-more"><summary>Още тенденции · '+more.length+'</summary>'+more.map(card).join('')+'</details>':'')+
-  '<p class="footnote trend-caption">Броят показва какво се е случило в наличните мачове, не вероятност за следващия.</p></section>';
+ return '<section class="card tendencies"><h3>Важни тенденции</h3><p class="current-series-context">Поредни завършили срещи от избраната история</p>'+delayed+
+  (body?'<div class="trend-groups'+(new Set(d.tendencies.filter(v=>v.scope!=='both').map(v=>v.scope)).size===1?' single-club':'')+'">'+body+'</div>':'<p class="footnote">Няма потвърдена скорошна поредица от поне 3 мача.</p>')+
+  '<p class="footnote trend-caption">Само наличните първенства и УЕФА, преди този мач. Това са факти от историята, не вероятности за следващия резултат.</p></section>';
 }
 function rateBar(sample,alt=false){return sample.n?'<div class="observed-rate"><span class="bar-track"><i class="bar-fill '+(alt?'alt':'')+'" style="width:'+(sample.hits/sample.n*100)+'%"></i></span><b>'+pct(sample.hits/sample.n)+'</b><small>'+sample.hits+'/'+sample.n+'</small></div>':'<span class="extra-missing">няма данни</span>';}
 function statsHTML(d){
@@ -238,43 +235,55 @@ function historyHTML(rows,team,keyTeam){
  }).join('');
 }
 function reading(d){
- const h=d.home,a=d.away,p=d.model?.distribution?.probs,out=[];
+ const h=d.home,a=d.away,p=d.model?.distribution?.probs,out=[],minimum=Math.min(h.form.n,a.form.n);
  if(p&&valid(p.homeWin)&&valid(p.awayWin)&&valid(p.draw)){
-  const gap=p.homeWin-p.awayWin,leader=gap>=0?h:a,win=gap>=0?p.homeWin:p.awayWin;
-  let text=Math.abs(gap)<.08?'Моделът вижда близък мач и няма отчетлив фаворит. Шансовете за победа са '+pct(p.homeWin)+' за '+h.name+' и '+pct(p.awayWin)+' за '+a.name+'.':
-   leader.name+(win<.5?' има леко предимство според модела':' е фаворит според модела')+' — '+pct(win)+' за победа.';
-  if(Math.abs(gap)>=.08&&win<.5)text+=' Победата му остава по-малко вероятна от всички останали изходи, взети заедно.';
-  else if(Math.abs(gap)>=.08&&win<.65)text+=' Предимството оставя съществен риск от равенство или изненада.';
+  const gap=p.homeWin-p.awayWin,leader=gap>=0?h:a,other=gap>=0?a:h,win=gap>=0?p.homeWin:p.awayWin;
+  let text=Math.abs(gap)<.08?'Моделът вижда близък мач и няма отчетлив фаворит: '+h.name+' има '+pct(p.homeWin)+' за победа, '+a.name+' — '+pct(p.awayWin)+', а равенството е '+pct(p.draw)+'.':
+   leader.name+(win<.5?' има леко предимство според модела':' е фаворит според модела')+' — '+pct(win)+' за победа. Равенството е '+pct(p.draw)+', а успехът на '+other.name+' — '+pct(gap>=0?p.awayWin:p.homeWin)+'.';
+  if(Math.abs(gap)>=.08)text+=win<.5?' Победата му остава по-малко вероятна от останалите изходи, взети заедно. Това е мач, в който чистата победа носи съществен риск въпреки преднината.':win<.65?' Преднината е видима, но оставя достатъчно място за равенство или изненада.':' Картината дава по-ясна преднина на този отбор, без да изключва другите изходи.';
+  else text+=' При такава малка разлика посоката за краен победител изисква повече предпазливост от самото сравнение на имената.';
   out.push({label:'Как изглежда мачът',text});
- }else out.push({label:'Как изглежда мачът',text:d.international?'За този европейски мач няма моделни проценти. Прочитът използва последните налични срещи за 90 минути.':'Няма достатъчно съпоставима история за моделна оценка на този мач.'});
- const minimum=Math.min(h.form.n,a.form.n);
- if(minimum<5){out.push({label:'Какво показва формата',text:'Налични са '+h.form.n+' срещи за '+h.name+' и '+a.form.n+' за '+a.name+'. Това е малка извадка за общ извод.'});}
+ }else out.push({label:'Как изглежда мачът',text:d.international?'За този европейски мач няма моделни проценти. Прочитът използва последните налични официални срещи за 90 минути, за да сравни формата и начина, по който двата отбора вкарват и допускат.':'Няма достатъчно съпоставима история за моделна оценка. Наличните резултати дават контекст, но не стигат за надеждно определяне на фаворит.'});
+ if(minimum<5){out.push({label:'Какво показва формата',text:'Налични са '+h.form.n+' срещи за '+h.name+' и '+a.form.n+' за '+a.name+'. Това е малка извадка за общ извод. Един необичаен резултат може силно да промени средните, затова тук прочитът остава ограничен.'});}
  else {
   const pointGap=h.form.points/h.form.n-a.form.points/a.form.n,better=pointGap>0?h:a;
-  let text=Math.abs(pointGap)<.25?'Последните резултати на двата отбора са близки.':better.name+' е в по-добра резултатна форма в разглежданите срещи.';
-  if(p&&Math.abs(pointGap)>=.25&&Math.abs(p.homeWin-p.awayWin)>=.08&&Math.sign(pointGap)!==Math.sign(p.homeWin-p.awayWin))text+=' Това се разминава с фаворита на модела и е причина за по-предпазлив избор.';
+  let text=h.name+' има '+h.form.wins+' победи, '+h.form.draws+' равенства и '+h.form.losses+' загуби в '+h.form.n+' мача. При '+a.name+' балансът е '+a.form.wins+' победи, '+a.form.draws+' равенства и '+a.form.losses+' загуби в '+a.form.n+' срещи. ';
+  text+=Math.abs(pointGap)<.25?'Като спечелени точки на мач формата е близка и не отделя ясно единия отбор.':better.name+' събира повече точки средно и идва с по-добра резултатна форма в тази извадка.';
+  if(p&&Math.abs(pointGap)>=.25&&Math.abs(p.homeWin-p.awayWin)>=.08&&Math.sign(pointGap)!==Math.sign(p.homeWin-p.awayWin))text+=' Това се разминава с фаворита на модела: текущата форма и по-широката моделна история дават различен акцент.';
   const changed=[h,a].filter(t=>t.form.recentFive!==null&&t.form.previousFive!==null&&Math.abs(t.form.recentFive-t.form.previousFive)>=4);
-  if(changed.length){const t=changed.sort((x,y)=>Math.abs(y.form.recentFive-y.form.previousFive)-Math.abs(x.form.recentFive-x.form.previousFive))[0];
-   text+=' '+t.name+' има '+t.form.recentFive+' точки в последните 5 мача срещу '+t.form.previousFive+' в предишните 5.';}
-  else {const scoring=t=>t.form.games.filter(g=>g.gf>0).length;
-   text+=' '+h.name+' бележи в '+scoring(h)+'/'+h.form.n+' мача, а '+a.name+' — в '+scoring(a)+'/'+a.form.n+'.';}
-  out.push({label:'Какво показва формата',text});
-  const hr=h.overall.o25/h.overall.n,ar=a.overall.o25/a.overall.n;
-  let goals=p&&valid(p.over25)?Math.abs(p.over25-.5)<=.07?'Границата от 2,5 гола е почти равностойна по модела: '+pct(p.over25)+' за над 2,5 и '+pct(1-p.over25)+' за под 2,5.':
-   p.over25>.5?'Моделът накланя мача към поне 3 гола ('+pct(p.over25)+').':'Моделът дава предимство на най-много 2 гола ('+pct(1-p.over25)+').':'';
-  if(Math.abs(hr-ar)>=.25)goals+=' При отборите има разминаване: поне 3 гола в '+h.overall.o25+'/'+h.overall.n+' срещи на '+h.name+' и '+a.overall.o25+'/'+a.overall.n+' на '+a.name+'.';
-  else if(hr>=.7&&ar>=.7)goals+=' Скорошните мачове и на двата отбора също често минават тази граница.';
-  else if(hr<=.3&&ar<=.3)goals+=' Скорошните мачове и на двата отбора по-често остават под тази граница.';
-  else if(!goals)goals='Историята за головете е смесена: поне 3 гола в '+h.overall.o25+'/'+h.overall.n+' мача на '+h.name+' и '+a.overall.o25+'/'+a.overall.n+' на '+a.name+'.';
-  out.push({label:'Посока за головете',text:goals.trim()});
+  if(changed.length){const t=changed.sort((x,y)=>Math.abs(y.form.recentFive-y.form.previousFive)-Math.abs(x.form.recentFive-x.form.previousFive))[0];text+=' При '+t.name+' има и промяна в темпото: '+t.form.recentFive+' точки от последните 5 мача срещу '+t.form.previousFive+' от предишните 5.';}
+  out.push({label:'Форма и постоянство',text});
+  if(h.local?.n>=4&&a.local?.n>=4){
+   const hv=h.local,av=a.local;
+   let venue='На свой терен '+h.name+' вкарва средно '+fmt(hv.gf,2)+' и допуска '+fmt(hv.ga,2)+' гола в '+hv.n+' домакинства. Като гост '+a.name+' бележи '+fmt(av.gf,2)+' и допуска '+fmt(av.ga,2)+' в '+av.n+' гостувания. ';
+   if(hv.gf>=1.5&&av.ga>=1.5)venue+='Атаката на домакина и допусканите от госта голове насочват вниманието към това дали '+h.name+' ще намери път към гола.';
+   else if(av.gf>=1.5&&hv.ga>=1.5)venue+='Гостът има основания да търси гол: атакуващите му числа се срещат с допускаща голове домакинска защита.';
+   else if(hv.gf+hv.ga<2.5&&av.gf+av.ga<2.5)venue+='И двата профила по място на игра са по-сдържани откъм общ брой голове.';
+   else venue+='Тук мястото на игра добавя контекст към общата форма; извадките са срещу различни съперници и не са пряк сблъсък помежду им.';
+   out.push({label:'Домакинство и гостуване',text:venue});
+  }
+  const scoring=t=>t.form.games.filter(g=>g.gf>0).length,hr=h.overall.o25/h.overall.n,ar=a.overall.o25/a.overall.n;
+  let goals=h.name+' бележи в '+scoring(h)+'/'+h.form.n+' мача, а '+a.name+' — в '+scoring(a)+'/'+a.form.n+'. Поне три гола общо има съответно в '+h.overall.o25+'/'+h.overall.n+' и '+a.overall.o25+'/'+a.overall.n+' срещи. ';
+  if(p&&valid(p.over25))goals+=Math.abs(p.over25-.5)<=.07?'Границата от 2,5 гола е почти равностойна по модела: '+pct(p.over25)+' за над 2,5 и '+pct(1-p.over25)+' за под 2,5. Малката разлика не дава убедителен аргумент сама по себе си.':p.over25>.5?'Моделът накланя мача към поне три гола ('+pct(p.over25)+').':'Моделът дава предимство на най-много два гола ('+pct(1-p.over25)+').';
+  if(Math.abs(hr-ar)>=.25)goals+=' Двата отбора обаче имат различен голов профил напоследък; общият избор трябва да отчете това разминаване.';
+  else if(hr>=.7&&ar>=.7)goals+=' Скорошните резултати и на двата отбора подкрепят по-резултатна картина.';
+  else if(hr<=.3&&ar<=.3)goals+=' Скорошните резултати и на двата отбора по-често остават под тази граница.';
+  out.push({label:'Как може да се развие головият мач',text:goals});
+  const observed=[h,a].filter(t=>t.xg.own.n>=5);
+  if(observed.length){let text=observed.map(t=>t.name+' създава средно '+fmt(t.xg.own.mean,2)+' наблюдаван xG и вкарва '+fmt(t.xg.own.goals,2)+' гола в същите '+t.xg.own.n+' срещи'+(t.xg.against.n>=5?'; допуска '+fmt(t.xg.against.mean,2)+' xG в '+t.xg.against.n+' мача':'')+'.').join(' ');
+   const gap=observed.find(t=>Math.abs(t.xg.own.goals-t.xg.own.mean)>=.4);
+   text+=gap?' При '+gap.name+' реалните голове са '+(gap.xg.own.goals>gap.xg.own.mean?'над':'под')+' наблюдавания xG. Това е причина резултатността да се чете внимателно, а не обещание за обрат в следващия мач.':' Няма голямо разминаване между тези голове и наблюдавания xG в сравнените извадки.';
+   out.push({label:'Какво добавят положенията',text});
+  }
  }
  const risks=[];
- for(const t of [h,a])if(t.pendingLatest)risks.push(t.pendingLatest.state==='unavailable'?'Допълнителните данни за '+t.name+' не са заредени; текуща тенденция не се заявява.':
-  t.pendingLatest.state==='conflict'?'Резултатът на '+t.name+' се уточнява; текуща тенденция не се заявява.':'За '+t.name+' се очаква резултат от по-нов мач; формата още не го включва.');
+ for(const t of [h,a])if(t.pendingLatest)risks.push(t.pendingLatest.state==='unavailable'?'Допълнителните данни за '+t.name+' не са заредени; текуща тенденция не се заявява.':t.pendingLatest.state==='conflict'?'Резултатът на '+t.name+' се уточнява; текуща тенденция не се заявява.':'За '+t.name+' се очаква резултат от по-нов мач; формата още не го включва.');
  if(h.proxy||a.proxy)risks.push('Има нееднозначна клубна идентичност; архивите не се обединяват по предположение.');
  if([h,a].some(t=>t.all[0]&&Date.parse((d.asOfDate||d.fixture[3])+'T12:00:00Z')-Date.parse(t.all[0][3]+'T12:00:00Z')>30*86400000))risks.push('За единия отбор липсва скорошен резултат от последните 30 дни.');
- const xg=[h,a].filter(t=>t.xg.own.n>=5&&Math.abs(t.xg.own.goals-t.xg.own.mean)>=.4).sort((x,y)=>Math.abs(y.xg.own.goals-y.xg.own.mean)-Math.abs(x.xg.own.goals-x.xg.own.mean))[0];
- if(!risks.length&&xg)risks.push(xg.name+' '+(xg.xg.own.goals>xg.xg.own.mean?'вкарва повече':'вкарва по-малко')+' от наблюдавания xG: '+fmt(xg.xg.own.goals,2)+' гола срещу '+fmt(xg.xg.own.mean,2)+' xG средно в едни и същи '+xg.xg.own.n+' мача. Разликата сама по себе си не предсказва следващия резултат.');
+ if(!risks.length&&minimum>=5){const signal=d.tendencies.find(v=>v.sides.some(t=>t.measure.currentStreak>=4));
+  if(signal)risks.push(trendExplanation(signal)+' Поредицата описва последните налични мачове и трябва да се чете заедно с целия профил, а не като гаранция за продължение.');
+  else risks.push('Най-полезно е предимството в резултата да се прецени отделно от посоката за головете. Основната прогноза и алтернативите отдолу сравняват точно тези различни сценарии с наличната обща подкрепа.');
+ }
  if(risks.length)out.push({label:'Какво изисква внимание',text:risks.join(' ')});
  return out;
 }
@@ -330,7 +339,7 @@ function brief(d,{status={},standings=null,keyTeam,generatedAt=new Date().toISOS
    'Наблюдаван xGA: '+fmt(t.xg.against.mean,2)+' в '+t.xg.against.n+'/'+t.xg.possible+' мача; допуснати в същите срещи '+fmt(t.xg.against.goals,2)+' средно.',
    'Последни резултати · домакин : гост · най-новите първи:',...t.all.map(row=>row[3]+' · '+score(row)+(row[13]?.PHASE==='QUALIFYING'?' · квалификации':'')+' · '+detailStats(row).map(s=>s.label+' '+fmt(s.home,s.label==='xG'?2:0)+':'+fmt(s.away,s.label==='xG'?2:0)).join('; ')),'');
  }
- out.push('ВАЖНИ ТЕНДЕНЦИИ · СКОРОШНИ ЧЕСТОТИ, НЕ МОДЕЛНИ ВЕРОЯТНОСТИ',...(d.tendencies.length?d.tendencies.flatMap(v=>[v.title+' · '+trendExplanation(v),...v.sides.map(s=>s.sentence+' · '+s.from+' → '+s.until+' · мачове: '+s.rows.map(r=>r[3]+' '+score(r)+' ('+r[0]+')').join('; '))]):['Няма достатъчно ясна скорошна тенденция.']),
+ out.push('ВАЖНИ ТЕНДЕНЦИИ · ОТДЕЛНО ЗА ОТБОРИТЕ И ОБЩИ ПОСЛЕДОВАТЕЛНОСТИ',...(d.tendencies.length?d.tendencies.flatMap(v=>[v.title+' · '+trendExplanation(v),...v.sides.map(s=>s.sentence+' · '+s.from+' → '+s.until+' · мачове: '+s.rows.map(r=>r[3]+' '+score(r)+' ('+r[0]+')').join('; '))]):['Няма достатъчно ясна скорошна тенденция.']),
   '', 'ДИРЕКТНИ СРЕЩИ · СЪЩОТО СЪСТЕЗАНИЕ · 90 МИНУТИ',...(direct.length?direct.map(r=>r[3]+' · '+score(r)):['Няма налични.']),
   '',...standingsBrief(standings,f[0],[d.home.name,d.away.name],keyTeam),
   '', 'АКТУАЛНОСТ И ОГРАНИЧЕНИЯ',
