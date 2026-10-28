@@ -242,7 +242,7 @@ function reading(d){
  if(p&&valid(p.homeWin)&&valid(p.awayWin)&&valid(p.draw)){
   const gap=p.homeWin-p.awayWin,leader=gap>=0?h:a,win=gap>=0?p.homeWin:p.awayWin;
   let text=Math.abs(gap)<.08?'Моделът вижда близък мач и няма отчетлив фаворит. Шансовете за победа са '+pct(p.homeWin)+' за '+h.name+' и '+pct(p.awayWin)+' за '+a.name+'.':
-   leader.name+(win<.5?' има леко предимство':' е фаворит според модела')+' — '+pct(win)+' за победа.';
+   leader.name+(win<.5?' има леко предимство според модела':' е фаворит според модела')+' — '+pct(win)+' за победа.';
   if(Math.abs(gap)>=.08&&win<.5)text+=' Победата му остава по-малко вероятна от всички останали изходи, взети заедно.';
   else if(Math.abs(gap)>=.08&&win<.65)text+=' Предимството оставя съществен риск от равенство или изненада.';
   out.push({label:'Как изглежда мачът',text});

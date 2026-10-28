@@ -48,7 +48,7 @@
  if(!(await desktop.locator('#matchContent').textContent()).includes('Двоен шанс 1X'))throw new Error('Missing double chance');
  const chip=desktop.locator('.form-chip').first();await chip.click();
  if((await desktop.locator('.form-inspection').first().textContent())!==(await chip.getAttribute('title')))throw new Error('Touched form chip does not reveal its match');
- if(!(await desktop.locator('.match-reading').textContent()).includes('модела'))throw new Error('Descriptive intro missing existing model estimates');
+ if(!/модел/i.test(await desktop.locator('.match-reading').textContent()))throw new Error('Descriptive intro missing existing model estimates');
  if((await desktop.locator('.form-curve svg').count())!==2||(await desktop.locator('.form-points').count()))throw new Error('Signed form curves did not replace the two five-game bars');
  stats.formChips=await desktop.locator('.form-overview').first().locator('.form-chip').count();
  await desktop.locator('.duel').screenshot({path:'scout-form.png'});
