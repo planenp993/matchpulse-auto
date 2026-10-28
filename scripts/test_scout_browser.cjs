@@ -48,7 +48,7 @@
  if(!(await desktop.locator('#matchContent').textContent()).includes('Двоен шанс 1X'))throw new Error('Missing double chance');
  const chip=desktop.locator('.form-chip').first();await chip.click();
  if((await desktop.locator('.form-inspection').first().textContent())!==(await chip.getAttribute('title')))throw new Error('Touched form chip does not reveal its match');
- if(!(await desktop.locator('.match-reading').textContent()).includes('модела'))throw new Error('Descriptive intro missing existing model estimates');
+ if(!/модел/i.test(await desktop.locator('.match-reading').textContent()))throw new Error('Descriptive intro missing existing model estimates');
  if((await desktop.locator('.form-curve svg').count())!==2||(await desktop.locator('.form-points').count()))throw new Error('Signed form curves did not replace the two five-game bars');
  stats.formChips=await desktop.locator('.form-overview').first().locator('.form-chip').count();
  await desktop.locator('.duel').screenshot({path:'scout-form.png'});
@@ -234,7 +234,7 @@
    return {n:d.home.all.length,europe:d.home.all.filter(r=>MatchpulseArchive.european(r)).length,
     modelSame:JSON.stringify(d.model.distribution.probs)===JSON.stringify(m.distribution.probs),
     sourceIsolated:profile(activeMatch).home.all.every(r=>r[0]===activeMatch[0]),
-    allCurrent:d.tendencies.every(v=>v.sides.every(s=>s.rows.every(r=>r[3]>=new Date(Date.parse(d.asOfDate+'T12:00:00Z')-30*86400000).toISOString().slice(0,10))))};
+    allCurrent:d.tendencies.every(v=>v.sides.every(s=>s.rows.every(r=>r[3]>=new Date(Date.parse(d.asOfDate+'T12:00:00Z')-90*86400000).toISOString().slice(0,10))))};
   });
   if(!recent.europe||!recent.modelSame||!recent.sourceIsolated||!recent.allCurrent)throw new Error('Recent UEFA form leaked into the model, or active runs include older periods');
   const point=desktop.locator('.form-dot').last();await point.click();

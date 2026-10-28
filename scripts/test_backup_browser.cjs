@@ -30,10 +30,11 @@
  await target.locator('#backupApply').click();
  assert.deepEqual(await target.evaluate(()=>MatchpulseBackup.read(localStorage)),{picks:seed.picks,prices:seed.prices});
  assert.ok((await target.locator('.pick-card').textContent()).includes('62%'));
- await target.locator('[data-view="selections"]').click();
- await target.waitForFunction(()=>document.getElementById('selectionList').getAttribute('aria-busy')==='false'&&document.querySelector('.selection-primary'));
- const card=target.locator('.selection-card').filter({has:target.locator('[data-selection-market="1"]')}).filter({hasText:'Milan'});
+ await target.evaluate(async key=>{await MatchpulseLoading.ensureExtras();openMatch(fixtures.find(f=>Scout.keyFixture(f)===key));},seed.key);
+ await target.waitForFunction(()=>document.getElementById('matchPlan')?.getAttribute('aria-busy')==='false'&&document.querySelector('#matchPlan .selection-primary'));
+ const card=target.locator('#matchPlan');
  assert.ok((await card.textContent()).includes('Въведена от теб'));assert.ok((await card.textContent()).includes('Стара / непотвърдена цена'));
+ await target.locator('#closeMatch').click();
  await target.locator('[data-view="picks"]').click();
  await target.locator('#backupFile').setInputFiles(file(raw));await target.waitForFunction(()=>!document.getElementById('backupPreview').classList.contains('hidden'));
  assert.equal(await target.locator('#backupApply').isEnabled(),false);await target.locator('#backupCancel').click();

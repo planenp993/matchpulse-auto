@@ -43,7 +43,7 @@ test('Source profile excludes same-day, future and awarded matches from every do
 test('Directional result events are phrased from the actual club perspective',()=>{
  assert.equal(A.eventText('1X','home'),'е без загуба');assert.equal(A.eventText('1X','away'),'е без победа');
  assert.equal(A.eventText('2','home'),'губи');assert.equal(A.eventText('home2','away'),'допуска поне 2 гола');
- const d=dossier(),html=A.trendsHTML(d);assert.match(html,/поредни мача/);assert.ok(!html.includes('streak-table'));
+ const d=dossier(),html=A.trendsHTML(d);assert.match(html,/Данни зад тенденцията/);assert.ok(!html.includes('streak-table'));assert.match(html,/Alpha печели|Alpha е без загуба/);
  assert.ok(d.tendencies.slice(0,4).every((v,i,arr)=>arr.findIndex(x=>x.family===v.family)===i));
 });
 test('Missing most-recent statistic interrupts a streak instead of borrowing an older observation',()=>{
@@ -82,12 +82,12 @@ test('Form curve rises on wins, remains level on draws and falls on losses witho
  assert.deepEqual(curve.map(x=>x.value),[1,1,0]);assert.equal(JSON.stringify(f),before);
  const html=A.formHTML({form:f});assert.match(html,/<svg/);assert.match(html,/polyline/);assert.ok(!html.includes('Предишни 5'));assert.ok(!html.includes('form-points'));
 });
-test('Current tendencies are dated live runs only, exclude old-season runs and honor missing newest values',()=>{
+test('Tendencies use recent supported cohorts and hide date trails in expandable evidence',()=>{
  const recent=history().slice(0,5),d=dossier(recent);
- const current=A.trendsHTML(d);assert.ok(current.includes('active-match-date'));assert.ok(!current.includes('event-trail'));assert.ok(!current.includes('trail-no'));
- for(const v of d.tendencies)for(const side of v.sides){assert.equal(side.rows.length,side.measure.currentStreak);assert.equal(side.until,side.rows[0][3]);}
+ const current=A.trendsHTML(d);assert.ok(!current.includes('active-match-date'));assert.ok(!current.includes('✓'));assert.ok(current.includes('series-proof'));
+ for(const v of d.tendencies)for(const side of v.sides){assert.equal(side.rows.length,side.measure.total);assert.equal(side.until,side.rows[0][3]);assert.ok(side.measure.n>=5);}
  const old=dossier(history().map(r=>{const q=[...r];q[3]=r[3].replace('2026-10','2026-05');return q;}));
- assert.equal(old.tendencies.length,0);assert.match(A.trendsHTML(old),/Няма потвърдена продължаваща серия/);
+ assert.equal(old.tendencies.length,0);assert.match(A.trendsHTML(old),/Няма достатъчно ясна скорошна тенденция/);
 });
 test('A pending newer result suppresses the affected club current runs without fabricating a loss',()=>{
  const d=dossier(),p={fixture:d.fixture,windowSize:10,home:{...d.home,pendingLatest:{date:'2026-10-27'}},away:d.away};
@@ -99,5 +99,26 @@ test('Intro interprets close model outcomes and a balanced total without inventi
  const d=dossier(),prob={...d.model.distribution.probs,homeWin:.38,draw:.25,awayWin:.37,over25:.49};
  d.model={...d.model,distribution:{probs:prob}};const text=A.intro(d).join(' ');
  assert.match(text,/няма отчетлив фаворит/);assert.match(text,/49% за над 2,5 и 51% за под 2,5/);
- assert.ok(!text.includes('Съществуващият модел'));assert.equal((A.introHTML(d).match(/<p>/g)||[]).length,3);
+ assert.ok(!text.includes('Съществуващият модел'));assert.equal((A.introHTML(d).match(/class="reading-point"/g)||[]).length,A.reading(d).length);
+});
+test('Three recent hits alone cannot promote a weak whole-window trend',()=>{
+ const rows=history().map((r,i)=>{const x=structuredClone(r);x[7]=i<3?3:0;x[8]=0;return x;}),d=dossier(rows);
+ assert.ok(d.tendencies.every(t=>t.market!=='o25'));
+});
+test('Contradictory clubs are shown as a disagreement rather than two independent confirmations',()=>{
+ const d=dossier(),split=d.tendencies.find(t=>t.kind==='split');assert.ok(split);
+ assert.ok(split.sides.some(s=>s.measure.rate<=.35));assert.ok(split.sides.some(s=>s.measure.rate>=.75));
+ assert.match(A.trendsHTML(d),/Разминаване/);assert.ok(d.tendencies.length<=6);
+ assert.equal(new Set(d.tendencies.map(t=>t.family)).size,d.tendencies.length);
+});
+test('Missing newest statistics block that market; small and stale cohorts remain unpromoted',()=>{
+ const rows=history();for(const r of rows)r[13]={HS:20,AS:15};rows[0][13]={HS:20};
+ const d=dossier(rows);assert.ok(d.tendencies.every(t=>t.group!=='shots'));
+ assert.equal(dossier(history().slice(0,4)).tendencies.length,0);
+ const old=history().map(r=>{const x=[...r];x[3]=x[3].replace('2026-10','2026-08');return x;});assert.equal(dossier(old).tendencies.length,0);
+});
+test('Readable analysis states a sub-50% favorite modestly and keeps the copied prose identical',()=>{
+ const d=dossier();d.model={...d.model,distribution:{probs:{...d.model.distribution.probs,homeWin:.47,draw:.27,awayWin:.26}}};
+ const prose=A.intro(d);assert.match(prose[0],/леко предимство/);assert.match(prose[0],/по-малко вероятна/);
+ const copied=A.brief(d,{keyTeam:S.keyTeam});for(const paragraph of prose)assert.ok(copied.includes(paragraph));
 });
