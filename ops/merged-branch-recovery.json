@@ -1,0 +1,189 @@
+{
+  "checked_at": "2026-10-28",
+  "repository": "planenp993/matchpulse-auto",
+  "note": "Exact current heads matched already merged pull requests. Keep this recovery map; never apply to a branch whose head has changed.",
+  "branches": [
+    {
+      "branch": "matchpulse-scout-v1",
+      "head_sha": "58381b0321d29981d5f984bbc43950b2e8330e1d",
+      "merged_pr": 1,
+      "merged_at": "2026-10-25T08:20:21Z",
+      "pr_url": "https://github.com/planenp993/matchpulse-auto/pull/1"
+    },
+    {
+      "branch": "scout-database-trend-audit-v3",
+      "head_sha": "1fda606d756f62bcdcb1585827fb60bde5d761db",
+      "merged_pr": 4,
+      "merged_at": "2026-10-25T15:33:51Z",
+      "pr_url": "https://github.com/planenp993/matchpulse-auto/pull/4"
+    },
+    {
+      "branch": "scout-elo-window-2",
+      "head_sha": "ab1f7af2be9226ac5c3fdf5705b1f4e22361c067",
+      "merged_pr": 3,
+      "merged_at": "2026-10-25T14:38:13Z",
+      "pr_url": "https://github.com/planenp993/matchpulse-auto/pull/3"
+    },
+    {
+      "branch": "scout-full-analysis-v1",
+      "head_sha": "983ea4f61fc61b8d4287efd793ee1bced9c78679",
+      "merged_pr": 2,
+      "merged_at": "2026-10-25T14:16:47Z",
+      "pr_url": "https://github.com/planenp993/matchpulse-auto/pull/2"
+    },
+    {
+      "branch": "work/analysis-readability",
+      "head_sha": "10bff509f26d8fd870ff59e475ab33e2ab7c0649",
+      "merged_pr": 24,
+      "merged_at": "2026-10-27T20:48:05Z",
+      "pr_url": "https://github.com/planenp993/matchpulse-auto/pull/24"
+    },
+    {
+      "branch": "work/calendar-coverage",
+      "head_sha": "0c2b8e14a6f9fd588c4d9714e95b2379ce34925b",
+      "merged_pr": 6,
+      "merged_at": "2026-10-26T07:29:32Z",
+      "pr_url": "https://github.com/planenp993/matchpulse-auto/pull/6"
+    },
+    {
+      "branch": "work/calendar-market-acceptance",
+      "head_sha": "6e88aa1ce128696d34cc0896ddd9f87919e87008",
+      "merged_pr": 19,
+      "merged_at": "2026-10-27T11:05:11Z",
+      "pr_url": "https://github.com/planenp993/matchpulse-auto/pull/19"
+    },
+    {
+      "branch": "work/calendar-odds",
+      "head_sha": "bafc26a72f2a9641ba0c0aa76f11f416425f867b",
+      "merged_pr": 18,
+      "merged_at": "2026-10-27T10:54:01Z",
+      "pr_url": "https://github.com/planenp993/matchpulse-auto/pull/18"
+    },
+    {
+      "branch": "work/current-form",
+      "head_sha": "c068e6f3580377a82740d6213163e563a5542e1d",
+      "merged_pr": 25,
+      "merged_at": "2026-10-27T21:30:38Z",
+      "pr_url": "https://github.com/planenp993/matchpulse-auto/pull/25"
+    },
+    {
+      "branch": "work/data-reliability",
+      "head_sha": "6d84f916c1c849ee277f3d403a99056b757b7928",
+      "merged_pr": 16,
+      "merged_at": "2026-10-27T09:56:43Z",
+      "pr_url": "https://github.com/planenp993/matchpulse-auto/pull/16"
+    },
+    {
+      "branch": "work/data-reliability-acceptance",
+      "head_sha": "c9d4d3b965a845bb87fae8b9be9d456dcc498535",
+      "merged_pr": 17,
+      "merged_at": "2026-10-27T10:06:26Z",
+      "pr_url": "https://github.com/planenp993/matchpulse-auto/pull/17"
+    },
+    {
+      "branch": "work/diary-table-format",
+      "head_sha": "0d8e36fb7915d9d1e93efa77268d979366667edb",
+      "merged_pr": 13,
+      "merged_at": "2026-10-26T15:02:05Z",
+      "pr_url": "https://github.com/planenp993/matchpulse-auto/pull/13"
+    },
+    {
+      "branch": "work/europe-identity-acceptance",
+      "head_sha": "3033ef62c653fe7ca1e5e31bef7f7ed53ddf4011",
+      "merged_pr": 21,
+      "merged_at": "2026-10-27T14:18:47Z",
+      "pr_url": "https://github.com/planenp993/matchpulse-auto/pull/21"
+    },
+    {
+      "branch": "work/model-comparison",
+      "head_sha": "b9773fc5ed2233b7b7e401170f821aead906220f",
+      "merged_pr": 10,
+      "merged_at": "2026-10-26T13:33:37Z",
+      "pr_url": "https://github.com/planenp993/matchpulse-auto/pull/10"
+    },
+    {
+      "branch": "work/model-quality",
+      "head_sha": "3f55c8fd85001c41b1b3a77caf651ff4a5003d71",
+      "merged_pr": 7,
+      "merged_at": "2026-10-26T08:14:17Z",
+      "pr_url": "https://github.com/planenp993/matchpulse-auto/pull/7"
+    },
+    {
+      "branch": "work/paired-model-diary",
+      "head_sha": "6a4ac12a6cde359e9d7dd6cd7c86603acf764600",
+      "merged_pr": 11,
+      "merged_at": "2026-10-26T14:40:07Z",
+      "pr_url": "https://github.com/planenp993/matchpulse-auto/pull/11"
+    },
+    {
+      "branch": "work/paired-ui-cache",
+      "head_sha": "08243b646326c397d148fed89dddae54dfa017d1",
+      "merged_pr": 12,
+      "merged_at": "2026-10-26T14:50:55Z",
+      "pr_url": "https://github.com/planenp993/matchpulse-auto/pull/12"
+    },
+    {
+      "branch": "work/prospective-diary",
+      "head_sha": "88ce45c4f479d0942212e28b2634c99edb6f1e19",
+      "merged_pr": 9,
+      "merged_at": "2026-10-26T09:38:07Z",
+      "pr_url": "https://github.com/planenp993/matchpulse-auto/pull/9"
+    },
+    {
+      "branch": "work/results-europe",
+      "head_sha": "3edb22bb485dd93774a753da4a283d6586a98426",
+      "merged_pr": 20,
+      "merged_at": "2026-10-27T14:07:30Z",
+      "pr_url": "https://github.com/planenp993/matchpulse-auto/pull/20"
+    },
+    {
+      "branch": "work/resume-scout-v4",
+      "head_sha": "1265f951072128e023a2c14e4fc594c373e53990",
+      "merged_pr": 5,
+      "merged_at": "2026-10-26T05:10:36Z",
+      "pr_url": "https://github.com/planenp993/matchpulse-auto/pull/5"
+    },
+    {
+      "branch": "work/scanner-ranking",
+      "head_sha": "66dc201dc2d65ccc404b294f28afd16b67286e86",
+      "merged_pr": 8,
+      "merged_at": "2026-10-26T08:41:40Z",
+      "pr_url": "https://github.com/planenp993/matchpulse-auto/pull/8"
+    },
+    {
+      "branch": "work/scanner-validation",
+      "head_sha": "237dc2596f6e98437b8f299189ab6cb622ebe9de",
+      "merged_pr": 15,
+      "merged_at": "2026-10-26T17:39:21Z",
+      "pr_url": "https://github.com/planenp993/matchpulse-auto/pull/15"
+    },
+    {
+      "branch": "work/selections",
+      "head_sha": "deddd64dabfbc06cb919a318c2fdff75b86dbe7c",
+      "merged_pr": 26,
+      "merged_at": "2026-10-27T22:48:30Z",
+      "pr_url": "https://github.com/planenp993/matchpulse-auto/pull/26"
+    },
+    {
+      "branch": "work/shot-contribution",
+      "head_sha": "7cfed6f9259f652a2cc4407e2b556e8fa6bbbff6",
+      "merged_pr": 14,
+      "merged_at": "2026-10-26T15:56:26Z",
+      "pr_url": "https://github.com/planenp993/matchpulse-auto/pull/14"
+    },
+    {
+      "branch": "work/standings",
+      "head_sha": "cb164d34e4a88bbdefd52177da7cc6c866e72e30",
+      "merged_pr": 22,
+      "merged_at": "2026-10-27T16:12:26Z",
+      "pr_url": "https://github.com/planenp993/matchpulse-auto/pull/22"
+    },
+    {
+      "branch": "work/standings-acceptance",
+      "head_sha": "0d636e204f80416dbd4f62500cdfac3b9ca8d3f7",
+      "merged_pr": 23,
+      "merged_at": "2026-10-27T16:22:46Z",
+      "pr_url": "https://github.com/planenp993/matchpulse-auto/pull/23"
+    }
+  ]
+}

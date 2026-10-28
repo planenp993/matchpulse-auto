@@ -142,7 +142,7 @@ function trendsHTML(d){
    '<details class="series-proof"><summary>Виж мачовете</summary>'+rows.map(row=>'<p>'+esc(row[3]+' · '+score(row)+' · '+row[2])+'</p>').join('')+'</details></div>';
  }).join('')+'</article>';
  const main=d.tendencies.slice(0,4).map(card).join(''),more=d.tendencies.slice(4);
- const delayed=['home','away'].filter(side=>d[side].pendingLatest).map(side=>'<p class="series-notice">'+esc(d[side].name)+(d[side].pendingLatest.state==='conflict'?': резултатът от '+esc(d[side].pendingLatest.date)+' се уточнява.':': очаква се резултат от по-нов мач ('+esc(d[side].pendingLatest.date)+').')+' Текущите серии са спрени до потвърждението.</p>').join('');
+ const delayed=['home','away'].filter(side=>d[side].pendingLatest).map(side=>'<p class="series-notice">'+esc(d[side].name)+(d[side].pendingLatest.state==='unavailable'?': допълнителните данни не са заредени.':d[side].pendingLatest.state==='conflict'?': резултатът от '+esc(d[side].pendingLatest.date)+' се уточнява.':': очаква се резултат от по-нов мач ('+esc(d[side].pendingLatest.date)+').')+' Текущите серии са спрени до потвърждението.</p>').join('');
  return '<section class="card tendencies"><h3>Важни тенденции</h3><p class="current-series-context">Продължаващи серии · последните '+CURRENT_DAYS+' дни · към '+esc(d.asOfDate||'')+'</p>'+delayed+
   (main||'<p class="footnote">Няма потвърдена продължаваща серия от поне 3 мача в актуалния период.</p>')+
   (more.length?'<details class="tendencies-more"><summary>Още актуални серии · '+more.length+'</summary>'+more.map(card).join('')+'</details>':'')+'</section>';
@@ -219,7 +219,7 @@ function intro(d){
   extra.push(t.name+' създава положения за средно '+fmt(x.own.mean,2)+' xG ('+x.own.n+' мача с данни) и допуска '+fmt(x.against.mean,2)+' xG ('+x.against.n+' мача).');}
  const active=d.tendencies[0]?.sides[0];
  if(active)extra.push(active.sentence+'; последната среща в серията е на '+active.until+'.');
- for(const t of [h,a])if(t.pendingLatest)extra.push(t.pendingLatest.state==='conflict'?'Резултатът на '+t.name+' от '+t.pendingLatest.date+' се уточнява; текуща серия не се заявява.':'За '+t.name+' очакваме резултат от по-нов мач на '+t.pendingLatest.date+'; формата още не го включва.');
+ for(const t of [h,a])if(t.pendingLatest)extra.push(t.pendingLatest.state==='unavailable'?'Допълнителните данни за '+t.name+' не са заредени; текуща серия не се заявява.':t.pendingLatest.state==='conflict'?'Резултатът на '+t.name+' от '+t.pendingLatest.date+' се уточнява; текуща серия не се заявява.':'За '+t.name+' очакваме резултат от по-нов мач на '+t.pendingLatest.date+'; формата още не го включва.');
  if(h.proxy||a.proxy)extra.push('Има нееднозначна клубна идентичност; различни архиви не се обединяват по предположение.');
  const oldest=[h.all[0]?.[3],a.all[0]?.[3]].filter(Boolean);
  if(oldest.some(date=>Date.parse((d.asOfDate||d.fixture[3])+'T12:00:00Z')-Date.parse(date+'T12:00:00Z')>CURRENT_DAYS*86400000))extra.push('За единия отбор няма скорошен резултат в последните 30 дни; стара поредица не се показва като актуална.');

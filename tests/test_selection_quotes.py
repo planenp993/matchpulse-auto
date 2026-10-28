@@ -59,3 +59,28 @@ class SelectionQuoteTests(unittest.TestCase):
             path.write_text('{}')
             with self.assertRaises(ValueError):
                 view.build(root, [ROW], {})
+
+    def test_reconfirmation_keeps_first_clock_and_only_refreshes_present_values(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            first, confirmed = '2026-10-25T07:00:00+00:00', '2026-10-28T08:00:00+00:00'
+            self.save(root, {'B365H': '1.8'}, stamp=first)
+            self.save(root, {'B365D': '3.5'}, stamp=first)
+            self.save(root, {'B365H': '1.8'}, stamp=confirmed)
+            prices = view.build(root, [ROW], {'last_quote_success_utc': confirmed})['fixtures'][registry.row_key(ROW)]
+            self.assertEqual(prices['1']['observed_at_utc'], first)
+            self.assertEqual(prices['1']['last_confirmed_at_utc'], confirmed)
+            self.assertEqual(prices['X']['last_confirmed_at_utc'], first)
+            self.assertEqual(prices['1']['confirmation_source_sha256'], 'a'*64)
+
+    def test_return_to_earlier_values_uses_latest_confirmation_without_rewriting_evidence(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            self.save(root, {'B365H': '1.8'}, stamp='2026-10-25T07:00:00+00:00')
+            self.save(root, {'B365H': '1.9'}, stamp='2026-10-26T07:00:00+00:00')
+            self.save(root, {'B365H': '1.8'}, stamp='2026-10-28T08:00:00+00:00')
+            self.save(root, {'B365H': '1.8'}, stamp='2026-10-24T07:00:00+00:00')
+            price = view.build(root, [ROW], {})['fixtures'][registry.row_key(ROW)]['1']
+            self.assertEqual(price['odds'], 1.8)
+            self.assertEqual(price['observed_at_utc'], '2026-10-25T07:00:00+00:00')
+            self.assertEqual(price['last_confirmed_at_utc'], '2026-10-28T08:00:00+00:00')

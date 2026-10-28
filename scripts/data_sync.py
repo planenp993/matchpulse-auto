@@ -31,6 +31,9 @@ REGISTRY = "data/match_registry.json"
 LINKS = "docs/data/match_links.json"
 HEALTH = "docs/data/data_health.json"
 MODES = ("auto", "full", "history", "calendar", "fixtures", "results", "europe", "standings", "publish")
+# Regular ticks are eight hours apart. Allow modest queue/runtime drift so a
+# slightly early next attempt does not accidentally skip a whole eight-hour slot.
+AUTO_REFRESH_HOURS = 7.5
 
 
 def utcnow():
@@ -83,13 +86,13 @@ def plan(status, mode, now):
     can_history = age(status.get("last_history_attempt_utc"), now) >= 2
     full = mode == "full" or mode == "auto" and full_due and can_history
     history = mode in ("full", "history") or mode == "auto" and (full or current_due and can_history)
-    calendar = mode in ("full", "calendar", "fixtures") or mode == "auto" and age(status.get("last_fixture_attempt_utc"), now) >= 8
+    calendar = mode in ("full", "calendar", "fixtures") or mode == "auto" and age(status.get("last_fixture_attempt_utc"), now) >= AUTO_REFRESH_HOURS
     window = quote_window(now)
     quotes = mode in ("full", "fixtures") or mode == "auto" and status.get("quote_window") != window and age(status.get("last_quote_attempt_utc"), now) >= 2
-    results = mode in ("full", "history", "results", "europe") or mode == "auto" and age(status.get("last_results_attempt_utc"), now) >= 8
-    europe_due = mode in ("full", "results", "europe") or mode == "auto" and age(status.get("last_europe_attempt_utc"), now) >= 8
+    results = mode in ("full", "history", "results", "europe") or mode == "auto" and age(status.get("last_results_attempt_utc"), now) >= AUTO_REFRESH_HOURS
+    europe_due = mode in ("full", "results", "europe") or mode == "auto" and age(status.get("last_europe_attempt_utc"), now) >= AUTO_REFRESH_HOURS
     europe_full = mode == "europe" or europe_due and not status.get("last_europe_backfill_success_utc")
-    tables = mode in ("full", "results", "europe", "standings") or mode == "auto" and age(status.get("last_standings_attempt_utc"), now) >= (2 if status.get("standings_refresh_status") in ("error","partial") else 8)
+    tables = mode in ("full", "results", "europe", "standings") or mode == "auto" and age(status.get("last_standings_attempt_utc"), now) >= (2 if status.get("standings_refresh_status") in ("error","partial") else AUTO_REFRESH_HOURS)
     return {"standings": tables, "results": results, "europe": europe_due, "europe_full": europe_full, "mode": mode, "history": bool(history), "full": bool(full), "calendar": calendar,
             "quotes": quotes, "quote_window": window, "history_targets": len(targets(today, full)) if history else 0}
 

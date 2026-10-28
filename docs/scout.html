@@ -5,7 +5,7 @@
   <meta name="theme-color" content="#0b1523">
   <meta name="description" content="Футболна програма, статистика и анализ на мачове.">
   <title>MATCHPULSE SCOUT · Футболни анализи</title>
-  <link rel="stylesheet" href="scout.css?v=d886c7603b62">
+  <link rel="stylesheet" href="scout.css?v=6e2a0bac2593">
 </head>
 <body>
 <div class="shell">
@@ -42,7 +42,7 @@
       <div class="scanner-toolbar">
         <label class="control-label">Пазар<select id="scanMarket"><option value="all" selected>Всички пазари</option><optgroup label="Голове"><option value="o15">Над 1,5</option><option value="o25">Над 2,5</option><option value="o35">Над 3,5</option><option value="u25">Под 2,5</option><option value="u35">Под 3,5</option><option value="btts">Гол/гол Да</option><option value="bttsNo">Гол/гол Не</option><option value="home2">Домакин 2+ / гост допуска 2+</option><option value="away2">Гост 2+ / домакин допуска 2+</option></optgroup><optgroup label="Резултат и двоен шанс"><option value="1">Победа на домакина</option><option value="X">Равен</option><option value="2">Победа на госта</option><option value="12">Без равен</option><option value="1X">Двоен шанс 1X</option><option value="X2">Двоен шанс X2</option></optgroup><optgroup label="Корнери"><option value="corners85">Над 8,5 корнера</option><option value="corners95">Над 9,5 корнера</option></optgroup><optgroup label="Картони"><option value="yellow35">Над 3,5 жълти</option><option value="yellow45">Над 4,5 жълти</option><option value="red05">Поне 1 червен</option></optgroup><optgroup label="Удари"><option value="shots215">Над 21,5 удара</option><option value="shots255">Над 25,5 удара</option><option value="target85">Над 8,5 точни</option></optgroup><optgroup label="Първо полувреме"><option value="ht05">Гол през първо полувреме</option><option value="ht15">2+ гола през първо полувреме</option></optgroup></select></label>
         <label class="control-label">Период<select id="scanWindow"><option value="1">Днес</option><option value="3" selected>3 дни</option><option value="7">7 дни</option></select></label>
-        <label class="control-label">Последни мачове<select id="researchWindow"><option value="5">5</option><option value="10" selected>10</option><option value="20">20</option></select></label>
+        <label class="control-label">Форма · последни мачове<select id="researchWindow"><option value="5">5</option><option value="10" selected>10</option><option value="20">20</option></select></label>
         <label class="control-label">Поредна серия<select id="scanStreak"><option value="3" selected>3+</option><option value="4">4+</option><option value="5">5+</option><option value="6">6+</option><option value="7">7+</option><option value="8">8+</option><option value="10">10+</option></select></label>
         <details class="scanner-more"><summary>Още филтри</summary><div class="scanner-more-grid">
           <label class="control-label">Първенство<select id="scanLeague"><option value="">Всички</option></select></label>
@@ -63,6 +63,7 @@
       <div class="diary-totals" id="diaryTotals"></div>
       <p class="footnote diary-note">Първите проценти се запазват преди мача. Резултатите се отчитат при обновяване на архива.</p>
       <div id="diaryScanner" class="footnote"></div>
+      <details class="card detail-card" id="selectionDiary"><summary>Отделен дневник на „Селекции“</summary><div id="selectionDiaryContent" class="coverage-content">Зарежда се при отваряне.</div></details>
       <details class="card detail-card"><summary>Качество по пазари</summary><div id="diaryQuality" class="coverage-scroll coverage-content">Очакват се първите резултати.</div></details>
       <div class="section-heading"><h2>Последни записи</h2><small class="timezone-label">Записани преди мача</small></div>
       <div id="diaryList"><div class="empty">Зареждане…</div></div>
@@ -79,9 +80,9 @@
           <button type="button" data-selection-period="7" aria-pressed="false">7 дни</button>
           <button type="button" data-selection-period="30" aria-pressed="false">30 дни</button>
         </div></div>
-        <div class="filterbar"><label class="control-label">Състезание<select id="selectionLeague"><option value="">Всички състезания</option></select></label>
+        <details class="selection-filters" id="selectionFilters" open><summary id="selectionFilterSummary">Филтри</summary><div class="filterbar"><label class="control-label">Състезание<select id="selectionLeague"><option value="">Всички състезания</option></select></label>
           <label class="control-label">Търси<input id="selectionSearch" type="search" placeholder="Отбор или лига" autocomplete="off"></label>
-          <label class="control-label">Покажи<select id="selectionQuality"><option value="all">Всички мачове</option><option value="main">С основна селекция</option><option value="price">С цена над моделната</option></select></label></div>
+          <label class="control-label">Покажи<select id="selectionQuality"><option value="all">Всички мачове</option><option value="main">С основна селекция</option><option value="price">С цена над моделната</option></select></label></div></details>
       </div>
       <div class="section-heading"><span id="selectionSummary" role="status">Подбор от наличните данни</span><small class="timezone-label">Часове: София</small></div>
       <p id="selectionTabNote" class="selection-intro"></p>
@@ -116,9 +117,10 @@
 <script src="scout-patterns.js"></script>
 <script src="scout-markets.js"></script>
 <script src="scout-archive.js?v=6bb2b510343d"></script>
+<script src="scout-health.js?v=63057d26e2f0"></script>
 <script src="scout-standings.js?v=3203c03c0852"></script>
-<script src="scout-analysis.js?v=50b706934372"></script>
-<script src="scout-selections.js?v=73955070aabc"></script>
-<script src="scout-selection-ui.js?v=1a0eb6e93f69"></script>
-<script src="scout.js?v=6d6d16f37fc4"></script>
+<script src="scout-analysis.js?v=58cf1dec5c4c"></script>
+<script src="scout-selections.js?v=50b470019a05"></script>
+<script src="scout-selection-ui.js?v=772a1b4b828e"></script>
+<script src="scout.js?v=85e7b4274cce"></script>
 </body></html>

@@ -65,6 +65,14 @@ test('Price comparison rejects missing, old, future and historical prices and re
  assert.equal(S.quoteAssessment(q,null,now).edge,null);
 });
 
+test('Only a valid per-price confirmation renews a fixture quote',()=>{
+ const first='2026-10-24T07:00:00Z',confirmed='2026-10-28T06:00:00Z';
+ const q={odds:1.9,kind:'fixture_csv',observed_at_utc:first,last_confirmed_at_utc:confirmed};
+ assert.equal(S.quoteAssessment(q,.6,now).status,'available');
+ for(const patch of [{last_confirmed_at_utc:'invalid'},{last_confirmed_at_utc:'2026-10-30T06:00:00Z'},{last_confirmed_at_utc:'2026-10-23T06:00:00Z'},{kind:'manual'}])assert.equal(S.quoteAssessment({...q,...patch},.6,now).status,'stale');
+ assert.equal(S.quoteAssessment({...q,last_confirmed_at_utc:undefined,checked_at_utc:confirmed},.6,now).status,'stale');
+});
+
 test('Event evidence maps own goals against the opponent conceded goals and keeps actual venue mix',()=>{
  const row=(date,h,a,hg,ag)=>['E0','England','Premier League',date,'18:00',h,a,hg,ag,null,null,null,null,{}];
  const rows=[row('2026-10-21','Alpha','Other',2,0),row('2026-10-20','Other','Alpha',0,2),

@@ -54,6 +54,21 @@ class DataSyncTests(unittest.TestCase):
         self.assertEqual(sync.quote_window(dt.datetime.fromisoformat("2026-10-27T13:10:00+00:00")), "2026-10-27")
         self.assertEqual(sync.quote_window(dt.datetime.fromisoformat("2026-10-30T17:10:00+00:00")), "2026-10-30")
 
+    def test_regular_eight_hour_ticks_allow_queue_drift_but_friday_quote_tick_skips_feeds(self):
+        first = dt.datetime.fromisoformat('2026-10-30T05:57:00+00:00')
+        status = {key: sync.iso(first) for key in ['last_fixture_attempt_utc', 'last_results_attempt_utc', 'last_europe_attempt_utc', 'last_standings_attempt_utc']}
+        for hour in [13, 21]:
+            tick = first.replace(hour=hour, minute=47)
+            planned = sync.plan(status, 'auto', tick)
+            for feed in ['calendar', 'results', 'europe', 'standings']:
+                self.assertTrue(planned[feed], feed)
+            for key in status:
+                status[key] = sync.iso(tick)
+            if hour == 13:
+                quote = sync.plan(status, 'auto', tick.replace(hour=17))
+                self.assertTrue(quote['quotes'])
+                self.assertFalse(any(quote[k] for k in ['calendar', 'results', 'europe', 'standings']))
+
     def test_full_collector_validates_42_sources_before_any_publication(self):
         def download(url):
             if url.endswith("fixtures.csv"):

@@ -4,6 +4,7 @@ CSV retrieval time is not a bookmaker quote timestamp. Historical starting and
 closing columns are retained for research, never passed to prospective models.
 """
 import hashlib
+import datetime as dt
 import json
 import math
 from pathlib import Path
@@ -69,7 +70,15 @@ def empty(division, season):
     return {'schema': 1, 'division': division, 'season': season, 'formats': {}, 'matches': {}}
 
 
+def timestamp(value):
+    parsed = dt.datetime.fromisoformat(value.replace('Z', '+00:00'))
+    if parsed.tzinfo is None:
+        raise ValueError('Market observation needs a timezone')
+    return parsed
+
+
 def merge(shard, observations, stamp):
+    confirmed = timestamp(stamp)
     added = 0
     for item in observations:
         columns, values = item['columns'], item['values']
@@ -92,6 +101,13 @@ def merge(shard, observations, stamp):
                                  'kind': item['kind'], 'source_url': item['source_url'],
                                  'source_sha256': item['source_sha256']}
             added += 1
+        # Only a row actually present in this retrieval confirms its values.
+        # Preserve the first observation and its source evidence on a retry.
+        snap = entries[identity]
+        if item['kind'] == 'fixture_csv' and confirmed >= timestamp(snap.get('last_confirmed_at_utc', snap['observed_at_utc'])):
+            snap.update(last_confirmed_at_utc=stamp,
+                        last_confirmed_source_sha256=item['source_sha256'],
+                        last_confirmed_source_url=item['source_url'])
     return added
 
 
@@ -105,6 +121,8 @@ def load(path):
             columns = shard['formats'][snap['format']]
             expected = sha({'key': key, 'kind': snap['kind'], 'columns': columns, 'values': snap['values']})
             if identity != expected: raise ValueError('Saved market observation fingerprint mismatch')
+            if 'last_confirmed_at_utc' in snap and timestamp(snap['last_confirmed_at_utc']) < timestamp(snap['observed_at_utc']):
+                raise ValueError('Market confirmation predates its first observation')
     return shard
 
 

@@ -75,6 +75,12 @@
 
  const mobile=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});await prepare(mobile);
  await mobile.goto(base,{waitUntil:'domcontentloaded'});await ready(mobile);await selectWeek(mobile);
+ assert.equal(await mobile.locator('#selectionFilters').evaluate(el=>el.open),false);
+ await mobile.locator('#selectionFilterSummary').click();
+ await mobile.locator('#selectionLeague').selectOption('E0');await selectionReady(mobile);
+ assert.ok((await mobile.locator('#selectionFilterSummary').textContent()).includes('1 активни'));
+ await mobile.locator('#selectionLeague').selectOption('');await selectionReady(mobile);
+ await mobile.locator('#selectionFilterSummary').click();
  assert.equal(await mobile.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
  await mobile.screenshot({path:'scout-selections-mobile.png',fullPage:false});
  const mobileCard=mobile.locator('.selection-card').filter({has:mobile.locator('.selection-primary')}).first();

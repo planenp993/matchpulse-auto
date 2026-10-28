@@ -13,9 +13,10 @@ on:
         options: [auto, full, history, calendar, fixtures, results, europe, standings, publish]
         default: auto
   schedule:
-    - cron: '17 05 * * *' # Due-state catch-up, not an exact-cron mode switch
+    - cron: '47 05 * * *' # Three regular ticks, eight hours apart
     - cron: '47 13 * * *' # After Tuesday UK quote publication
-    - cron: '47 17 * * *' # After Friday UK quote publication (including winter)
+    - cron: '47 21 * * *'
+    - cron: '47 17 * * 5' # Friday quotes; the four-hour gap skips regular feeds
 
 permissions:
   contents: write
@@ -72,10 +73,13 @@ jobs:
             python scripts/check_research.py
             node scripts/forecast_diary.cjs --check --base-ref origin/main
             node scripts/paired_model_diary.cjs --check --base-ref origin/main
+            node scripts/selection_diary.cjs --check --base-ref origin/main
             node scripts/forecast_diary.cjs --write
             node scripts/paired_model_diary.cjs --write --base-ref origin/main
+            node scripts/selection_diary.cjs --write
             node scripts/forecast_diary.cjs --check
             node scripts/paired_model_diary.cjs --check
+            node scripts/selection_diary.cjs --check
             node scripts/smoke_scout.cjs
             git add data/match_registry.json docs/data/history.json docs/data/fixtures.json docs/data/status.json docs/data/coverage_audit.json
             git add docs/data/match_links.json docs/data/data_health.json
@@ -89,6 +93,7 @@ jobs:
             git add docs/data/selection_quotes.json
             if [ -d data/markets ]; then git add data/markets; fi
             git add docs/data/diary docs/data/diary_report.json docs/data/paired_model_report.json
+            git add docs/data/selection_diary_report.json
             if git diff --staged --quiet; then
               echo "No data changes"
               break
