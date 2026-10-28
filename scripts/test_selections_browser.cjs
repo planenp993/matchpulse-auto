@@ -10,7 +10,7 @@
    window.Date=class extends Original{constructor(...args){super(...(args.length?args:[fixed]));}static now(){return fixed;}};
   });
  }
- async function ready(page){await page.waitForFunction(()=>document.getElementById('lastSync')?.textContent.includes('Програма:'));}
+ async function ready(page){await page.waitForFunction(()=>document.getElementById('lastSync')?.textContent.includes('Програма:'));await page.evaluate(()=>MatchpulseLoading.ensureExtras());}
  async function selectionReady(page){await page.waitForFunction(()=>document.getElementById('selectionList')?.getAttribute('aria-busy')==='false'&&!document.getElementById('selectionSummary').textContent.includes('Преглеждам'),{timeout:60000});}
  async function selectWeek(page){
   await page.locator('[data-view="selections"]').click();await selectionReady(page);
