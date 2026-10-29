@@ -1,5 +1,1 @@
-{
-  "id": "recover-scheduled-update-2026-10-29-calendar-archive",
-  "mode": "full",
-  "reason": "Recover the failed scheduled refresh and verify configured history, calendars, results, UEFA, standings and quote feeds after the calendar archive fix"
-}
+{"id":"activate-statarea-retained-calendar-2026-10-29","mode":"calendar","reason":"User-authorized permanent Statarea calendar/recent results; initial retained backfill, confirmed UTC, no Football-Data downloads."}
