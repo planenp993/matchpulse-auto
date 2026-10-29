@@ -1,5 +1,5 @@
 {
-  "id": "standings-2026-10-27-1793117548184",
-  "mode": "standings",
-  "reason": "Verify all 27 published standings feeds after PR 22 without result/history requests"
+  "id": "recover-scheduled-update-2026-10-29-calendar-archive",
+  "mode": "full",
+  "reason": "Recover the failed scheduled refresh and verify configured history, calendars, results, UEFA, standings and quote feeds after the calendar archive fix"
 }
