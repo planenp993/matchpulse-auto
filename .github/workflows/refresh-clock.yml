@@ -5,6 +5,12 @@ on:
   schedule:
     - cron: '8,18,28,38,48,58 * * * *'
   workflow_dispatch:
+    inputs:
+      mode:
+        description: 'auto refreshes due sources; publish verifies the caller without provider requests'
+        type: choice
+        options: [auto, publish]
+        default: auto
 
 permissions:
   contents: read
@@ -42,4 +48,4 @@ jobs:
       id-token: write
     uses: ./.github/workflows/update.yml
     with:
-      mode: auto
+      mode: ${{ inputs.mode || 'auto' }}
