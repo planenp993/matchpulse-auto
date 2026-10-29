@@ -1,0 +1,45 @@
+name: Matchpulse Refresh Clock
+run-name: 'Refresh clock · ${{ github.event_name }}'
+
+on:
+  schedule:
+    - cron: '8,18,28,38,48,58 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Do not reuse the publisher's group here: the called workflow acquires it.
+concurrency:
+  group: matchpulse-refresh-clock
+  cancel-in-progress: false
+
+jobs:
+  due:
+    name: Check independent source clocks
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    outputs:
+      refresh: ${{ steps.plan.outputs.refresh }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Plan only; no provider downloads or data writes
+        id: plan
+        run: python scripts/refresh_clock.py --event "$GITHUB_EVENT_NAME" --run-id "$GITHUB_RUN_ID" --output "$GITHUB_OUTPUT"
+
+  refresh:
+    name: Refresh overdue data and publish
+    needs: due
+    if: needs.due.outputs.refresh == 'true'
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/update.yml
+    with:
+      mode: auto

@@ -12,8 +12,13 @@ on:
         type: choice
         options: [auto, full, history, calendar, fixtures, results, europe, standings, publish]
         default: auto
-  schedule:
-    - cron: '13,43 * * * *' # Statarea every 30 min; resync GitHub schedule; planner gates slower feeds
+  workflow_call:
+    inputs:
+      mode:
+        description: 'Mode selected by the independently scheduled refresh clock'
+        type: string
+        required: false
+        default: auto
 
 permissions:
   contents: write
