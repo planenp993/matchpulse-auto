@@ -1,0 +1,30 @@
+{
+  "status": "awaiting_external_account_and_authorization",
+  "service": "cron-job.org",
+  "timezone": "Europe/Sofia",
+  "schedule": "13,43 * * * *",
+  "request": {
+    "method": "POST",
+    "url": "https://api.github.com/repos/planenp993/matchpulse-auto/actions/workflows/refresh-clock.yml/dispatches",
+    "headers": {
+      "Accept": "application/vnd.github+json",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer REPLACE_ONLY_IN_THE_EXTERNAL_SERVICE"
+    },
+    "body": {
+      "ref": "main",
+      "inputs": {
+        "mode": "auto"
+      }
+    }
+  },
+  "expected_http_status": 204,
+  "credential_scope": {
+    "type": "fine-grained GitHub token",
+    "repository": "planenp993/matchpulse-auto",
+    "permissions": {
+      "Actions": "read and write"
+    }
+  },
+  "verification": "A scheduled execution in the external service must correspond to a successful GitHub run and its Statarea source receipt. A manual test alone is not proof."
+}
