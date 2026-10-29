@@ -1,1 +1,1 @@
-{"id":"verify-statarea-retained-fast-cycle-2026-10-29","mode":"calendar","reason":"Verify the short six-UTC-day Statarea refresh against the persisted initial archive, without historical CSVs or duplicate results."}
+{"id":"recover-statarea-calendar-after-schedule-resync-2026-10-29-1209z","mode":"calendar","reason":"User-requested recovery check: verify actual Statarea collection after scheduled-run gap and cron re-registration; retain archive and prevent duplicate results."}
