@@ -53,13 +53,16 @@
    assert.equal(calendar.coreReady,false,'The first schedule must precede full archive processing');
    assert.ok(!seen.some(n=>['europe_history.json','match_links.json','europe_fixture_names.json','coverage_audit.json'].includes(n)),'Supplementary archives must wait for a request');
   }
-  const index=await page.evaluate(key=>fixtureRows.findIndex(f=>Scout.keyFixture(f)===key),key);assert.ok(index>=0);
-  await page.locator('[data-fixture="'+index+'"]').click();
+  // Lazy calendar enrichment can reorder rows after the first paint. Resolve
+  // the intended match by its identity, never by a previously observed index.
+  const target=page.locator('.fixture-row').filter({hasText:sample[5]+' – '+sample[6]});
+  assert.equal(await target.count(),1);await target.click();
   await page.locator('#matchContent .model-analysis').waitFor({state:'visible',timeout:60000});
   const result=await page.evaluate(()=>({calendarMs:Math.round(window.__calendarAt),analysisMs:Math.round(performance.now()),
    encodedJSONBytes:performance.getEntriesByType('resource').filter(r=>new URL(r.name).pathname.includes('/data/')).reduce((n,r)=>n+r.encodedBodySize,0),
-   model:Model.evaluate(history,activeMatch,'standard').distribution.probs,
+   fixtureKey:Scout.keyFixture(activeMatch),model:Model.evaluate(history,activeMatch,'standard').distribution.probs,
    personalPicks:localStorage.getItem('matchpulse-scout-picks-v1'),manualPrices:localStorage.getItem('matchpulse-selection-quotes-v1')}));
+  assert.equal(result.fixtureKey,key);
   await page.locator('#closeMatch').click();page.removeListener('request',listener);return result;
  }
  const baseline=await prepare(),updated=await prepare(),report={browser:browser.version(),baselineCommit:BASE,fixtureKey:key,

@@ -86,6 +86,8 @@ jobs:
             node scripts/selection_diary.cjs --check
             node scripts/match_plan_diary.cjs --check
             node scripts/curated_diary.cjs --check
+            node scripts/schedule_archive.cjs
+            node scripts/schedule_archive.cjs --check
             node scripts/smoke_scout.cjs
             # Last writer: version the exact files that this artifact publishes.
             python scripts/client_manifest.py
@@ -104,7 +106,7 @@ jobs:
             git add docs/data/diary docs/data/diary_report.json docs/data/paired_model_report.json
             git add docs/data/selection_diary_report.json
             git add docs/data/match_plan_diary_report.json docs/data/curated_diary_report.json
-            git add docs/data/client_manifest.json
+            git add docs/data/client_manifest.json docs/data/schedule_archive.json
             if git diff --staged --quiet; then
               echo "No data changes"
               break

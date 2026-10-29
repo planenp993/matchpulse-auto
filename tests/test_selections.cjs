@@ -2,7 +2,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),crypto=require('node:crypto');
 const S=require('../docs/scout-selections.js'),C=require('../docs/scout-core.js'),M=require('../docs/model-core.js');
 const history=JSON.parse(fs.readFileSync('docs/data/history.json')),
- fixtures=JSON.parse(fs.readFileSync('docs/data/fixtures.json')),
+ fixtures=JSON.parse(fs.readFileSync('tests/fixtures/selection-calendar-2026-10-28.json')),
  index=C.build(history),now=new Date('2026-10-28T07:00:00Z');
 const fixture=fixtures.find(f=>f[0]==='E0'&&f[3]>='2026-10-29'),profile=C.profile(index,fixture,{windowSize:10});
 const engine=S.createEngine(history,M,C);

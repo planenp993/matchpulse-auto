@@ -6,7 +6,7 @@
  const errors=[],base='http://127.0.0.1:8765/scout.html';
  async function page(viewport={width:1280,height:900},url=base){
   const p=await browser.newPage({viewport});p.on('pageerror',e=>errors.push(String(e)));
-  await p.addInitScript(()=>{const Original=Date,now=Original.parse('2026-10-28T08:00:00Z');window.Date=class extends Original{constructor(...a){super(...(a.length?a:[now]));}static now(){return now;}};});
+  await require('./browser_selection_snapshot.cjs').prepare(p,'2026-10-28T08:00:00Z');
   await p.goto(url,{waitUntil:'domcontentloaded'});await p.waitForFunction(()=>document.getElementById('lastSync').textContent.includes('Програма:'));
   await p.locator('[data-view="picks"]').click();await p.locator('.personal-backup > summary').click();return p;
  }
