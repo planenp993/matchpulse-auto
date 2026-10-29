@@ -13,7 +13,7 @@ on:
         options: [auto, full, history, calendar, fixtures, results, europe, standings, publish]
         default: auto
   schedule:
-    - cron: '17,47 * * * *' # Statarea every 30 min; planner gates slower feeds
+    - cron: '13,43 * * * *' # Statarea every 30 min; resync GitHub schedule; planner gates slower feeds
 
 permissions:
   contents: write
