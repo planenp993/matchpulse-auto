@@ -493,6 +493,14 @@ source check advances `last_statarea_success_trigger`. A code publication cannot
 replace these receipts. Verify both the actual Actions `event: schedule` and the
 source's successful receipt/run ID before calling the automation operational.
 
+`reset-refresh-clock.yml` is a narrowly scoped manual maintenance utility for
+the known clock workflow ID/path. It runs only on workflow_dispatch or an
+explicit `[clock-reset] ` push changing `ops/clock_reset_request.json`. Its short
+job token has Actions write solely to invoke the official enable/disable API;
+the publisher and clock retain their existing permission scopes. It validates
+the target, preflights enable, and retries re-enabling on exit. It does not collect
+provider data or write archives. An API reset is not evidence of a schedule run.
+
 Run `tests/test_refresh_clock.py` with the complete provider-free suite, all
 existing frozen diary/research/archive/manifest checks, and the real workflow
 call. Record actual automatic evidence or its absence in PROJECT_STATE_BG.md.
