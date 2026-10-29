@@ -501,6 +501,11 @@ the publisher and clock retain their existing permission scopes. It validates
 the target, preflights enable, and retries re-enabling on exit. It does not collect
 provider data or write archives. An API reset is not evidence of a schedule run.
 
+The maintenance utility also accepts an explicit `[clock-probe] ` push or manual
+`operation: probe`. It dispatches the clock with `mode: publish`, which exercises
+the reusable workflow without provider requests. Native scheduled calls always
+use `auto`; a manual probe remains workflow_dispatch evidence, never schedule.
+
 Run `tests/test_refresh_clock.py` with the complete provider-free suite, all
 existing frozen diary/research/archive/manifest checks, and the real workflow
 call. Record actual automatic evidence or its absence in PROJECT_STATE_BG.md.

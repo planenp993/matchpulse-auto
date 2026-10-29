@@ -2,6 +2,12 @@ name: Reset Refresh Clock Registration
 
 on:
   workflow_dispatch:
+    inputs:
+      operation:
+        description: 'Probe the caller without providers, or reset the clock registration'
+        type: choice
+        options: [probe, reset]
+        default: probe
   push:
     branches: [main]
     paths: ['ops/clock_reset_request.json']
@@ -15,7 +21,7 @@ concurrency:
 
 jobs:
   reset:
-    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, '[clock-reset] ')
+    if: (github.event_name == 'workflow_dispatch' && inputs.operation == 'reset') || startsWith(github.event.head_commit.message, '[clock-reset] ')
     runs-on: ubuntu-latest
     timeout-minutes: 3
     permissions:
@@ -45,3 +51,21 @@ jobs:
           restore
           gh api "$target" --jq '{id, path, state, updated_at}'
           echo 'Registration reset only. This is not a scheduled data refresh.'
+
+  probe:
+    if: (github.event_name == 'workflow_dispatch' && inputs.operation == 'probe') || startsWith(github.event.head_commit.message, '[clock-probe] ')
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    permissions:
+      actions: write
+    steps:
+      - name: Probe the clock and reusable publisher without provider downloads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="repos/$GITHUB_REPOSITORY/actions/workflows/400638647"
+          gh api "$target" --jq '.path' | grep -Fx '.github/workflows/refresh-clock.yml'
+          printf '%s' '{"ref":"main","inputs":{"mode":"publish"}}' | gh api --method POST "$target/dispatches" --input -
+          echo 'Provider-free manual caller probe requested. This is not schedule evidence.'
