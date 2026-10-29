@@ -81,6 +81,32 @@ class StatareaTests(unittest.TestCase):
         for label in ['England - Premier League Women', 'England - Efl Cup', 'England - Premier League U21']:
             self.assertEqual(sta.parse(html(league=label), '2026-10-28')[0], [])
 
+    def test_explicit_split_and_uefa_phase_labels_preserve_competition_scope(self):
+        labels = {
+            'Scotland - Premiership - Championship Group': 'SC0',
+            'Belgium - Jupiler Pro League - Conference League Group': 'B1',
+            'Austria - Bundesliga - Relegation Group': 'AUT',
+            'Denmark - Superliga - Championship Group': 'DNK',
+            'Greece - Super League - Conference League Group': 'G1',
+            'Switzerland - Super League - Relegation Group': 'SWZ',
+            'Europe - Champions League - Play Offs': 'UCL',
+            'Europe - Europa League - Qualification': 'UEL',
+            'Europe - Conference League - Play Offs': 'UECL',
+        }
+        for label, div in labels.items():
+            self.assertEqual(sta.parse(html(league=label), '2026-10-28')[0][0]['division'], div)
+        for label in ['Austria - Bundesliga Women - Relegation Group',
+                      'Europe - Champions League Women - Play Offs',
+                      'Switzerland - Super League Women - Placement Play Offs']:
+            self.assertFalse(sta.parse(html(league=label), '2026-10-28')[0])
+        records, _ = sta.parse(html(league='Belgium - Jupiler Pro League - Relegation'), '2026-10-28')
+        self.assertTrue(records[0]['calendar_only'])
+        home = row(goals=[0, 0]); home[0:3] = ['B1', 'Belgium', 'Pro League']
+        batch = {'records': [{'match': records[0]}]}
+        projected = sta.project(batch, sta.Names(self.root, [home], []), NOW)
+        self.assertFalse(projected['results'])
+        self.assertEqual(len(projected['records']), 1)
+
     def test_utc_day_converts_to_next_sofia_day_and_dst_fold_is_explicit(self):
         names = sta.Names(self.root, [row(goals=[0, 0])], [])
         record = sta.parse(html(clock='23:30'), '2026-10-28')[0][0]
