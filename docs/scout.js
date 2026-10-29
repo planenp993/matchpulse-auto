@@ -13,7 +13,7 @@ let dataSnapshot=null,initialPromise=null,corePromise=null,extrasPromise=null,fi
 const dataFailures=new Map();
 let scheduleArchive=null,scheduleArchivePromise=null,scheduleArchiveError=null;
 const archivedEntries=new Map();
-const archived=f=>f[3]<localISO()||!Scout.getUpcoming([f]).length;
+const archived=f=>f[3]<localISO()||!Scout.getUpcoming([f]).length||['final','conflict','cancelled','canceled','postponed','rescheduled','excluded','unmatched'].includes(archivedEntry(f)?.state);
 const archivedEntry=f=>archivedEntries.get(Scout.keyFixture(f))||null;
 const archiveDate=()=>mode==='custom'&&customDate<=localISO();
 function ensureScheduleArchive(){

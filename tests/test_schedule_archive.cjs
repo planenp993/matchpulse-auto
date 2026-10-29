@@ -32,6 +32,8 @@ test('Archive validates record seals and never manufactures a forecast or a miss
 test('One fixture has one row, the bounded calendar does not alter immutable source ledgers',()=>{
  const doc=B.build({registry:registry(),ledgers:[ledger()],now}),f=doc.entries[0].fixture;
  assert.equal(UI.merge([f,f],doc,C).length,1);assert.equal(UI.valid(doc),true);
+ const earlier=[...f];earlier[4]='12:00';earlier[5]='Earlier';
+ assert.equal(UI.merge([f,earlier],doc,C)[0][5],'Earlier');
  assert.equal(B.build({registry:registry(),ledgers:[ledger()],now:new Date('2027-01-01T08:00Z')}).entries.length,0);
  assert.ok(!UI.planHTML(null).includes('NaN'));
  const html=fs.readFileSync('docs/scout.html','utf8'),builder=fs.readFileSync('scripts/build_scout_preview.py','utf8');

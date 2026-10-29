@@ -8,7 +8,7 @@ function valid(doc){return doc?.schema===1&&Array.isArray(doc.entries)&&doc.entr
 function merge(fixtures,doc,core){
  const rows=new Map(fixtures.map(f=>[core.keyFixture(f),f]));
  for(const e of doc?.entries||[])if(!rows.has(e.key))rows.set(e.key,e.fixture);
- return [...rows.values()];
+ return [...rows.values()].sort((a,b)=>a[3].localeCompare(b[3])||String(a[4]||'99:99').localeCompare(String(b[4]||'99:99'))||core.keyFixture(a).localeCompare(core.keyFixture(b)));
 }
 function model(entry){const m=entry?.forecast?.model;return m?{lambdaHome:m.lambda_home,lambdaAway:m.lambda_away,total:m.lambda_home+m.lambda_away,distribution:{probs:m.probabilities}}:null;}
 function status(entry){
