@@ -452,3 +452,10 @@ identity. Keep UEFA source observations out of domestic history.
 cover UTC/Sofia/DST, score markers, name identity, archives, old patches, failed
 days, reschedules and CSV quote isolation. Run the complete existing acceptances
 as well; ordinary code pushes/CI remain provider-free.
+
+
+The Statarea exact allowlist also covers verified domestic split-group labels
+and UEFA qualification/playoff labels (public UTC samples: 2026-05-02/03/16/17,
+2026-02-18/19 and 2026-08-19/20). Never replace it with prefix matching: women/youth
+labels overlap. The Belgian inter-division relegation tie is calendar-only;
+its scores stay in provider evidence and do not enter ordinary domestic history.

@@ -2,7 +2,7 @@
 
 Activated on 29 October 2026 through `ops/calendar_source.json`. Statarea is the
 normal calendar/recent-result provider for the 24 domestic divisions and the
-three UEFA main phases. Football-Data UK remains the historical/statistics and
+three UEFA competitions, including verified qualification/playoff labels. Football-Data UK remains the historical/statistics and
 quote source. Official UEFA archives and descriptive standings remain separate.
 Legacy calendar/result adapters are retained for reproducible old tests/manual
 development, but are not fetched by the activated production calendar path.
@@ -33,7 +33,11 @@ request to the old calendar adapters on a failed Statarea day.
 
 ## Meaning of an accepted result
 
-Only the exact competition allowlist is read. Cups, women, youth and similarly
+Only the exact competition allowlist is read. Verified championship/relegation
+split-group labels retain the same domestic division. The Belgian inter-division
+relegation tie is calendar-only and cannot enter ordinary domestic history.
+The labels were checked on the public UTC calendars for 2–3/16–17 May, 18–19 February
+and 19–20 August 2026. Cups, women, youth and similarly
 named competitions are not silently added. A regulation final requires `fin`,
 system status `1`, two valid integer scores and no extra-time/shootout marker.
 `P`, extra time, awarded/abandoned matches, live scores and missing kickoff

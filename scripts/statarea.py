@@ -45,6 +45,26 @@ COMPETITIONS = dict(zip([
     'UCL', 'UEL', 'UECL']))
 
 
+# Explicit labels observed on the public 2026-05-02/03/16/17, 02-18/19 and 08-19/20
+# UTC calendars. Never use a prefix rule: women's/youth competitions share it.
+for base, div, phases in [
+    ('Scotland - Premiership', 'SC0', ('Championship Group', 'Relegation Group')),
+    ('Belgium - Jupiler Pro League', 'B1', ('Championship Group', 'Conference League Group', 'Relegation Group', 'Relegation')),
+    ('Austria - Bundesliga', 'AUT', ('Championship Group', 'Relegation Group')),
+    ('Denmark - Superliga', 'DNK', ('Championship Group', 'Relegation Group')),
+    ('Greece - Super League', 'G1', ('Championship Group', 'Conference League Group', 'Relegation Group')),
+    ('Switzerland - Super League', 'SWZ', ('Championship Group', 'Relegation Group')),
+    ('Europe - Champions League', 'UCL', ('Qualification', 'Play Offs')),
+    ('Europe - Europa League', 'UEL', ('Qualification', 'Play Offs')),
+    ('Europe - Conference League', 'UECL', ('Qualification', 'Play Offs')),
+]:
+    for phase in phases:
+        COMPETITIONS[base+' - '+phase] = div
+# This inter-division relegation tie is a calendar event, not an ordinary
+# top-division training observation. Its source scores remain in our archive.
+CALENDAR_ONLY = {'Belgium - Jupiler Pro League - Relegation'}
+
+
 def configuration(root):
     value = registry.read_strict(root/CONFIG, {})
     if not value:
@@ -162,6 +182,8 @@ def parse(raw, day):
                 'source_date_utc': day, 'clock_utc': clock, 'kickoff_utc': kickoff,
                 'home': h, 'away': a, 'status': state, 'system_status': system,
                 'score_display': score, 'extra': extras, 'regulation': values if final else None})
+            if label in CALENDAR_ONLY:
+                records[-1]['calendar_only'] = True
     return records, len(all_matches)
 
 
@@ -319,7 +341,7 @@ def project(result, names, now):
                        'kickoff_utc': record['kickoff_utc'], 'status': state}
         result['observations'].append(observation)
         if final:
-            if record['division'] not in EUROPE:
+            if record['division'] not in EUROPE and not record.get('calendar_only'):
                 finished = [*row[:7], *record['regulation'], None, None, None, None,
                     {'SRC': 'Statarea', 'PROVIDER_ID': record['id']}]
                 result['results'].append({**observation, 'row': finished})
