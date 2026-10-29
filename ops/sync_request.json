@@ -1,1 +1,1 @@
-{"id":"recover-statarea-calendar-after-schedule-resync-2026-10-29-1209z","mode":"calendar","reason":"User-requested recovery check: verify actual Statarea collection after scheduled-run gap and cron re-registration; retain archive and prevent duplicate results."}
+{"id":"recover-statarea-while-native-schedule-unconfirmed-2026-10-29","mode":"calendar","reason":"User-requested recovery during investigation. This explicit push refresh is manual, not evidence of native schedule operation; preserve all provider observations and frozen forecasts."}
