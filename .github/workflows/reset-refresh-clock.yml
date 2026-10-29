@@ -1,0 +1,47 @@
+name: Reset Refresh Clock Registration
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['ops/clock_reset_request.json']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: matchpulse-clock-registration-repair
+  cancel-in-progress: false
+
+jobs:
+  reset:
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, '[clock-reset] ')
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - name: Reset only the known refresh clock using the official workflow API
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="repos/$GITHUB_REPOSITORY/actions/workflows/400638647"
+          current="$(gh api "$target")"
+          jq -e '.id == 400638647 and .path == ".github/workflows/refresh-clock.yml"' <<< "$current" > /dev/null
+          # Preflight the enable permission before disabling anything.
+          gh api --method PUT "$target/enable"
+          restore() {
+            for attempt in 1 2 3; do
+              if gh api --method PUT "$target/enable"; then return 0; fi
+              sleep 2
+            done
+            return 1
+          }
+          trap restore EXIT
+          gh api --method PUT "$target/disable"
+          restore
+          gh api "$target" --jq '{id, path, state, updated_at}'
+          echo 'Registration reset only. This is not a scheduled data refresh.'
