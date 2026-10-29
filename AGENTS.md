@@ -11,7 +11,7 @@ Earlier milestones are preserved in `docs/archive/PROJECT_HISTORY_BG.md`.
 - Existing goal model: `docs/model-core.js`; Match Lab: `docs/lab.html`.
 - Published snapshots: `docs/data/*.json`.
 - Python import, calendar and audit scripts: `scripts/`; regression tests: `tests/`.
-- Automation: `.github/workflows/update.yml`; provider-free CI: `scout-verify.yml`.
+- Automation: `.github/workflows/refresh-clock.yml` calls `update.yml`; provider-free CI: `scout-verify.yml`.
 
 ## Data invariants
 
@@ -427,7 +427,7 @@ historical/statistical enrichment and quotes; quote CSVs cannot introduce a
 fixture or replace the primary Statarea kickoff. Official UEFA history/standings
 retain their independent roles and clocks.
 
-GitHub ticks at `17,47 * * * *`; the planner checks recent dates every 30 minutes,
+The independent refresh clock checks due work every 10 minutes; the planner checks recent dates about every 30 minutes,
 with a wider seven-day lookback/future scan daily and 30-day initial backfill.
 Every page must confirm its requested UTC date and `GMT 0`; never trust the
 runner's default timezone. Use only the site's anonymous timezone preference,
@@ -465,3 +465,34 @@ past-calendar view for its fixed pre-match selection/backup clock (HTTP and
 offline paths, with matching manifest hashes). Never let a live settled result
 silently turn that scenario into an archived dossier. Keep the separate real
 sealed-record past-calendar browser acceptance intact.
+
+
+## Independent refresh clock (29 October 2026)
+
+The original `update.yml` remained active but produced no `schedule` event after
+01:14 UTC, even after its cron was changed to 13/43. Successful push/manual data
+refreshes do NOT prove that a timer is working. Do not report a written cron or
+a newer publication clock as evidence of a successful automatic source check.
+
+`refresh-clock.yml` is a new independently registered scheduled workflow. It runs
+at minutes 8/18/28/38/48/58 UTC and uses `scripts/refresh_clock.py` to read the
+existing source receipts and planner. An early tick makes no provider requests,
+writes no data and skips publication. An overdue tick calls the existing
+`update.yml` through `workflow_call` with `mode: auto`; actual Statarea collection
+keeps its 30-minute gate and slow feeds keep their own gates. There is one active
+cron definition, in the clock workflow. Ordinary code pushes remain provider-free.
+
+Caller concurrency is `matchpulse-refresh-clock`; the called publisher keeps
+`matchpulse-pages`. Never give them the same group, or a caller can block/cancel
+its own child. Permissions stay at the existing publisher's contents/pages/token
+scope; no external scheduler, personal token, new secret or idle runner loop.
+
+Each collected patch records the real GitHub trigger event/run/attempt. Only a
+newer Statarea attempt advances `last_statarea_attempt_trigger`; only a successful
+source check advances `last_statarea_success_trigger`. A code publication cannot
+replace these receipts. Verify both the actual Actions `event: schedule` and the
+source's successful receipt/run ID before calling the automation operational.
+
+Run `tests/test_refresh_clock.py` with the complete provider-free suite, all
+existing frozen diary/research/archive/manifest checks, and the real workflow
+call. Record actual automatic evidence or its absence in PROJECT_STATE_BG.md.

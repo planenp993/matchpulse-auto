@@ -9,8 +9,11 @@ development, but are not fetched by the activated production calendar path.
 
 ## Requests and freshness
 
-GitHub Actions ticks at minute 17 and 47 of every hour. Auto mode checks the last
-attempt with five minutes of queue tolerance. It reads UTC pages for the last two
+A separate `refresh-clock.yml` checks due work every ten minutes (8/18/28/38/48/58).
+It calls the existing publisher only when a source is due. Statarea keeps its
+30-minute interval with five minutes of queue tolerance; an early clock tick
+makes no provider request and does not publish. A delayed tick catches up from
+stored receipts. It reads UTC pages for the last two
 days, today and the next two days, with one extra preceding UTC day for Sofia's
 midnight boundary. Once about every 24 hours it checks seven days back and seven
 days forward. The first initialization reads 30 days back. Slower CSV, official
@@ -86,3 +89,12 @@ block publication instead of resetting an archive.
 Validation: `python scripts/statarea.py --check`, `tests/test_statarea.py`, the full
 provider-free Python/Node suite, all five sealed diary checks, schedule archive,
 research snapshot, audit, manifest and the existing mobile/browser checks.
+
+
+The original workflow's half-hour cron did not produce an observed `schedule`
+event after activation; successful push-triggered runs were not timer evidence.
+The new clock has a separate workflow registration and one explicit cron. Its
+caller concurrency differs from the publisher's group. Automatic verification
+requires a real Actions `schedule` event plus its successful source receipt;
+`last_statarea_success_trigger` records the actual event/run/attempt and ordinary
+code publication cannot renew it. No external scheduler or personal token is used.

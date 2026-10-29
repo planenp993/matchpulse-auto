@@ -9,6 +9,7 @@ import datetime as dt
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -123,7 +124,7 @@ def requested_mode(root, event, mode, request_commit=None):
     return request["mode"], request["id"]
 
 
-def collect(root, mode, now, download=u.fetch, request_id=None, statarea_download=None):
+def collect(root, mode, now, download=u.fetch, request_id=None, statarea_download=None, trigger=None):
     underlying, cache, lock = download, {}, Lock()
     def download(url, **kwargs):
         key = (url, registry.encoded(kwargs))
@@ -142,6 +143,7 @@ def collect(root, mode, now, download=u.fetch, request_id=None, statarea_downloa
     history = u.index_history(u.readjson(root/"docs/data/history.json", []))
     stamp, today = iso(now), u.today_sofia(now)
     patch = {"schema": 1, "observed_at_utc": stamp, "plan": work, "request_id": request_id,
+             "trigger": trigger,
              "history": [], "checks": {}, "errors": [], "observations": [],
              "calendar": None, "quotes": None, "markets": [], "results": None, "europe": None, "standings": None, "statarea": None}
 
@@ -299,7 +301,12 @@ def apply(root, patch):
             status.update(last_statarea_attempt_utc=stamp, statarea_refresh_status='ok' if complete else 'partial' if good else 'error',
                 statarea_checks=sta['days'], statarea_errors=sta['errors'], statarea_quarantined=sta['quarantined'],
                 statarea_archived_matches=archive_total, statarea_future_days=7)
-            if complete: status['last_statarea_success_utc'] = stamp
+            if patch.get('trigger'):
+                status['last_statarea_attempt_trigger'] = patch['trigger']
+            if complete:
+                status['last_statarea_success_utc'] = stamp
+                if patch.get('trigger'):
+                    status['last_statarea_success_trigger'] = patch['trigger']
             if sta_changed: status['last_statarea_result_change_utc'] = stamp
             if sta['wide']:
                 status.update(last_statarea_wide_attempt_utc=stamp, statarea_wide_status='ok' if complete else 'partial', statarea_wide_checks=sta['days'])
@@ -460,7 +467,9 @@ def main():
         if args.action == "plan":
             print(json.dumps(plan(u.readjson(u.STAT, {}), mode, utcnow(), statarea.configuration(ROOT))))
         else:
-            patch = collect(ROOT, mode, utcnow(), request_id=request_id)
+            trigger = {'event': args.event, 'run_id': os.environ.get('GITHUB_RUN_ID'),
+                       'run_attempt': os.environ.get('GITHUB_RUN_ATTEMPT')}
+            patch = collect(ROOT, mode, utcnow(), request_id=request_id, trigger=trigger)
             u.writejson(args.patch, patch)
             print(json.dumps({"plan": patch["plan"], "checks": len(patch["checks"]), "errors": patch["errors"],
                               "calendar_errors": (patch["calendar"] or {}).get("errors", [])}, ensure_ascii=False))
