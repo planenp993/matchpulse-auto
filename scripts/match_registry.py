@@ -41,6 +41,19 @@ def kickoff(row):
         return None
 
 
+def observed_kickoff(row, observation):
+    explicit = observation.get('kickoff_utc')
+    if explicit is None:
+        return kickoff(row)
+    instant = dt.datetime.fromisoformat(explicit.replace('Z', '+00:00'))
+    if instant.tzinfo is None:
+        raise ValueError('Provider kickoff must include a timezone')
+    local = instant.astimezone(ZoneInfo('Europe/Sofia'))
+    if [local.date().isoformat(), local.strftime('%H:%M')] != row[3:5]:
+        raise ValueError('Provider kickoff disagrees with the Sofia match row')
+    return instant.astimezone(dt.timezone.utc).isoformat(timespec='seconds')
+
+
 def empty():
     return {"schema": 1, "matches": {}, "conflicts": {}}
 
@@ -79,7 +92,7 @@ def observe(registry, observations, stamp):
             match = matches[identity] = {"id": identity, "division": row[0], "clubs": clubs,
                 "season": str(year) if row[0] in ("NOR", "SWE") else f"{start}/{str(start+1)[2:]}",
                 "legacy_keys": [], "provider_ids": [], "first_seen_utc": stamp,
-                "schedule": row[:7], "kickoff_utc": kickoff(row), "last_seen_utc": stamp,
+                "schedule": row[:7], "kickoff_utc": observed_kickoff(row, observation), "last_seen_utc": stamp,
                 "state": "scheduled", "result_key": None, "result": None}
         if key not in match["legacy_keys"]:
             match["legacy_keys"].append(key)
@@ -91,8 +104,11 @@ def observe(registry, observations, stamp):
         if stamp >= match["last_seen_utc"]:
             match["last_seen_utc"] = stamp
             if match["result"] is None and not (type(row[7]) is int and type(row[8]) is int):
+                start = observed_kickoff(row, observation)
+                if start is None and row[3:5] == match['schedule'][3:5] and row[4] and len(row) > 13 and 'Sofia' in str(row[13]):
+                    start = match.get('kickoff_utc')  # Preserve an explicit UTC fold.
                 match["schedule"] = row[:7]
-                match["kickoff_utc"] = kickoff(row)
+                match["kickoff_utc"] = start
                 for field in ("phase", "round"):
                     if observation.get(field) is not None:
                         match[field] = observation[field]

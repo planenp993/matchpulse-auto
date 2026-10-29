@@ -22,3 +22,15 @@ test('Duplicate league names include their distinct country',()=>{
  assert.equal(H.leagueLabel(['AUT','Austria','Bundesliga']),'Австрия · Bundesliga');
  assert.equal(H.leagueLabel(['UCL','Europe','Champions League']),'Champions League');
 });
+test('Statarea clocks are independent, frequent and expose quarantined observations',()=>{
+ const s={...healthy,last_statarea_attempt_utc:stamp,last_statarea_success_utc:stamp,statarea_refresh_status:'ok'};
+ const fresh=new Date('2026-10-28T06:30:00Z');
+ assert.equal(H.sources(s,fresh).find(r=>r.label.includes('Statarea')).warning,false);
+ const stale=H.sources(s,new Date('2026-10-28T08:01:00Z'));
+ assert.equal(stale[0].warning,true);
+ assert.equal(stale.find(r=>r.label.includes('Statarea')).warning,true);
+ const quarantined=H.sources({...s,statarea_quarantined:[{id:'42'}]},fresh).find(r=>r.label.includes('Statarea'));
+ assert.equal(quarantined.warning,true);assert.match(quarantined.errors[0],/1 наблюдения/);
+ const missing=H.sources({...s,last_statarea_success_utc:null,last_build_utc:stamp},fresh).find(r=>r.label.includes('Statarea'));
+ assert.equal(missing.stamp,null);assert.equal(missing.warning,true);
+});

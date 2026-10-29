@@ -53,6 +53,7 @@ node scripts/smoke_scout.cjs
 node scripts/forecast_diary.cjs --check
 python scripts/check_research.py
 node scripts/paired_model_diary.cjs --check
+python scripts/statarea.py --check
 ```
 
 These checks do not download sports-provider data. The audit writes its report;
@@ -415,3 +416,39 @@ that blocked the 29 October scheduled update before provider collection. Browser
 selection/backup tests use the same controlled snapshot; the general live-data
 browser checks remain separate. Run `test_schedule_archive.cjs` and
 `scripts/test_calendar_browser.cjs` alongside all previous acceptances.
+
+## Permanent Statarea ingestion (29 October 2026)
+
+`ops/calendar_source.json` now activates Statarea as the normal calendar and
+recent domestic score source. This supersedes the older eight-hour calendar and
+six-feed result-bridge production schedule above. The legacy adapters remain for
+reproducibility; the active path does not fetch them. Keep Football-Data UK for
+historical/statistical enrichment and quotes; quote CSVs cannot introduce a
+fixture or replace the primary Statarea kickoff. Official UEFA history/standings
+retain their independent roles and clocks.
+
+GitHub ticks at `17,47 * * * *`; the planner checks recent dates every 30 minutes,
+with a wider seven-day lookback/future scan daily and 30-day initial backfill.
+Every page must confirm its requested UTC date and `GMT 0`; never trust the
+runner's default timezone. Use only the site's anonymous timezone preference,
+two workers and bounded requests. Respect the circuit stop for blocked/rate
+limited responses; no proxy, login, browser bypass or silent provider fallback.
+
+`data/statarea` stores sanitized match observations permanently, including
+quarantined rows, with monthly shards, stable IDs, correction variants and
+source URL/hash/observation clocks. Identical variants deduplicate; old patches
+cannot regress current views. Corrupt/missing indexed shards block publication.
+Keep writes/checks/staging inside the existing latest-main retry loop.
+
+Only explicit regulation finals with confirmed kickoff enter domestic history.
+Do not treat penalty/extra-time totals or awarded outcomes as 90-minute goals.
+Missing optional stats remain missing. Preserve richer existing rows and reject
+score/date/identity conflicts. Use the separate exact scoped name crosswalk in
+`data/statarea_clubs.json`; never edit frozen model aliases to make a name match.
+Reviewed official UEFA IDs may preserve an already joined per-match calendar
+identity. Keep UEFA source observations out of domestic history.
+
+`docs/statarea-method.md` documents coverage, evidence and limits. New regressions
+cover UTC/Sofia/DST, score markers, name identity, archives, old patches, failed
+days, reschedules and CSV quote isolation. Run the complete existing acceptances
+as well; ordinary code pushes/CI remain provider-free.
