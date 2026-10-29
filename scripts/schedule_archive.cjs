@@ -12,7 +12,7 @@ function build({registry,ledgers,now=new Date()}){
  for(const m of Object.values(registry.matches)){
   if(!Array.isArray(m.schedule)||!inRange(m.schedule))continue;
   const f=[...m.schedule.slice(0,7),null,null,null,null,null,null,m.kickoff_utc?'Saved calendar / Europe-Sofia':'Saved calendar / unconfirmed timezone'];
-  const key=C.keyFixture(f),validScore=m.state==='final'&&(!m.actual_date||m.actual_date===f[3])&&Array.isArray(m.result)&&m.result.length===2&&m.result.every(x=>Number.isInteger(x)&&x>=0);
+  const key=C.keyFixture(f),validScore=['final','final_awaiting_stats'].includes(m.state)&&(!m.actual_date||m.actual_date===f[3])&&Array.isArray(m.result)&&m.result.length===2&&m.result.every(x=>Number.isInteger(x)&&x>=0);
   entries.set(key,{key,fixture:f,match_id:m.id,kickoff_utc:m.kickoff_utc||null,state:m.state,score:validScore?m.result:null,forecast:null});
  }
  // A later registered version wins explicitly; a failed/absent main choice is

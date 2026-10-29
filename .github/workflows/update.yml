@@ -13,10 +13,7 @@ on:
         options: [auto, full, history, calendar, fixtures, results, europe, standings, publish]
         default: auto
   schedule:
-    - cron: '47 05 * * *' # Three regular ticks, eight hours apart
-    - cron: '47 13 * * *' # After Tuesday UK quote publication
-    - cron: '47 21 * * *'
-    - cron: '47 17 * * 5' # Friday quotes; the four-hour gap skips regular feeds
+    - cron: '17,47 * * * *' # Statarea every 30 min; planner gates slower feeds
 
 permissions:
   contents: write
@@ -66,6 +63,7 @@ jobs:
             # Reapply observations to the newest files; never copy an old whole
             # history or calendar over another writer's newer publication.
             python scripts/data_sync.py apply --patch /tmp/mp-patch.json
+            python scripts/statarea.py --check
             python scripts/audit_scout.py
             python scripts/europe_archive.py --check
             python scripts/standings.py --check
@@ -96,6 +94,7 @@ jobs:
             git add docs/data/match_links.json docs/data/data_health.json
             git add docs/data/europe_history.json docs/data/europe_coverage.json docs/data/europe_fixture_names.json
             if [ -d data/europe ]; then git add data/europe; fi
+            if [ -d data/statarea ]; then git add data/statarea; fi
             for file in data/europe_clubs.json data/europe_schedule.json data/result_provenance.json; do
               if [ -f "$file" ]; then git add "$file"; fi
             done

@@ -22,6 +22,7 @@ import europe_archive as europe
 import results_bridge as bridge
 import standings
 import selection_quotes
+import statarea
 from threading import Lock
 from concurrent.futures import Future
 from fixtures_fallback import collect as calendars, CALENDAR_DIVISIONS, is_secondary
@@ -75,7 +76,7 @@ def quote_window(now):
     raise ValueError("No quote publication window")
 
 
-def plan(status, mode, now):
+def plan(status, mode, now, calendar_config=None):
     if mode not in MODES:
         raise ValueError("Unknown refresh mode")
     if mode == "publish":
@@ -86,15 +87,23 @@ def plan(status, mode, now):
     can_history = age(status.get("last_history_attempt_utc"), now) >= 2
     full = mode == "full" or mode == "auto" and full_due and can_history
     history = mode in ("full", "history") or mode == "auto" and (full or current_due and can_history)
-    calendar = mode in ("full", "calendar", "fixtures") or mode == "auto" and age(status.get("last_fixture_attempt_utc"), now) >= AUTO_REFRESH_HOURS
+    interval = (calendar_config['interval_minutes']-5)/60 if calendar_config else AUTO_REFRESH_HOURS
+    calendar = mode in ("full", "calendar", "fixtures") or mode == "auto" and age(status.get("last_fixture_attempt_utc"), now) >= interval
     window = quote_window(now)
     quotes = mode in ("full", "fixtures") or mode == "auto" and status.get("quote_window") != window and age(status.get("last_quote_attempt_utc"), now) >= 2
     results = mode in ("full", "history", "results", "europe") or mode == "auto" and age(status.get("last_results_attempt_utc"), now) >= AUTO_REFRESH_HOURS
     europe_due = mode in ("full", "results", "europe") or mode == "auto" and age(status.get("last_europe_attempt_utc"), now) >= AUTO_REFRESH_HOURS
     europe_full = mode == "europe" or europe_due and not status.get("last_europe_backfill_success_utc")
     tables = mode in ("full", "results", "europe", "standings") or mode == "auto" and age(status.get("last_standings_attempt_utc"), now) >= (2 if status.get("standings_refresh_status") in ("error","partial") else AUTO_REFRESH_HOURS)
-    return {"standings": tables, "results": results, "europe": europe_due, "europe_full": europe_full, "mode": mode, "history": bool(history), "full": bool(full), "calendar": calendar,
+    work = {"standings": tables, "results": results, "europe": europe_due, "europe_full": europe_full, "mode": mode, "history": bool(history), "full": bool(full), "calendar": calendar,
             "quotes": quotes, "quote_window": window, "history_targets": len(targets(today, full)) if history else 0}
+    if calendar_config:
+        work.update(calendar_provider='Statarea', results=False,
+                    statarea=calendar or mode in ('history', 'results', 'europe'))
+        retry = status.get('statarea_wide_status') == 'partial' and age(status.get('last_statarea_wide_attempt_utc'), now) >= 2
+        work['statarea_wide'] = work['statarea'] and (mode == 'full' or not status.get('last_statarea_wide_attempt_utc') or
+            retry or age(status.get('last_statarea_wide_attempt_utc'), now) >= 23)
+    return work
 
 
 def requested_mode(root, event, mode, request_commit=None):
@@ -114,7 +123,7 @@ def requested_mode(root, event, mode, request_commit=None):
     return request["mode"], request["id"]
 
 
-def collect(root, mode, now, download=u.fetch, request_id=None):
+def collect(root, mode, now, download=u.fetch, request_id=None, statarea_download=None):
     underlying, cache, lock = download, {}, Lock()
     def download(url, **kwargs):
         key = (url, registry.encoded(kwargs))
@@ -129,12 +138,12 @@ def collect(root, mode, now, download=u.fetch, request_id=None):
     status = u.readjson(root/"docs/data/status.json", {})
     if request_id and request_id in status.get("processed_sync_requests", []):
         mode = "publish"
-    work = plan(status, mode, now)
+    work = plan(status, mode, now, statarea.configuration(root))
     history = u.index_history(u.readjson(root/"docs/data/history.json", []))
     stamp, today = iso(now), u.today_sofia(now)
     patch = {"schema": 1, "observed_at_utc": stamp, "plan": work, "request_id": request_id,
              "history": [], "checks": {}, "errors": [], "observations": [],
-             "calendar": None, "quotes": None, "markets": [], "results": None, "europe": None, "standings": None}
+             "calendar": None, "quotes": None, "markets": [], "results": None, "europe": None, "standings": None, "statarea": None}
 
     def one(target):
         label, div, url = target
@@ -184,7 +193,10 @@ def collect(root, mode, now, download=u.fetch, request_id=None):
                 else:
                     patch["history"].extend(rows)
                     patch["markets"].extend(prices)
-    if work["calendar"]:
+    if work.get('statarea'):
+        patch['statarea'] = statarea.collect(root, now, wide=work['statarea_wide'],
+            initial=not (root/statarea.ARCHIVE/'index.json').exists(), download=statarea_download)
+    elif work["calendar"]:
         observed = []
         rows, counts, errors = calendars(download, today, u.LEAGUES, observer=observed.append)
         patch["calendar"] = {"rows": rows, "counts": counts, "errors": errors}
@@ -273,6 +285,27 @@ def apply(root, patch):
         if receipt["complete"]:
             status["last_europe_success_utc"] = stamp
             if work.get("europe_full"): status["last_europe_backfill_success_utc"] = stamp
+    sta = patch.get('statarea')
+    sta_changed, sta_conflicts = [], 0
+    if sta is not None:
+        archive_total = statarea.persist(root, sta, stamp)
+        if newer('last_statarea_attempt_utc'):
+            sta = statarea.align_registry(root, sta, book)
+            sta_changed, sta_conflicts = statarea.apply_results(sta, history, book)
+            changed.extend(sta_changed); applied += len(sta_changed)
+            registry.observe(book, sta['observations'], stamp)
+            good = sum(c['status'] == 'ok' for c in sta['days'].values())
+            complete = good == len(sta['days']) and not sta['quarantined'] and not sta_conflicts
+            status.update(last_statarea_attempt_utc=stamp, statarea_refresh_status='ok' if complete else 'partial' if good else 'error',
+                statarea_checks=sta['days'], statarea_errors=sta['errors'], statarea_quarantined=sta['quarantined'],
+                statarea_archived_matches=archive_total, statarea_future_days=7)
+            if complete: status['last_statarea_success_utc'] = stamp
+            if sta_changed: status['last_statarea_result_change_utc'] = stamp
+            if sta['wide']:
+                status.update(last_statarea_wide_attempt_utc=stamp, statarea_wide_status='ok' if complete else 'partial', statarea_wide_checks=sta['days'])
+                if complete: status['last_statarea_wide_success_utc'] = stamp
+        else:
+            sta = None  # Keep older evidence without regressing the current views.
     # Newly completed fixtures and any enrichment retain identity and provenance.
     registry.observe(book, patch["observations"], stamp)
     registry.observe(book, [{"row": row} for row in changed], stamp)
@@ -298,7 +331,31 @@ def apply(root, patch):
     future = lambda row: today.isoformat() <= row[3] <= (today+dt.timedelta(days=30)).isoformat()
     fixtures = list(old_fixtures)
     calendar = patch["calendar"]
-    if calendar and newer("last_fixture_attempt_utc"):
+    if sta is not None and newer('last_fixture_attempt_utc'):
+        # Replace only exact observed identities, including provider-ID reschedules.
+        # Unlisted/failed-day fixtures survive; absence alone is not cancellation.
+        observed_ids = {o['provider_id'] for o in sta['observations']}
+        affected = {key for m in book['matches'].values() if observed_ids.intersection(m['provider_ids']) for key in m['legacy_keys']}
+        cached = {u.key(r): r for r in fixtures}
+        incoming = []
+        for row in sta['rows']:
+            old = cached.get(u.key(row))
+            fresh = list(row)
+            if old is not None: fresh[9:13] = old[9:13]
+            incoming.append(fresh)
+        fixtures = u.merge_fixtures([*incoming, *[r for r in fixtures if registry.row_key(r) not in affected]])
+        good_days = {d: stamp for d, c in sta['days'].items() if c['status'] == 'ok'}
+        status.setdefault('statarea_day_success_utc', {}).update(good_days)
+        good = len(good_days)
+        status.update(last_fixture_attempt_utc=stamp, fixtures_checked_utc=stamp,
+            secondary_fixture_counts={div: sum(r[0] == div for r in incoming) for div in statarea.DIVISIONS},
+            secondary_fixture_sources_ok=27 if good == len(sta['days']) else 0,
+            secondary_fixture_sources_total=27, secondary_fixture_errors=sta['errors'],
+            stale_secondary_leagues=[] if good == len(sta['days']) else sorted(statarea.DIVISIONS),
+            fixtures_feed_status='ok' if good == len(sta['days']) and not sta['quarantined'] else 'partial' if good else 'error',
+            fixtures_source='Statarea / verified UTC; Football-Data historical statistics and quotes')
+        if good: status['fixtures_updated_utc'] = stamp
+    elif calendar and newer("last_fixture_attempt_utc"):
         stamps = status.setdefault("calendar_success_utc", {})
         eligible = {div for div in calendar["counts"] if stamps.get(div, "") <= stamp}
         incoming = [r for r in calendar["rows"] if r[0] in eligible]
@@ -323,10 +380,14 @@ def apply(root, patch):
             secondary = [r for r in fixtures if is_secondary(r) or len(r) > 13 and "Sofia" in str(r[13])]
             keys = {u.key(r) for r in fixtures}
             eligible = calendar["counts"] if calendar else {}
-            primary = [r for r in quotes["rows"] if r[0] not in eligible or u.key(r) in keys]
+            primary = [r for r in quotes["rows"] if u.key(r) in keys] if work.get('calendar_provider') == 'Statarea' else [r for r in quotes["rows"] if r[0] not in eligible or u.key(r) in keys]
             # Fresh quotes overwrite older primary snapshots; kickoff remains Sofia.
             fresh_keys = {u.key(r) for r in primary}
-            fixtures = u.confirmed_kickoffs(u.merge_fixtures([*primary, *[r for r in fixtures if u.key(r) not in fresh_keys]]), secondary)
+            if work.get('calendar_provider') == 'Statarea':
+                prices = {u.key(r): r for r in primary}
+                fixtures = [[*r[:9], *prices[u.key(r)][9:13], *r[13:]] if u.key(r) in prices else r for r in fixtures]
+            else:
+                fixtures = u.confirmed_kickoffs(u.merge_fixtures([*primary, *[r for r in fixtures if u.key(r) not in fresh_keys]]), secondary)
             priced_keys = {m["key"] for m in patch.get("markets", []) if m["kind"] == "fixture_csv"}
             applicable = any(registry.row_key(r) in priced_keys or r[11] is not None or r[12] is not None for r in primary)
             upcoming_core = any(r[0] in u.CSV_LEAGUES and r[3] <= (today+dt.timedelta(days=15)).isoformat() for r in fixtures)
@@ -343,7 +404,7 @@ def apply(root, patch):
     europe.reconcile_administrative(root, book, europe_clubs)
     registry.reconcile(book, [*historical, *europe_rows], fixtures, view_stamp, aliases=aliases)
     status.update(schema_version=3, history_count=len(historical), fixtures_count=len(fixtures),
-                  calendar_only=not work["history"] and not work.get("results") and not work.get("europe"), last_build_utc=max(stamp, status.get("last_build_utc", "")))
+                  calendar_only=not work["history"] and not work.get("results") and not work.get("europe") and not patch.get('statarea'), last_build_utc=max(stamp, status.get("last_build_utc", "")))
     if patch.get("request_id"):
         status["processed_sync_requests"] = sorted(set(status.get("processed_sync_requests", [])+[patch["request_id"]]))
     latest = {}
@@ -370,6 +431,7 @@ def apply(root, patch):
               "calendar_stale_leagues": status.get("stale_secondary_leagues", []),
               "sources": status.get("source_checks", {}),
               "result_bridge_status": status.get("result_bridge_status"), "result_bridge_checks": status.get("result_bridge_checks", {}),
+              "statarea": {k: status.get(k) for k in ('last_statarea_attempt_utc', 'last_statarea_success_utc', 'statarea_refresh_status', 'statarea_archived_matches', 'statarea_errors', 'statarea_quarantined')},
               "europe_refresh_status": status.get("europe_refresh_status"), "europe_regulation_results": len(europe_rows), "standings": tables["coverage"],
               "note": "Source date alone does not prove missing games during a break. Pending fixtures are retained; unlisted is not cancelled. UEFA regulation scores are archived separately; administrative outcomes never settle analytical picks."}
     added_markets, market_report = markets.apply(root, patch.get("markets", []), fixtures, registry.row_key, stamp, u.readjson, u.writejson, status.get("quote_check_status"), checked_stamp=view_stamp)
@@ -380,7 +442,7 @@ def apply(root, patch):
                        ("docs/data/status.json", status), (REGISTRY, book), (LINKS, registry.links(book)), (HEALTH, health)]:
         u.writejson(root/name, data)
     return {"history": len(historical), "fixtures": len(fixtures), "changed_results": applied,
-            "conflicts_this_patch": conflicts+bridge_conflicts, "europe_results": len(europe_rows), "standings": tables["coverage"], "registry_matches": len(book["matches"]), "new_market_snapshots": added_markets, "plan": work}
+            "conflicts_this_patch": conflicts+bridge_conflicts+sta_conflicts, "europe_results": len(europe_rows), "standings": tables["coverage"], "registry_matches": len(book["matches"]), "new_market_snapshots": added_markets, "plan": work}
 
 
 def main():
@@ -396,7 +458,7 @@ def main():
     else:
         mode, request_id = requested_mode(ROOT, args.event, args.mode, args.commit)
         if args.action == "plan":
-            print(json.dumps(plan(u.readjson(u.STAT, {}), mode, utcnow())))
+            print(json.dumps(plan(u.readjson(u.STAT, {}), mode, utcnow(), statarea.configuration(ROOT))))
         else:
             patch = collect(ROOT, mode, utcnow(), request_id=request_id)
             u.writejson(args.patch, patch)

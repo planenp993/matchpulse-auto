@@ -522,6 +522,7 @@ function refreshSync(){
  el('notice').textContent=partial?'Непълни данни: '+[...sources.filter(r=>r.warning).map(r=>r.label),...failures].join(', ')+'. Виж „Данни и обновяване“.':'';
  el('syncContent').innerHTML='<div class="sync-grid">'+sources.map(r=>'<div><strong>'+esc(r.label)+'</strong><span>'+esc(showStamp(r.stamp))+'</span><span class="sync-state '+(r.warning?'sync-state-warning':'')+'">'+esc(r.text)+'</span></div>').join('')+'</div>'+
   '<p>Публикуване: '+esc(showStamp(s.last_build_utc))+'. То е отделно от проверките на източниците.</p>'+
+  (s.last_statarea_attempt_utc?'<p>Statarea: програмата и скорошните резултати се проверяват по график през 30 минути. По-широк преглед назад и до 7 дни напред се прави ежедневно. Вече получените резултати се пазят в нашия архив.</p>':'')+
   (failures.length?'<p>Не се заредиха: '+failures.map(esc).join(', ')+'. Зависещите от тях серии, селекции или отчитане на резултати са ограничени.</p>':'')+
   sources.filter(r=>r.errors.length).map(r=>'<p>'+esc(r.label)+': '+r.errors.map(esc).join(' · ')+'</p>').join('');
 }

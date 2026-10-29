@@ -53,6 +53,8 @@ jobs:
         run: python scripts/audit_scout.py
       - name: Verify isolated UEFA regulation archive
         run: python scripts/europe_archive.py --check
+      - name: Verify locally retained Statarea observations without downloads
+        run: python scripts/statarea.py --check
       - name: Verify provider standings without downloads
         run: python scripts/standings.py --check
       - name: Smoke check real history and fixtures

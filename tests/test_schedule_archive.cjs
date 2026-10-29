@@ -47,3 +47,10 @@ test('A schedule correction discloses the new kickoff and preserves the original
  assert.equal(e.fixture[3],record.fixture.date);assert.deepEqual(e.forecast.selection.main,record.selection.main);
  assert.equal(UI.status(e),'Променен график');assert.match(UI.planHTML(e),/Променен начален час/);
 });
+test('A confirmed goal-only final is visible while optional CSV statistics are still missing',()=>{
+ const source=registry();source.matches.one.state='final_awaiting_stats';source.matches.one.result=[2,4];
+ const entry=B.build({registry:source,ledgers:[],now}).entries[0];
+ assert.deepEqual(entry.score,[2,4]);assert.equal(UI.status(entry),'Краен резултат 2:4');
+ source.matches.one.state='provisional_result';
+ assert.equal(B.build({registry:source,ledgers:[],now}).entries[0].score,null);
+});
