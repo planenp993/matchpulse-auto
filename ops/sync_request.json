@@ -1,1 +1,1 @@
-{"id":"activate-statarea-retained-calendar-2026-10-29","mode":"calendar","reason":"User-authorized permanent Statarea calendar/recent results; initial retained backfill, confirmed UTC, no Football-Data downloads."}
+{"id":"verify-statarea-retained-fast-cycle-2026-10-29","mode":"calendar","reason":"Verify the short six-UTC-day Statarea refresh against the persisted initial archive, without historical CSVs or duplicate results."}
