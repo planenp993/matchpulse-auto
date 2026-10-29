@@ -8,7 +8,7 @@
 const FILES=Object.freeze({'history.json':'history','fixtures.json':'fixtures','status.json':'status',
  'europe_history.json':'europe','match_links.json':'links','europe_fixture_names.json':'europeNames',
  'standings.json':'standings','coverage_audit.json':'coverage','diary_report.json':'diary',
- 'selection_diary_report.json':'selectionDiary','match_plan_diary_report.json':'matchPlanDiary','curated_diary_report.json':'curatedDiary','selection_quotes.json':'selectionQuotes'});
+ 'selection_diary_report.json':'selectionDiary','match_plan_diary_report.json':'matchPlanDiary','curated_diary_report.json':'curatedDiary','selection_quotes.json':'selectionQuotes','schedule_archive.json':'scheduleArchive'});
 const CACHEABLE=new Set(['history.json','europe_history.json','match_links.json','europe_fixture_names.json']);
 const CACHE='matchpulse-public-snapshots-v1';
 const canonical=v=>JSON.stringify(v,(_,x)=>x&&typeof x==='object'&&!Array.isArray(x)?Object.fromEntries(Object.keys(x).sort().map(k=>[k,x[k]])):x);

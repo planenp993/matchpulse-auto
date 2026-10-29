@@ -1,7 +1,7 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),crypto=require('node:crypto');
 const V2=require('../docs/scout-combinations.js'),S=require('../docs/scout-curated.js'),C=require('../docs/scout-core.js'),M=require('../docs/model-core.js'),A=require('../docs/scout-archive.js');
-const read=n=>JSON.parse(fs.readFileSync('docs/data/'+n+'.json')),history=read('history'),fixtures=read('fixtures'),now=new Date('2026-10-28T07:00Z');
+const read=n=>JSON.parse(fs.readFileSync('docs/data/'+n+'.json')),history=read('history'),fixtures=JSON.parse(fs.readFileSync('tests/fixtures/selection-calendar-2026-10-28.json')),now=new Date('2026-10-28T07:00Z');
 const archive=A.build(C,history,read('europe_history'),read('match_links'),read('europe_fixture_names')),engine=S.createEngine(history,M,C),v2=V2.createEngine(history,M,C);
 const opts=f=>{const r=archive.recentProfile(f,{windowSize:10,now});return {profile:archive.profile(f,{windowSize:10}),now,pending:!!(r.home.pendingLatest||r.away.pendingLatest)};};
 const entries=fixtures.filter(f=>f[3]>='2026-10-28'&&f[3]<='2026-11-03').map(f=>engine.evaluate(f,opts(f)));

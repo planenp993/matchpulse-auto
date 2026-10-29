@@ -389,3 +389,29 @@ Rich match readouts should explain form, venue, goals, observed xG and limitatio
 in connected prose, without truncating them to a few sentences. The displayed and
 copied paragraphs must agree. See `docs/curated-method.md` and run the curated
 unit, diary and browser acceptances in addition to previous checks.
+
+
+## Past calendar and update regression (29 October 2026)
+
+`schedule_archive.cjs` derives a bounded 30-day-back calendar from the persistent
+match registry and verified, sealed original/v1/v2/v3 ledgers. It never creates a
+past forecast, changes a writer/config, or edits any ledger line. Explicit latest
+registered selection version wins, including its frozen abstention. Missing
+results stay pending; provider absence is not cancellation. Schedule corrections
+retain the original date/record and disclose the changed kickoff separately.
+Run its builder/check after diary writers and before the final client manifest
+inside the existing post-reset retry loop. Keep the artifact versioned/offline.
+
+The Program date picker opens past matches and their saved probabilities/picks;
+other statistics are explicitly a reference from the updated historical archive.
+No manual-price or new-pick controls appear for an already started match. Archive
+failure must show a retry state instead of a false empty day. Future selections
+and the scanner continue to use the unchanged upcoming-only engine.
+
+Selection/combination/diary regression tests use the checked-in calendar snapshot
+`tests/fixtures/selection-calendar-2026-10-28.json` with their fixed clock. Never
+look up a fixed historical test match in today's rolling production calendar:
+that blocked the 29 October scheduled update before provider collection. Browser
+selection/backup tests use the same controlled snapshot; the general live-data
+browser checks remain separate. Run `test_schedule_archive.cjs` and
+`scripts/test_calendar_browser.cjs` alongside all previous acceptances.

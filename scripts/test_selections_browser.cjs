@@ -5,7 +5,7 @@
  const errors=[],stats={browser:browser.version()},base='http://127.0.0.1:8765/scout.html';
  async function prepare(page){
   page.on('pageerror',e=>errors.push(String(e)));
-  await page.addInitScript(()=>{const Original=Date,fixed=Original.parse('2026-10-28T07:00:00Z');window.Date=class extends Original{constructor(...args){super(...(args.length?args:[fixed]));}static now(){return fixed;}};});
+  await require('./browser_selection_snapshot.cjs').prepare(page);
  }
  async function ready(page){await page.waitForFunction(()=>document.getElementById('lastSync')?.textContent.includes('Програма:'));await page.evaluate(()=>MatchpulseLoading.ensureExtras());}
  async function selectionReady(page){await page.waitForFunction(()=>document.getElementById('selectionList')?.getAttribute('aria-busy')==='false'&&!document.getElementById('selectionSummary').textContent.includes('Преглеждам'),{timeout:60000});}

@@ -1,7 +1,7 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs');
 const D=require('../scripts/curated_diary.cjs'),J=require('../scripts/forecast_diary.cjs'),S=require('../docs/scout-curated.js'),C=require('../docs/scout-core.js');
-const history=JSON.parse(fs.readFileSync('docs/data/history.json')),all=JSON.parse(fs.readFileSync('docs/data/fixtures.json'));
+const history=JSON.parse(fs.readFileSync('docs/data/history.json')),all=JSON.parse(fs.readFileSync('tests/fixtures/selection-calendar-2026-10-28.json'));
 const now=new Date('2026-10-28T07:00:00Z'),config=D.configFor(new Date('2026-10-28T06:00:00Z'));
 const fixtures=all.filter(f=>['E0','I1'].includes(f[0])&&f[3]>='2026-10-28'&&f[3]<='2026-10-30');
 const args={history,fixtures,now,config,matchLinks:J.readMatchLinks()};

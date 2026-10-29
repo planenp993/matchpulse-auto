@@ -1,7 +1,7 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),crypto=require('node:crypto');
 const V1=require('../docs/scout-selections.js'),S=require('../docs/scout-combinations.js'),C=require('../docs/scout-core.js'),M=require('../docs/model-core.js'),A=require('../docs/scout-archive.js');
-const read=n=>JSON.parse(fs.readFileSync('docs/data/'+n+'.json')),history=read('history'),fixtures=read('fixtures');
+const read=n=>JSON.parse(fs.readFileSync('docs/data/'+n+'.json')),history=read('history'),fixtures=JSON.parse(fs.readFileSync('tests/fixtures/selection-calendar-2026-10-28.json'));
 const now=new Date('2026-10-28T07:00:00Z'),archive=A.build(C,history,read('europe_history'),read('match_links'),read('europe_fixture_names'));
 const current=S.createEngine(history,M,C),old=V1.createEngine(history,M,C);
 const week=fixtures.filter(f=>f[3]>='2026-10-28'&&f[3]<='2026-11-03');

@@ -15,6 +15,7 @@ patterns=(DOC/"scout-patterns.js").read_text(encoding="utf-8")
 health=(DOC/"scout-health.js").read_text(encoding="utf-8")
 ui=(DOC/"scout.js").read_text(encoding="utf-8")
 bundle={
+ "scheduleArchive":json.loads((DOC/"data/schedule_archive.json").read_text(encoding="utf-8")),
  "history":json.loads((DOC/"data/history.json").read_text(encoding="utf-8")),
  "europe":json.loads((DOC/"data/europe_history.json").read_text(encoding="utf-8")),
  "links":json.loads((DOC/"data/match_links.json").read_text(encoding="utf-8")),
@@ -31,7 +32,7 @@ bundle={
 }
 payload=json.dumps(bundle,ensure_ascii=False,separators=(",",":")).replace("</","<\\/")
 html=re.sub(r'<link rel="stylesheet" href="scout\.css(?:\?[^"<>]*)?">',lambda m:'<style>'+css+'</style>',html)
-for n,source in [("scout-health.js",health),("club-aliases.js",aliases),("model-core.js",model),("scout-core.js",core),("scout-markets.js",markets),("scout-elo.js",elo),("scout-patterns.js",patterns),("scout-archive.js",(DOC/"scout-archive.js").read_text(encoding="utf-8")),("scout-standings.js",(DOC/"scout-standings.js").read_text(encoding="utf-8")),("scout-analysis.js",(DOC/"scout-analysis.js").read_text(encoding="utf-8")),("scout-selections.js",(DOC/"scout-selections.js").read_text(encoding="utf-8")),("scout-combinations.js",(DOC/"scout-combinations.js").read_text(encoding="utf-8")),("scout-curated.js",(DOC/"scout-curated.js").read_text(encoding="utf-8")),("scout-selection-ui.js",(DOC/"scout-selection-ui.js").read_text(encoding="utf-8")),("scout-data.js",(DOC/"scout-data.js").read_text(encoding="utf-8")),("scout-backup.js",(DOC/"scout-backup.js").read_text(encoding="utf-8")),("scout.js",ui)]:
+for n,source in [("scout-calendar.js",(DOC/"scout-calendar.js").read_text(encoding="utf-8")),("scout-health.js",health),("club-aliases.js",aliases),("model-core.js",model),("scout-core.js",core),("scout-markets.js",markets),("scout-elo.js",elo),("scout-patterns.js",patterns),("scout-archive.js",(DOC/"scout-archive.js").read_text(encoding="utf-8")),("scout-standings.js",(DOC/"scout-standings.js").read_text(encoding="utf-8")),("scout-analysis.js",(DOC/"scout-analysis.js").read_text(encoding="utf-8")),("scout-selections.js",(DOC/"scout-selections.js").read_text(encoding="utf-8")),("scout-combinations.js",(DOC/"scout-combinations.js").read_text(encoding="utf-8")),("scout-curated.js",(DOC/"scout-curated.js").read_text(encoding="utf-8")),("scout-selection-ui.js",(DOC/"scout-selection-ui.js").read_text(encoding="utf-8")),("scout-data.js",(DOC/"scout-data.js").read_text(encoding="utf-8")),("scout-backup.js",(DOC/"scout-backup.js").read_text(encoding="utf-8")),("scout.js",ui)]:
  marker=re.search(r'<script src="'+re.escape(n)+r'(?:\?[^"<>]*)?"></script>',html)
  replacement='<script>'+source.replace("</script","<\\/script")+'</script>'
  if n=="scout.js":
