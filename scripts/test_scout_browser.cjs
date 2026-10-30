@@ -177,7 +177,13 @@
  await mobile.waitForFunction(()=>document.getElementById('lastSync')?.textContent.includes('Програма:'),{timeout:20000});
  await mobile.locator('[data-day="7"]').click();
  if(await mobile.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth+1))throw new Error('Mobile schedule overflows horizontally');
- if((await mobile.locator('.fixture-row').first().boundingBox()).y>700)throw new Error('Mobile program is buried below introductory copy');
+ // Real stale/partial provider receipts add a necessary health warning. Keep
+ // the layout budget for the program, excluding only that visible warning.
+ const warningSpace=await mobile.locator('#notice').evaluate(el=>{
+  const s=getComputedStyle(el);return s.display==='none'?0:el.getBoundingClientRect().height+
+   (parseFloat(s.marginTop)||0)+(parseFloat(s.marginBottom)||0);
+ });
+ if((await mobile.locator('.fixture-row').first().boundingBox()).y-warningSpace>700)throw new Error('Mobile program is buried below introductory copy');
  await mobile.screenshot({path:'scout-mobile.png',fullPage:true});
  await mobile.locator('.fixture-row').first().click();
  await mobile.waitForFunction(()=>document.documentElement.dataset.scoutArchive==='ready');
