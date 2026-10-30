@@ -1,1 +1,1 @@
-{"schema":1,"id":"forebet-activation-2026-10-30","mode":"auto","reason":"Owner-authorized activation of the supplemental Forebet source after PR 40 passed verification and browser acceptance. Preserve independent actual source triggers and existing Statarea receipts."}
+{"schema":1,"id":"missing-clock-recovery-2026-10-30-afternoon","mode":"auto","reason":"Owner reports stale 11:04 Sofia source receipt at 13:46. Explicit recovery only; do not treat this push as native scheduler reliability evidence."}
