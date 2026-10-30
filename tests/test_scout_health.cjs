@@ -34,3 +34,13 @@ test('Statarea clocks are independent, frequent and expose quarantined observati
  const missing=H.sources({...s,last_statarea_success_utc:null,last_build_utc:stamp},fresh).find(r=>r.label.includes('Statarea'));
  assert.equal(missing.stamp,null);assert.equal(missing.warning,true);
 });
+test('Forebet keeps its own receipt and partial warning after a newer publication',()=>{
+ const s={...healthy,last_statarea_attempt_utc:stamp,last_statarea_success_utc:stamp,
+  last_forebet_attempt_utc:stamp,last_forebet_data_success_utc:stamp,forebet_refresh_status:'ok'};
+ const row=H.sources(s,now).find(r=>r.label.includes('Forebet'));
+ assert.equal(row.stamp,stamp);assert.equal(row.warning,false);
+ const stale=H.sources({...s,last_build_utc:'2026-10-28T12:00:00Z'},new Date('2026-10-28T12:00:00Z')).find(r=>r.label.includes('Forebet'));
+ assert.equal(stale.stamp,stamp);assert.equal(stale.warning,true);
+ const partial=H.sources({...s,forebet_refresh_status:'partial',forebet_quarantined:[{id:'9'}]},now).find(r=>r.label.includes('Forebet'));
+ assert.equal(partial.warning,true);assert.match(partial.errors[0],/1/);
+});

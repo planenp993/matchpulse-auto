@@ -9,6 +9,7 @@
 - Правила за промени и проверки: [AGENTS.md](AGENTS.md).
 - Подбор на селекции: [методика](docs/selections-method.md).
 - Отделен дневник на селекциите: [правила](docs/selections-diary-method.md).
+- Програма и резултати: [Statarea](docs/statarea-method.md) и допълващ [Forebet](docs/forebet-method.md).
 - Предишни етапи: [архив](docs/archive/PROJECT_HISTORY_BG.md).
 
 Статичният сайт се публикува от GitHub Actions. Обновяването работи без

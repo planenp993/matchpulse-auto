@@ -509,3 +509,25 @@ use `auto`; a manual probe remains workflow_dispatch evidence, never schedule.
 Run `tests/test_refresh_clock.py` with the complete provider-free suite, all
 existing frozen diary/research/archive/manifest checks, and the real workflow
 call. Record actual automatic evidence or its absence in PROJECT_STATE_BG.md.
+
+## Supplemental Forebet ingestion (30 October 2026)
+
+The owner authorized Forebet as a complementary second calendar/recent-result
+source. This supersedes the Statarea-only source restriction above; it does not
+authorize another scheduler. Keep cron-job.org setup stopped. The existing
+clock/planner gives Forebet its own two-hour gate and a 25-minute minimum for
+primary errors/missing observations, with a daily wider window.
+
+`scripts/forebet.py` reads the anonymous public More listing with two bounded
+workers and the same access-denial circuit policy. Its source DATE_BAH is fixed
+UTC+01, converted to UTC before selecting a day and then to Europe/Sofia.
+Never import prediction/odds fields. Only exact competitions, reviewed club
+links and explicit regulation FT observations qualify. Preserve Statarea's
+primary kickoff, richer historical statistics and every score conflict.
+
+`data/forebet_clubs.json` is ingestion-only; each link has three exact historical
+scores against two opponents and source URL/hash evidence. Keep unknown names
+quarantined. Retain sanitized correction variants permanently in data/forebet;
+run `python scripts/forebet.py --check` in provider-free CI and the publication
+retry loop. A failed source retains its own receipts/warning even when the
+other source supplies the calendar. See `docs/forebet-method.md`.

@@ -11,7 +11,7 @@ import data_sync as sync
 import match_registry as registry
 import statarea
 
-SOURCES = ('history', 'calendar', 'quotes', 'results', 'europe', 'standings', 'statarea')
+SOURCES = ('history', 'calendar', 'quotes', 'results', 'europe', 'standings', 'statarea', 'forebet')
 
 
 def decision(root, now):
