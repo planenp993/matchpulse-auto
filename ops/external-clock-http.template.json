@@ -1,5 +1,5 @@
 {
-  "status": "authorized_awaiting_account_and_private_token_entry",
+  "status": "paused_by_owner_no_verified_external_job",
   "service": "cron-job.org",
   "timezone": "Europe/Sofia",
   "schedule": "13,43 * * * *",
@@ -31,5 +31,6 @@
     200,
     204
   ],
-  "authorization": "Owner approved the free external clock on 2026-10-29; account access and private credential entry are still required. No external job is active yet."
+  "authorization": "Owner approved the free external clock on 2026-10-29 and later paused setup. Prepared definition only; do not resume activation without an instruction to continue. No credential is stored in the repository.",
+  "last_review": "2026-10-30 after the 13:46 Europe/Sofia stale-data report. Native scheduled events are missing; Statarea also failed TLS in two explicit recoveries. An external trigger does not fix provider availability."
 }
