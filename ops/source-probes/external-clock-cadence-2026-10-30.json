@@ -1,0 +1,90 @@
+{
+  "schema": 1,
+  "service": "cron-job.org",
+  "job_id": 8758317,
+  "job_url": "https://console.cron-job.org/jobs/8758317",
+  "title": "Matchpulse — Soccerway · проверка на 10 мин",
+  "enabled": true,
+  "timezone": "Europe/Sofia",
+  "previous_schedule": "13,43 * * * *",
+  "schedule": "3,13,23,33,43,53 * * * *",
+  "saved_and_reloaded": true,
+  "response_history_enabled": true,
+  "credential_value_recorded": false,
+  "credential_or_permissions_changed": false,
+  "request": {
+    "method": "POST",
+    "workflow": "refresh-clock.yml",
+    "ref": "main",
+    "mode": "auto"
+  },
+  "provider_target_interval_minutes": 30,
+  "provider_minimum_interval_minutes": 25,
+  "code_models_and_diaries_changed": false,
+  "scheduled_history": [
+    {
+      "scheduled_sofia": "2026-10-30T22:13:00+02:00",
+      "executed_sofia": "2026-10-30T22:13:03+02:00",
+      "http_status": 200,
+      "github_run_id": 41121445289,
+      "source_success_utc": "2026-10-30T20:19:46+00:00",
+      "source_status": "ok",
+      "sources_ok": 27,
+      "sources_total": 27
+    },
+    {
+      "scheduled_sofia": "2026-10-30T22:43:00+02:00",
+      "executed_sofia": "2026-10-30T22:43:03+02:00",
+      "http_status": 200,
+      "github_run_id": 41125398666,
+      "response_run_id_matched": true,
+      "planner_refresh": false,
+      "source_collection": "skipped; source attempt was only about 23 minutes old"
+    },
+    {
+      "scheduled_sofia": "2026-10-30T23:13:00+02:00",
+      "executed_sofia": "2026-10-30T23:13:03+02:00",
+      "http_status": 200,
+      "github_run_id": 41129345313,
+      "response_run_id_matched": true,
+      "source_success_utc": "2026-10-30T21:14:05+00:00",
+      "source_status": "ok",
+      "sources_ok": 27,
+      "sources_total": 27,
+      "errors": [],
+      "quarantined": [],
+      "changed_results": 6,
+      "conflicts_this_patch": 0,
+      "history_count": 54947,
+      "fixtures_count": 889,
+      "public_status_verified": true,
+      "five_append_only_diaries": "pass",
+      "pages_deployment": "success",
+      "preceded_cadence_change": true
+    }
+  ],
+  "reason": "A delayed publisher moved source collection from 22:13 to 22:19:46. The 22:43 poll skipped below the 25-minute minimum, so a half-hour external poll waited until 23:13 to retry. A ten-minute poll catches due work sooner without changing provider gates.",
+  "provider_free_replay": {
+    "source_attempt_utc": "2026-10-30T20:19:46+00:00",
+    "decisions": [
+      {
+        "at_sofia": "22:43:13",
+        "soccerway_due": false
+      },
+      {
+        "at_sofia": "22:53:13",
+        "soccerway_due": true
+      }
+    ],
+    "provider_downloads": 0,
+    "production_receipt": false
+  },
+  "next_scheduled_executions_sofia": [
+    "2026-10-30T23:33:00+02:00",
+    "2026-10-30T23:43:00+02:00",
+    "2026-10-30T23:53:00+02:00"
+  ],
+  "first_new_cadence_execution": "pending",
+  "limits": "Saved schedule is not proof of future execution. GitHub runner and Pages queue delays remain possible; actual provider receipts retain their real observation times.",
+  "previous_evidence": "ops/source-probes/external-clock-activation-2026-10-30.json"
+}

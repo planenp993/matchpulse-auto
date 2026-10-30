@@ -579,35 +579,51 @@ single-file `[data-sync]` request. See docs/soccerway-method.md.
 
 ## Active external clock (30 October 2026)
 
-The owner explicitly resumed cron-job.org setup and privately entered the
-existing token. This supersedes all earlier pause/credential-pending notes.
-Exactly one external job is saved and ENABLED: 8758317,
-“Matchpulse — Soccerway · 30 минути”, at
-https://console.cron-job.org/jobs/8758317. Its schedule is 13,43 * * * *,
-Europe/Sofia, POST to refresh-clock.yml/dispatches with main/auto, standard
-GitHub JSON headers and saved response history. Never create a duplicate job.
+The owner prioritizes regular updates and explicitly authorized the interval
+choice after reviewing the proposed ten-minute check. Exactly one external job
+is saved and ENABLED: 8758317, “Matchpulse — Soccerway · проверка на 10 мин”,
+at https://console.cron-job.org/jobs/8758317. Its CURRENT schedule is
+3,13,23,33,43,53 * * * *, Europe/Sofia. This supersedes the initial 13/43
+external schedule and all earlier pause/credential-pending notes. Do not
+create another job. POST/main/auto, saved response history and credentials
+remain in the same service configuration.
 
-An initial HTTP 401 was caused by an exact duplicated paste of the existing
-credential. Only the duplicate was removed via UI keyboard editing, without
-returning, recording or replacing the secret. The corrected manual service
-test returned HTTP 200 and GitHub workflow_dispatch run 41118013045. That run
-successfully published a clean 27/27 Soccerway receipt at
-2026-10-30T19:47:37+00:00 (21:47:37 Sofia), four new domestic results, zero
-score conflicts, and all five append-only diary checks passed. The public site
-clock was verified. A fresh service reload confirmed next execution 22:13 Sofia.
+The initial manual service test was run 41118013045, with a clean 27/27
+Soccerway receipt at 2026-10-30T19:47:37+00:00 (21:47:37 Sofia). It is not
+proof of scheduled recurrence. Private HISTORY has since confirmed scheduled
+HTTP 200 executions at 22:13:03, 22:43:03 and 23:13:03 Sofia. The response
+bodies for 22:43 and 23:13 match GitHub runs 41125398666 and 41129345313;
+the first scheduled run is 41121445289.
 
-The first real scheduled executions (22:13 and 22:43) remain to be verified.
-A one-time follow-up check was scheduled for 22:53:56 Sofia. Do not count the
-manual test as proof of recurrence. Match the external service's planned
-execution/response run ID to the corresponding GitHub workflow_dispatch and
-actual successful Soccerway source receipt. If private cron history is
-unavailable, distinguish public matching-time evidence from verified origin.
+Run 41121445289 waited for its publisher runner until 22:19:05; actual
+Soccerway success was 22:19:46, clean 27/27. The 22:43 planner correctly
+skipped downloads because only 23 minutes had elapsed against the existing
+25-minute minimum. Run 41129345313 then succeeded at 23:14:05 Sofia:
+27/27, six new domestic results, zero source errors/quarantines/score
+conflicts, 54,947 domestic results and 889 future fixtures. Publication
+and all five append-only diary checks passed; public status was verified.
+
+The correction changes only the external check frequency, not collection
+rules. Preserve the existing approximately 30-minute Soccerway policy
+(25-minute minimum), independent slow-source gates, separate caller/publisher
+concurrency and provider-free ordinary pushes. A ten-minute poll that arrives
+early still makes no provider requests or publication. A later poll catches
+up without waiting another whole half hour. Do not promise exact wall-clock
+publication; GitHub runner/Pages queues remain outside this configuration.
+
+Save/reload verified the ten-minute expression and enabled state. HISTORY
+shows upcoming 23:33, 23:43 and 23:53 Sofia under the new configuration.
+The first actual execution under the new cadence is still pending; do not
+count a displayed schedule or the preceding 23:14 receipt as that evidence.
+A provider-free replay of the observed 22:19:46 receipt confirms skip at
+22:43 and due at 22:53 with the unchanged planner. This is a replay, not a
+new production retrieval.
 
 The real Authorization value is only in the service; repository templates
 retain a placeholder. NEVER dump the Advanced editor, Raw Request, full
-editor AX/DOM or a screenshot containing the credential. Use narrow non-secret
-DOM checks and the Cronjobs list/history for verification. Do not ask for the
-token in chat, generate a replacement unnecessarily, or widen permissions.
-Keep the existing clock/planner/concurrency gates and models/diaries unchanged.
+editor AX/DOM or a screenshot containing the credential. Inspect only narrow
+non-secret Common controls; use the Cronjobs list/history for full observations.
+Do not request the token in chat, generate a replacement unnecessarily, or
+widen permissions. Keep all models, archives and frozen diaries intact.
 See docs/EXTERNAL_CLOCK_BG.md and
-ops/source-probes/external-clock-activation-2026-10-30.json.
+ops/source-probes/external-clock-cadence-2026-10-30.json.

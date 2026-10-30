@@ -1,15 +1,15 @@
 {
-  "status": "enabled_manual_test_and_source_success_scheduled_recurrence_pending",
+  "status": "enabled_ten_minute_polling_scheduled_delivery_confirmed_new_cadence_pending",
   "service": "cron-job.org",
   "job_id": 8758317,
   "job_url": "https://console.cron-job.org/jobs/8758317",
-  "title": "Matchpulse — Soccerway · 30 минути",
+  "title": "Matchpulse — Soccerway · проверка на 10 мин",
   "enabled": true,
   "save_responses": true,
   "http_timeout_seconds": 30,
   "primary_provider": "Soccerway",
   "timezone": "Europe/Sofia",
-  "schedule": "13,43 * * * *",
+  "schedule": "3,13,23,33,43,53 * * * *",
   "request": {
     "method": "POST",
     "url": "https://api.github.com/repos/planenp993/matchpulse-auto/actions/workflows/refresh-clock.yml/dispatches",
@@ -33,16 +33,24 @@
       "Actions": "read and write"
     }
   },
-  "verification": "Job 8758317 is enabled and fresh service UI shows next execution at 22:13 Europe/Sofia. Manual service test returned HTTP 200 and run 41118013045 successfully refreshed Soccerway at 21:47:37 Sofia (27/27). First planned executions at 22:13 and 22:43 remain to be verified; a manual test alone is not proof of repetition.",
+  "verification": "Saved and reloaded existing enabled job 8758317 with a ten-minute poll. Private HISTORY confirms scheduled HTTP 200 at 22:13, 22:43 and 23:13 Sofia, matched to GitHub dispatches. Last actual successful Soccerway receipt before cadence change: 23:14:05 Sofia, 27/27 in run 41129345313. The first execution under the new cadence remains pending; an early poll may skip collection.",
   "test_run_id": 41118013045,
   "test_http_status": 200,
   "test_source_success_utc": "2026-10-30T19:47:37+00:00",
-  "next_scheduled_executions_sofia": ["2026-10-30T22:13:00+02:00", "2026-10-30T22:43:00+02:00"],
-  "follow_up_check_sofia": "2026-10-30T22:53:56+02:00",
+  "next_scheduled_executions_sofia": [
+    "2026-10-30T23:33:00+02:00",
+    "2026-10-30T23:43:00+02:00",
+    "2026-10-30T23:53:00+02:00"
+  ],
   "expected_http_statuses": [
     200,
     204
   ],
-  "authorization": "Owner explicitly resumed the free external clock on 2026-10-30 and privately entered the existing token. A duplicate paste was removed without exposing or replacing the credential. One saved job is enabled after successful test and deployment. No credential is stored in the repository.",
-  "last_review": "2026-10-30: enabled job 8758317 verified after a fresh service reload, next execution 22:13 Europe/Sofia. HTTP 200 dispatch and actual Soccerway production receipt verified in run 41118013045. Scheduled recurrence verification remains pending."
+  "authorization": "Owner explicitly prioritized regular automatic updates over a particular interval after reviewing the proposed ten-minute check. Same enabled job and credential; only title and polling schedule changed. No credential is stored in the repository.",
+  "last_review": "2026-10-30: ten-minute schedule and enabled state verified after reload. Service HISTORY and response run IDs checked. Initial manual test is retained as historical evidence, not proof of recurrence.",
+  "polling_interval_minutes": 10,
+  "provider_target_interval_minutes": 30,
+  "provider_minimum_interval_minutes": 25,
+  "latest_automatic_run_id": 41129345313,
+  "latest_automatic_source_success_utc": "2026-10-30T21:14:05+00:00"
 }
