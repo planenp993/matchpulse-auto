@@ -69,6 +69,7 @@ jobs:
             # history or calendar over another writer's newer publication.
             python scripts/data_sync.py apply --patch /tmp/mp-patch.json
             python scripts/statarea.py --check
+            python scripts/forebet.py --check
             python scripts/audit_scout.py
             python scripts/europe_archive.py --check
             python scripts/standings.py --check
@@ -100,6 +101,7 @@ jobs:
             git add docs/data/europe_history.json docs/data/europe_coverage.json docs/data/europe_fixture_names.json
             if [ -d data/europe ]; then git add data/europe; fi
             if [ -d data/statarea ]; then git add data/statarea; fi
+            if [ -d data/forebet ]; then git add data/forebet; fi
             for file in data/europe_clubs.json data/europe_schedule.json data/result_provenance.json; do
               if [ -f "$file" ]; then git add "$file"; fi
             done

@@ -1,0 +1,2406 @@
+{
+  "schema": 1,
+  "entries": [
+    {
+      "division": "AUT",
+      "source_name": "SCR Altach",
+      "target": "Altach",
+      "evidence": [
+        {
+          "provider_match_id": "2476827",
+          "date": "2026-10-23",
+          "home": "Altach",
+          "away": "Austria Vienna",
+          "regulation": [
+            2,
+            1
+          ],
+          "opponent_key": "austria vienna",
+          "source_url": "https://www.forebet.com/en/football/matches/scr-altach-sv-ried-2476832",
+          "source_sha256": "4f9fac49aaaa11b41f7d5394a2f84b21f00d3e6ef0cfce836fb37508cbf996f6",
+          "match_url": "https://www.forebet.com/en/football/matches/scr-altach-austria-wien-2476827"
+        },
+        {
+          "provider_match_id": "2476824",
+          "date": "2026-10-18",
+          "home": "Salzburg",
+          "away": "Altach",
+          "regulation": [
+            3,
+            0
+          ],
+          "opponent_key": "salzburg",
+          "source_url": "https://www.forebet.com/en/football/matches/scr-altach-sv-ried-2476832",
+          "source_sha256": "4f9fac49aaaa11b41f7d5394a2f84b21f00d3e6ef0cfce836fb37508cbf996f6",
+          "match_url": "https://www.forebet.com/en/football/matches/rb-salzburg-scr-altach-2476824"
+        },
+        {
+          "provider_match_id": "2476815",
+          "date": "2026-10-11",
+          "home": "Altach",
+          "away": "Wolfsberger AC",
+          "regulation": [
+            3,
+            0
+          ],
+          "opponent_key": "wolfsberger ac",
+          "source_url": "https://www.forebet.com/en/football/matches/scr-altach-sv-ried-2476832",
+          "source_sha256": "4f9fac49aaaa11b41f7d5394a2f84b21f00d3e6ef0cfce836fb37508cbf996f6",
+          "match_url": "https://www.forebet.com/en/football/matches/scr-altach-wolfsberger-ac-2476815"
+        }
+      ]
+    },
+    {
+      "division": "AUT",
+      "source_name": "SV Ried",
+      "target": "Ried",
+      "evidence": [
+        {
+          "provider_match_id": "2476831",
+          "date": "2026-10-25",
+          "home": "Sturm Graz",
+          "away": "Ried",
+          "regulation": [
+            2,
+            2
+          ],
+          "opponent_key": "sturm graz",
+          "source_url": "https://www.forebet.com/en/football/matches/scr-altach-sv-ried-2476832",
+          "source_sha256": "4f9fac49aaaa11b41f7d5394a2f84b21f00d3e6ef0cfce836fb37508cbf996f6",
+          "match_url": "https://www.forebet.com/en/football/matches/sturm-graz-sv-ried-2476831"
+        },
+        {
+          "provider_match_id": "2476822",
+          "date": "2026-10-17",
+          "home": "Ried",
+          "away": "Austria Vienna",
+          "regulation": [
+            3,
+            2
+          ],
+          "opponent_key": "austria vienna",
+          "source_url": "https://www.forebet.com/en/football/matches/scr-altach-sv-ried-2476832",
+          "source_sha256": "4f9fac49aaaa11b41f7d5394a2f84b21f00d3e6ef0cfce836fb37508cbf996f6",
+          "match_url": "https://www.forebet.com/en/football/matches/sv-ried-austria-wien-2476822"
+        },
+        {
+          "provider_match_id": "2476810",
+          "date": "2026-09-20",
+          "home": "Ried",
+          "away": "Wolfsberger AC",
+          "regulation": [
+            4,
+            1
+          ],
+          "opponent_key": "wolfsberger ac",
+          "source_url": "https://www.forebet.com/en/football/matches/scr-altach-sv-ried-2476832",
+          "source_sha256": "4f9fac49aaaa11b41f7d5394a2f84b21f00d3e6ef0cfce836fb37508cbf996f6",
+          "match_url": "https://www.forebet.com/en/football/matches/sv-ried-wolfsberger-ac-2476810"
+        }
+      ]
+    },
+    {
+      "division": "AUT",
+      "source_name": "WSG Tirol",
+      "target": "Tirol",
+      "evidence": [
+        {
+          "provider_match_id": "2476826",
+          "date": "2026-10-24",
+          "home": "Tirol",
+          "away": "Grazer AK",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "grazer ak",
+          "source_url": "https://www.forebet.com/en/football/matches/lask-linz-wsg-tirol-2476836",
+          "source_sha256": "d81812a2225e67ba412cf61b28f754dc96098db93c2fa5b44a3713e0916e4bfb",
+          "match_url": "https://www.forebet.com/en/football/matches/wsg-tirol-grazer-ak-2476826"
+        },
+        {
+          "provider_match_id": "2476821",
+          "date": "2026-10-18",
+          "home": "Wolfsberger AC",
+          "away": "Tirol",
+          "regulation": [
+            0,
+            2
+          ],
+          "opponent_key": "wolfsberger ac",
+          "source_url": "https://www.forebet.com/en/football/matches/lask-linz-wsg-tirol-2476836",
+          "source_sha256": "d81812a2225e67ba412cf61b28f754dc96098db93c2fa5b44a3713e0916e4bfb",
+          "match_url": "https://www.forebet.com/en/football/matches/wolfsberger-ac-wsg-tirol-2476821"
+        },
+        {
+          "provider_match_id": "2476812",
+          "date": "2026-09-18",
+          "home": "SK Rapid",
+          "away": "Tirol",
+          "regulation": [
+            3,
+            0
+          ],
+          "opponent_key": "sk rapid",
+          "source_url": "https://www.forebet.com/en/football/matches/lask-linz-wsg-tirol-2476836",
+          "source_sha256": "d81812a2225e67ba412cf61b28f754dc96098db93c2fa5b44a3713e0916e4bfb",
+          "match_url": "https://www.forebet.com/en/football/matches/rapid-wien-wsg-tirol-2476812"
+        }
+      ]
+    },
+    {
+      "division": "B1",
+      "source_name": "Royal Antwerp",
+      "target": "Antwerp",
+      "evidence": [
+        {
+          "provider_match_id": "2490213",
+          "date": "2026-10-24",
+          "home": "Antwerp",
+          "away": "Charleroi",
+          "regulation": [
+            3,
+            0
+          ],
+          "opponent_key": "charleroi",
+          "source_url": "https://www.forebet.com/en/football/matches/cercle-brugge-royal-antwerp-2490222",
+          "source_sha256": "7d6e2af69e9d3026e6145c080dcf72bf49d5352401d4be56c9d1076cee7c19e9",
+          "match_url": "https://www.forebet.com/en/football/matches/royal-antwerp-sporting-charleroi-2490213"
+        },
+        {
+          "provider_match_id": "2490197",
+          "date": "2026-10-11",
+          "home": "Westerlo",
+          "away": "Antwerp",
+          "regulation": [
+            5,
+            1
+          ],
+          "opponent_key": "westerlo",
+          "source_url": "https://www.forebet.com/en/football/matches/cercle-brugge-royal-antwerp-2490222",
+          "source_sha256": "7d6e2af69e9d3026e6145c080dcf72bf49d5352401d4be56c9d1076cee7c19e9",
+          "match_url": "https://www.forebet.com/en/football/matches/westerlo-royal-antwerp-2490197"
+        },
+        {
+          "provider_match_id": "2490193",
+          "date": "2026-09-20",
+          "home": "Antwerp",
+          "away": "St. Gilloise",
+          "regulation": [
+            0,
+            2
+          ],
+          "opponent_key": "st gilloise",
+          "source_url": "https://www.forebet.com/en/football/matches/cercle-brugge-royal-antwerp-2490222",
+          "source_sha256": "7d6e2af69e9d3026e6145c080dcf72bf49d5352401d4be56c9d1076cee7c19e9",
+          "match_url": "https://www.forebet.com/en/football/matches/royal-antwerp-union-saint-gilloise-2490193"
+        }
+      ]
+    },
+    {
+      "division": "B1",
+      "source_name": "Sint-Truiden",
+      "target": "St Truiden",
+      "evidence": [
+        {
+          "provider_match_id": "2490209",
+          "date": "2026-10-25",
+          "home": "Club Brugge",
+          "away": "St Truiden",
+          "regulation": [
+            3,
+            2
+          ],
+          "opponent_key": "club brugge",
+          "source_url": "https://www.forebet.com/en/football/matches/sint-truiden-oh-leuven-2490215",
+          "source_sha256": "b8957676008d7cb8013dcfd401a70ef12dca2e733914f9d1be321337e93a7b6e",
+          "match_url": "https://www.forebet.com/en/football/matches/club-brugge-sint-truiden-2490209"
+        },
+        {
+          "provider_match_id": "2490199",
+          "date": "2026-10-11",
+          "home": "Mechelen",
+          "away": "St Truiden",
+          "regulation": [
+            4,
+            3
+          ],
+          "opponent_key": "mechelen",
+          "source_url": "https://www.forebet.com/en/football/matches/sint-truiden-oh-leuven-2490215",
+          "source_sha256": "b8957676008d7cb8013dcfd401a70ef12dca2e733914f9d1be321337e93a7b6e",
+          "match_url": "https://www.forebet.com/en/football/matches/kv-mechelen-sint-truiden-2490199"
+        },
+        {
+          "provider_match_id": "2490194",
+          "date": "2026-09-20",
+          "home": "St Truiden",
+          "away": "Westerlo",
+          "regulation": [
+            0,
+            2
+          ],
+          "opponent_key": "westerlo",
+          "source_url": "https://www.forebet.com/en/football/matches/sint-truiden-oh-leuven-2490215",
+          "source_sha256": "b8957676008d7cb8013dcfd401a70ef12dca2e733914f9d1be321337e93a7b6e",
+          "match_url": "https://www.forebet.com/en/football/matches/sint-truiden-westerlo-2490194"
+        }
+      ]
+    },
+    {
+      "division": "D1",
+      "source_name": "Borussia M'gladbach",
+      "target": "M'gladbach",
+      "evidence": [
+        {
+          "provider_match_id": "2523608",
+          "date": "2026-10-23",
+          "home": "Stuttgart",
+          "away": "M'gladbach",
+          "regulation": [
+            2,
+            3
+          ],
+          "opponent_key": "stuttgart",
+          "source_url": "https://www.forebet.com/en/football/matches/borussia-m'gladbach-paderborn-2523614",
+          "source_sha256": "cdda3d46f72ece5d14d222e8b27e3b273752f1446274d5e10563756e3c7a677d",
+          "match_url": "https://www.forebet.com/en/football/matches/stuttgart-borussia-mgladbach-2523608"
+        },
+        {
+          "provider_match_id": "2523341",
+          "date": "2026-10-18",
+          "home": "M'gladbach",
+          "away": "Hoffenheim",
+          "regulation": [
+            1,
+            2
+          ],
+          "opponent_key": "hoffenheim",
+          "source_url": "https://www.forebet.com/en/football/matches/borussia-m'gladbach-paderborn-2523614",
+          "source_sha256": "cdda3d46f72ece5d14d222e8b27e3b273752f1446274d5e10563756e3c7a677d",
+          "match_url": "https://www.forebet.com/en/football/matches/borussia-mgladbach-hoffenheim-2523341"
+        },
+        {
+          "provider_match_id": "2523329",
+          "date": "2026-10-11",
+          "home": "FC Koln",
+          "away": "M'gladbach",
+          "regulation": [
+            2,
+            1
+          ],
+          "opponent_key": "fc koln",
+          "source_url": "https://www.forebet.com/en/football/matches/borussia-m'gladbach-paderborn-2523614",
+          "source_sha256": "cdda3d46f72ece5d14d222e8b27e3b273752f1446274d5e10563756e3c7a677d",
+          "match_url": "https://www.forebet.com/en/football/matches/k%C3%B6ln-borussia-mgladbach-2523329"
+        }
+      ]
+    },
+    {
+      "division": "DNK",
+      "source_name": "AGF Aarhus",
+      "target": "Aarhus",
+      "evidence": [
+        {
+          "provider_match_id": "2469566",
+          "date": "2026-10-25",
+          "home": "Aarhus",
+          "away": "Viborg",
+          "regulation": [
+            2,
+            1
+          ],
+          "opponent_key": "viborg",
+          "source_url": "https://www.forebet.com/en/football/matches/br%C3%B8ndby-agf-aarhus-2469572",
+          "source_sha256": "6851a35d63d92b0188cca3c84549dbe4fcd37eac757f756706aa3e49fc516de1",
+          "match_url": "https://www.forebet.com/en/football/matches/agf-aarhus-viborg-ff-2469566"
+        },
+        {
+          "provider_match_id": "2469554",
+          "date": "2026-10-12",
+          "home": "Aarhus",
+          "away": "Sonderjyske",
+          "regulation": [
+            3,
+            0
+          ],
+          "opponent_key": "sonderjyske",
+          "source_url": "https://www.forebet.com/en/football/matches/br%C3%B8ndby-agf-aarhus-2469572",
+          "source_sha256": "6851a35d63d92b0188cca3c84549dbe4fcd37eac757f756706aa3e49fc516de1",
+          "match_url": "https://www.forebet.com/en/football/matches/agf-aarhus-sonderjyske-2469554"
+        },
+        {
+          "provider_match_id": "2469546",
+          "date": "2026-09-20",
+          "home": "Horsens",
+          "away": "Aarhus",
+          "regulation": [
+            2,
+            2
+          ],
+          "opponent_key": "horsens",
+          "source_url": "https://www.forebet.com/en/football/matches/br%C3%B8ndby-agf-aarhus-2469572",
+          "source_sha256": "6851a35d63d92b0188cca3c84549dbe4fcd37eac757f756706aa3e49fc516de1",
+          "match_url": "https://www.forebet.com/en/football/matches/ac-horsens-agf-aarhus-2469546"
+        }
+      ]
+    },
+    {
+      "division": "DNK",
+      "source_name": "Brøndby",
+      "target": "Brondby",
+      "evidence": [
+        {
+          "provider_match_id": "2469568",
+          "date": "2026-10-23",
+          "home": "Randers FC",
+          "away": "Brondby",
+          "regulation": [
+            1,
+            3
+          ],
+          "opponent_key": "randers fc",
+          "source_url": "https://www.forebet.com/en/football/matches/br%C3%B8ndby-agf-aarhus-2469572",
+          "source_sha256": "6851a35d63d92b0188cca3c84549dbe4fcd37eac757f756706aa3e49fc516de1",
+          "match_url": "https://www.forebet.com/en/football/matches/randers-fc-br%C3%B8ndby-2469568"
+        },
+        {
+          "provider_match_id": "2469542",
+          "date": "2026-09-14",
+          "home": "Midtjylland",
+          "away": "Brondby",
+          "regulation": [
+            4,
+            1
+          ],
+          "opponent_key": "midtjylland",
+          "source_url": "https://www.forebet.com/en/football/matches/br%C3%B8ndby-agf-aarhus-2469572",
+          "source_sha256": "6851a35d63d92b0188cca3c84549dbe4fcd37eac757f756706aa3e49fc516de1",
+          "match_url": "https://www.forebet.com/en/football/matches/midtjylland-br%C3%B8ndby-2469542"
+        },
+        {
+          "provider_match_id": "2469538",
+          "date": "2026-09-06",
+          "home": "Brondby",
+          "away": "Randers FC",
+          "regulation": [
+            0,
+            3
+          ],
+          "opponent_key": "randers fc",
+          "source_url": "https://www.forebet.com/en/football/matches/br%C3%B8ndby-agf-aarhus-2469572",
+          "source_sha256": "6851a35d63d92b0188cca3c84549dbe4fcd37eac757f756706aa3e49fc516de1",
+          "match_url": "https://www.forebet.com/en/football/matches/br%C3%B8ndby-randers-fc-2469538"
+        }
+      ]
+    },
+    {
+      "division": "DNK",
+      "source_name": "København",
+      "target": "FC Copenhagen",
+      "evidence": [
+        {
+          "provider_match_id": "2469569",
+          "date": "2026-10-26",
+          "home": "FC Copenhagen",
+          "away": "Odense",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "odense",
+          "source_url": "https://www.forebet.com/en/football/matches/odense-bk-silkeborg-2469575",
+          "source_sha256": "effc3d7289e7f1be0d53a6d4a894adb92038a47d39f5809d4a7e43439da7b5bc",
+          "match_url": "https://www.forebet.com/en/football/matches/k%C3%B8benhavn-odense-bk-2469569"
+        },
+        {
+          "provider_match_id": "2469561",
+          "date": "2026-10-18",
+          "home": "FC Copenhagen",
+          "away": "Aarhus",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "aarhus",
+          "source_url": "https://www.forebet.com/en/football/matches/br%C3%B8ndby-agf-aarhus-2469572",
+          "source_sha256": "6851a35d63d92b0188cca3c84549dbe4fcd37eac757f756706aa3e49fc516de1",
+          "match_url": "https://www.forebet.com/en/football/matches/k%C3%B8benhavn-agf-aarhus-2469561"
+        },
+        {
+          "provider_match_id": "2469548",
+          "date": "2026-09-20",
+          "home": "Brondby",
+          "away": "FC Copenhagen",
+          "regulation": [
+            0,
+            1
+          ],
+          "opponent_key": "brondby",
+          "source_url": "https://www.forebet.com/en/football/matches/br%C3%B8ndby-agf-aarhus-2469572",
+          "source_sha256": "6851a35d63d92b0188cca3c84549dbe4fcd37eac757f756706aa3e49fc516de1",
+          "match_url": "https://www.forebet.com/en/football/matches/br%C3%B8ndby-k%C3%B8benhavn-2469548"
+        }
+      ]
+    },
+    {
+      "division": "DNK",
+      "source_name": "Lyngby BK",
+      "target": "Lyngby",
+      "evidence": [
+        {
+          "provider_match_id": "2469567",
+          "date": "2026-10-25",
+          "home": "Midtjylland",
+          "away": "Lyngby",
+          "regulation": [
+            3,
+            2
+          ],
+          "opponent_key": "midtjylland",
+          "source_url": "https://www.forebet.com/en/football/matches/lyngby-bk-randers-fc-2469573",
+          "source_sha256": "e5fd8d2b65482f951ed23488379d8b14a041943a8ae613e64984628b09f57a29",
+          "match_url": "https://www.forebet.com/en/football/matches/midtjylland-lyngby-bk-2469567"
+        },
+        {
+          "provider_match_id": "2469560",
+          "date": "2026-10-18",
+          "home": "Lyngby",
+          "away": "Nordsjaelland",
+          "regulation": [
+            3,
+            3
+          ],
+          "opponent_key": "nordsjaelland",
+          "source_url": "https://www.forebet.com/en/football/matches/lyngby-bk-randers-fc-2469573",
+          "source_sha256": "e5fd8d2b65482f951ed23488379d8b14a041943a8ae613e64984628b09f57a29",
+          "match_url": "https://www.forebet.com/en/football/matches/lyngby-bk-fc-nordsj%C3%A6lland-2469560"
+        },
+        {
+          "provider_match_id": "2469549",
+          "date": "2026-09-18",
+          "home": "Lyngby",
+          "away": "Silkeborg",
+          "regulation": [
+            0,
+            4
+          ],
+          "opponent_key": "silkeborg",
+          "source_url": "https://www.forebet.com/en/football/matches/odense-bk-silkeborg-2469575",
+          "source_sha256": "effc3d7289e7f1be0d53a6d4a894adb92038a47d39f5809d4a7e43439da7b5bc",
+          "match_url": "https://www.forebet.com/en/football/matches/lyngby-bk-silkeborg-2469549"
+        }
+      ]
+    },
+    {
+      "division": "DNK",
+      "source_name": "Odense BK",
+      "target": "Odense",
+      "evidence": [
+        {
+          "provider_match_id": "2469552",
+          "date": "2026-10-09",
+          "home": "Nordsjaelland",
+          "away": "Odense",
+          "regulation": [
+            0,
+            0
+          ],
+          "opponent_key": "nordsjaelland",
+          "source_url": "https://www.forebet.com/en/football/matches/odense-bk-silkeborg-2469575",
+          "source_sha256": "effc3d7289e7f1be0d53a6d4a894adb92038a47d39f5809d4a7e43439da7b5bc",
+          "match_url": "https://www.forebet.com/en/football/matches/fc-nordsj%C3%A6lland-odense-bk-2469552"
+        },
+        {
+          "provider_match_id": "2469551",
+          "date": "2026-09-19",
+          "home": "Odense",
+          "away": "Midtjylland",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "midtjylland",
+          "source_url": "https://www.forebet.com/en/football/matches/odense-bk-silkeborg-2469575",
+          "source_sha256": "effc3d7289e7f1be0d53a6d4a894adb92038a47d39f5809d4a7e43439da7b5bc",
+          "match_url": "https://www.forebet.com/en/football/matches/odense-bk-midtjylland-2469551"
+        },
+        {
+          "provider_match_id": "2469544",
+          "date": "2026-09-13",
+          "home": "Randers FC",
+          "away": "Odense",
+          "regulation": [
+            1,
+            2
+          ],
+          "opponent_key": "randers fc",
+          "source_url": "https://www.forebet.com/en/football/matches/odense-bk-silkeborg-2469575",
+          "source_sha256": "effc3d7289e7f1be0d53a6d4a894adb92038a47d39f5809d4a7e43439da7b5bc",
+          "match_url": "https://www.forebet.com/en/football/matches/randers-fc-odense-bk-2469544"
+        }
+      ]
+    },
+    {
+      "division": "E1",
+      "source_name": "West Bromwich",
+      "target": "West Brom",
+      "evidence": [
+        {
+          "provider_match_id": "2507153",
+          "date": "2026-10-24",
+          "home": "Preston",
+          "away": "West Brom",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "preston",
+          "source_url": "https://www.forebet.com/en/football/matches/west-ham-west-bromwich-2507162",
+          "source_sha256": "6033fe67851989b017503996148d60964aa368d9843a260ea566b6c92f201a2e",
+          "match_url": "https://www.forebet.com/en/football/matches/preston-north-end-west-bromwich-2507153"
+        },
+        {
+          "provider_match_id": "2507138",
+          "date": "2026-10-17",
+          "home": "West Brom",
+          "away": "Blackburn",
+          "regulation": [
+            3,
+            2
+          ],
+          "opponent_key": "blackburn",
+          "source_url": "https://www.forebet.com/en/football/matches/west-ham-west-bromwich-2507162",
+          "source_sha256": "6033fe67851989b017503996148d60964aa368d9843a260ea566b6c92f201a2e",
+          "match_url": "https://www.forebet.com/en/football/matches/west-bromwich-blackburn-rovers-2507138"
+        },
+        {
+          "provider_match_id": "2507110",
+          "date": "2026-10-10",
+          "home": "West Brom",
+          "away": "Birmingham",
+          "regulation": [
+            0,
+            1
+          ],
+          "opponent_key": "birmingham",
+          "source_url": "https://www.forebet.com/en/football/matches/west-ham-west-bromwich-2507162",
+          "source_sha256": "6033fe67851989b017503996148d60964aa368d9843a260ea566b6c92f201a2e",
+          "match_url": "https://www.forebet.com/en/football/matches/west-bromwich-birmingham-city-2507110"
+        }
+      ]
+    },
+    {
+      "division": "E1",
+      "source_name": "Wrexham FC",
+      "target": "Wrexham",
+      "evidence": [
+        {
+          "provider_match_id": "2507156",
+          "date": "2026-10-24",
+          "home": "Blackburn",
+          "away": "Wrexham",
+          "regulation": [
+            2,
+            0
+          ],
+          "opponent_key": "blackburn",
+          "source_url": "https://www.forebet.com/en/football/matches/sheffield-united-wrexham-fc-2507157",
+          "source_sha256": "816dc895373f4c6b0c72f39fe58078cd1e3912201b713eeb6588a96a91e8a947",
+          "match_url": "https://www.forebet.com/en/football/matches/blackburn-rovers-wrexham-fc-2507156"
+        },
+        {
+          "provider_match_id": "2507137",
+          "date": "2026-10-17",
+          "home": "Wrexham",
+          "away": "Preston",
+          "regulation": [
+            4,
+            1
+          ],
+          "opponent_key": "preston",
+          "source_url": "https://www.forebet.com/en/football/matches/sheffield-united-wrexham-fc-2507157",
+          "source_sha256": "816dc895373f4c6b0c72f39fe58078cd1e3912201b713eeb6588a96a91e8a947",
+          "match_url": "https://www.forebet.com/en/football/matches/wrexham-fc-preston-north-end-2507137"
+        },
+        {
+          "provider_match_id": "2507117",
+          "date": "2026-10-10",
+          "home": "Derby",
+          "away": "Wrexham",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "derby",
+          "source_url": "https://www.forebet.com/en/football/matches/sheffield-united-wrexham-fc-2507157",
+          "source_sha256": "816dc895373f4c6b0c72f39fe58078cd1e3912201b713eeb6588a96a91e8a947",
+          "match_url": "https://www.forebet.com/en/football/matches/derby-county-wrexham-fc-2507117"
+        }
+      ]
+    },
+    {
+      "division": "E2",
+      "source_name": "Cambridge Utd",
+      "target": "Cambridge",
+      "evidence": [
+        {
+          "provider_match_id": "2507716",
+          "date": "2026-10-24",
+          "home": "Cambridge",
+          "away": "Plymouth",
+          "regulation": [
+            2,
+            3
+          ],
+          "opponent_key": "plymouth",
+          "source_url": "https://www.forebet.com/en/football/matches/sheffield-wednesday-cambridge-utd-2507662",
+          "source_sha256": "508555b7e3ffa28efcc6ecae2e3cb61a3e4a954c9c7171f525f4a8850ecac029",
+          "match_url": "https://www.forebet.com/en/football/matches/cambridge-utd-plymouth-argyle-2507716"
+        },
+        {
+          "provider_match_id": "2507703",
+          "date": "2026-10-20",
+          "home": "Cambridge",
+          "away": "Wycombe",
+          "regulation": [
+            2,
+            2
+          ],
+          "opponent_key": "wycombe",
+          "source_url": "https://www.forebet.com/en/football/matches/sheffield-wednesday-cambridge-utd-2507662",
+          "source_sha256": "508555b7e3ffa28efcc6ecae2e3cb61a3e4a954c9c7171f525f4a8850ecac029",
+          "match_url": "https://www.forebet.com/en/football/matches/cambridge-utd-wycombe-2507703"
+        },
+        {
+          "provider_match_id": "2507696",
+          "date": "2026-10-17",
+          "home": "Barnsley",
+          "away": "Cambridge",
+          "regulation": [
+            1,
+            2
+          ],
+          "opponent_key": "barnsley",
+          "source_url": "https://www.forebet.com/en/football/matches/sheffield-wednesday-cambridge-utd-2507662",
+          "source_sha256": "508555b7e3ffa28efcc6ecae2e3cb61a3e4a954c9c7171f525f4a8850ecac029",
+          "match_url": "https://www.forebet.com/en/football/matches/barnsley-cambridge-utd-2507696"
+        }
+      ]
+    },
+    {
+      "division": "E2",
+      "source_name": "Peterborough",
+      "target": "Peterboro",
+      "evidence": [
+        {
+          "provider_match_id": "2507718",
+          "date": "2026-10-24",
+          "home": "Bromley",
+          "away": "Peterboro",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "bromley",
+          "source_url": "https://www.forebet.com/en/football/matches/peterborough-luton-town-2507727",
+          "source_sha256": "124eb7f9aa4cef784a37e8e211169af4d0541f5aae748c4d49e9bbc4e23b2b1a",
+          "match_url": "https://www.forebet.com/en/football/matches/bromley-fc-peterborough-2507718"
+        },
+        {
+          "provider_match_id": "2507701",
+          "date": "2026-10-20",
+          "home": "Huddersfield",
+          "away": "Peterboro",
+          "regulation": [
+            4,
+            1
+          ],
+          "opponent_key": "huddersfield",
+          "source_url": "https://www.forebet.com/en/football/matches/peterborough-luton-town-2507727",
+          "source_sha256": "124eb7f9aa4cef784a37e8e211169af4d0541f5aae748c4d49e9bbc4e23b2b1a",
+          "match_url": "https://www.forebet.com/en/football/matches/huddersfield-peterborough-2507701"
+        },
+        {
+          "provider_match_id": "2507686",
+          "date": "2026-10-17",
+          "home": "Peterboro",
+          "away": "Burton",
+          "regulation": [
+            2,
+            2
+          ],
+          "opponent_key": "burton",
+          "source_url": "https://www.forebet.com/en/football/matches/peterborough-luton-town-2507727",
+          "source_sha256": "124eb7f9aa4cef784a37e8e211169af4d0541f5aae748c4d49e9bbc4e23b2b1a",
+          "match_url": "https://www.forebet.com/en/football/matches/peterborough-burton-albion-2507686"
+        }
+      ]
+    },
+    {
+      "division": "E3",
+      "source_name": "Colchester Utd",
+      "target": "Colchester",
+      "evidence": [
+        {
+          "provider_match_id": "2508261",
+          "date": "2026-10-24",
+          "home": "Northampton",
+          "away": "Colchester",
+          "regulation": [
+            2,
+            0
+          ],
+          "opponent_key": "northampton",
+          "source_url": "https://www.forebet.com/en/football/matches/colchester-utd-walsall-fc-2508283",
+          "source_sha256": "98085ae8aa296651ea28e565a6db2b40ba97ab86ad126c3eff3931c75f4e0e32",
+          "match_url": "https://www.forebet.com/en/football/matches/northampton-town-colchester-utd-2508261"
+        },
+        {
+          "provider_match_id": "2508256",
+          "date": "2026-10-20",
+          "home": "Chesterfield",
+          "away": "Colchester",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "chesterfield",
+          "source_url": "https://www.forebet.com/en/football/matches/colchester-utd-walsall-fc-2508283",
+          "source_sha256": "98085ae8aa296651ea28e565a6db2b40ba97ab86ad126c3eff3931c75f4e0e32",
+          "match_url": "https://www.forebet.com/en/football/matches/chesterfield-colchester-utd-2508256"
+        },
+        {
+          "provider_match_id": "2508247",
+          "date": "2026-10-17",
+          "home": "Colchester",
+          "away": "Exeter",
+          "regulation": [
+            0,
+            0
+          ],
+          "opponent_key": "exeter",
+          "source_url": "https://www.forebet.com/en/football/matches/colchester-utd-walsall-fc-2508283",
+          "source_sha256": "98085ae8aa296651ea28e565a6db2b40ba97ab86ad126c3eff3931c75f4e0e32",
+          "match_url": "https://www.forebet.com/en/football/matches/colchester-utd-exeter-city-2508247"
+        }
+      ]
+    },
+    {
+      "division": "F2",
+      "source_name": "AS Nancy",
+      "target": "Nancy",
+      "evidence": [
+        {
+          "provider_match_id": "2497588",
+          "date": "2026-10-23",
+          "home": "Nancy",
+          "away": "Stade Lavallois MFC",
+          "regulation": [
+            1,
+            0
+          ],
+          "opponent_key": "laval",
+          "source_url": "https://www.forebet.com/en/football/matches/stade-laval-us-boulogne-2497599",
+          "source_sha256": "27e8c834c95c9ed60b71a8f528b10e04bdda54a324eeeeac8fc137ad42bd52a7",
+          "match_url": "https://www.forebet.com/en/football/matches/as-nancy-stade-laval-2497588"
+        },
+        {
+          "provider_match_id": "2497584",
+          "date": "2026-10-16",
+          "home": "FC Annecy",
+          "away": "Nancy",
+          "regulation": [
+            1,
+            2
+          ],
+          "opponent_key": "annecy",
+          "source_url": "https://www.forebet.com/en/football/matches/red-star-as-nancy-2497596",
+          "source_sha256": "fbf76307e27d4c859e022473e6572eccf446b75ba1d179ccfec5da84a7546d91",
+          "match_url": "https://www.forebet.com/en/football/matches/annecy-as-nancy-2497584"
+        },
+        {
+          "provider_match_id": "2497571",
+          "date": "2026-10-09",
+          "home": "Nancy",
+          "away": "EN Avant Guingamp",
+          "regulation": [
+            1,
+            0
+          ],
+          "opponent_key": "guingamp",
+          "source_url": "https://www.forebet.com/en/football/matches/red-star-as-nancy-2497596",
+          "source_sha256": "fbf76307e27d4c859e022473e6572eccf446b75ba1d179ccfec5da84a7546d91",
+          "match_url": "https://www.forebet.com/en/football/matches/as-nancy-guingamp-2497571"
+        }
+      ]
+    },
+    {
+      "division": "F2",
+      "source_name": "US Boulogne",
+      "target": "Boulogne",
+      "evidence": [
+        {
+          "provider_match_id": "2497593",
+          "date": "2026-10-26",
+          "home": "Boulogne",
+          "away": "Reims",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "reims",
+          "source_url": "https://www.forebet.com/en/football/matches/stade-laval-us-boulogne-2497599",
+          "source_sha256": "27e8c834c95c9ed60b71a8f528b10e04bdda54a324eeeeac8fc137ad42bd52a7",
+          "match_url": "https://www.forebet.com/en/football/matches/us-boulogne-reims-2497593"
+        },
+        {
+          "provider_match_id": "2497583",
+          "date": "2026-10-16",
+          "home": "Grenoble",
+          "away": "Boulogne",
+          "regulation": [
+            0,
+            2
+          ],
+          "opponent_key": "grenoble",
+          "source_url": "https://www.forebet.com/en/football/matches/stade-laval-us-boulogne-2497599",
+          "source_sha256": "27e8c834c95c9ed60b71a8f528b10e04bdda54a324eeeeac8fc137ad42bd52a7",
+          "match_url": "https://www.forebet.com/en/football/matches/grenoble-us-boulogne-2497583"
+        },
+        {
+          "provider_match_id": "2497567",
+          "date": "2026-10-09",
+          "home": "Sochaux",
+          "away": "Boulogne",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "sochaux",
+          "source_url": "https://www.forebet.com/en/football/matches/stade-laval-us-boulogne-2497599",
+          "source_sha256": "27e8c834c95c9ed60b71a8f528b10e04bdda54a324eeeeac8fc137ad42bd52a7",
+          "match_url": "https://www.forebet.com/en/football/matches/fc-sochaux-us-boulogne-2497567"
+        }
+      ]
+    },
+    {
+      "division": "G1",
+      "source_name": "Aris Salonica",
+      "target": "Aris",
+      "evidence": [
+        {
+          "provider_match_id": "2520259",
+          "date": "2026-10-18",
+          "home": "Kifisia",
+          "away": "Aris",
+          "regulation": [
+            1,
+            2
+          ],
+          "opponent_key": "kifisia",
+          "source_url": "https://www.forebet.com/en/football/matches/levadiakos-aris-salonica-2520272",
+          "source_sha256": "7b9a63a4bfc1e5e100107e56ded6cac09c928424a346aaa33b2cfa4b6056e981",
+          "match_url": "https://www.forebet.com/en/football/matches/kifisia-aris-salonica-2520259"
+        },
+        {
+          "provider_match_id": "2520252",
+          "date": "2026-10-11",
+          "home": "Aris",
+          "away": "Volos NFC",
+          "regulation": [
+            3,
+            2
+          ],
+          "opponent_key": "volos nfc",
+          "source_url": "https://www.forebet.com/en/football/matches/levadiakos-aris-salonica-2520272",
+          "source_sha256": "7b9a63a4bfc1e5e100107e56ded6cac09c928424a346aaa33b2cfa4b6056e981",
+          "match_url": "https://www.forebet.com/en/football/matches/aris-salonica-volos-nfc-2520252"
+        },
+        {
+          "provider_match_id": "2520235",
+          "date": "2026-09-13",
+          "home": "PAOK",
+          "away": "Aris",
+          "regulation": [
+            2,
+            0
+          ],
+          "opponent_key": "paok",
+          "source_url": "https://www.forebet.com/en/football/matches/levadiakos-aris-salonica-2520272",
+          "source_sha256": "7b9a63a4bfc1e5e100107e56ded6cac09c928424a346aaa33b2cfa4b6056e981",
+          "match_url": "https://www.forebet.com/en/football/matches/paok-aris-salonica-2520235"
+        }
+      ]
+    },
+    {
+      "division": "G1",
+      "source_name": "Atromitos FC",
+      "target": "Atromitos",
+      "evidence": [
+        {
+          "provider_match_id": "2520266",
+          "date": "2026-10-25",
+          "home": "Aris",
+          "away": "Atromitos",
+          "regulation": [
+            3,
+            1
+          ],
+          "opponent_key": "aris",
+          "source_url": "https://www.forebet.com/en/football/matches/levadiakos-aris-salonica-2520272",
+          "source_sha256": "7b9a63a4bfc1e5e100107e56ded6cac09c928424a346aaa33b2cfa4b6056e981",
+          "match_url": "https://www.forebet.com/en/football/matches/aris-salonica-atromitos-fc-2520266"
+        },
+        {
+          "provider_match_id": "2520246",
+          "date": "2026-09-19",
+          "home": "Atromitos",
+          "away": "Kifisia",
+          "regulation": [
+            1,
+            2
+          ],
+          "opponent_key": "kifisia",
+          "source_url": "https://www.forebet.com/en/football/matches/kifisia-olympiacos-fc-2520273",
+          "source_sha256": "220e54e5684df02c0b7cf1ac7ad588def6343ed173809b7b8a5952c128826c59",
+          "match_url": "https://www.forebet.com/en/football/matches/atromitos-fc-kifisia-2520246"
+        },
+        {
+          "provider_match_id": "2520215",
+          "date": "2026-08-22",
+          "home": "Olympiacos",
+          "away": "Atromitos",
+          "regulation": [
+            1,
+            0
+          ],
+          "opponent_key": "olympiakos",
+          "source_url": "https://www.forebet.com/en/football/matches/kifisia-olympiacos-fc-2520273",
+          "source_sha256": "220e54e5684df02c0b7cf1ac7ad588def6343ed173809b7b8a5952c128826c59",
+          "match_url": "https://www.forebet.com/en/football/matches/olympiacos-fc-atromitos-fc-2520215"
+        }
+      ]
+    },
+    {
+      "division": "G1",
+      "source_name": "Iraklis Salonica",
+      "target": "Iraklis",
+      "evidence": [
+        {
+          "provider_match_id": "2520262",
+          "date": "2026-10-24",
+          "home": "Iraklis",
+          "away": "Kifisia",
+          "regulation": [
+            2,
+            3
+          ],
+          "opponent_key": "kifisia",
+          "source_url": "https://www.forebet.com/en/football/matches/kifisia-olympiacos-fc-2520273",
+          "source_sha256": "220e54e5684df02c0b7cf1ac7ad588def6343ed173809b7b8a5952c128826c59",
+          "match_url": "https://www.forebet.com/en/football/matches/iraklis-salonica-kifisia-2520262"
+        },
+        {
+          "provider_match_id": "2520248",
+          "date": "2026-10-11",
+          "home": "Iraklis",
+          "away": "Levadiakos",
+          "regulation": [
+            2,
+            0
+          ],
+          "opponent_key": "levadeiakos",
+          "source_url": "https://www.forebet.com/en/football/matches/levadiakos-aris-salonica-2520272",
+          "source_sha256": "7b9a63a4bfc1e5e100107e56ded6cac09c928424a346aaa33b2cfa4b6056e981",
+          "match_url": "https://www.forebet.com/en/football/matches/iraklis-salonica-levadiakos-2520248"
+        },
+        {
+          "provider_match_id": "2520247",
+          "date": "2026-09-19",
+          "home": "Aris",
+          "away": "Iraklis",
+          "regulation": [
+            0,
+            0
+          ],
+          "opponent_key": "aris",
+          "source_url": "https://www.forebet.com/en/football/matches/levadiakos-aris-salonica-2520272",
+          "source_sha256": "7b9a63a4bfc1e5e100107e56ded6cac09c928424a346aaa33b2cfa4b6056e981",
+          "match_url": "https://www.forebet.com/en/football/matches/aris-salonica-iraklis-salonica-2520247"
+        }
+      ]
+    },
+    {
+      "division": "G1",
+      "source_name": "OFI Creta",
+      "target": "OFI Crete",
+      "evidence": [
+        {
+          "provider_match_id": "2520263",
+          "date": "2026-10-25",
+          "home": "OFI Crete",
+          "away": "PAOK",
+          "regulation": [
+            2,
+            1
+          ],
+          "opponent_key": "paok",
+          "source_url": "https://www.forebet.com/en/football/matches/panetolikos-ofi-creta-2520270",
+          "source_sha256": "408ef02c30d0e028b11fa969ec6a50d59462f9e3481fa1d6fde447566048c730",
+          "match_url": "https://www.forebet.com/en/football/matches/ofi-creta-paok-2520263"
+        },
+        {
+          "provider_match_id": "2520260",
+          "date": "2026-10-18",
+          "home": "Kalamata",
+          "away": "OFI Crete",
+          "regulation": [
+            4,
+            3
+          ],
+          "opponent_key": "kalamata",
+          "source_url": "https://www.forebet.com/en/football/matches/panetolikos-ofi-creta-2520270",
+          "source_sha256": "408ef02c30d0e028b11fa969ec6a50d59462f9e3481fa1d6fde447566048c730",
+          "match_url": "https://www.forebet.com/en/football/matches/kalamata-ofi-creta-2520260"
+        },
+        {
+          "provider_match_id": "2520254",
+          "date": "2026-10-10",
+          "home": "AEK",
+          "away": "OFI Crete",
+          "regulation": [
+            3,
+            0
+          ],
+          "opponent_key": "aek",
+          "source_url": "https://www.forebet.com/en/football/matches/panetolikos-ofi-creta-2520270",
+          "source_sha256": "408ef02c30d0e028b11fa969ec6a50d59462f9e3481fa1d6fde447566048c730",
+          "match_url": "https://www.forebet.com/en/football/matches/aek-ofi-creta-2520254"
+        }
+      ]
+    },
+    {
+      "division": "G1",
+      "source_name": "Olympiacos FC",
+      "target": "Olympiakos",
+      "evidence": [
+        {
+          "provider_match_id": "2520264",
+          "date": "2026-10-25",
+          "home": "Olympiakos",
+          "away": "Kalamata",
+          "regulation": [
+            5,
+            0
+          ],
+          "opponent_key": "kalamata",
+          "source_url": "https://www.forebet.com/en/football/matches/kifisia-olympiacos-fc-2520273",
+          "source_sha256": "220e54e5684df02c0b7cf1ac7ad588def6343ed173809b7b8a5952c128826c59",
+          "match_url": "https://www.forebet.com/en/football/matches/olympiacos-fc-kalamata-2520264"
+        },
+        {
+          "provider_match_id": "2520256",
+          "date": "2026-10-18",
+          "home": "Panetolikos",
+          "away": "Olympiakos",
+          "regulation": [
+            0,
+            2
+          ],
+          "opponent_key": "panetolikos",
+          "source_url": "https://www.forebet.com/en/football/matches/panetolikos-ofi-creta-2520270",
+          "source_sha256": "408ef02c30d0e028b11fa969ec6a50d59462f9e3481fa1d6fde447566048c730",
+          "match_url": "https://www.forebet.com/en/football/matches/panetolikos-olympiacos-fc-2520256"
+        },
+        {
+          "provider_match_id": "2520250",
+          "date": "2026-10-11",
+          "home": "Olympiakos",
+          "away": "Panathinaikos",
+          "regulation": [
+            1,
+            0
+          ],
+          "opponent_key": "panathinaikos",
+          "source_url": "https://www.forebet.com/en/football/matches/kifisia-olympiacos-fc-2520273",
+          "source_sha256": "220e54e5684df02c0b7cf1ac7ad588def6343ed173809b7b8a5952c128826c59",
+          "match_url": "https://www.forebet.com/en/football/matches/olympiacos-fc-panathinaikos-2520250"
+        }
+      ]
+    },
+    {
+      "division": "I1",
+      "source_name": "Calcio Como",
+      "target": "Como",
+      "evidence": [
+        {
+          "provider_match_id": "2496565",
+          "date": "2026-10-24",
+          "home": "Como",
+          "away": "Sassuolo",
+          "regulation": [
+            2,
+            0
+          ],
+          "opponent_key": "sassuolo",
+          "source_url": "https://www.forebet.com/en/football/matches/torino-calcio-como-2496569",
+          "source_sha256": "93a84de0b07b3bd71a0e597633163769e917d7f281a501f3d8b3980d40fe45ea",
+          "match_url": "https://www.forebet.com/en/football/matches/calcio-como-sassuolo-2496565"
+        },
+        {
+          "provider_match_id": "2496556",
+          "date": "2026-10-18",
+          "home": "Fiorentina",
+          "away": "Como",
+          "regulation": [
+            1,
+            3
+          ],
+          "opponent_key": "fiorentina",
+          "source_url": "https://www.forebet.com/en/football/matches/torino-calcio-como-2496569",
+          "source_sha256": "93a84de0b07b3bd71a0e597633163769e917d7f281a501f3d8b3980d40fe45ea",
+          "match_url": "https://www.forebet.com/en/football/matches/fiorentina-calcio-como-2496556"
+        },
+        {
+          "provider_match_id": "2496545",
+          "date": "2026-10-11",
+          "home": "Como",
+          "away": "Roma",
+          "regulation": [
+            0,
+            0
+          ],
+          "opponent_key": "roma",
+          "source_url": "https://www.forebet.com/en/football/matches/torino-calcio-como-2496569",
+          "source_sha256": "93a84de0b07b3bd71a0e597633163769e917d7f281a501f3d8b3980d40fe45ea",
+          "match_url": "https://www.forebet.com/en/football/matches/calcio-como-roma-2496545"
+        }
+      ]
+    },
+    {
+      "division": "I2",
+      "source_name": "AC Pisa",
+      "target": "Pisa",
+      "evidence": [
+        {
+          "provider_match_id": "2521357",
+          "date": "2026-10-25",
+          "home": "Verona",
+          "away": "Pisa",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "verona",
+          "source_url": "https://www.forebet.com/en/football/matches/ac-pisa-palermo-2521364",
+          "source_sha256": "910f1e10ecd1448cc507d330e597433a3a1e4b79d752b800be30523050f3646f",
+          "match_url": "https://www.forebet.com/en/football/matches/verona-ac-pisa-2521357"
+        },
+        {
+          "provider_match_id": "2521344",
+          "date": "2026-10-17",
+          "home": "Pisa",
+          "away": "Cremonese",
+          "regulation": [
+            3,
+            1
+          ],
+          "opponent_key": "cremonese",
+          "source_url": "https://www.forebet.com/en/football/matches/ac-pisa-palermo-2521364",
+          "source_sha256": "910f1e10ecd1448cc507d330e597433a3a1e4b79d752b800be30523050f3646f",
+          "match_url": "https://www.forebet.com/en/football/matches/ac-pisa-cremonese-2521344"
+        },
+        {
+          "provider_match_id": "2521314",
+          "date": "2026-09-11",
+          "home": "Pisa",
+          "away": "Virtus Entella",
+          "regulation": [
+            1,
+            4
+          ],
+          "opponent_key": "virtus entella",
+          "source_url": "https://www.forebet.com/en/football/matches/ac-pisa-palermo-2521364",
+          "source_sha256": "910f1e10ecd1448cc507d330e597433a3a1e4b79d752b800be30523050f3646f",
+          "match_url": "https://www.forebet.com/en/football/matches/ac-pisa-virtus-entella-2521314"
+        }
+      ]
+    },
+    {
+      "division": "I2",
+      "source_name": "Mantova FC",
+      "target": "Mantova",
+      "evidence": [
+        {
+          "provider_match_id": "2521353",
+          "date": "2026-10-24",
+          "home": "Virtus Entella",
+          "away": "Mantova",
+          "regulation": [
+            0,
+            1
+          ],
+          "opponent_key": "virtus entella",
+          "source_url": "https://www.forebet.com/en/football/matches/mantova-fc-cremonese-2521366",
+          "source_sha256": "61f0251dbae7d5d48ff6823a813295b2971c6bd25086b891482a1a91968797d8",
+          "match_url": "https://www.forebet.com/en/football/matches/virtus-entella-mantova-fc-2521353"
+        },
+        {
+          "provider_match_id": "2521346",
+          "date": "2026-10-17",
+          "home": "Mantova",
+          "away": "Palermo",
+          "regulation": [
+            0,
+            2
+          ],
+          "opponent_key": "palermo",
+          "source_url": "https://www.forebet.com/en/football/matches/ac-pisa-palermo-2521364",
+          "source_sha256": "910f1e10ecd1448cc507d330e597433a3a1e4b79d752b800be30523050f3646f",
+          "match_url": "https://www.forebet.com/en/football/matches/mantova-fc-palermo-2521346"
+        },
+        {
+          "provider_match_id": "2521339",
+          "date": "2026-10-11",
+          "home": "Catanzaro",
+          "away": "Mantova",
+          "regulation": [
+            1,
+            3
+          ],
+          "opponent_key": "catanzaro",
+          "source_url": "https://www.forebet.com/en/football/matches/mantova-fc-cremonese-2521366",
+          "source_sha256": "61f0251dbae7d5d48ff6823a813295b2971c6bd25086b891482a1a91968797d8",
+          "match_url": "https://www.forebet.com/en/football/matches/catanzaro-mantova-fc-2521339"
+        }
+      ]
+    },
+    {
+      "division": "I2",
+      "source_name": "Padova Calcio",
+      "target": "Padova",
+      "evidence": [
+        {
+          "provider_match_id": "2521361",
+          "date": "2026-10-24",
+          "home": "Avellino",
+          "away": "Padova",
+          "regulation": [
+            0,
+            1
+          ],
+          "opponent_key": "avellino",
+          "source_url": "https://www.forebet.com/en/football/matches/padova-calcio-fc-s%C3%BCdtirol-2521365",
+          "source_sha256": "e03f797a91106935a3976a83835bac3466fd06f52ad72501afd4a66c75d32117",
+          "match_url": "https://www.forebet.com/en/football/matches/avellino-padova-calcio-2521361"
+        },
+        {
+          "provider_match_id": "2521345",
+          "date": "2026-10-17",
+          "home": "Padova",
+          "away": "Virtus Entella",
+          "regulation": [
+            1,
+            2
+          ],
+          "opponent_key": "virtus entella",
+          "source_url": "https://www.forebet.com/en/football/matches/padova-calcio-fc-s%C3%BCdtirol-2521365",
+          "source_sha256": "e03f797a91106935a3976a83835bac3466fd06f52ad72501afd4a66c75d32117",
+          "match_url": "https://www.forebet.com/en/football/matches/padova-calcio-virtus-entella-2521345"
+        },
+        {
+          "provider_match_id": "2521335",
+          "date": "2026-10-11",
+          "home": "Padova",
+          "away": "Carrarese",
+          "regulation": [
+            0,
+            2
+          ],
+          "opponent_key": "carrarese",
+          "source_url": "https://www.forebet.com/en/football/matches/carrarese-calcio-us-arezzo-2521370",
+          "source_sha256": "1690c4db183e65821d1a01b7d744a4cc594f7a4ff8a5f27ea28ac24b9a6bfa52",
+          "match_url": "https://www.forebet.com/en/football/matches/padova-calcio-carrarese-calcio-2521335"
+        }
+      ]
+    },
+    {
+      "division": "I2",
+      "source_name": "US Arezzo",
+      "target": "Arezzo",
+      "evidence": [
+        {
+          "provider_match_id": "2521362",
+          "date": "2026-10-24",
+          "home": "Arezzo",
+          "away": "Benevento",
+          "regulation": [
+            0,
+            3
+          ],
+          "opponent_key": "benevento",
+          "source_url": "https://www.forebet.com/en/football/matches/carrarese-calcio-us-arezzo-2521370",
+          "source_sha256": "1690c4db183e65821d1a01b7d744a4cc594f7a4ff8a5f27ea28ac24b9a6bfa52",
+          "match_url": "https://www.forebet.com/en/football/matches/us-arezzo-benevento-calcio-2521362"
+        },
+        {
+          "provider_match_id": "2521343",
+          "date": "2026-10-18",
+          "home": "Sampdoria",
+          "away": "Arezzo",
+          "regulation": [
+            1,
+            2
+          ],
+          "opponent_key": "sampdoria",
+          "source_url": "https://www.forebet.com/en/football/matches/carrarese-calcio-us-arezzo-2521370",
+          "source_sha256": "1690c4db183e65821d1a01b7d744a4cc594f7a4ff8a5f27ea28ac24b9a6bfa52",
+          "match_url": "https://www.forebet.com/en/football/matches/sampdoria-us-arezzo-2521343"
+        },
+        {
+          "provider_match_id": "2521342",
+          "date": "2026-10-10",
+          "home": "Arezzo",
+          "away": "Cremonese",
+          "regulation": [
+            0,
+            0
+          ],
+          "opponent_key": "cremonese",
+          "source_url": "https://www.forebet.com/en/football/matches/carrarese-calcio-us-arezzo-2521370",
+          "source_sha256": "1690c4db183e65821d1a01b7d744a4cc594f7a4ff8a5f27ea28ac24b9a6bfa52",
+          "match_url": "https://www.forebet.com/en/football/matches/us-arezzo-cremonese-2521342"
+        }
+      ]
+    },
+    {
+      "division": "I2",
+      "source_name": "Vicenza Calcio",
+      "target": "Vicenza",
+      "evidence": [
+        {
+          "provider_match_id": "2521358",
+          "date": "2026-10-23",
+          "home": "Empoli",
+          "away": "Vicenza",
+          "regulation": [
+            0,
+            2
+          ],
+          "opponent_key": "empoli",
+          "source_url": "https://www.forebet.com/en/football/matches/vicenza-calcio-modena-fc-2521367",
+          "source_sha256": "5a3f12339067c00afc240a3dd2db4261b3259c6acf3f8abb2c3d2d8f26197198",
+          "match_url": "https://www.forebet.com/en/football/matches/empoli-vicenza-calcio-2521358"
+        },
+        {
+          "provider_match_id": "2521351",
+          "date": "2026-10-17",
+          "home": "Benevento",
+          "away": "Vicenza",
+          "regulation": [
+            2,
+            2
+          ],
+          "opponent_key": "benevento",
+          "source_url": "https://www.forebet.com/en/football/matches/vicenza-calcio-modena-fc-2521367",
+          "source_sha256": "5a3f12339067c00afc240a3dd2db4261b3259c6acf3f8abb2c3d2d8f26197198",
+          "match_url": "https://www.forebet.com/en/football/matches/benevento-calcio-vicenza-calcio-2521351"
+        },
+        {
+          "provider_match_id": "2521329",
+          "date": "2026-09-20",
+          "home": "Verona",
+          "away": "Vicenza",
+          "regulation": [
+            2,
+            1
+          ],
+          "opponent_key": "verona",
+          "source_url": "https://www.forebet.com/en/football/matches/vicenza-calcio-modena-fc-2521367",
+          "source_sha256": "5a3f12339067c00afc240a3dd2db4261b3259c6acf3f8abb2c3d2d8f26197198",
+          "match_url": "https://www.forebet.com/en/football/matches/verona-vicenza-calcio-2521329"
+        }
+      ]
+    },
+    {
+      "division": "N1",
+      "source_name": "SC Telstar",
+      "target": "Telstar",
+      "evidence": [
+        {
+          "provider_match_id": "2492082",
+          "date": "2026-10-23",
+          "home": "Go Ahead Eagles",
+          "away": "Telstar",
+          "regulation": [
+            3,
+            2
+          ],
+          "opponent_key": "go ahead eagles",
+          "source_url": "https://www.forebet.com/en/football/matches/sc-telstar-utrecht-2492097",
+          "source_sha256": "c13e4927570e708488e4d9808d9887cdefbdaa214bdda1ce95eb0485f3aafca0",
+          "match_url": "https://www.forebet.com/en/football/matches/go-ahead-eagles-sc-telstar-2492082"
+        },
+        {
+          "provider_match_id": "2492076",
+          "date": "2026-10-17",
+          "home": "Telstar",
+          "away": "Feyenoord",
+          "regulation": [
+            3,
+            4
+          ],
+          "opponent_key": "feyenoord",
+          "source_url": "https://www.forebet.com/en/football/matches/sc-telstar-utrecht-2492097",
+          "source_sha256": "c13e4927570e708488e4d9808d9887cdefbdaa214bdda1ce95eb0485f3aafca0",
+          "match_url": "https://www.forebet.com/en/football/matches/sc-telstar-feyenoord-2492076"
+        },
+        {
+          "provider_match_id": "2492070",
+          "date": "2026-10-11",
+          "home": "Telstar",
+          "away": "Den Haag",
+          "regulation": [
+            2,
+            2
+          ],
+          "opponent_key": "den haag",
+          "source_url": "https://www.forebet.com/en/football/matches/sc-telstar-utrecht-2492097",
+          "source_sha256": "c13e4927570e708488e4d9808d9887cdefbdaa214bdda1ce95eb0485f3aafca0",
+          "match_url": "https://www.forebet.com/en/football/matches/sc-telstar-ado-den-haag-2492070"
+        }
+      ]
+    },
+    {
+      "division": "N1",
+      "source_name": "Willem II Tilburg",
+      "target": "Willem II",
+      "evidence": [
+        {
+          "provider_match_id": "2492084",
+          "date": "2026-10-24",
+          "home": "Willem II",
+          "away": "Cambuur",
+          "regulation": [
+            1,
+            6
+          ],
+          "opponent_key": "cambuur",
+          "source_url": "https://www.forebet.com/en/football/matches/psv-eindhoven-willem-ii-tilburg-2492093",
+          "source_sha256": "2a4fd6b52ed8373e0543aca276fc98630980edaebe4455f6a492ee2bea392d2e",
+          "match_url": "https://www.forebet.com/en/football/matches/willem-ii-tilburg-cambuur-2492084"
+        },
+        {
+          "provider_match_id": "2492077",
+          "date": "2026-10-17",
+          "home": "Sparta Rotterdam",
+          "away": "Willem II",
+          "regulation": [
+            3,
+            2
+          ],
+          "opponent_key": "sparta rotterdam",
+          "source_url": "https://www.forebet.com/en/football/matches/psv-eindhoven-willem-ii-tilburg-2492093",
+          "source_sha256": "2a4fd6b52ed8373e0543aca276fc98630980edaebe4455f6a492ee2bea392d2e",
+          "match_url": "https://www.forebet.com/en/football/matches/sparta-rotterdam-willem-ii-tilburg-2492077"
+        },
+        {
+          "provider_match_id": "2492069",
+          "date": "2026-10-11",
+          "home": "Utrecht",
+          "away": "Willem II",
+          "regulation": [
+            3,
+            1
+          ],
+          "opponent_key": "utrecht",
+          "source_url": "https://www.forebet.com/en/football/matches/sc-telstar-utrecht-2492097",
+          "source_sha256": "c13e4927570e708488e4d9808d9887cdefbdaa214bdda1ce95eb0485f3aafca0",
+          "match_url": "https://www.forebet.com/en/football/matches/utrecht-willem-ii-tilburg-2492069"
+        }
+      ]
+    },
+    {
+      "division": "NOR",
+      "source_name": "Aalesund FK",
+      "target": "Aalesund",
+      "evidence": [
+        {
+          "provider_match_id": "2438446",
+          "date": "2026-10-25",
+          "home": "Sarpsborg 08",
+          "away": "Aalesund",
+          "regulation": [
+            2,
+            1
+          ],
+          "opponent_key": "sarpsborg 08",
+          "source_url": "https://www.forebet.com/en/football/matches/aalesund-fk-sandefjord-2438547",
+          "source_sha256": "7d07c322b125fdd7581674cde7b5eaa1d64364d0107864a29f560cc4564ea819",
+          "match_url": "https://www.forebet.com/en/football/matches/sarpsborg-08-aalesund-fk-2438446"
+        },
+        {
+          "provider_match_id": "2438538",
+          "date": "2026-10-17",
+          "home": "Kristiansund",
+          "away": "Aalesund",
+          "regulation": [
+            1,
+            4
+          ],
+          "opponent_key": "kristiansund",
+          "source_url": "https://www.forebet.com/en/football/matches/aalesund-fk-sandefjord-2438547",
+          "source_sha256": "7d07c322b125fdd7581674cde7b5eaa1d64364d0107864a29f560cc4564ea819",
+          "match_url": "https://www.forebet.com/en/football/matches/kristiansund-bk-aalesund-fk-2438538"
+        },
+        {
+          "provider_match_id": "2438532",
+          "date": "2026-10-11",
+          "home": "Aalesund",
+          "away": "Sarpsborg 08",
+          "regulation": [
+            2,
+            4
+          ],
+          "opponent_key": "sarpsborg 08",
+          "source_url": "https://www.forebet.com/en/football/matches/aalesund-fk-sandefjord-2438547",
+          "source_sha256": "7d07c322b125fdd7581674cde7b5eaa1d64364d0107864a29f560cc4564ea819",
+          "match_url": "https://www.forebet.com/en/football/matches/aalesund-fk-sarpsborg-08-2438532"
+        }
+      ]
+    },
+    {
+      "division": "NOR",
+      "source_name": "Lillestrom SK",
+      "target": "Lillestrom",
+      "evidence": [
+        {
+          "provider_match_id": "2438450",
+          "date": "2026-10-25",
+          "home": "Lillestrom",
+          "away": "Brann",
+          "regulation": [
+            3,
+            2
+          ],
+          "opponent_key": "brann",
+          "source_url": "https://www.forebet.com/en/football/matches/ik-start-lillestrom-sk-2438546",
+          "source_sha256": "5ffd7cba4332e5a03c62f781d3bc6b04966e571e5c484902eeabb11dbc20a61d",
+          "match_url": "https://www.forebet.com/en/football/matches/lillestrom-sk-brann-2438450"
+        },
+        {
+          "provider_match_id": "2438541",
+          "date": "2026-10-18",
+          "home": "Sandefjord",
+          "away": "Lillestrom",
+          "regulation": [
+            0,
+            2
+          ],
+          "opponent_key": "sandefjord",
+          "source_url": "https://www.forebet.com/en/football/matches/ik-start-lillestrom-sk-2438546",
+          "source_sha256": "5ffd7cba4332e5a03c62f781d3bc6b04966e571e5c484902eeabb11dbc20a61d",
+          "match_url": "https://www.forebet.com/en/football/matches/sandefjord-lillestrom-sk-2438541"
+        },
+        {
+          "provider_match_id": "2438528",
+          "date": "2026-10-11",
+          "home": "Lillestrom",
+          "away": "Molde",
+          "regulation": [
+            2,
+            2
+          ],
+          "opponent_key": "molde",
+          "source_url": "https://www.forebet.com/en/football/matches/ik-start-lillestrom-sk-2438546",
+          "source_sha256": "5ffd7cba4332e5a03c62f781d3bc6b04966e571e5c484902eeabb11dbc20a61d",
+          "match_url": "https://www.forebet.com/en/football/matches/lillestrom-sk-molde-2438528"
+        }
+      ]
+    },
+    {
+      "division": "NOR",
+      "source_name": "Rosenborg BK",
+      "target": "Rosenborg",
+      "evidence": [
+        {
+          "provider_match_id": "2438449",
+          "date": "2026-10-24",
+          "home": "HamKam",
+          "away": "Rosenborg",
+          "regulation": [
+            0,
+            3
+          ],
+          "opponent_key": "hamkam",
+          "source_url": "https://www.forebet.com/en/football/matches/fredrikstad-rosenborg-bk-2438544",
+          "source_sha256": "995698e70b740955e9a522fbd3a517629c660556fa8b2e583228fd593c25b524",
+          "match_url": "https://www.forebet.com/en/football/matches/hamkam-rosenborg-bk-2438449"
+        },
+        {
+          "provider_match_id": "2438543",
+          "date": "2026-10-18",
+          "home": "Sarpsborg 08",
+          "away": "Rosenborg",
+          "regulation": [
+            0,
+            3
+          ],
+          "opponent_key": "sarpsborg 08",
+          "source_url": "https://www.forebet.com/en/football/matches/fredrikstad-rosenborg-bk-2438544",
+          "source_sha256": "995698e70b740955e9a522fbd3a517629c660556fa8b2e583228fd593c25b524",
+          "match_url": "https://www.forebet.com/en/football/matches/sarpsborg-08-rosenborg-bk-2438543"
+        },
+        {
+          "provider_match_id": "2438531",
+          "date": "2026-10-10",
+          "home": "Rosenborg",
+          "away": "Sandefjord",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "sandefjord",
+          "source_url": "https://www.forebet.com/en/football/matches/aalesund-fk-sandefjord-2438547",
+          "source_sha256": "7d07c322b125fdd7581674cde7b5eaa1d64364d0107864a29f560cc4564ea819",
+          "match_url": "https://www.forebet.com/en/football/matches/rosenborg-bk-sandefjord-2438531"
+        }
+      ]
+    },
+    {
+      "division": "P1",
+      "source_name": "Nacional Madeira",
+      "target": "Nacional",
+      "evidence": [
+        {
+          "provider_match_id": "2494324",
+          "date": "2026-10-25",
+          "home": "Nacional",
+          "away": "Sp Braga",
+          "regulation": [
+            1,
+            0
+          ],
+          "opponent_key": "sp braga",
+          "source_url": "https://www.forebet.com/en/football/matches/fc-arouca-nacional-madeira-2494336",
+          "source_sha256": "71196afe11b0805a98465be1b03f773670c69535fc1dfbd5711dd2d96c519430",
+          "match_url": "https://www.forebet.com/en/football/matches/nacional-madeira-sporting-braga-2494324"
+        },
+        {
+          "provider_match_id": "2494312",
+          "date": "2026-10-11",
+          "home": "Rio Ave",
+          "away": "Nacional",
+          "regulation": [
+            3,
+            2
+          ],
+          "opponent_key": "rio ave",
+          "source_url": "https://www.forebet.com/en/football/matches/fc-arouca-nacional-madeira-2494336",
+          "source_sha256": "71196afe11b0805a98465be1b03f773670c69535fc1dfbd5711dd2d96c519430",
+          "match_url": "https://www.forebet.com/en/football/matches/rio-ave-nacional-madeira-2494312"
+        },
+        {
+          "provider_match_id": "2494306",
+          "date": "2026-09-19",
+          "home": "Nacional",
+          "away": "Famalicao",
+          "regulation": [
+            0,
+            4
+          ],
+          "opponent_key": "famalicao",
+          "source_url": "https://www.forebet.com/en/football/matches/fc-arouca-nacional-madeira-2494336",
+          "source_sha256": "71196afe11b0805a98465be1b03f773670c69535fc1dfbd5711dd2d96c519430",
+          "match_url": "https://www.forebet.com/en/football/matches/nacional-madeira-fc-famalic%C3%A3o-2494306"
+        }
+      ]
+    },
+    {
+      "division": "P1",
+      "source_name": "Vitória",
+      "target": "Guimaraes",
+      "evidence": [
+        {
+          "provider_match_id": "2494320",
+          "date": "2026-10-23",
+          "home": "Guimaraes",
+          "away": "Marítimo M.",
+          "regulation": [
+            5,
+            0
+          ],
+          "opponent_key": "maritimo",
+          "source_url": "https://www.forebet.com/en/football/matches/gil-vicente-vit%C3%B3ria-2494333",
+          "source_sha256": "181259f7dc7051c4ea28aa5bbabeadd4cfa039398099e7bc0f1ac3f0a034782e",
+          "match_url": "https://www.forebet.com/en/football/matches/vit%C3%B3ria-mar%C3%ADtimo-2494320"
+        },
+        {
+          "provider_match_id": "2494311",
+          "date": "2026-10-11",
+          "home": "SL Benfica",
+          "away": "Guimaraes",
+          "regulation": [
+            2,
+            0
+          ],
+          "opponent_key": "benfica",
+          "source_url": "https://www.forebet.com/en/football/matches/gil-vicente-vit%C3%B3ria-2494333",
+          "source_sha256": "181259f7dc7051c4ea28aa5bbabeadd4cfa039398099e7bc0f1ac3f0a034782e",
+          "match_url": "https://www.forebet.com/en/football/matches/sl-benfica-vit%C3%B3ria-2494311"
+        },
+        {
+          "provider_match_id": "2494302",
+          "date": "2026-09-20",
+          "home": "Guimaraes",
+          "away": "Moreirense FC",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "moreirense",
+          "source_url": "https://www.forebet.com/en/football/matches/gil-vicente-vit%C3%B3ria-2494333",
+          "source_sha256": "181259f7dc7051c4ea28aa5bbabeadd4cfa039398099e7bc0f1ac3f0a034782e",
+          "match_url": "https://www.forebet.com/en/football/matches/vit%C3%B3ria-moreirense-fc-2494302"
+        }
+      ]
+    },
+    {
+      "division": "SP2",
+      "source_name": "AD Ceuta",
+      "target": "Ceuta",
+      "evidence": [
+        {
+          "provider_match_id": "2509406",
+          "date": "2026-10-25",
+          "home": "Cadiz",
+          "away": "Ceuta",
+          "regulation": [
+            3,
+            1
+          ],
+          "opponent_key": "cadiz",
+          "source_url": "https://www.forebet.com/en/football/matches/ad-ceuta-sporting-gij%C3%B3n-2509417",
+          "source_sha256": "62df28293bdc10b40245bbe34ae0616bcefe73ab287c8e3a6cf39744b4f85ff1",
+          "match_url": "https://www.forebet.com/en/football/matches/cadiz-ad-ceuta-2509406"
+        },
+        {
+          "provider_match_id": "2509396",
+          "date": "2026-10-18",
+          "home": "Ceuta",
+          "away": "Oviedo",
+          "regulation": [
+            1,
+            2
+          ],
+          "opponent_key": "oviedo",
+          "source_url": "https://www.forebet.com/en/football/matches/ad-ceuta-sporting-gij%C3%B3n-2509417",
+          "source_sha256": "62df28293bdc10b40245bbe34ae0616bcefe73ab287c8e3a6cf39744b4f85ff1",
+          "match_url": "https://www.forebet.com/en/football/matches/ad-ceuta-real-oviedo-2509396"
+        },
+        {
+          "provider_match_id": "2509373",
+          "date": "2026-10-04",
+          "home": "Castellon",
+          "away": "Ceuta",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "castellon",
+          "source_url": "https://www.forebet.com/en/football/matches/ad-ceuta-sporting-gij%C3%B3n-2509417",
+          "source_sha256": "62df28293bdc10b40245bbe34ae0616bcefe73ab287c8e3a6cf39744b4f85ff1",
+          "match_url": "https://www.forebet.com/en/football/matches/cd-castellon-ad-ceuta-2509373"
+        }
+      ]
+    },
+    {
+      "division": "SP2",
+      "source_name": "Albacete Balompie",
+      "target": "Albacete",
+      "evidence": [
+        {
+          "provider_match_id": "2509409",
+          "date": "2026-10-25",
+          "home": "Albacete",
+          "away": "Eldense",
+          "regulation": [
+            2,
+            0
+          ],
+          "opponent_key": "eldense",
+          "source_url": "https://www.forebet.com/en/football/matches/albacete-balompie-ce-sabadell-2509420",
+          "source_sha256": "7ed99a6426c09a42c52c41b0b568a982950be17d179f5df468a842c21760c604",
+          "match_url": "https://www.forebet.com/en/football/matches/albacete-balompie-eldense-2509409"
+        },
+        {
+          "provider_match_id": "2509389",
+          "date": "2026-10-17",
+          "home": "Sp Gijon",
+          "away": "Albacete",
+          "regulation": [
+            2,
+            1
+          ],
+          "opponent_key": "sp gijon",
+          "source_url": "https://www.forebet.com/en/football/matches/ad-ceuta-sporting-gij%C3%B3n-2509417",
+          "source_sha256": "62df28293bdc10b40245bbe34ae0616bcefe73ab287c8e3a6cf39744b4f85ff1",
+          "match_url": "https://www.forebet.com/en/football/matches/sporting-gij%C3%B3n-albacete-balompie-2509389"
+        },
+        {
+          "provider_match_id": "2509377",
+          "date": "2026-10-12",
+          "home": "Valladolid",
+          "away": "Albacete",
+          "regulation": [
+            5,
+            0
+          ],
+          "opponent_key": "valladolid",
+          "source_url": "https://www.forebet.com/en/football/matches/albacete-balompie-ce-sabadell-2509420",
+          "source_sha256": "7ed99a6426c09a42c52c41b0b568a982950be17d179f5df468a842c21760c604",
+          "match_url": "https://www.forebet.com/en/football/matches/real-valladolid-albacete-balompie-2509377"
+        }
+      ]
+    },
+    {
+      "division": "SP2",
+      "source_name": "CE Sabadell",
+      "target": "Sabadell",
+      "evidence": [
+        {
+          "provider_match_id": "2509399",
+          "date": "2026-10-25",
+          "home": "Sabadell",
+          "away": "Tenerife",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "tenerife",
+          "source_url": "https://www.forebet.com/en/football/matches/albacete-balompie-ce-sabadell-2509420",
+          "source_sha256": "7ed99a6426c09a42c52c41b0b568a982950be17d179f5df468a842c21760c604",
+          "match_url": "https://www.forebet.com/en/football/matches/ce-sabadell-tenerife-2509399"
+        },
+        {
+          "provider_match_id": "2509398",
+          "date": "2026-10-18",
+          "home": "Burgos",
+          "away": "Sabadell",
+          "regulation": [
+            1,
+            0
+          ],
+          "opponent_key": "burgos",
+          "source_url": "https://www.forebet.com/en/football/matches/albacete-balompie-ce-sabadell-2509420",
+          "source_sha256": "7ed99a6426c09a42c52c41b0b568a982950be17d179f5df468a842c21760c604",
+          "match_url": "https://www.forebet.com/en/football/matches/burgos-cf-ce-sabadell-2509398"
+        },
+        {
+          "provider_match_id": "2509344",
+          "date": "2026-09-20",
+          "home": "Sabadell",
+          "away": "Oviedo",
+          "regulation": [
+            3,
+            1
+          ],
+          "opponent_key": "oviedo",
+          "source_url": "https://www.forebet.com/en/football/matches/albacete-balompie-ce-sabadell-2509420",
+          "source_sha256": "7ed99a6426c09a42c52c41b0b568a982950be17d179f5df468a842c21760c604",
+          "match_url": "https://www.forebet.com/en/football/matches/ce-sabadell-real-oviedo-2509344"
+        }
+      ]
+    },
+    {
+      "division": "SP2",
+      "source_name": "Celta de Vigo B",
+      "target": "Celta B",
+      "evidence": [
+        {
+          "provider_match_id": "2509403",
+          "date": "2026-10-24",
+          "home": "Girona",
+          "away": "Celta B",
+          "regulation": [
+            5,
+            1
+          ],
+          "opponent_key": "girona",
+          "source_url": "https://www.forebet.com/en/football/matches/celta-de-vigo-b-c%C3%B3rdoba-2509418",
+          "source_sha256": "4e3a45de5e0066513b7fc0899db23f60142e16dc090c7ac84644f5db4ba0bfa1",
+          "match_url": "https://www.forebet.com/en/football/matches/girona-celta-de-vigo-b-2509403"
+        },
+        {
+          "provider_match_id": "2509397",
+          "date": "2026-10-19",
+          "home": "Celta B",
+          "away": "Tenerife",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "tenerife",
+          "source_url": "https://www.forebet.com/en/football/matches/celta-de-vigo-b-c%C3%B3rdoba-2509418",
+          "source_sha256": "4e3a45de5e0066513b7fc0899db23f60142e16dc090c7ac84644f5db4ba0bfa1",
+          "match_url": "https://www.forebet.com/en/football/matches/celta-de-vigo-b-tenerife-2509397"
+        },
+        {
+          "provider_match_id": "2509383",
+          "date": "2026-10-10",
+          "home": "Celta B",
+          "away": "Sociedad B",
+          "regulation": [
+            4,
+            1
+          ],
+          "opponent_key": "sociedad b",
+          "source_url": "https://www.forebet.com/en/football/matches/celta-de-vigo-b-c%C3%B3rdoba-2509418",
+          "source_sha256": "4e3a45de5e0066513b7fc0899db23f60142e16dc090c7ac84644f5db4ba0bfa1",
+          "match_url": "https://www.forebet.com/en/football/matches/celta-de-vigo-b-real-sociedad-b-2509383"
+        }
+      ]
+    },
+    {
+      "division": "SP2",
+      "source_name": "Real Mallorca",
+      "target": "Mallorca",
+      "evidence": [
+        {
+          "provider_match_id": "2509401",
+          "date": "2026-10-24",
+          "home": "Leganés",
+          "away": "Mallorca",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "leganes",
+          "source_url": "https://www.forebet.com/en/football/matches/real-mallorca-cadiz-2509414",
+          "source_sha256": "540da80e5bb7025bdf6d912a555e5d96473c8f6aacd085f734249ef6ef25db68",
+          "match_url": "https://www.forebet.com/en/football/matches/leganes-real-mallorca-2509401"
+        },
+        {
+          "provider_match_id": "2509395",
+          "date": "2026-10-17",
+          "home": "Eibar",
+          "away": "Mallorca",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "eibar",
+          "source_url": "https://www.forebet.com/en/football/matches/real-mallorca-cadiz-2509414",
+          "source_sha256": "540da80e5bb7025bdf6d912a555e5d96473c8f6aacd085f734249ef6ef25db68",
+          "match_url": "https://www.forebet.com/en/football/matches/eibar-real-mallorca-2509395"
+        },
+        {
+          "provider_match_id": "2509380",
+          "date": "2026-10-11",
+          "home": "Mallorca",
+          "away": "Las Palmas",
+          "regulation": [
+            3,
+            1
+          ],
+          "opponent_key": "las palmas",
+          "source_url": "https://www.forebet.com/en/football/matches/real-mallorca-cadiz-2509414",
+          "source_sha256": "540da80e5bb7025bdf6d912a555e5d96473c8f6aacd085f734249ef6ef25db68",
+          "match_url": "https://www.forebet.com/en/football/matches/real-mallorca-las-palmas-2509380"
+        }
+      ]
+    },
+    {
+      "division": "SWE",
+      "source_name": "AIK Fotboll",
+      "target": "AIK",
+      "evidence": [
+        {
+          "provider_match_id": "2448499",
+          "date": "2026-10-17",
+          "home": "AIK",
+          "away": "Goteborg",
+          "regulation": [
+            2,
+            2
+          ],
+          "opponent_key": "goteborg",
+          "source_url": "https://www.forebet.com/en/football/matches/ifk-g%C3%B6teborg-djurg%C3%A5rdens-2448514",
+          "source_sha256": "4cc3f089299c448519834a1160d692fa7c3624c300860af56419b5bc5c9f2bd3",
+          "match_url": "https://www.forebet.com/en/football/matches/aik-fotboll-ifk-g%C3%B6teborg-2448499"
+        },
+        {
+          "provider_match_id": "2448487",
+          "date": "2026-10-10",
+          "home": "AIK",
+          "away": "Brommapojkarna",
+          "regulation": [
+            5,
+            6
+          ],
+          "opponent_key": "brommapojkarna",
+          "source_url": "https://www.forebet.com/en/football/matches/aik-fotboll-elfsborg-2448510",
+          "source_sha256": "4379cd14e6969a57a05f7a1af49d600d8e5ecaeaec8dfd0f5395752852734d95",
+          "match_url": "https://www.forebet.com/en/football/matches/aik-fotboll-brommapojkarna-2448487"
+        },
+        {
+          "provider_match_id": "2448479",
+          "date": "2026-09-20",
+          "home": "Halmstad",
+          "away": "AIK",
+          "regulation": [
+            2,
+            1
+          ],
+          "opponent_key": "halmstad",
+          "source_url": "https://www.forebet.com/en/football/matches/halmstads-bk-malm%C3%B6-2448517",
+          "source_sha256": "beb0db759ebe0088bbe67c88e44d9aeeee9db58605851d42c4767f51f822571d",
+          "match_url": "https://www.forebet.com/en/football/matches/halmstads-bk-aik-fotboll-2448479"
+        }
+      ]
+    },
+    {
+      "division": "SWE",
+      "source_name": "Djurgårdens",
+      "target": "Djurgarden",
+      "evidence": [
+        {
+          "provider_match_id": "2448507",
+          "date": "2026-10-24",
+          "home": "Djurgarden",
+          "away": "Orgryte",
+          "regulation": [
+            2,
+            2
+          ],
+          "opponent_key": "orgryte",
+          "source_url": "https://www.forebet.com/en/football/matches/ifk-g%C3%B6teborg-djurg%C3%A5rdens-2448514",
+          "source_sha256": "4cc3f089299c448519834a1160d692fa7c3624c300860af56419b5bc5c9f2bd3",
+          "match_url": "https://www.forebet.com/en/football/matches/djurg%C3%A5rdens-%C3%96rgryte-is-2448507"
+        },
+        {
+          "provider_match_id": "2448496",
+          "date": "2026-10-16",
+          "home": "Brommapojkarna",
+          "away": "Djurgarden",
+          "regulation": [
+            0,
+            2
+          ],
+          "opponent_key": "brommapojkarna",
+          "source_url": "https://www.forebet.com/en/football/matches/ifk-g%C3%B6teborg-djurg%C3%A5rdens-2448514",
+          "source_sha256": "4cc3f089299c448519834a1160d692fa7c3624c300860af56419b5bc5c9f2bd3",
+          "match_url": "https://www.forebet.com/en/football/matches/brommapojkarna-djurg%C3%A5rdens-2448496"
+        },
+        {
+          "provider_match_id": "2448490",
+          "date": "2026-10-11",
+          "home": "Hammarby",
+          "away": "Djurgarden",
+          "regulation": [
+            0,
+            1
+          ],
+          "opponent_key": "hammarby",
+          "source_url": "https://www.forebet.com/en/football/matches/hammarby-if-sirius-ik-2448511",
+          "source_sha256": "2f6734b50685721df2b7d53213b8d96aa146c92d3c116fa2b661477d65d28297",
+          "match_url": "https://www.forebet.com/en/football/matches/hammarby-if-djurg%C3%A5rdens-2448490"
+        }
+      ]
+    },
+    {
+      "division": "SWE",
+      "source_name": "Malmö",
+      "target": "Malmo FF",
+      "evidence": [
+        {
+          "provider_match_id": "2448506",
+          "date": "2026-10-23",
+          "home": "Elfsborg",
+          "away": "Malmo FF",
+          "regulation": [
+            0,
+            0
+          ],
+          "opponent_key": "elfsborg",
+          "source_url": "https://www.forebet.com/en/football/matches/halmstads-bk-malm%C3%B6-2448517",
+          "source_sha256": "beb0db759ebe0088bbe67c88e44d9aeeee9db58605851d42c4767f51f822571d",
+          "match_url": "https://www.forebet.com/en/football/matches/elfsborg-malm%C3%B6-2448506"
+        },
+        {
+          "provider_match_id": "2448494",
+          "date": "2026-10-18",
+          "home": "Malmo FF",
+          "away": "Hacken",
+          "regulation": [
+            0,
+            1
+          ],
+          "opponent_key": "hacken",
+          "source_url": "https://www.forebet.com/en/football/matches/halmstads-bk-malm%C3%B6-2448517",
+          "source_sha256": "beb0db759ebe0088bbe67c88e44d9aeeee9db58605851d42c4767f51f822571d",
+          "match_url": "https://www.forebet.com/en/football/matches/malm%C3%B6-h%C3%A4cken-2448494"
+        },
+        {
+          "provider_match_id": "2448493",
+          "date": "2026-10-12",
+          "home": "Malmo FF",
+          "away": "Kalmar",
+          "regulation": [
+            1,
+            0
+          ],
+          "opponent_key": "kalmar",
+          "source_url": "https://www.forebet.com/en/football/matches/halmstads-bk-malm%C3%B6-2448517",
+          "source_sha256": "beb0db759ebe0088bbe67c88e44d9aeeee9db58605851d42c4767f51f822571d",
+          "match_url": "https://www.forebet.com/en/football/matches/malm%C3%B6-kalmar-ff-2448493"
+        }
+      ]
+    },
+    {
+      "division": "SWE",
+      "source_name": "Sirius IK",
+      "target": "Sirius",
+      "evidence": [
+        {
+          "provider_match_id": "2448498",
+          "date": "2026-10-18",
+          "home": "Sirius",
+          "away": "Elfsborg",
+          "regulation": [
+            2,
+            2
+          ],
+          "opponent_key": "elfsborg",
+          "source_url": "https://www.forebet.com/en/football/matches/hammarby-if-sirius-ik-2448511",
+          "source_sha256": "2f6734b50685721df2b7d53213b8d96aa146c92d3c116fa2b661477d65d28297",
+          "match_url": "https://www.forebet.com/en/football/matches/sirius-ik-elfsborg-2448498"
+        },
+        {
+          "provider_match_id": "2448488",
+          "date": "2026-10-10",
+          "home": "GAIS",
+          "away": "Sirius",
+          "regulation": [
+            0,
+            1
+          ],
+          "opponent_key": "gais",
+          "source_url": "https://www.forebet.com/en/football/matches/hammarby-if-sirius-ik-2448511",
+          "source_sha256": "2f6734b50685721df2b7d53213b8d96aa146c92d3c116fa2b661477d65d28297",
+          "match_url": "https://www.forebet.com/en/football/matches/gais-sirius-ik-2448488"
+        },
+        {
+          "provider_match_id": "2448485",
+          "date": "2026-09-19",
+          "home": "Orgryte",
+          "away": "Sirius",
+          "regulation": [
+            1,
+            2
+          ],
+          "opponent_key": "orgryte",
+          "source_url": "https://www.forebet.com/en/football/matches/hammarby-if-sirius-ik-2448511",
+          "source_sha256": "2f6734b50685721df2b7d53213b8d96aa146c92d3c116fa2b661477d65d28297",
+          "match_url": "https://www.forebet.com/en/football/matches/%C3%96rgryte-is-sirius-ik-2448485"
+        }
+      ]
+    },
+    {
+      "division": "SWE",
+      "source_name": "Vasteras SK FK",
+      "target": "Vasteras SK",
+      "evidence": [
+        {
+          "provider_match_id": "2448503",
+          "date": "2026-10-23",
+          "home": "Vasteras SK",
+          "away": "Halmstad",
+          "regulation": [
+            1,
+            2
+          ],
+          "opponent_key": "halmstad",
+          "source_url": "https://www.forebet.com/en/football/matches/halmstads-bk-malm%C3%B6-2448517",
+          "source_sha256": "beb0db759ebe0088bbe67c88e44d9aeeee9db58605851d42c4767f51f822571d",
+          "match_url": "https://www.forebet.com/en/football/matches/vasteras-sk-fk-halmstads-bk-2448503"
+        },
+        {
+          "provider_match_id": "2448497",
+          "date": "2026-10-18",
+          "home": "Vasteras SK",
+          "away": "Mjallby",
+          "regulation": [
+            1,
+            0
+          ],
+          "opponent_key": "mjallby",
+          "source_url": "https://www.forebet.com/en/football/matches/degerfors-if-vasteras-sk-fk-2448512",
+          "source_sha256": "ad175e083784ffa3e53cbdbdb0780561a492a31bb53b5afe7815e9fe66cac292",
+          "match_url": "https://www.forebet.com/en/football/matches/vasteras-sk-fk-mj%C3%A4llby-aif-2448497"
+        },
+        {
+          "provider_match_id": "2448486",
+          "date": "2026-10-09",
+          "home": "Goteborg",
+          "away": "Vasteras SK",
+          "regulation": [
+            1,
+            0
+          ],
+          "opponent_key": "goteborg",
+          "source_url": "https://www.forebet.com/en/football/matches/ifk-g%C3%B6teborg-djurg%C3%A5rdens-2448514",
+          "source_sha256": "4cc3f089299c448519834a1160d692fa7c3624c300860af56419b5bc5c9f2bd3",
+          "match_url": "https://www.forebet.com/en/football/matches/ifk-g%C3%B6teborg-vasteras-sk-fk-2448486"
+        }
+      ]
+    },
+    {
+      "division": "SWZ",
+      "source_name": "FC Basel",
+      "target": "Basel",
+      "evidence": [
+        {
+          "provider_match_id": "2470027",
+          "date": "2026-10-25",
+          "home": "Basel",
+          "away": "Grasshoppers",
+          "regulation": [
+            0,
+            0
+          ],
+          "opponent_key": "grasshoppers",
+          "source_url": "https://www.forebet.com/en/football/matches/lugano-fc-basel-2470032",
+          "source_sha256": "f95848a1619e275295e476dddb66436484515e011f3d5f55ca12b4ba2abf0e59",
+          "match_url": "https://www.forebet.com/en/football/matches/fc-basel-grasshoppers-2470027"
+        },
+        {
+          "provider_match_id": "2470021",
+          "date": "2026-10-11",
+          "home": "Vaduz",
+          "away": "Basel",
+          "regulation": [
+            3,
+            0
+          ],
+          "opponent_key": "vaduz",
+          "source_url": "https://www.forebet.com/en/football/matches/lugano-fc-basel-2470032",
+          "source_sha256": "f95848a1619e275295e476dddb66436484515e011f3d5f55ca12b4ba2abf0e59",
+          "match_url": "https://www.forebet.com/en/football/matches/fc-vaduz-fc-basel-2470021"
+        },
+        {
+          "provider_match_id": "2470016",
+          "date": "2026-09-20",
+          "home": "Basel",
+          "away": "St. Gallen",
+          "regulation": [
+            1,
+            3
+          ],
+          "opponent_key": "st gallen",
+          "source_url": "https://www.forebet.com/en/football/matches/lugano-fc-basel-2470032",
+          "source_sha256": "f95848a1619e275295e476dddb66436484515e011f3d5f55ca12b4ba2abf0e59",
+          "match_url": "https://www.forebet.com/en/football/matches/fc-basel-st-gallen-2470016"
+        }
+      ]
+    },
+    {
+      "division": "T1",
+      "source_name": "Göztepe Izmir",
+      "target": "Goztep",
+      "evidence": [
+        {
+          "provider_match_id": "2494924",
+          "date": "2026-10-18",
+          "home": "Kocaelispor",
+          "away": "Goztep",
+          "regulation": [
+            1,
+            2
+          ],
+          "opponent_key": "kocaelispor",
+          "source_url": "https://www.forebet.com/en/football/matches/fenerbah%C3%A7e-g%C3%B6ztepe-izmir-2494943",
+          "source_sha256": "c392fa9110e5c7ccb3a8fc2eb5d94a4169b2c7a9cec6448033bf065d5b4084ec",
+          "match_url": "https://www.forebet.com/en/football/matches/kocaelispor-g%C3%B6ztepe-izmir-2494924"
+        },
+        {
+          "provider_match_id": "2494921",
+          "date": "2026-10-12",
+          "home": "Eyupspor",
+          "away": "Goztep",
+          "regulation": [
+            0,
+            4
+          ],
+          "opponent_key": "eyupspor",
+          "source_url": "https://www.forebet.com/en/football/matches/fenerbah%C3%A7e-g%C3%B6ztepe-izmir-2494943",
+          "source_sha256": "c392fa9110e5c7ccb3a8fc2eb5d94a4169b2c7a9cec6448033bf065d5b4084ec",
+          "match_url": "https://www.forebet.com/en/football/matches/ey%C3%BCpspor-g%C3%B6ztepe-izmir-2494921"
+        },
+        {
+          "provider_match_id": "2494909",
+          "date": "2026-09-20",
+          "home": "Goztep",
+          "away": "Rizespor",
+          "regulation": [
+            2,
+            2
+          ],
+          "opponent_key": "rizespor",
+          "source_url": "https://www.forebet.com/en/football/matches/fenerbah%C3%A7e-g%C3%B6ztepe-izmir-2494943",
+          "source_sha256": "c392fa9110e5c7ccb3a8fc2eb5d94a4169b2c7a9cec6448033bf065d5b4084ec",
+          "match_url": "https://www.forebet.com/en/football/matches/g%C3%B6ztepe-izmir-rizespor-2494909"
+        }
+      ]
+    },
+    {
+      "division": "T1",
+      "source_name": "Çorum Belediyesi",
+      "target": "Corum",
+      "evidence": [
+        {
+          "provider_match_id": "2494926",
+          "date": "2026-10-16",
+          "home": "Corum",
+          "away": "Rizespor",
+          "regulation": [
+            2,
+            1
+          ],
+          "opponent_key": "rizespor",
+          "source_url": "https://www.forebet.com/en/football/matches/erzurum-bb-%C3%A7orum-belediyesi-2494941",
+          "source_sha256": "1b49fad566a4039a550a268ecbe2fcf57434e6d251d6d22e979f60b29f4f189f",
+          "match_url": "https://www.forebet.com/en/football/matches/%C3%87orum-belediyesi-rizespor-2494926"
+        },
+        {
+          "provider_match_id": "2494922",
+          "date": "2026-10-11",
+          "home": "Gaziantep",
+          "away": "Corum",
+          "regulation": [
+            0,
+            3
+          ],
+          "opponent_key": "gaziantep",
+          "source_url": "https://www.forebet.com/en/football/matches/erzurum-bb-%C3%A7orum-belediyesi-2494941",
+          "source_sha256": "1b49fad566a4039a550a268ecbe2fcf57434e6d251d6d22e979f60b29f4f189f",
+          "match_url": "https://www.forebet.com/en/football/matches/gaziantep-%C3%87orum-belediyesi-2494922"
+        },
+        {
+          "provider_match_id": "2494908",
+          "date": "2026-09-19",
+          "home": "Corum",
+          "away": "Alanyaspor",
+          "regulation": [
+            1,
+            2
+          ],
+          "opponent_key": "alanyaspor",
+          "source_url": "https://www.forebet.com/en/football/matches/erzurum-bb-%C3%A7orum-belediyesi-2494941",
+          "source_sha256": "1b49fad566a4039a550a268ecbe2fcf57434e6d251d6d22e979f60b29f4f189f",
+          "match_url": "https://www.forebet.com/en/football/matches/%C3%87orum-belediyesi-alanyaspor-2494908"
+        }
+      ]
+    }
+  ]
+}
