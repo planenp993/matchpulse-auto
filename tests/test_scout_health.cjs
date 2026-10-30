@@ -44,3 +44,11 @@ test('Forebet keeps its own receipt and partial warning after a newer publicatio
  const partial=H.sources({...s,forebet_refresh_status:'partial',forebet_quarantined:[{id:'9'}]},now).find(r=>r.label.includes('Forebet'));
  assert.equal(partial.warning,true);assert.match(partial.errors[0],/1/);
 });
+test('A disabled Forebet source is explicitly inactive without marking the working primary as failed',()=>{
+ const rows=H.sources({...healthy,forebet_enabled:false,last_forebet_attempt_utc:stamp,
+  forebet_refresh_status:'error',forebet_errors:['HTTP 403']},now);
+ const source=rows.find(r=>r.label.includes('Forebet'));
+ assert.match(source.label,/неактивен/);assert.match(source.text,/Изключен/);
+ assert.equal(source.stamp,stamp);assert.equal(source.warning,false);
+ assert.equal(rows[0].warning,false);
+});

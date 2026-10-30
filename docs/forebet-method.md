@@ -5,6 +5,23 @@ remains the primary calendar; Football-Data supplies historical statistics and
 quotes. This adapter does not use Forebet predictions, probabilities, odds or
 generated score forecasts.
 
+## Production access result: inactive
+
+PR #40 passed 177 Python and 247 Node tests, all five diary/archive/research
+checks and the desktop/mobile browser acceptances. The actual GitHub run
+41031688366 then received HTTP 403 on both first requests, stopped the batch
+and collected zero Forebet records. A successful workflow did not mean a
+successful provider check. The production attempt was 30 October 2026 at
+09:13:45 UTC (11:13:45 Sofia).
+
+`ops/calendar_source.json` therefore sets `secondary.enabled` to false. Both
+planner and collector honor it, automatic retries stop, and the update panel
+explicitly shows Forebet inactive while Statarea continues. The existing failed
+receipt is retained. Local live sample/archive results below are research
+evidence, not a production import. No proxy, login or access-control bypass is
+used. The adapter and identity evidence remain prepared for legitimate public
+access becoming available; its two-hour schedule applies only when enabled.
+
 ## Public source and clocks
 
 The ordinary dated page's More control uses the anonymous public

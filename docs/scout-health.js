@@ -14,13 +14,14 @@ function sources(s={},now=new Date()){
   ['Основен архив',s.last_history_success_utc,s.history_refresh_status,s.errors],
   s.last_statarea_attempt_utc?['Скорошни резултати · Statarea',s.last_statarea_success_utc,s.statarea_refresh_status,[...(s.statarea_errors||[]),...(s.statarea_quarantined?.length?[`${s.statarea_quarantined.length} наблюдения чакат проверка на самоличност/статус`]:[])]]:
    ['Допълнителни лиги',s.last_results_success_utc,s.result_bridge_status,s.result_bridge_errors],
-  ...(s.last_forebet_attempt_utc?[["Допълване · Forebet",s.last_forebet_data_success_utc||s.last_forebet_success_utc,s.forebet_refresh_status,[...(s.forebet_errors||[]),...(s.forebet_quarantined?.length?["Наблюдения за проверка: "+s.forebet_quarantined.length]:[])]]]:[]),
+  ...(s.last_forebet_attempt_utc?[s.forebet_enabled===false?["Forebet · неактивен",s.last_forebet_attempt_utc,"paused",[]]:["Допълване · Forebet",s.last_forebet_data_success_utc||s.last_forebet_success_utc,s.forebet_refresh_status,[...(s.forebet_errors||[]),...(s.forebet_quarantined?.length?["Наблюдения за проверка: "+s.forebet_quarantined.length]:[])]]]:[]),
   ['Евротурнири',s.last_europe_success_utc,s.europe_refresh_status,s.europe_errors],
   ['Класиране',s.last_standings_success_utc,s.standings_refresh_status,s.standings_errors],
   ['CSV цени',s.last_quote_success_utc,s.quote_error?'error':s.quote_check_status,s.quote_error?[s.quote_error]:[]]
  ];
  return rows.map(([label,stamp,state,errors])=>{
   const valid=Number.isFinite(Date.parse(stamp)),age=(now.getTime()-Date.parse(stamp))/3600000;
+  if(state==='paused')return {label,stamp:valid?stamp:null,warning:false,errors:[],text:'Изключен от автоматичните проверки'};
   const messages=Array.isArray(errors)?errors.filter(Boolean).map(String):[];
   const warning=failed(state)||messages.length>0||state==='empty_for_upcoming';
   const frequent=!!s.last_statarea_attempt_utc&&(label==='Програма'||label==='Скорошни резултати · Statarea'||label==='Допълване · Forebet');

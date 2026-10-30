@@ -158,6 +158,21 @@ class ForebetTests(unittest.TestCase):
             p=sync.collect(self.root,'publish',NOW)
             self.assertIsNone(p['forebet'])
 
+    def test_disabled_secondary_makes_no_requests_and_preserves_failure_receipts(self):
+        config=copy.deepcopy(CONFIG);config['secondary']['enabled']=False
+        u.writejson(self.root/sta.CONFIG,config)
+        self.assertIsNone(fb.configuration(self.root))
+        self.assertNotIn('forebet',sync.plan({},'auto',NOW,config))
+        self.assertNotIn('forebet',sync.plan({},'calendar',NOW,config))
+        failed={'last_forebet_attempt_utc':STAMP,'forebet_refresh_status':'error','forebet_errors':['HTTP 403']}
+        u.writejson(self.root/'docs/data/status.json',failed)
+        with patch.object(sync.forebet,'fetch',side_effect=AssertionError('disabled provider called')):
+            p=sync.collect(self.root,'publish',NOW+dt.timedelta(hours=1));sync.apply(self.root,p)
+        status=self.read('docs/data/status.json')
+        self.assertFalse(status['forebet_enabled'])
+        self.assertEqual(status['last_forebet_attempt_utc'],STAMP)
+        self.assertEqual(status['forebet_errors'],['HTTP 403'])
+
     def test_missing_primary_fixture_requests_help_after_cooldown_even_when_pages_succeed(self):
         fixture=row('2026-10-31',(None,None));u.writejson(self.root/'docs/data/fixtures.json',[fixture])
         primary={'observations':[],'results':[],'quarantined':[],'errors':[]}
