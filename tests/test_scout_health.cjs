@@ -52,3 +52,16 @@ test('A disabled Forebet source is explicitly inactive without marking the worki
  assert.equal(source.stamp,stamp);assert.equal(source.warning,false);
  assert.equal(rows[0].warning,false);
 });
+test('Soccerway uses its own clock and partial warnings; old Statarea errors stay inactive',()=>{
+ const s={...healthy,calendar_provider:'Soccerway',soccerway_enabled:true,
+  last_soccerway_data_success_utc:stamp,soccerway_refresh_status:'ok',
+  last_statarea_attempt_utc:stamp,statarea_refresh_status:'error',statarea_errors:['TLS failure']};
+ const fresh=new Date('2026-10-28T06:30:00Z'),rows=H.sources(s,fresh);
+ assert.equal(rows.find(r=>r.label.includes('Soccerway')).warning,false);
+ assert.equal(rows.find(r=>r.label.includes('Statarea')).warning,false);
+ assert.match(rows.find(r=>r.label.includes('Statarea')).label,/неактивен/);
+ assert.ok(H.sources({...s,soccerway_refresh_status:'partial',soccerway_quarantined:[{}]},fresh).find(r=>r.label.includes('Soccerway')).warning);
+ assert.equal(H.sources({...s,last_soccerway_data_success_utc:null,last_build_utc:stamp},fresh).find(r=>r.label.includes('Soccerway')).stamp,null);
+ const stale=H.sources(s,new Date('2026-10-28T08:01:00Z'));
+ assert.equal(stale[0].warning,true);assert.equal(stale.find(r=>r.label.includes('Soccerway')).warning,true);
+});

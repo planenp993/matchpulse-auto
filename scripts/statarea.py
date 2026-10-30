@@ -69,7 +69,7 @@ def configuration(root):
     value = registry.read_strict(root/CONFIG, {})
     if not value:
         return None  # Legacy/test snapshots remain reproducible without activation.
-    if value.get('schema') != 1 or value.get('provider') != 'Statarea':
+    if value.get('schema') != 1 or value.get('provider') not in ('Statarea', 'Soccerway'):
         raise ValueError('Invalid calendar source configuration')
     return value
 

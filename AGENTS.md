@@ -551,3 +551,28 @@ publisher ignores that probe request path. No clock, fixture, history, diary or
 model is changed. Actual HTTP success with real embedded data from GitHub is
 required before claiming deployment access. A partial 15-row sample does not
 prove full coverage or regulation-result semantics. See docs/soccerway-probe.md.
+
+## Authorized Soccerway primary (30 October 2026)
+
+The owner subsequently explicitly instructed that Soccerway become primary.
+This supersedes the earlier probe-only/Statarea-primary restrictions. Keep
+Forebet disabled and cron-job.org setup paused. `ops/calendar_source.json`
+routes ordinary calendar/recent-result work to Soccerway only, with the existing
+30-minute gate and independent actual GitHub source receipts. A source switch
+does not prove reliable schedule delivery.
+
+Use the exact 27-competition catalog and the public full fixtures/results HTML
+feeds (not the short summary cards). Verify current season, sport, template ID,
+path, country, payload window coverage and Unix clocks. PX/PY are stable club IDs;
+JA/JB are event-specific references. Only explicit 3/3 regulation finals with
+confirmed past kickoff enter domestic history; keep UEFA separate. Preserve rich
+rows, missing statistics, every score conflict, pending/unlisted fixtures and
+all five frozen append-only diaries. Quotes cannot add fixtures or change times.
+
+Reviewed names and the one exact season/round/stable-ID future schedule bridge
+are separate ingestion crosswalks. Unknown/ambiguous links stay quarantined;
+never infer a reschedule just from nearby dates and club names. Persist sanitized
+correction variants in data/soccerway inside the latest-main retry loop. Run
+`python scripts/soccerway.py --check` in CI and publication alongside all existing
+acceptances. Code pushes remain provider-free; actual downloads need a separate
+single-file `[data-sync]` request. See docs/soccerway-method.md.
