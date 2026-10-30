@@ -1,0 +1,37 @@
+name: Soccerway Source Probe
+run-name: 'Soccerway probe · ${{ github.event_name }}'
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['ops/soccerway_probe_request.json']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: matchpulse-soccerway-source-probe
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.head_commit.message, '[source-probe] ')
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Read one ordinary anonymous Soccerway page without importing data
+        run: python scripts/soccerway_probe.py --event "$GITHUB_EVENT_NAME" --commit "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID" --out /tmp/soccerway-probe.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: SOCCERWAY-SOURCE-PROBE
+          path: /tmp/soccerway-probe.json
+          retention-days: 7
+          if-no-files-found: warn

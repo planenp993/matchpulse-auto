@@ -539,3 +539,15 @@ The UI labels it inactive and keeps the working primary calendar healthy.
 A successful publisher job is not a successful Forebet receipt. Preserve the
 failed attempt and local-vs-production distinction; do not import a local sample
 as a fresh GitHub observation or work around the denial with a proxy/browser.
+
+## Explicit Soccerway feasibility probe (30 October 2026)
+
+The owner requested a Soccerway trial. The isolated `soccerway-probe.yml` may
+read one ordinary public page only after an explicit single-file operational
+push to `ops/soccerway_probe_request.json` with `[source-probe] ` title, or a
+manual dispatch. Its script validates the request and retains only sanitized
+embedded fixture/result facts. Code pushes/CI remain provider-free; the normal
+publisher ignores that probe request path. No clock, fixture, history, diary or
+model is changed. Actual HTTP success with real embedded data from GitHub is
+required before claiming deployment access. A partial 15-row sample does not
+prove full coverage or regulation-result semantics. See docs/soccerway-probe.md.
