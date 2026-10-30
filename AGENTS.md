@@ -577,29 +577,37 @@ correction variants in data/soccerway inside the latest-main retry loop. Run
 acceptances. Code pushes remain provider-free; actual downloads need a separate
 single-file `[data-sync]` request. See docs/soccerway-method.md.
 
-## Resumed external clock setup (30 October 2026)
+## Active external clock (30 October 2026)
 
-The owner explicitly resumed the free cron-job.org setup with “Давай да го
-направим”. This supersedes the earlier pause instructions; do not request the
-same authorization again. The existing account is signed in and exactly one
-job was created: 8758317, “Matchpulse — Soccerway · 30 минути”. Its saved URL is
-https://console.cron-job.org/jobs/8758317, schedule 13,43 * * * *, Europe/Sofia,
-POST to refresh-clock.yml/dispatches with main/auto, the three standard GitHub
-headers and saved response history. It is INACTIVE pending the owner's existing
-token. Never duplicate the job or claim it is operational before verification.
+The owner explicitly resumed cron-job.org setup and privately entered the
+existing token. This supersedes all earlier pause/credential-pending notes.
+Exactly one external job is saved and ENABLED: 8758317,
+“Matchpulse — Soccerway · 30 минути”, at
+https://console.cron-job.org/jobs/8758317. Its schedule is 13,43 * * * *,
+Europe/Sofia, POST to refresh-clock.yml/dispatches with main/auto, standard
+GitHub JSON headers and saved response history. Never create a duplicate job.
 
-The Authorization value currently contains a harmless placeholder. The owner
-must privately replace it in the service with the previously created limited
-GitHub token and save; never read, print, retrieve or commit that token. Preserve
-the other settings. Then verify a test dispatch, enable the saved job and match
-actual scheduled executions to GitHub workflow_dispatch runs and successful
-Soccerway source receipts. The recurring job itself is authorized; the remaining
-credential handoff is not another permission request. Keep models and diaries
-unchanged. See docs/EXTERNAL_CLOCK_BG.md and ops/external-clock-http.template.json.
+An initial HTTP 401 was caused by an exact duplicated paste of the existing
+credential. Only the duplicate was removed via UI keyboard editing, without
+returning, recording or replacing the secret. The corrected manual service
+test returned HTTP 200 and GitHub workflow_dispatch run 41118013045. That run
+successfully published a clean 27/27 Soccerway receipt at
+2026-10-30T19:47:37+00:00 (21:47:37 Sofia), four new domestic results, zero
+score conflicts, and all five append-only diary checks passed. The public site
+clock was verified. A fresh service reload confirmed next execution 22:13 Sofia.
 
-After the owner accidentally removed Authorization and changed Content-Type,
-the same saved job was repaired and reopened to verify persistence. It remains
-inactive with `Bearer PASTE_TOKEN_HERE`; only the placeholder is selected for
-private token entry. On return, never dump the Advanced editor's full AX/DOM or
-screenshot: it may contain the real token. Use narrowly scoped non-secret DOM
-checks and navigate to the Cronjobs list before an unrestricted observation.
+The first real scheduled executions (22:13 and 22:43) remain to be verified.
+A one-time follow-up check was scheduled for 22:53:56 Sofia. Do not count the
+manual test as proof of recurrence. Match the external service's planned
+execution/response run ID to the corresponding GitHub workflow_dispatch and
+actual successful Soccerway source receipt. If private cron history is
+unavailable, distinguish public matching-time evidence from verified origin.
+
+The real Authorization value is only in the service; repository templates
+retain a placeholder. NEVER dump the Advanced editor, Raw Request, full
+editor AX/DOM or a screenshot containing the credential. Use narrow non-secret
+DOM checks and the Cronjobs list/history for verification. Do not ask for the
+token in chat, generate a replacement unnecessarily, or widen permissions.
+Keep the existing clock/planner/concurrency gates and models/diaries unchanged.
+See docs/EXTERNAL_CLOCK_BG.md and
+ops/source-probes/external-clock-activation-2026-10-30.json.

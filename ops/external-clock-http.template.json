@@ -1,10 +1,10 @@
 {
-  "status": "created_inactive_awaiting_owner_token",
+  "status": "enabled_manual_test_and_source_success_scheduled_recurrence_pending",
   "service": "cron-job.org",
   "job_id": 8758317,
   "job_url": "https://console.cron-job.org/jobs/8758317",
   "title": "Matchpulse — Soccerway · 30 минути",
-  "enabled": false,
+  "enabled": true,
   "save_responses": true,
   "http_timeout_seconds": 30,
   "primary_provider": "Soccerway",
@@ -33,11 +33,16 @@
       "Actions": "read and write"
     }
   },
-  "verification": "A scheduled execution of job 8758317 must correspond to a successful GitHub workflow_dispatch run and its Soccerway source receipt. No test dispatch or scheduled external execution has been verified yet. A manual test alone is not proof.",
+  "verification": "Job 8758317 is enabled and fresh service UI shows next execution at 22:13 Europe/Sofia. Manual service test returned HTTP 200 and run 41118013045 successfully refreshed Soccerway at 21:47:37 Sofia (27/27). First planned executions at 22:13 and 22:43 remain to be verified; a manual test alone is not proof of repetition.",
+  "test_run_id": 41118013045,
+  "test_http_status": 200,
+  "test_source_success_utc": "2026-10-30T19:47:37+00:00",
+  "next_scheduled_executions_sofia": ["2026-10-30T22:13:00+02:00", "2026-10-30T22:43:00+02:00"],
+  "follow_up_check_sofia": "2026-10-30T22:53:56+02:00",
   "expected_http_statuses": [
     200,
     204
   ],
-  "authorization": "Owner explicitly resumed the free external clock on 2026-10-30 with Давай да го направим. Existing account signed in; one inactive job created and saved. Owner must privately enter the existing restricted token in the service before test and activation. No credential is stored in the repository.",
-  "last_review": "2026-10-30: saved job 8758317 and 13,43 Europe/Sofia schedule verified in the service. Soccerway is primary and worked in production run 41090927038. Credential, test and scheduled-run verification remain pending."
+  "authorization": "Owner explicitly resumed the free external clock on 2026-10-30 and privately entered the existing token. A duplicate paste was removed without exposing or replacing the credential. One saved job is enabled after successful test and deployment. No credential is stored in the repository.",
+  "last_review": "2026-10-30: enabled job 8758317 verified after a fresh service reload, next execution 22:13 Europe/Sofia. HTTP 200 dispatch and actual Soccerway production receipt verified in run 41118013045. Scheduled recurrence verification remains pending."
 }
