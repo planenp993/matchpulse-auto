@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "provider": "Soccerway",
+  "url": "https://www.soccerway.com/england/premier-league/fixtures/",
+  "observed_at_utc": "2026-10-30T15:47:46+00:00",
+  "imported_matches": 0,
+  "production_enabled": false,
+  "http_status": 200,
+  "bytes": 1348832,
+  "sha256": "6fafc9a0701200ae68fd15660418cdd5d1db630bd85c5618bfdf0c097abd996a",
+  "usable_sample": true,
+  "request_id": "soccerway-github-trial-2026-10-30-1",
+  "trigger": {
+    "event": "push",
+    "run_id": "41083973132"
+  },
+  "feeds": {
+    "summary-results": {
+      "matches": 15,
+      "first_utc": "2026-10-18T13:00:00+00:00",
+      "last_utc": "2026-10-25T16:30:00+00:00",
+      "sample": [
+        {
+          "id": "ImWz7i0f",
+          "kickoff_utc": "2026-10-25T16:30:00+00:00",
+          "home": "Sunderland",
+          "away": "Leeds",
+          "display_score": [
+            0,
+            0
+          ],
+          "state_code": "3",
+          "stage_code": "3"
+        },
+        {
+          "id": "fXmefEGl",
+          "kickoff_utc": "2026-10-25T14:00:00+00:00",
+          "home": "Crystal Palace",
+          "away": "Newcastle",
+          "display_score": [
+            0,
+            2
+          ],
+          "state_code": "3",
+          "stage_code": "3"
+        }
+      ]
+    },
+    "summary-fixtures": {
+      "matches": 15,
+      "first_utc": "2026-10-31T12:30:00+00:00",
+      "last_utc": "2026-11-07T17:30:00+00:00",
+      "sample": [
+        {
+          "id": "OWc65atm",
+          "kickoff_utc": "2026-10-31T12:30:00+00:00",
+          "home": "Chelsea",
+          "away": "Manchester Utd",
+          "display_score": [
+            null,
+            null
+          ],
+          "state_code": "1",
+          "stage_code": "1"
+        },
+        {
+          "id": "j1Ur5VU6",
+          "kickoff_utc": "2026-10-31T15:00:00+00:00",
+          "home": "Bournemouth",
+          "away": "Leeds",
+          "display_score": [
+            null,
+            null
+          ],
+          "state_code": "1",
+          "stage_code": "1"
+        }
+      ]
+    }
+  },
+  "run_url": "https://github.com/planenp993/matchpulse-auto/actions/runs/41083973132"
+}
