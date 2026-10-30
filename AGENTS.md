@@ -576,3 +576,23 @@ correction variants in data/soccerway inside the latest-main retry loop. Run
 `python scripts/soccerway.py --check` in CI and publication alongside all existing
 acceptances. Code pushes remain provider-free; actual downloads need a separate
 single-file `[data-sync]` request. See docs/soccerway-method.md.
+
+## Resumed external clock setup (30 October 2026)
+
+The owner explicitly resumed the free cron-job.org setup with “Давай да го
+направим”. This supersedes the earlier pause instructions; do not request the
+same authorization again. The existing account is signed in and exactly one
+job was created: 8758317, “Matchpulse — Soccerway · 30 минути”. Its saved URL is
+https://console.cron-job.org/jobs/8758317, schedule 13,43 * * * *, Europe/Sofia,
+POST to refresh-clock.yml/dispatches with main/auto, the three standard GitHub
+headers and saved response history. It is INACTIVE pending the owner's existing
+token. Never duplicate the job or claim it is operational before verification.
+
+The Authorization value currently contains a harmless placeholder. The owner
+must privately replace it in the service with the previously created limited
+GitHub token and save; never read, print, retrieve or commit that token. Preserve
+the other settings. Then verify a test dispatch, enable the saved job and match
+actual scheduled executions to GitHub workflow_dispatch runs and successful
+Soccerway source receipts. The recurring job itself is authorized; the remaining
+credential handoff is not another permission request. Keep models and diaries
+unchanged. See docs/EXTERNAL_CLOCK_BG.md and ops/external-clock-http.template.json.

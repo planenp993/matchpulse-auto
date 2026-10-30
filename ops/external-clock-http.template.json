@@ -1,6 +1,13 @@
 {
-  "status": "paused_by_owner_no_verified_external_job",
+  "status": "created_inactive_awaiting_owner_token",
   "service": "cron-job.org",
+  "job_id": 8758317,
+  "job_url": "https://console.cron-job.org/jobs/8758317",
+  "title": "Matchpulse — Soccerway · 30 минути",
+  "enabled": false,
+  "save_responses": true,
+  "http_timeout_seconds": 30,
+  "primary_provider": "Soccerway",
   "timezone": "Europe/Sofia",
   "schedule": "13,43 * * * *",
   "request": {
@@ -26,11 +33,11 @@
       "Actions": "read and write"
     }
   },
-  "verification": "A scheduled execution in the external service must correspond to a successful GitHub run and its Statarea source receipt. A manual test alone is not proof.",
+  "verification": "A scheduled execution of job 8758317 must correspond to a successful GitHub workflow_dispatch run and its Soccerway source receipt. No test dispatch or scheduled external execution has been verified yet. A manual test alone is not proof.",
   "expected_http_statuses": [
     200,
     204
   ],
-  "authorization": "Owner approved the free external clock on 2026-10-29 and later paused setup. Prepared definition only; do not resume activation without an instruction to continue. No credential is stored in the repository.",
-  "last_review": "2026-10-30 after the 13:46 Europe/Sofia stale-data report. Native scheduled events are missing; Statarea also failed TLS in two explicit recoveries. An external trigger does not fix provider availability."
+  "authorization": "Owner explicitly resumed the free external clock on 2026-10-30 with Давай да го направим. Existing account signed in; one inactive job created and saved. Owner must privately enter the existing restricted token in the service before test and activation. No credential is stored in the repository.",
+  "last_review": "2026-10-30: saved job 8758317 and 13,43 Europe/Sofia schedule verified in the service. Soccerway is primary and worked in production run 41090927038. Credential, test and scheduled-run verification remain pending."
 }
