@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths-ignore:
       - 'docs/data/**'
+      - 'ops/soccerway_probe_request.json'
   workflow_dispatch:
     inputs:
       mode:
