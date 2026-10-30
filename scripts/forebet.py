@@ -52,6 +52,8 @@ def configuration(root):
         return None
     if value.get('provider') != 'Forebet' or not 30 <= value.get('interval_minutes', 0) <= 1440:
         raise ValueError('Invalid supplemental calendar configuration')
+    if value.get('enabled', True) is False:
+        return None
     return value
 
 

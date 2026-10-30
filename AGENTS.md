@@ -531,3 +531,11 @@ quarantined. Retain sanitized correction variants permanently in data/forebet;
 run `python scripts/forebet.py --check` in provider-free CI and the publication
 retry loop. A failed source retains its own receipts/warning even when the
 other source supplies the calendar. See `docs/forebet-method.md`.
+
+The real GitHub probe 41031688366 returned HTTP 403 and collected no Forebet
+records, although local public reads worked. Keep `secondary.enabled: false`
+honored by planner/collector; routine refreshes must not retry the denied source.
+The UI labels it inactive and keeps the working primary calendar healthy.
+A successful publisher job is not a successful Forebet receipt. Preserve the
+failed attempt and local-vs-production distinction; do not import a local sample
+as a fresh GitHub observation or work around the denial with a proxy/browser.

@@ -106,7 +106,7 @@ def plan(status, mode, now, calendar_config=None):
         work['statarea_wide'] = work['statarea'] and (mode == 'full' or not status.get('last_statarea_wide_attempt_utc') or
             retry or age(status.get('last_statarea_wide_attempt_utc'), now) >= 23)
         second = calendar_config.get('secondary')
-        if second and second.get('provider') == 'Forebet':
+        if second and second.get('provider') == 'Forebet' and second.get('enabled', True):
             work['forebet'] = mode in ('full','calendar','fixtures','results','history','europe') or mode == 'auto' and age(status.get('last_forebet_attempt_utc'), now) >= (second['interval_minutes']-5)/60
             work['forebet_wide'] = work['forebet'] and (mode=='full' or age(status.get('last_forebet_wide_attempt_utc'), now)>=23)
     return work
@@ -395,6 +395,8 @@ def apply(root, patch):
             status["fixtures_updated_utc"] = stamp
     if forebet.configuration(root):
         fixtures = forebet.merge_calendar(fb, sta, fixtures, status, book, stamp, view_now)
+    elif statarea.configuration(root):
+        status['fixtures_source'] = 'Statarea / verified UTC; Football-Data historical statistics and quotes'
     quotes = patch["quotes"]
     if quotes and newer("last_quote_attempt_utc"):
         status["last_quote_attempt_utc"] = stamp
@@ -428,6 +430,7 @@ def apply(root, patch):
     europe.reconcile_administrative(root, book, europe_clubs)
     registry.reconcile(book, [*historical, *europe_rows], fixtures, view_stamp, aliases=aliases)
     status.update(schema_version=3, history_count=len(historical), fixtures_count=len(fixtures),
+                  forebet_enabled=forebet.configuration(root) is not None,
                   calendar_only=not work["history"] and not work.get("results") and not work.get("europe") and not patch.get('statarea') and not patch.get('forebet'), last_build_utc=max(stamp, status.get("last_build_utc", "")))
     if patch.get("request_id"):
         status["processed_sync_requests"] = sorted(set(status.get("processed_sync_requests", [])+[patch["request_id"]]))
@@ -456,7 +459,7 @@ def apply(root, patch):
               "sources": status.get("source_checks", {}),
               "result_bridge_status": status.get("result_bridge_status"), "result_bridge_checks": status.get("result_bridge_checks", {}),
               "statarea": {k: status.get(k) for k in ('last_statarea_attempt_utc', 'last_statarea_success_utc', 'statarea_refresh_status', 'statarea_archived_matches', 'statarea_errors', 'statarea_quarantined')},
-              "forebet": {k: status.get(k) for k in ('last_forebet_attempt_utc', 'last_forebet_success_utc', 'forebet_refresh_status', 'forebet_archived_matches', 'forebet_errors', 'forebet_quarantined')},
+              "forebet": {k: status.get(k) for k in ('forebet_enabled', 'last_forebet_attempt_utc', 'last_forebet_success_utc', 'forebet_refresh_status', 'forebet_archived_matches', 'forebet_errors', 'forebet_quarantined')},
               "europe_refresh_status": status.get("europe_refresh_status"), "europe_regulation_results": len(europe_rows), "standings": tables["coverage"],
               "note": "Source date alone does not prove missing games during a break. Pending fixtures are retained; unlisted is not cancelled. UEFA regulation scores are archived separately; administrative outcomes never settle analytical picks."}
     added_markets, market_report = markets.apply(root, patch.get("markets", []), fixtures, registry.row_key, stamp, u.readjson, u.writejson, status.get("quote_check_status"), checked_stamp=view_stamp)
