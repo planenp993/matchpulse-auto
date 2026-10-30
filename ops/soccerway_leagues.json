@@ -1,0 +1,137 @@
+{
+  "E0": {
+    "path": "/england/premier-league/",
+    "template": "dYlOSQOD",
+    "country": "England"
+  },
+  "E1": {
+    "path": "/england/championship/",
+    "template": "2DSCa5fE",
+    "country": "England"
+  },
+  "E2": {
+    "path": "/england/league-one/",
+    "template": "rJSMG3H0",
+    "country": "England"
+  },
+  "E3": {
+    "path": "/england/league-two/",
+    "template": "0MwU4NW6",
+    "country": "England"
+  },
+  "SC0": {
+    "path": "/scotland/premiership/",
+    "template": "tGwiyvJ1",
+    "country": "Scotland"
+  },
+  "D1": {
+    "path": "/germany/bundesliga/",
+    "template": "W6BOzpK2",
+    "country": "Germany"
+  },
+  "D2": {
+    "path": "/germany/2-bundesliga/",
+    "template": "tKH71vSe",
+    "country": "Germany"
+  },
+  "I1": {
+    "path": "/italy/serie-a/",
+    "template": "COuk57Ci",
+    "country": "Italy"
+  },
+  "I2": {
+    "path": "/italy/serie-b/",
+    "template": "6oug4RRc",
+    "country": "Italy"
+  },
+  "SP1": {
+    "path": "/spain/laliga/",
+    "template": "QVmLl54o",
+    "country": "Spain"
+  },
+  "SP2": {
+    "path": "/spain/laliga2/",
+    "template": "vZiPmPJi",
+    "country": "Spain"
+  },
+  "F1": {
+    "path": "/france/ligue-1/",
+    "template": "KIShoMk3",
+    "country": "France"
+  },
+  "F2": {
+    "path": "/france/ligue-2/",
+    "template": "Y35Jer59",
+    "country": "France"
+  },
+  "N1": {
+    "path": "/netherlands/eredivisie/",
+    "template": "Or1bBrWD",
+    "country": "Netherlands"
+  },
+  "B1": {
+    "path": "/belgium/jupiler-pro-league/",
+    "template": "dG2SqPrf",
+    "country": "Belgium"
+  },
+  "P1": {
+    "path": "/portugal/liga-portugal/",
+    "template": "UmMRoGzp",
+    "country": "Portugal"
+  },
+  "T1": {
+    "path": "/turkey/super-lig/",
+    "template": "Opdcd08Q",
+    "country": "Turkey"
+  },
+  "G1": {
+    "path": "/greece/super-league/",
+    "template": "d2pwJFHI",
+    "country": "Greece"
+  },
+  "NOR": {
+    "path": "/norway/eliteserien/",
+    "template": "GOvB22xg",
+    "country": "Norway"
+  },
+  "SWE": {
+    "path": "/sweden/allsvenskan/",
+    "template": "nXxWpLmT",
+    "country": "Sweden"
+  },
+  "DNK": {
+    "path": "/denmark/superliga/",
+    "template": "O6W7GIaF",
+    "country": "Denmark"
+  },
+  "AUT": {
+    "path": "/austria/bundesliga/",
+    "template": "rJg7S7Me",
+    "country": "Austria"
+  },
+  "POL": {
+    "path": "/poland/ekstraklasa/",
+    "template": "lrMHUHDc",
+    "country": "Poland"
+  },
+  "SWZ": {
+    "path": "/switzerland/super-league/",
+    "template": "KAjTCI1l",
+    "country": "Switzerland"
+  },
+  "UCL": {
+    "path": "/europe/champions-league/",
+    "template": "xGrwqq16",
+    "country": "Europe"
+  },
+  "UEL": {
+    "path": "/europe/europa-league/",
+    "template": "ClDjv3V5",
+    "country": "Europe"
+  },
+  "UECL": {
+    "path": "/europe/conference-league/",
+    "template": "GfRbsVWM",
+    "country": "Europe"
+  }
+}

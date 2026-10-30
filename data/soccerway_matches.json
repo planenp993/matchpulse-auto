@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "entries": [
+    {
+      "division": "F2",
+      "season": "2026/27",
+      "soccerway_match_id": "KANaRkbT",
+      "registry_id": "m-9aa791f14ae0d17720f87bec",
+      "existing_provider_id": "FixtureDownload:F2:2026:105",
+      "clubs": ["montpellier", "metz"],
+      "club_ids": ["Eyf00syR", "4v0yqlWc"],
+      "round": 12,
+      "old_key": "F2|2026-11-07|montpellier|metz",
+      "source_url": "https://www.soccerway.com/france/ligue-2/fixtures/",
+      "source_sha256": "4c6952b3ea11017557fda8d14e0a8ddc0151d0256939d9463502306273841290",
+      "existing_source_url": "https://fixturedownload.com/feed/json/ligue-2-2026",
+      "existing_source_sha256": "1ac63a79ae4ddcdced01dfe4878d1ecc693243f24ae959658089301bc5329493",
+      "review": "Both full public competition feeds identify Montpellier at home to Metz in round 12. FixtureDownload stable match 105 still lists 7 November 13:00 UTC; Soccerway stable match KANaRkbT lists 6 November 19:00 UTC. Exact scoped canonical clubs, club IDs, season and round checked. This explicit bridge preserves the existing registry/forecast identity while allowing the authorized primary provider's future schedule correction. No pair/date proximity inference is enabled for other fixtures."
+    }
+  ]
+}

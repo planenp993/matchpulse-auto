@@ -25,6 +25,7 @@ import standings
 import selection_quotes
 import statarea
 import forebet
+import soccerway
 from threading import Lock
 from concurrent.futures import Future
 from fixtures_fallback import collect as calendars, CALENDAR_DIVISIONS, is_secondary
@@ -100,6 +101,10 @@ def plan(status, mode, now, calendar_config=None):
     work = {"standings": tables, "results": results, "europe": europe_due, "europe_full": europe_full, "mode": mode, "history": bool(history), "full": bool(full), "calendar": calendar,
             "quotes": quotes, "quote_window": window, "history_targets": len(targets(today, full)) if history else 0}
     if calendar_config:
+        if calendar_config['provider'] == 'Soccerway':
+            due = mode in ('full','calendar','fixtures','results','history','europe') or mode == 'auto' and age(status.get('last_soccerway_attempt_utc'), now) >= interval
+            work.update(calendar_provider='Soccerway', results=False, calendar=due, soccerway=due)
+            return work
         work.update(calendar_provider='Statarea', results=False,
                     statarea=calendar or mode in ('history', 'results', 'europe'))
         retry = status.get('statarea_wide_status') == 'partial' and age(status.get('last_statarea_wide_attempt_utc'), now) >= 2
@@ -129,7 +134,7 @@ def requested_mode(root, event, mode, request_commit=None):
     return request["mode"], request["id"]
 
 
-def collect(root, mode, now, download=u.fetch, request_id=None, statarea_download=None, trigger=None, forebet_download=None):
+def collect(root, mode, now, download=u.fetch, request_id=None, statarea_download=None, trigger=None, forebet_download=None, soccerway_download=None):
     underlying, cache, lock = download, {}, Lock()
     def download(url, **kwargs):
         key = (url, registry.encoded(kwargs))
@@ -150,7 +155,7 @@ def collect(root, mode, now, download=u.fetch, request_id=None, statarea_downloa
     patch = {"schema": 1, "observed_at_utc": stamp, "plan": work, "request_id": request_id,
              "trigger": trigger,
              "history": [], "checks": {}, "errors": [], "observations": [],
-             "calendar": None, "quotes": None, "markets": [], "results": None, "europe": None, "standings": None, "statarea": None, "forebet": None}
+             "calendar": None, "quotes": None, "markets": [], "results": None, "europe": None, "standings": None, "statarea": None, "forebet": None, "soccerway": None}
 
     def one(target):
         label, div, url = target
@@ -200,7 +205,9 @@ def collect(root, mode, now, download=u.fetch, request_id=None, statarea_downloa
                 else:
                     patch["history"].extend(rows)
                     patch["markets"].extend(prices)
-    if work.get('statarea'):
+    if work.get('soccerway'):
+        patch['soccerway'] = soccerway.collect(root, now, download=soccerway_download)
+    elif work.get('statarea'):
         patch['statarea'] = statarea.collect(root, now, wide=work['statarea_wide'],
             initial=not (root/statarea.ARCHIVE/'index.json').exists(), download=statarea_download)
     elif work["calendar"]:
@@ -353,6 +360,11 @@ def apply(root, patch):
     future = lambda row: today.isoformat() <= row[3] <= (today+dt.timedelta(days=30)).isoformat()
     fixtures = list(old_fixtures)
     calendar = patch["calendar"]
+    sw_conflicts = 0
+    if patch.get('soccerway') is not None:
+        fixtures, sw_changed, sw_conflicts = soccerway.apply(root, patch['soccerway'], status, history, book, fixtures, stamp, now, patch.get('trigger'))
+        changed.extend(sw_changed); applied += len(sw_changed)
+        registry.observe(book, [{'row': row} for row in sw_changed], stamp)
     if sta is not None and newer('last_fixture_attempt_utc'):
         # Replace only exact observed identities, including provider-ID reschedules.
         # Unlisted/failed-day fixtures survive; absence alone is not cancellation.
@@ -396,7 +408,7 @@ def apply(root, patch):
     if forebet.configuration(root):
         fixtures = forebet.merge_calendar(fb, sta, fixtures, status, book, stamp, view_now)
     elif statarea.configuration(root):
-        status['fixtures_source'] = 'Statarea / verified UTC; Football-Data historical statistics and quotes'
+        status['fixtures_source'] = statarea.configuration(root)['provider']+' / verified UTC; Football-Data historical statistics and quotes'
     quotes = patch["quotes"]
     if quotes and newer("last_quote_attempt_utc"):
         status["last_quote_attempt_utc"] = stamp
@@ -406,10 +418,10 @@ def apply(root, patch):
             secondary = [r for r in fixtures if is_secondary(r) or len(r) > 13 and "Sofia" in str(r[13])]
             keys = {u.key(r) for r in fixtures}
             eligible = calendar["counts"] if calendar else {}
-            primary = [r for r in quotes["rows"] if u.key(r) in keys] if work.get('calendar_provider') == 'Statarea' else [r for r in quotes["rows"] if r[0] not in eligible or u.key(r) in keys]
+            primary = [r for r in quotes["rows"] if u.key(r) in keys] if work.get('calendar_provider') in ('Statarea','Soccerway') else [r for r in quotes["rows"] if r[0] not in eligible or u.key(r) in keys]
             # Fresh quotes overwrite older primary snapshots; kickoff remains Sofia.
             fresh_keys = {u.key(r) for r in primary}
-            if work.get('calendar_provider') == 'Statarea':
+            if work.get('calendar_provider') in ('Statarea','Soccerway'):
                 prices = {u.key(r): r for r in primary}
                 fixtures = [[*r[:9], *prices[u.key(r)][9:13], *r[13:]] if u.key(r) in prices else r for r in fixtures]
             else:
@@ -430,8 +442,11 @@ def apply(root, patch):
     europe.reconcile_administrative(root, book, europe_clubs)
     registry.reconcile(book, [*historical, *europe_rows], fixtures, view_stamp, aliases=aliases)
     status.update(schema_version=3, history_count=len(historical), fixtures_count=len(fixtures),
+                  calendar_provider=(statarea.configuration(root) or {}).get('provider'),
+                  soccerway_enabled=(statarea.configuration(root) or {}).get('provider')=='Soccerway',
+                  statarea_enabled=(statarea.configuration(root) or {}).get('provider')=='Statarea',
                   forebet_enabled=forebet.configuration(root) is not None,
-                  calendar_only=not work["history"] and not work.get("results") and not work.get("europe") and not patch.get('statarea') and not patch.get('forebet'), last_build_utc=max(stamp, status.get("last_build_utc", "")))
+                  calendar_only=not work["history"] and not work.get("results") and not work.get("europe") and not patch.get('statarea') and not patch.get('forebet') and not patch.get('soccerway'), last_build_utc=max(stamp, status.get("last_build_utc", "")))
     if patch.get("request_id"):
         status["processed_sync_requests"] = sorted(set(status.get("processed_sync_requests", [])+[patch["request_id"]]))
     latest = {}
@@ -460,6 +475,7 @@ def apply(root, patch):
               "result_bridge_status": status.get("result_bridge_status"), "result_bridge_checks": status.get("result_bridge_checks", {}),
               "statarea": {k: status.get(k) for k in ('last_statarea_attempt_utc', 'last_statarea_success_utc', 'statarea_refresh_status', 'statarea_archived_matches', 'statarea_errors', 'statarea_quarantined')},
               "forebet": {k: status.get(k) for k in ('forebet_enabled', 'last_forebet_attempt_utc', 'last_forebet_success_utc', 'forebet_refresh_status', 'forebet_archived_matches', 'forebet_errors', 'forebet_quarantined')},
+              "soccerway": {k: status.get(k) for k in ('soccerway_enabled', 'last_soccerway_attempt_utc', 'last_soccerway_data_success_utc', 'last_soccerway_success_utc', 'soccerway_refresh_status', 'soccerway_archived_matches', 'soccerway_errors', 'soccerway_quarantined')},
               "europe_refresh_status": status.get("europe_refresh_status"), "europe_regulation_results": len(europe_rows), "standings": tables["coverage"],
               "note": "Source date alone does not prove missing games during a break. Pending fixtures are retained; unlisted is not cancelled. UEFA regulation scores are archived separately; administrative outcomes never settle analytical picks."}
     added_markets, market_report = markets.apply(root, patch.get("markets", []), fixtures, registry.row_key, stamp, u.readjson, u.writejson, status.get("quote_check_status"), checked_stamp=view_stamp)
@@ -470,7 +486,7 @@ def apply(root, patch):
                        ("docs/data/status.json", status), (REGISTRY, book), (LINKS, registry.links(book)), (HEALTH, health)]:
         u.writejson(root/name, data)
     return {"history": len(historical), "fixtures": len(fixtures), "changed_results": applied,
-            "conflicts_this_patch": conflicts+bridge_conflicts+sta_conflicts+fb_conflicts, "europe_results": len(europe_rows), "standings": tables["coverage"], "registry_matches": len(book["matches"]), "new_market_snapshots": added_markets, "plan": work}
+            "conflicts_this_patch": conflicts+bridge_conflicts+sta_conflicts+fb_conflicts+sw_conflicts, "europe_results": len(europe_rows), "standings": tables["coverage"], "registry_matches": len(book["matches"]), "new_market_snapshots": added_markets, "plan": work}
 
 
 def main():

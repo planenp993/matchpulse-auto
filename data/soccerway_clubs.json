@@ -1,0 +1,1422 @@
+{
+  "schema": 1,
+  "entries": [
+    {
+      "division": "B1",
+      "source_name": "Leuven",
+      "target": "Oud-Heverlee Leuven",
+      "club_id": "dYlTycNN",
+      "evidence": [
+        {
+          "provider_match_id": "Gbd3pB1s",
+          "date": "2026-10-24",
+          "home": "Oud-Heverlee Leuven",
+          "away": "Lommel SK",
+          "regulation": [
+            2,
+            2
+          ],
+          "opponent_key": "lommel sk",
+          "source_url": "https://www.soccerway.com/belgium/jupiler-pro-league/fixtures/",
+          "source_sha256": "f1ea3cd732a40a6f958d02b57d6cbddafe1f87fd205ee974638bffccdc18981c"
+        },
+        {
+          "provider_match_id": "6RFtx8cn",
+          "date": "2026-09-19",
+          "home": "Oud-Heverlee Leuven",
+          "away": "RAAL La Louvière",
+          "regulation": [
+            2,
+            0
+          ],
+          "opponent_key": "raal la louviere",
+          "source_url": "https://www.soccerway.com/belgium/jupiler-pro-league/fixtures/",
+          "source_sha256": "f1ea3cd732a40a6f958d02b57d6cbddafe1f87fd205ee974638bffccdc18981c"
+        },
+        {
+          "provider_match_id": "Sbci5RSO",
+          "date": "2026-09-12",
+          "home": "Oud-Heverlee Leuven",
+          "away": "Cercle Brugge KSV",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "cercle brugge",
+          "source_url": "https://www.soccerway.com/belgium/jupiler-pro-league/fixtures/",
+          "source_sha256": "f1ea3cd732a40a6f958d02b57d6cbddafe1f87fd205ee974638bffccdc18981c"
+        }
+      ]
+    },
+    {
+      "division": "B1",
+      "source_name": "Royale Union SG",
+      "target": "St. Gilloise",
+      "club_id": "407h8Ird",
+      "evidence": [
+        {
+          "provider_match_id": "KSAXkXwK",
+          "date": "2026-10-25",
+          "home": "St. Gilloise",
+          "away": "Cercle Brugge KSV",
+          "regulation": [
+            5,
+            2
+          ],
+          "opponent_key": "cercle brugge",
+          "source_url": "https://www.soccerway.com/belgium/jupiler-pro-league/fixtures/",
+          "source_sha256": "f1ea3cd732a40a6f958d02b57d6cbddafe1f87fd205ee974638bffccdc18981c"
+        },
+        {
+          "provider_match_id": "jFLZQsko",
+          "date": "2026-09-20",
+          "home": "Antwerp",
+          "away": "St. Gilloise",
+          "regulation": [
+            0,
+            2
+          ],
+          "opponent_key": "antwerp",
+          "source_url": "https://www.soccerway.com/belgium/jupiler-pro-league/fixtures/",
+          "source_sha256": "f1ea3cd732a40a6f958d02b57d6cbddafe1f87fd205ee974638bffccdc18981c"
+        },
+        {
+          "provider_match_id": "foaq7mbC",
+          "date": "2026-09-12",
+          "home": "St. Gilloise",
+          "away": "Lommel SK",
+          "regulation": [
+            5,
+            0
+          ],
+          "opponent_key": "lommel sk",
+          "source_url": "https://www.soccerway.com/belgium/jupiler-pro-league/fixtures/",
+          "source_sha256": "f1ea3cd732a40a6f958d02b57d6cbddafe1f87fd205ee974638bffccdc18981c"
+        }
+      ]
+    },
+    {
+      "division": "B1",
+      "source_name": "St. Liege",
+      "target": "Standard",
+      "club_id": "vsnvCI6G",
+      "evidence": [
+        {
+          "provider_match_id": "hMIoSToD",
+          "date": "2026-10-25",
+          "home": "Racing Genk",
+          "away": "Standard",
+          "regulation": [
+            2,
+            1
+          ],
+          "opponent_key": "genk",
+          "source_url": "https://www.soccerway.com/belgium/jupiler-pro-league/fixtures/",
+          "source_sha256": "f1ea3cd732a40a6f958d02b57d6cbddafe1f87fd205ee974638bffccdc18981c"
+        },
+        {
+          "provider_match_id": "6oMtsfuq",
+          "date": "2026-10-11",
+          "home": "Standard",
+          "away": "Royal Charleroi SC",
+          "regulation": [
+            0,
+            1
+          ],
+          "opponent_key": "charleroi",
+          "source_url": "https://www.soccerway.com/belgium/jupiler-pro-league/fixtures/",
+          "source_sha256": "f1ea3cd732a40a6f958d02b57d6cbddafe1f87fd205ee974638bffccdc18981c"
+        },
+        {
+          "provider_match_id": "jFuXH4CU",
+          "date": "2026-09-18",
+          "home": "KAA Gent",
+          "away": "Standard",
+          "regulation": [
+            2,
+            1
+          ],
+          "opponent_key": "gent",
+          "source_url": "https://www.soccerway.com/belgium/jupiler-pro-league/fixtures/",
+          "source_sha256": "f1ea3cd732a40a6f958d02b57d6cbddafe1f87fd205ee974638bffccdc18981c"
+        }
+      ]
+    },
+    {
+      "division": "D1",
+      "source_name": "Schalke",
+      "target": "Schalke 04",
+      "club_id": "0Ija0Ej9",
+      "evidence": [
+        {
+          "provider_match_id": "GfpM05Q1",
+          "date": "2026-10-24",
+          "home": "1. FC Köln",
+          "away": "Schalke 04",
+          "regulation": [
+            0,
+            0
+          ],
+          "opponent_key": "fc koln",
+          "source_url": "https://www.soccerway.com/germany/bundesliga/fixtures/",
+          "source_sha256": "0b5aa7b56c4dbb808c25e2ac4a68c76b60147b383fa2daa9457b0e49f219276d"
+        },
+        {
+          "provider_match_id": "6yPlFqOc",
+          "date": "2026-10-17",
+          "home": "Schalke 04",
+          "away": "1. FSV Mainz 05",
+          "regulation": [
+            0,
+            1
+          ],
+          "opponent_key": "mainz",
+          "source_url": "https://www.soccerway.com/germany/bundesliga/fixtures/",
+          "source_sha256": "0b5aa7b56c4dbb808c25e2ac4a68c76b60147b383fa2daa9457b0e49f219276d"
+        },
+        {
+          "provider_match_id": "ENV2nflf",
+          "date": "2026-10-11",
+          "home": "Sport-Club Freiburg",
+          "away": "Schalke 04",
+          "regulation": [
+            2,
+            1
+          ],
+          "opponent_key": "freiburg",
+          "source_url": "https://www.soccerway.com/germany/bundesliga/fixtures/",
+          "source_sha256": "0b5aa7b56c4dbb808c25e2ac4a68c76b60147b383fa2daa9457b0e49f219276d"
+        }
+      ]
+    },
+    {
+      "division": "D2",
+      "source_name": "SG Dynamo Dresden",
+      "target": "Dresden",
+      "club_id": "zL1YsOi1",
+      "evidence": [
+        {
+          "provider_match_id": "roQXnWmK",
+          "date": "2026-10-25",
+          "home": "Holstein Kiel",
+          "away": "Dresden",
+          "regulation": [
+            3,
+            0
+          ],
+          "opponent_key": "holstein kiel",
+          "source_url": "https://www.soccerway.com/germany/2-bundesliga/fixtures/",
+          "source_sha256": "16ceddc5ef18f56d6d0ce8fa7164a1a0676a62835d408a33dff63049a94595e5"
+        },
+        {
+          "provider_match_id": "lj9Bz2bc",
+          "date": "2026-10-18",
+          "home": "Dresden",
+          "away": "1. FC Magdeburg",
+          "regulation": [
+            2,
+            0
+          ],
+          "opponent_key": "magdeburg",
+          "source_url": "https://www.soccerway.com/germany/2-bundesliga/fixtures/",
+          "source_sha256": "16ceddc5ef18f56d6d0ce8fa7164a1a0676a62835d408a33dff63049a94595e5"
+        },
+        {
+          "provider_match_id": "C8GWNOEi",
+          "date": "2026-10-10",
+          "home": "VfL Osnabruck",
+          "away": "Dresden",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "osnabruck",
+          "source_url": "https://www.soccerway.com/germany/2-bundesliga/fixtures/",
+          "source_sha256": "16ceddc5ef18f56d6d0ce8fa7164a1a0676a62835d408a33dff63049a94595e5"
+        }
+      ]
+    },
+    {
+      "division": "E0",
+      "source_name": "Manchester Utd",
+      "target": "Man United",
+      "club_id": "ppjDR086",
+      "evidence": [
+        {
+          "provider_match_id": "CjTS8DVs",
+          "date": "2026-10-25",
+          "home": "Man United",
+          "away": "Bournemouth",
+          "regulation": [
+            0,
+            3
+          ],
+          "opponent_key": "bournemouth",
+          "source_url": "https://www.soccerway.com/england/premier-league/fixtures/",
+          "source_sha256": "b2bc631cd78f046d3a290d11099096e1ad2f0fbcac3a19e4f4ef6b3266779a8b"
+        },
+        {
+          "provider_match_id": "rHnJqO2T",
+          "date": "2026-10-18",
+          "home": "Leeds",
+          "away": "Man United",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "leeds",
+          "source_url": "https://www.soccerway.com/england/premier-league/fixtures/",
+          "source_sha256": "b2bc631cd78f046d3a290d11099096e1ad2f0fbcac3a19e4f4ef6b3266779a8b"
+        },
+        {
+          "provider_match_id": "hQ2NzTJb",
+          "date": "2026-10-10",
+          "home": "Man United",
+          "away": "Tottenham",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "tottenham",
+          "source_url": "https://www.soccerway.com/england/premier-league/fixtures/",
+          "source_sha256": "b2bc631cd78f046d3a290d11099096e1ad2f0fbcac3a19e4f4ef6b3266779a8b"
+        }
+      ]
+    },
+    {
+      "division": "E0",
+      "source_name": "Nottingham",
+      "target": "Nott'm Forest",
+      "club_id": "UsushcZr",
+      "evidence": [
+        {
+          "provider_match_id": "lEkBjWFD",
+          "date": "2026-10-23",
+          "home": "Ipswich",
+          "away": "Nott'm Forest",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "ipswich",
+          "source_url": "https://www.soccerway.com/england/premier-league/fixtures/",
+          "source_sha256": "b2bc631cd78f046d3a290d11099096e1ad2f0fbcac3a19e4f4ef6b3266779a8b"
+        },
+        {
+          "provider_match_id": "hAOr0qmA",
+          "date": "2026-10-18",
+          "home": "Nott'm Forest",
+          "away": "Arsenal",
+          "regulation": [
+            0,
+            1
+          ],
+          "opponent_key": "arsenal",
+          "source_url": "https://www.soccerway.com/england/premier-league/fixtures/",
+          "source_sha256": "b2bc631cd78f046d3a290d11099096e1ad2f0fbcac3a19e4f4ef6b3266779a8b"
+        },
+        {
+          "provider_match_id": "ld8jMT45",
+          "date": "2026-10-11",
+          "home": "Crystal Palace",
+          "away": "Nott'm Forest",
+          "regulation": [
+            3,
+            1
+          ],
+          "opponent_key": "crystal palace",
+          "source_url": "https://www.soccerway.com/england/premier-league/fixtures/",
+          "source_sha256": "b2bc631cd78f046d3a290d11099096e1ad2f0fbcac3a19e4f4ef6b3266779a8b"
+        }
+      ]
+    },
+    {
+      "division": "E2",
+      "source_name": "Cambridge Utd",
+      "target": "Cambridge",
+      "club_id": "lnb8EJRp",
+      "evidence": [
+        {
+          "provider_match_id": "06fZmszo",
+          "date": "2026-10-24",
+          "home": "Cambridge",
+          "away": "Plymouth Argyle",
+          "regulation": [
+            2,
+            3
+          ],
+          "opponent_key": "plymouth",
+          "source_url": "https://www.soccerway.com/england/league-one/fixtures/",
+          "source_sha256": "495025fb07e3a859d462cf6489a020fb810355e646d585ef21eed56e27dec1f2"
+        },
+        {
+          "provider_match_id": "dCUzW8Ea",
+          "date": "2026-10-20",
+          "home": "Cambridge",
+          "away": "Wycombe Wanderers",
+          "regulation": [
+            2,
+            2
+          ],
+          "opponent_key": "wycombe",
+          "source_url": "https://www.soccerway.com/england/league-one/fixtures/",
+          "source_sha256": "495025fb07e3a859d462cf6489a020fb810355e646d585ef21eed56e27dec1f2"
+        },
+        {
+          "provider_match_id": "hxc5SEjA",
+          "date": "2026-10-17",
+          "home": "Barnsley",
+          "away": "Cambridge",
+          "regulation": [
+            1,
+            2
+          ],
+          "opponent_key": "barnsley",
+          "source_url": "https://www.soccerway.com/england/league-one/fixtures/",
+          "source_sha256": "495025fb07e3a859d462cf6489a020fb810355e646d585ef21eed56e27dec1f2"
+        }
+      ]
+    },
+    {
+      "division": "E2",
+      "source_name": "Oxford Utd",
+      "target": "Oxford",
+      "club_id": "vgOBT43c",
+      "evidence": [
+        {
+          "provider_match_id": "ALJooQ1D",
+          "date": "2026-10-27",
+          "home": "Oxford",
+          "away": "Stockport County",
+          "regulation": [
+            1,
+            0
+          ],
+          "opponent_key": "stockport",
+          "source_url": "https://www.soccerway.com/england/league-one/fixtures/",
+          "source_sha256": "495025fb07e3a859d462cf6489a020fb810355e646d585ef21eed56e27dec1f2"
+        },
+        {
+          "provider_match_id": "pWsF0KJj",
+          "date": "2026-10-24",
+          "home": "Oxford",
+          "away": "Bradford City",
+          "regulation": [
+            0,
+            0
+          ],
+          "opponent_key": "bradford",
+          "source_url": "https://www.soccerway.com/england/league-one/fixtures/",
+          "source_sha256": "495025fb07e3a859d462cf6489a020fb810355e646d585ef21eed56e27dec1f2"
+        },
+        {
+          "provider_match_id": "6wSFrnb5",
+          "date": "2026-10-20",
+          "home": "Oxford",
+          "away": "Wigan Athletic",
+          "regulation": [
+            2,
+            1
+          ],
+          "opponent_key": "wigan",
+          "source_url": "https://www.soccerway.com/england/league-one/fixtures/",
+          "source_sha256": "495025fb07e3a859d462cf6489a020fb810355e646d585ef21eed56e27dec1f2"
+        }
+      ]
+    },
+    {
+      "division": "E2",
+      "source_name": "Peterborough",
+      "target": "Peterboro",
+      "club_id": "tWeI85kh",
+      "evidence": [
+        {
+          "provider_match_id": "dA5eePsB",
+          "date": "2026-10-24",
+          "home": "Bromley",
+          "away": "Peterboro",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "bromley",
+          "source_url": "https://www.soccerway.com/england/league-one/fixtures/",
+          "source_sha256": "495025fb07e3a859d462cf6489a020fb810355e646d585ef21eed56e27dec1f2"
+        },
+        {
+          "provider_match_id": "jgWjSQDO",
+          "date": "2026-10-20",
+          "home": "Huddersfield Town",
+          "away": "Peterboro",
+          "regulation": [
+            4,
+            1
+          ],
+          "opponent_key": "huddersfield",
+          "source_url": "https://www.soccerway.com/england/league-one/fixtures/",
+          "source_sha256": "495025fb07e3a859d462cf6489a020fb810355e646d585ef21eed56e27dec1f2"
+        },
+        {
+          "provider_match_id": "AFrgwW4S",
+          "date": "2026-10-17",
+          "home": "Peterboro",
+          "away": "Burton Albion",
+          "regulation": [
+            2,
+            2
+          ],
+          "opponent_key": "burton",
+          "source_url": "https://www.soccerway.com/england/league-one/fixtures/",
+          "source_sha256": "495025fb07e3a859d462cf6489a020fb810355e646d585ef21eed56e27dec1f2"
+        }
+      ]
+    },
+    {
+      "division": "E2",
+      "source_name": "Sheffield Wed",
+      "target": "Sheffield Weds",
+      "club_id": "llcCvIcG",
+      "evidence": [
+        {
+          "provider_match_id": "SCnLBpSi",
+          "date": "2026-10-24",
+          "home": "Doncaster Rovers",
+          "away": "Sheffield Weds",
+          "regulation": [
+            2,
+            0
+          ],
+          "opponent_key": "doncaster",
+          "source_url": "https://www.soccerway.com/england/league-one/fixtures/",
+          "source_sha256": "495025fb07e3a859d462cf6489a020fb810355e646d585ef21eed56e27dec1f2"
+        },
+        {
+          "provider_match_id": "EV98p8Th",
+          "date": "2026-10-20",
+          "home": "Notts County",
+          "away": "Sheffield Weds",
+          "regulation": [
+            2,
+            0
+          ],
+          "opponent_key": "notts county",
+          "source_url": "https://www.soccerway.com/england/league-one/fixtures/",
+          "source_sha256": "495025fb07e3a859d462cf6489a020fb810355e646d585ef21eed56e27dec1f2"
+        },
+        {
+          "provider_match_id": "vDsWVmc2",
+          "date": "2026-10-17",
+          "home": "Sheffield Weds",
+          "away": "AFC Wimbledon",
+          "regulation": [
+            5,
+            0
+          ],
+          "opponent_key": "afc wimbledon",
+          "source_url": "https://www.soccerway.com/england/league-one/fixtures/",
+          "source_sha256": "495025fb07e3a859d462cf6489a020fb810355e646d585ef21eed56e27dec1f2"
+        }
+      ]
+    },
+    {
+      "division": "E3",
+      "source_name": "Crawley",
+      "target": "Crawley Town",
+      "club_id": "QVmLl54o",
+      "evidence": [
+        {
+          "provider_match_id": "AcXU1RXF",
+          "date": "2026-10-24",
+          "home": "Crawley Town",
+          "away": "Tranmere Rovers",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "tranmere",
+          "source_url": "https://www.soccerway.com/england/league-two/fixtures/",
+          "source_sha256": "8c19e4a0af8062002db3ea388c7372a0ddcf43251ca02f2ddabe22b28b21e7c5"
+        },
+        {
+          "provider_match_id": "ljiAxB44",
+          "date": "2026-10-20",
+          "home": "Crawley Town",
+          "away": "Shrewsbury Town",
+          "regulation": [
+            2,
+            3
+          ],
+          "opponent_key": "shrewsbury",
+          "source_url": "https://www.soccerway.com/england/league-two/fixtures/",
+          "source_sha256": "8c19e4a0af8062002db3ea388c7372a0ddcf43251ca02f2ddabe22b28b21e7c5"
+        },
+        {
+          "provider_match_id": "fTe3MbE6",
+          "date": "2026-10-17",
+          "home": "Salford City",
+          "away": "Crawley Town",
+          "regulation": [
+            2,
+            1
+          ],
+          "opponent_key": "salford",
+          "source_url": "https://www.soccerway.com/england/league-two/fixtures/",
+          "source_sha256": "8c19e4a0af8062002db3ea388c7372a0ddcf43251ca02f2ddabe22b28b21e7c5"
+        }
+      ]
+    },
+    {
+      "division": "E3",
+      "source_name": "Fleetwood",
+      "target": "Fleetwood Town",
+      "club_id": "tCZ3D68d",
+      "evidence": [
+        {
+          "provider_match_id": "Gfzw052S",
+          "date": "2026-10-24",
+          "home": "Exeter City",
+          "away": "Fleetwood Town",
+          "regulation": [
+            2,
+            1
+          ],
+          "opponent_key": "exeter",
+          "source_url": "https://www.soccerway.com/england/league-two/fixtures/",
+          "source_sha256": "8c19e4a0af8062002db3ea388c7372a0ddcf43251ca02f2ddabe22b28b21e7c5"
+        },
+        {
+          "provider_match_id": "lW0GGTso",
+          "date": "2026-10-20",
+          "home": "Cheltenham Town",
+          "away": "Fleetwood Town",
+          "regulation": [
+            4,
+            2
+          ],
+          "opponent_key": "cheltenham",
+          "source_url": "https://www.soccerway.com/england/league-two/fixtures/",
+          "source_sha256": "8c19e4a0af8062002db3ea388c7372a0ddcf43251ca02f2ddabe22b28b21e7c5"
+        },
+        {
+          "provider_match_id": "ja1W7aaD",
+          "date": "2026-10-17",
+          "home": "Fleetwood Town",
+          "away": "Rotherham United",
+          "regulation": [
+            2,
+            0
+          ],
+          "opponent_key": "rotherham",
+          "source_url": "https://www.soccerway.com/england/league-two/fixtures/",
+          "source_sha256": "8c19e4a0af8062002db3ea388c7372a0ddcf43251ca02f2ddabe22b28b21e7c5"
+        }
+      ]
+    },
+    {
+      "division": "E3",
+      "source_name": "Newport",
+      "target": "Newport County",
+      "club_id": "ChwgcrNJ",
+      "evidence": [
+        {
+          "provider_match_id": "4fRMlWSG",
+          "date": "2026-10-24",
+          "home": "Cheltenham Town",
+          "away": "Newport County",
+          "regulation": [
+            1,
+            0
+          ],
+          "opponent_key": "cheltenham",
+          "source_url": "https://www.soccerway.com/england/league-two/fixtures/",
+          "source_sha256": "8c19e4a0af8062002db3ea388c7372a0ddcf43251ca02f2ddabe22b28b21e7c5"
+        },
+        {
+          "provider_match_id": "WtTEjhb4",
+          "date": "2026-10-20",
+          "home": "Rotherham United",
+          "away": "Newport County",
+          "regulation": [
+            2,
+            2
+          ],
+          "opponent_key": "rotherham",
+          "source_url": "https://www.soccerway.com/england/league-two/fixtures/",
+          "source_sha256": "8c19e4a0af8062002db3ea388c7372a0ddcf43251ca02f2ddabe22b28b21e7c5"
+        },
+        {
+          "provider_match_id": "OGP6hETi",
+          "date": "2026-10-17",
+          "home": "Newport County",
+          "away": "York City",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "york",
+          "source_url": "https://www.soccerway.com/england/league-two/fixtures/",
+          "source_sha256": "8c19e4a0af8062002db3ea388c7372a0ddcf43251ca02f2ddabe22b28b21e7c5"
+        }
+      ]
+    },
+    {
+      "division": "G1",
+      "source_name": "Olympiacos Piraeus",
+      "target": "Olympiakos",
+      "club_id": "hnzvnHPS",
+      "evidence": [
+        {
+          "provider_match_id": "t6BibSkS",
+          "date": "2026-10-25",
+          "home": "Olympiakos",
+          "away": "Kalamata",
+          "regulation": [
+            5,
+            0
+          ],
+          "opponent_key": "kalamata",
+          "source_url": "https://www.soccerway.com/greece/super-league/fixtures/",
+          "source_sha256": "38afec553f96f0f375e11447e2220f44c6a8a54730af68b6677a87d39dc89285"
+        },
+        {
+          "provider_match_id": "dbF4mByA",
+          "date": "2026-10-18",
+          "home": "Panetolikos",
+          "away": "Olympiakos",
+          "regulation": [
+            0,
+            2
+          ],
+          "opponent_key": "panetolikos",
+          "source_url": "https://www.soccerway.com/greece/super-league/fixtures/",
+          "source_sha256": "38afec553f96f0f375e11447e2220f44c6a8a54730af68b6677a87d39dc89285"
+        },
+        {
+          "provider_match_id": "2yKcXboC",
+          "date": "2026-10-11",
+          "home": "Olympiakos",
+          "away": "Panathinaikos",
+          "regulation": [
+            1,
+            0
+          ],
+          "opponent_key": "panathinaikos",
+          "source_url": "https://www.soccerway.com/greece/super-league/fixtures/",
+          "source_sha256": "38afec553f96f0f375e11447e2220f44c6a8a54730af68b6677a87d39dc89285"
+        }
+      ]
+    },
+    {
+      "division": "G1",
+      "source_name": "Volos",
+      "target": "Volos NFC",
+      "club_id": "nDZbFBqG",
+      "evidence": [
+        {
+          "provider_match_id": "Yu8q0lLF",
+          "date": "2026-10-25",
+          "home": "Volos NFC",
+          "away": "Panathinaikos",
+          "regulation": [
+            0,
+            1
+          ],
+          "opponent_key": "panathinaikos",
+          "source_url": "https://www.soccerway.com/greece/super-league/fixtures/",
+          "source_sha256": "38afec553f96f0f375e11447e2220f44c6a8a54730af68b6677a87d39dc89285"
+        },
+        {
+          "provider_match_id": "dvPARTEj",
+          "date": "2026-10-17",
+          "home": "Levadiakos",
+          "away": "Volos NFC",
+          "regulation": [
+            0,
+            0
+          ],
+          "opponent_key": "levadeiakos",
+          "source_url": "https://www.soccerway.com/greece/super-league/fixtures/",
+          "source_sha256": "38afec553f96f0f375e11447e2220f44c6a8a54730af68b6677a87d39dc89285"
+        },
+        {
+          "provider_match_id": "noDsysnm",
+          "date": "2026-10-11",
+          "home": "Aris",
+          "away": "Volos NFC",
+          "regulation": [
+            3,
+            2
+          ],
+          "opponent_key": "aris",
+          "source_url": "https://www.soccerway.com/greece/super-league/fixtures/",
+          "source_sha256": "38afec553f96f0f375e11447e2220f44c6a8a54730af68b6677a87d39dc89285"
+        }
+      ]
+    },
+    {
+      "division": "I2",
+      "source_name": "Entella",
+      "target": "Virtus Entella",
+      "club_id": "hUuJfYbb",
+      "evidence": [
+        {
+          "provider_match_id": "IcVvirkJ",
+          "date": "2026-10-27",
+          "home": "Virtus Entella",
+          "away": "US Avellino",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "avellino",
+          "source_url": "https://www.soccerway.com/italy/serie-b/fixtures/",
+          "source_sha256": "b0951be877b0163fe6dfdf9c4d2bf5af5d0d0a187bcb2c84e096906f9de922a2"
+        },
+        {
+          "provider_match_id": "Ods6kVDE",
+          "date": "2026-10-24",
+          "home": "Virtus Entella",
+          "away": "Mantova",
+          "regulation": [
+            0,
+            1
+          ],
+          "opponent_key": "mantova",
+          "source_url": "https://www.soccerway.com/italy/serie-b/fixtures/",
+          "source_sha256": "b0951be877b0163fe6dfdf9c4d2bf5af5d0d0a187bcb2c84e096906f9de922a2"
+        },
+        {
+          "provider_match_id": "hhgKMuvB",
+          "date": "2026-10-17",
+          "home": "Padova",
+          "away": "Virtus Entella",
+          "regulation": [
+            1,
+            2
+          ],
+          "opponent_key": "padova",
+          "source_url": "https://www.soccerway.com/italy/serie-b/fixtures/",
+          "source_sha256": "b0951be877b0163fe6dfdf9c4d2bf5af5d0d0a187bcb2c84e096906f9de922a2"
+        }
+      ]
+    },
+    {
+      "division": "N1",
+      "source_name": "G.A. Eagles",
+      "target": "Go Ahead Eagles",
+      "club_id": "hG8POBb8",
+      "evidence": [
+        {
+          "provider_match_id": "QuGb2On9",
+          "date": "2026-10-23",
+          "home": "Go Ahead Eagles",
+          "away": "Telstar",
+          "regulation": [
+            3,
+            2
+          ],
+          "opponent_key": "telstar",
+          "source_url": "https://www.soccerway.com/netherlands/eredivisie/fixtures/",
+          "source_sha256": "8b1557a443208416c45c310524d4b17454b01918d768dc23601f367e83d1138a"
+        },
+        {
+          "provider_match_id": "8MzRmPXF",
+          "date": "2026-10-18",
+          "home": "PEC Zwolle",
+          "away": "Go Ahead Eagles",
+          "regulation": [
+            4,
+            1
+          ],
+          "opponent_key": "zwolle",
+          "source_url": "https://www.soccerway.com/netherlands/eredivisie/fixtures/",
+          "source_sha256": "8b1557a443208416c45c310524d4b17454b01918d768dc23601f367e83d1138a"
+        },
+        {
+          "provider_match_id": "jktmJDSO",
+          "date": "2026-10-10",
+          "home": "Go Ahead Eagles",
+          "away": "Sparta Rotterdam",
+          "regulation": [
+            3,
+            3
+          ],
+          "opponent_key": "sparta rotterdam",
+          "source_url": "https://www.soccerway.com/netherlands/eredivisie/fixtures/",
+          "source_sha256": "8b1557a443208416c45c310524d4b17454b01918d768dc23601f367e83d1138a"
+        }
+      ]
+    },
+    {
+      "division": "N1",
+      "source_name": "Sittard",
+      "target": "For Sittard",
+      "club_id": "YH8HX5iP",
+      "evidence": [
+        {
+          "provider_match_id": "8n6hibv8",
+          "date": "2026-10-25",
+          "home": "For Sittard",
+          "away": "Excelsior Rotterdam",
+          "regulation": [
+            1,
+            0
+          ],
+          "opponent_key": "excelsior",
+          "source_url": "https://www.soccerway.com/netherlands/eredivisie/fixtures/",
+          "source_sha256": "8b1557a443208416c45c310524d4b17454b01918d768dc23601f367e83d1138a"
+        },
+        {
+          "provider_match_id": "GfSPT3tp",
+          "date": "2026-10-18",
+          "home": "Nijmegen",
+          "away": "For Sittard",
+          "regulation": [
+            2,
+            2
+          ],
+          "opponent_key": "nijmegen",
+          "source_url": "https://www.soccerway.com/netherlands/eredivisie/fixtures/",
+          "source_sha256": "8b1557a443208416c45c310524d4b17454b01918d768dc23601f367e83d1138a"
+        },
+        {
+          "provider_match_id": "CbJ4yerg",
+          "date": "2026-10-10",
+          "home": "For Sittard",
+          "away": "Twente",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "twente",
+          "source_url": "https://www.soccerway.com/netherlands/eredivisie/fixtures/",
+          "source_sha256": "8b1557a443208416c45c310524d4b17454b01918d768dc23601f367e83d1138a"
+        }
+      ]
+    },
+    {
+      "division": "SC0",
+      "source_name": "Dundee Utd",
+      "target": "Dundee United",
+      "club_id": "8QEB2FFp",
+      "evidence": [
+        {
+          "provider_match_id": "IsRLTFdD",
+          "date": "2026-10-28",
+          "home": "Celtic",
+          "away": "Dundee United",
+          "regulation": [
+            2,
+            2
+          ],
+          "opponent_key": "celtic",
+          "source_url": "https://www.soccerway.com/scotland/premiership/fixtures/",
+          "source_sha256": "4353713fe382e86c812415648d208fbd17880490b200030f7c0cde8d64d0c2ab"
+        },
+        {
+          "provider_match_id": "EmsQKKDr",
+          "date": "2026-10-24",
+          "home": "Dundee United",
+          "away": "Aberdeen",
+          "regulation": [
+            3,
+            2
+          ],
+          "opponent_key": "aberdeen",
+          "source_url": "https://www.soccerway.com/scotland/premiership/fixtures/",
+          "source_sha256": "4353713fe382e86c812415648d208fbd17880490b200030f7c0cde8d64d0c2ab"
+        },
+        {
+          "provider_match_id": "IHefQtjL",
+          "date": "2026-10-17",
+          "home": "St. Johnstone",
+          "away": "Dundee United",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "st johnstone",
+          "source_url": "https://www.soccerway.com/scotland/premiership/fixtures/",
+          "source_sha256": "4353713fe382e86c812415648d208fbd17880490b200030f7c0cde8d64d0c2ab"
+        }
+      ]
+    },
+    {
+      "division": "SP1",
+      "source_name": "Atl. Madrid",
+      "target": "Ath Madrid",
+      "club_id": "jaarqpLQ",
+      "evidence": [
+        {
+          "provider_match_id": "bB7ejnDc",
+          "date": "2026-10-17",
+          "home": "RCD Espanyol de Barcelona",
+          "away": "Ath Madrid",
+          "regulation": [
+            0,
+            1
+          ],
+          "opponent_key": "espanol",
+          "source_url": "https://www.soccerway.com/spain/laliga/fixtures/",
+          "source_sha256": "ea144837acb0752f5191564a6b2e2d292cf096c82a6426cb7db00ef522955d28"
+        },
+        {
+          "provider_match_id": "6cE9Ndwf",
+          "date": "2026-10-10",
+          "home": "Deportivo Alavés",
+          "away": "Ath Madrid",
+          "regulation": [
+            1,
+            2
+          ],
+          "opponent_key": "alaves",
+          "source_url": "https://www.soccerway.com/spain/laliga/fixtures/",
+          "source_sha256": "ea144837acb0752f5191564a6b2e2d292cf096c82a6426cb7db00ef522955d28"
+        },
+        {
+          "provider_match_id": "hGycdKve",
+          "date": "2026-09-20",
+          "home": "Ath Madrid",
+          "away": "Real Madrid",
+          "regulation": [
+            2,
+            1
+          ],
+          "opponent_key": "real madrid",
+          "source_url": "https://www.soccerway.com/spain/laliga/fixtures/",
+          "source_sha256": "ea144837acb0752f5191564a6b2e2d292cf096c82a6426cb7db00ef522955d28"
+        }
+      ]
+    },
+    {
+      "division": "SP1",
+      "source_name": "Dep. A Coruna",
+      "target": "La Coruna",
+      "club_id": "Q51ZzMS6",
+      "evidence": [
+        {
+          "provider_match_id": "6HK9SrLj",
+          "date": "2026-10-16",
+          "home": "La Coruna",
+          "away": "Levante UD",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "levante",
+          "source_url": "https://www.soccerway.com/spain/laliga/fixtures/",
+          "source_sha256": "ea144837acb0752f5191564a6b2e2d292cf096c82a6426cb7db00ef522955d28"
+        },
+        {
+          "provider_match_id": "feSNymb4",
+          "date": "2026-10-11",
+          "home": "Real Sociedad",
+          "away": "La Coruna",
+          "regulation": [
+            3,
+            2
+          ],
+          "opponent_key": "sociedad",
+          "source_url": "https://www.soccerway.com/spain/laliga/fixtures/",
+          "source_sha256": "ea144837acb0752f5191564a6b2e2d292cf096c82a6426cb7db00ef522955d28"
+        },
+        {
+          "provider_match_id": "hzSjI11E",
+          "date": "2026-09-20",
+          "home": "La Coruna",
+          "away": "Betis",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "betis",
+          "source_url": "https://www.soccerway.com/spain/laliga/fixtures/",
+          "source_sha256": "ea144837acb0752f5191564a6b2e2d292cf096c82a6426cb7db00ef522955d28"
+        }
+      ]
+    },
+    {
+      "division": "SP2",
+      "source_name": "Celta Vigo B",
+      "target": "Celta B",
+      "club_id": "GQPCyIeG",
+      "evidence": [
+        {
+          "provider_match_id": "AJ0qWqA6",
+          "date": "2026-10-24",
+          "home": "Girona",
+          "away": "Celta B",
+          "regulation": [
+            5,
+            1
+          ],
+          "opponent_key": "girona",
+          "source_url": "https://www.soccerway.com/spain/laliga2/fixtures/",
+          "source_sha256": "de43e3e1a276dced832a789862edc7049c0a06c4ca62b021de224aa7422204ac"
+        },
+        {
+          "provider_match_id": "YLuihUR1",
+          "date": "2026-10-19",
+          "home": "Celta B",
+          "away": "Tenerife",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "tenerife",
+          "source_url": "https://www.soccerway.com/spain/laliga2/fixtures/",
+          "source_sha256": "de43e3e1a276dced832a789862edc7049c0a06c4ca62b021de224aa7422204ac"
+        },
+        {
+          "provider_match_id": "z3sQHYXb",
+          "date": "2026-10-10",
+          "home": "Celta B",
+          "away": "Real Sociedad II",
+          "regulation": [
+            4,
+            1
+          ],
+          "opponent_key": "sociedad b",
+          "source_url": "https://www.soccerway.com/spain/laliga2/fixtures/",
+          "source_sha256": "de43e3e1a276dced832a789862edc7049c0a06c4ca62b021de224aa7422204ac"
+        }
+      ]
+    },
+    {
+      "division": "SP2",
+      "source_name": "Gijon",
+      "target": "Sp Gijon",
+      "club_id": "69w4Rb2d",
+      "evidence": [
+        {
+          "provider_match_id": "ddfTZRAs",
+          "date": "2026-10-25",
+          "home": "Castellón",
+          "away": "Sp Gijon",
+          "regulation": [
+            4,
+            0
+          ],
+          "opponent_key": "castellon",
+          "source_url": "https://www.soccerway.com/spain/laliga2/fixtures/",
+          "source_sha256": "de43e3e1a276dced832a789862edc7049c0a06c4ca62b021de224aa7422204ac"
+        },
+        {
+          "provider_match_id": "r7TPQlYQ",
+          "date": "2026-10-17",
+          "home": "Sp Gijon",
+          "away": "Albacete",
+          "regulation": [
+            2,
+            1
+          ],
+          "opponent_key": "albacete",
+          "source_url": "https://www.soccerway.com/spain/laliga2/fixtures/",
+          "source_sha256": "de43e3e1a276dced832a789862edc7049c0a06c4ca62b021de224aa7422204ac"
+        },
+        {
+          "provider_match_id": "2yUIJf3n",
+          "date": "2026-10-11",
+          "home": "Cádiz",
+          "away": "Sp Gijon",
+          "regulation": [
+            0,
+            1
+          ],
+          "opponent_key": "cadiz",
+          "source_url": "https://www.soccerway.com/spain/laliga2/fixtures/",
+          "source_sha256": "de43e3e1a276dced832a789862edc7049c0a06c4ca62b021de224aa7422204ac"
+        }
+      ]
+    },
+    {
+      "division": "UCL",
+      "source_name": "Atl. Madrid",
+      "target": "Club Atlético de Madrid",
+      "club_id": "jaarqpLQ",
+      "evidence": [
+        {
+          "provider_match_id": "8ODjcCFN",
+          "date": "2026-10-20",
+          "home": "Stuttgart",
+          "away": "Club Atlético de Madrid",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "stuttgart",
+          "source_url": "https://www.soccerway.com/europe/champions-league/fixtures/",
+          "source_sha256": "139612a9bd8fc3c9650de26454cf7a3b4180c3a49a4ef61a11f48049cce0e00b"
+        },
+        {
+          "provider_match_id": "C0GBpZVH",
+          "date": "2026-10-13",
+          "home": "Club Atlético de Madrid",
+          "away": "Manchester United FC",
+          "regulation": [
+            2,
+            0
+          ],
+          "opponent_key": "man united",
+          "source_url": "https://www.soccerway.com/europe/champions-league/fixtures/",
+          "source_sha256": "139612a9bd8fc3c9650de26454cf7a3b4180c3a49a4ef61a11f48049cce0e00b"
+        },
+        {
+          "provider_match_id": "6aa0PFtQ",
+          "date": "2026-09-09",
+          "home": "Liverpool FC",
+          "away": "Club Atlético de Madrid",
+          "regulation": [
+            2,
+            1
+          ],
+          "opponent_key": "liverpool",
+          "source_url": "https://www.soccerway.com/europe/champions-league/fixtures/",
+          "source_sha256": "139612a9bd8fc3c9650de26454cf7a3b4180c3a49a4ef61a11f48049cce0e00b"
+        }
+      ]
+    },
+    {
+      "division": "UCL",
+      "source_name": "Manchester Utd",
+      "target": "Manchester United FC",
+      "club_id": "ppjDR086",
+      "evidence": [
+        {
+          "provider_match_id": "UTWLyE6T",
+          "date": "2026-10-21",
+          "home": "Como 1907",
+          "away": "Manchester United FC",
+          "regulation": [
+            4,
+            1
+          ],
+          "opponent_key": "como",
+          "source_url": "https://www.soccerway.com/europe/champions-league/fixtures/",
+          "source_sha256": "139612a9bd8fc3c9650de26454cf7a3b4180c3a49a4ef61a11f48049cce0e00b"
+        },
+        {
+          "provider_match_id": "C0GBpZVH",
+          "date": "2026-10-13",
+          "home": "Club Atlético de Madrid",
+          "away": "Manchester United FC",
+          "regulation": [
+            2,
+            0
+          ],
+          "opponent_key": "ath madrid",
+          "source_url": "https://www.soccerway.com/europe/champions-league/fixtures/",
+          "source_sha256": "139612a9bd8fc3c9650de26454cf7a3b4180c3a49a4ef61a11f48049cce0e00b"
+        },
+        {
+          "provider_match_id": "EwQ5ud74",
+          "date": "2026-09-10",
+          "home": "Manchester United FC",
+          "away": "Sabah",
+          "regulation": [
+            4,
+            0
+          ],
+          "opponent_key": "sabah",
+          "source_url": "https://www.soccerway.com/europe/champions-league/fixtures/",
+          "source_sha256": "139612a9bd8fc3c9650de26454cf7a3b4180c3a49a4ef61a11f48049cce0e00b"
+        }
+      ]
+    },
+    {
+      "division": "UECL",
+      "source_name": "Braga",
+      "target": "Sporting Braga",
+      "club_id": "dpUer7ht",
+      "evidence": [
+        {
+          "provider_match_id": "tlzf2acC",
+          "date": "2026-10-22",
+          "home": "Sporting Braga",
+          "away": "Gent",
+          "regulation": [
+            2,
+            0
+          ],
+          "opponent_key": "gent",
+          "source_url": "https://www.soccerway.com/europe/conference-league/fixtures/",
+          "source_sha256": "2599c4e8b72937a8f59d65d9dc85ff2b6dbe08d1d19ad1a9880fab6c245dc5ab"
+        },
+        {
+          "provider_match_id": "xMULOOY9",
+          "date": "2026-10-15",
+          "home": "FC Copenhagen",
+          "away": "Sporting Braga",
+          "regulation": [
+            3,
+            0
+          ],
+          "opponent_key": "fc copenhagen",
+          "source_url": "https://www.soccerway.com/europe/conference-league/fixtures/",
+          "source_sha256": "2599c4e8b72937a8f59d65d9dc85ff2b6dbe08d1d19ad1a9880fab6c245dc5ab"
+        }
+      ],
+      "two_match_uefa_proof": {
+        "official_club_id": "52336",
+        "standing_provider_id": "ESPN:UECL:2994",
+        "standing_totals": {
+          "played": 2,
+          "won": 1,
+          "drawn": 0,
+          "lost": 1,
+          "gf": 2,
+          "ga": 3,
+          "gd": -1
+        },
+        "observed_at_utc": "2026-10-30T09:04:08+00:00",
+        "receipts": [
+          {
+            "url": "https://site.api.espn.com/apis/v2/sports/soccer/uefa.europa.conf/standings?season=2026",
+            "sha256": "05d88b5d539aa047c562276f287921de7e55d40f63c681fb25a9e80b5c2d71a5"
+          }
+        ]
+      }
+    },
+    {
+      "division": "UEL",
+      "source_name": "Din. Zagreb",
+      "target": "GNK Dinamo",
+      "club_id": "8G5ufQTg",
+      "evidence": [
+        {
+          "provider_match_id": "nZCopW0m",
+          "date": "2026-10-22",
+          "home": "GNK Dinamo",
+          "away": "Nijmegen",
+          "regulation": [
+            2,
+            4
+          ],
+          "opponent_key": "nijmegen",
+          "source_url": "https://www.soccerway.com/europe/europa-league/fixtures/",
+          "source_sha256": "1026abf90688c348abd7807d49958bdbbac81a29ab32921e0e3ae5693b925794"
+        },
+        {
+          "provider_match_id": "ITFszO16",
+          "date": "2026-10-15",
+          "home": "GNK Dinamo",
+          "away": "Anderlecht",
+          "regulation": [
+            1,
+            0
+          ],
+          "opponent_key": "anderlecht",
+          "source_url": "https://www.soccerway.com/europe/europa-league/fixtures/",
+          "source_sha256": "1026abf90688c348abd7807d49958bdbbac81a29ab32921e0e3ae5693b925794"
+        },
+        {
+          "provider_match_id": "KnBgrAVa",
+          "date": "2026-09-16",
+          "home": "H. Beer-Sheva",
+          "away": "GNK Dinamo",
+          "regulation": [
+            0,
+            0
+          ],
+          "opponent_key": "h beer sheva",
+          "source_url": "https://www.soccerway.com/europe/europa-league/fixtures/",
+          "source_sha256": "1026abf90688c348abd7807d49958bdbbac81a29ab32921e0e3ae5693b925794"
+        }
+      ]
+    },
+    {
+      "division": "UEL",
+      "source_name": "Olympiacos Piraeus",
+      "target": "Olympiakos",
+      "club_id": "hnzvnHPS",
+      "evidence": [
+        {
+          "provider_match_id": "SMqu0QwJ",
+          "date": "2026-10-22",
+          "home": "Olympiakos",
+          "away": "Sparta Praha",
+          "regulation": [
+            1,
+            0
+          ],
+          "opponent_key": "sparta praha",
+          "source_url": "https://www.soccerway.com/europe/europa-league/fixtures/",
+          "source_sha256": "1026abf90688c348abd7807d49958bdbbac81a29ab32921e0e3ae5693b925794"
+        },
+        {
+          "provider_match_id": "n95a5iuI",
+          "date": "2026-10-15",
+          "home": "Marseille",
+          "away": "Olympiakos",
+          "regulation": [
+            0,
+            1
+          ],
+          "opponent_key": "marseille",
+          "source_url": "https://www.soccerway.com/europe/europa-league/fixtures/",
+          "source_sha256": "1026abf90688c348abd7807d49958bdbbac81a29ab32921e0e3ae5693b925794"
+        },
+        {
+          "provider_match_id": "OrSdI7gm",
+          "date": "2026-09-16",
+          "home": "Olympiakos",
+          "away": "Jagiellonia",
+          "regulation": [
+            2,
+            1
+          ],
+          "opponent_key": "jagiellonia",
+          "source_url": "https://www.soccerway.com/europe/europa-league/fixtures/",
+          "source_sha256": "1026abf90688c348abd7807d49958bdbbac81a29ab32921e0e3ae5693b925794"
+        }
+      ]
+    },
+    {
+      "division": "UEL",
+      "source_name": "Royale Union SG",
+      "target": "St. Gilloise",
+      "club_id": "407h8Ird",
+      "evidence": [
+        {
+          "provider_match_id": "r5IEVWof",
+          "date": "2026-10-22",
+          "home": "St. Gilloise",
+          "away": "H. Beer-Sheva",
+          "regulation": [
+            4,
+            0
+          ],
+          "opponent_key": "h beer sheva",
+          "source_url": "https://www.soccerway.com/europe/europa-league/fixtures/",
+          "source_sha256": "1026abf90688c348abd7807d49958bdbbac81a29ab32921e0e3ae5693b925794"
+        },
+        {
+          "provider_match_id": "dGW4LX5d",
+          "date": "2026-10-15",
+          "home": "St. Gilloise",
+          "away": "Real Sociedad",
+          "regulation": [
+            1,
+            1
+          ],
+          "opponent_key": "sociedad",
+          "source_url": "https://www.soccerway.com/europe/europa-league/fixtures/",
+          "source_sha256": "1026abf90688c348abd7807d49958bdbbac81a29ab32921e0e3ae5693b925794"
+        },
+        {
+          "provider_match_id": "2JjXOxx8",
+          "date": "2026-09-17",
+          "home": "Viktoria Plzen",
+          "away": "St. Gilloise",
+          "regulation": [
+            0,
+            3
+          ],
+          "opponent_key": "viktoria plzen",
+          "source_url": "https://www.soccerway.com/europe/europa-league/fixtures/",
+          "source_sha256": "1026abf90688c348abd7807d49958bdbbac81a29ab32921e0e3ae5693b925794"
+        }
+      ]
+    }
+  ]
+}

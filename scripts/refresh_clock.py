@@ -11,7 +11,7 @@ import data_sync as sync
 import match_registry as registry
 import statarea
 
-SOURCES = ('history', 'calendar', 'quotes', 'results', 'europe', 'standings', 'statarea', 'forebet')
+SOURCES = ('history', 'calendar', 'quotes', 'results', 'europe', 'standings', 'statarea', 'forebet', 'soccerway')
 
 
 def decision(root, now):
@@ -19,7 +19,8 @@ def decision(root, now):
     plan = sync.plan(status, 'auto', now, statarea.configuration(root))
     due = [key for key in SOURCES if plan.get(key)]
     return {'refresh': bool(due), 'due': due, 'plan': plan,
-            'last_statarea_success_utc': status.get('last_statarea_success_utc')}
+            'last_statarea_success_utc': status.get('last_statarea_success_utc'),
+            'last_soccerway_success_utc': status.get('last_soccerway_success_utc')}
 
 
 def main():
