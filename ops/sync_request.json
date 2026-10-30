@@ -1,1 +1,1 @@
-{"schema":1,"id":"missing-clock-recovery-2026-10-30-afternoon","mode":"auto","reason":"Owner reports stale 11:04 Sofia source receipt at 13:46. Explicit recovery only; do not treat this push as native scheduler reliability evidence."}
+{"schema":1,"id":"statarea-tls-retry-once-2026-10-30","mode":"calendar","reason":"One explicit retry after all requests in run 41050793624 failed during TLS, without an HTTP denial. Normal six-day window only; Forebet remains disabled; do not treat this push as scheduler evidence."}
