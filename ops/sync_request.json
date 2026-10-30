@@ -1,1 +1,1 @@
-{"schema":1,"id":"diary-recovery-2026-10-30","mode":"calendar","reason":"Owner-authorized recovery after fixing fixed-clock regression tests; source receipts must record the actual push run."}
+{"schema":1,"id":"forebet-activation-2026-10-30","mode":"auto","reason":"Owner-authorized activation of the supplemental Forebet source after PR 40 passed verification and browser acceptance. Preserve independent actual source triggers and existing Statarea receipts."}
