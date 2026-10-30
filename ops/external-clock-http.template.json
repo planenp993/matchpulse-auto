@@ -1,5 +1,5 @@
 {
-  "status": "enabled_ten_minute_polling_scheduled_delivery_confirmed_new_cadence_pending",
+  "status": "enabled_ten_minute_polling_first_scheduled_poll_verified",
   "service": "cron-job.org",
   "job_id": 8758317,
   "job_url": "https://console.cron-job.org/jobs/8758317",
@@ -33,24 +33,37 @@
       "Actions": "read and write"
     }
   },
-  "verification": "Saved and reloaded existing enabled job 8758317 with a ten-minute poll. Private HISTORY confirms scheduled HTTP 200 at 22:13, 22:43 and 23:13 Sofia, matched to GitHub dispatches. Last actual successful Soccerway receipt before cadence change: 23:14:05 Sofia, 27/27 in run 41129345313. The first execution under the new cadence remains pending; an early poll may skip collection.",
+  "verification": "Saved and reloaded existing enabled job 8758317 with a ten-minute poll. Private HISTORY confirms HTTP 200 and matching GitHub run 41131877441 for the first new scheduled poll at 23:33:04 Sofia. Planner succeeded and skipped collection because the real 23:14:05 Soccerway receipt (27/27, run 41129345313) was only about 19 minutes old. New poll delivery is proven; no later source retrieval is claimed.",
   "test_run_id": 41118013045,
   "test_http_status": 200,
   "test_source_success_utc": "2026-10-30T19:47:37+00:00",
   "next_scheduled_executions_sofia": [
-    "2026-10-30T23:33:00+02:00",
     "2026-10-30T23:43:00+02:00",
-    "2026-10-30T23:53:00+02:00"
+    "2026-10-30T23:53:00+02:00",
+    "2026-10-31T00:03:00+02:00"
   ],
   "expected_http_statuses": [
     200,
     204
   ],
   "authorization": "Owner explicitly prioritized regular automatic updates over a particular interval after reviewing the proposed ten-minute check. Same enabled job and credential; only title and polling schedule changed. No credential is stored in the repository.",
-  "last_review": "2026-10-30: ten-minute schedule and enabled state verified after reload. Service HISTORY and response run IDs checked. Initial manual test is retained as historical evidence, not proof of recurrence.",
+  "last_review": "2026-10-30: saved ten-minute schedule verified after reload; first new planned HTTP 200 poll at 23:33:04 linked to successful GitHub run 41131877441. Source collection remains gated and its latest actual receipt remains 23:14:05.",
   "polling_interval_minutes": 10,
   "provider_target_interval_minutes": 30,
   "provider_minimum_interval_minutes": 25,
-  "latest_automatic_run_id": 41129345313,
-  "latest_automatic_source_success_utc": "2026-10-30T21:14:05+00:00"
+  "latest_automatic_source_success_utc": "2026-10-30T21:14:05+00:00",
+  "latest_automatic_source_run_id": 41129345313,
+  "first_new_cadence_poll": {
+    "scheduled_sofia": "2026-10-30T23:33:00+02:00",
+    "executed_sofia": "2026-10-30T23:33:04+02:00",
+    "http_status": 200,
+    "github_run_id": 41131877441,
+    "github_created_utc": "2026-10-30T21:33:05Z",
+    "github_conclusion": "success",
+    "response_run_id_matched": true,
+    "planner_refresh": false,
+    "source_collection": "skipped; existing 23:14:05 Sofia source receipt was only about 19 minutes old",
+    "last_soccerway_success_utc": "2026-10-30T21:14:05+00:00",
+    "new_source_receipt": false
+  }
 }

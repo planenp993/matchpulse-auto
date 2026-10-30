@@ -611,10 +611,12 @@ early still makes no provider requests or publication. A later poll catches
 up without waiting another whole half hour. Do not promise exact wall-clock
 publication; GitHub runner/Pages queues remain outside this configuration.
 
-Save/reload verified the ten-minute expression and enabled state. HISTORY
-shows upcoming 23:33, 23:43 and 23:53 Sofia under the new configuration.
-The first actual execution under the new cadence is still pending; do not
-count a displayed schedule or the preceding 23:14 receipt as that evidence.
+Save/reload verified the ten-minute expression and enabled state. The first
+new scheduled poll executed at 23:33:04 Sofia, HTTP 200; its response run ID
+matches GitHub 41131877441 (created 23:33:05, completed successfully). Its
+planner correctly returned refresh=false and skipped collection because
+the 23:14:05 receipt was about 19 minutes old. This proves the new external
+delivery, not a new source retrieval. Next checks are 23:43, 23:53 and 00:03.
 A provider-free replay of the observed 22:19:46 receipt confirms skip at
 22:43 and due at 22:53 with the unchanged planner. This is a replay, not a
 new production retrieval.
