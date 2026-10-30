@@ -596,3 +596,10 @@ actual scheduled executions to GitHub workflow_dispatch runs and successful
 Soccerway source receipts. The recurring job itself is authorized; the remaining
 credential handoff is not another permission request. Keep models and diaries
 unchanged. See docs/EXTERNAL_CLOCK_BG.md and ops/external-clock-http.template.json.
+
+After the owner accidentally removed Authorization and changed Content-Type,
+the same saved job was repaired and reopened to verify persistence. It remains
+inactive with `Bearer PASTE_TOKEN_HERE`; only the placeholder is selected for
+private token entry. On return, never dump the Advanced editor's full AX/DOM or
+screenshot: it may contain the real token. Use narrowly scoped non-secret DOM
+checks and navigate to the Cronjobs list before an unrestricted observation.
