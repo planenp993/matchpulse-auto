@@ -9,7 +9,7 @@
 - Правила за промени и проверки: [AGENTS.md](AGENTS.md).
 - Подбор на селекции: [методика](docs/selections-method.md).
 - Отделен дневник на селекциите: [правила](docs/selections-diary-method.md).
-- Програма и резултати: [Statarea](docs/statarea-method.md); [Forebet](docs/forebet-method.md) е подготвен, но неактивен след отказан достъп от доставчика.
+- Програма и скорошни резултати: основен източник [Soccerway](docs/soccerway-method.md). Statarea и Forebet са неактивни; вече събраният архив се запазва.
 - Предишни етапи: [архив](docs/archive/PROJECT_HISTORY_BG.md).
 
 Статичният сайт се публикува от GitHub Actions. Обновяването работи без

@@ -1,0 +1,664 @@
+{
+  "schema": 1,
+  "provider": "Soccerway",
+  "role": "primary",
+  "production_enabled": true,
+  "run_id": 41090927038,
+  "job_id": 124184963526,
+  "run_url": "https://github.com/planenp993/matchpulse-auto/actions/runs/41090927038",
+  "pull_request": 43,
+  "merge_commit": "d2e946a9a7f9bc0f1492c3ade14ac821baebc492",
+  "request_commit": "99a8790c04cbe3296ecf8606ed6cf83f43a452df",
+  "source_checked_utc": "2026-10-30T16:35:10+00:00",
+  "source_trigger": {
+    "event": "push",
+    "run_id": "41090927038",
+    "run_attempt": "1"
+  },
+  "source_status": "ok",
+  "sources_ok": 27,
+  "sources_total": 27,
+  "archived_matches": 5130,
+  "errors": [],
+  "quarantined": [],
+  "apply_summary": {
+    "history": 54933,
+    "fixtures": 904,
+    "changed_results": 0,
+    "conflicts_this_patch": 0,
+    "europe_results": 4913,
+    "standings": {
+      "lagging": [],
+      "expected": 27,
+      "available_current_season": 27,
+      "failed": []
+    },
+    "registry_matches": 9395,
+    "new_market_snapshots": 0,
+    "plan": {
+      "standings": false,
+      "results": false,
+      "europe": false,
+      "europe_full": false,
+      "mode": "calendar",
+      "history": false,
+      "full": false,
+      "calendar": true,
+      "quotes": false,
+      "quote_window": "2026-10-27",
+      "history_targets": 0,
+      "calendar_provider": "Soccerway",
+      "soccerway": true
+    }
+  },
+  "checks": {
+    "E0": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/england/premier-league/fixtures/",
+      "sha256": "08ce41290733f5d4170aac7030b1fcce76e70de96f958c5dc9864ce550504e22",
+      "feeds": {
+        "results": {
+          "rows": 80,
+          "published_total": 80,
+          "first_date": "2026-08-21",
+          "last_date": "2026-10-25",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 108,
+          "published_total": 300,
+          "first_date": "2026-10-31",
+          "last_date": "2027-01-02",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    },
+    "E1": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/england/championship/fixtures/",
+      "sha256": "520f24759b8b506a5e00ab8a6f7d3c1552fad532172b5329becf40f6e2826ca1",
+      "feeds": {
+        "results": {
+          "rows": 119,
+          "published_total": 144,
+          "first_date": "2026-08-29",
+          "last_date": "2026-10-24",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 109,
+          "published_total": 408,
+          "first_date": "2026-10-30",
+          "last_date": "2026-12-18",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    },
+    "E2": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/england/league-one/fixtures/",
+      "sha256": "926b557f614fcbb9c59c6cdedba4fbf7a9140f0e65d4962f2fc77075888d6113",
+      "feeds": {
+        "results": {
+          "rows": 108,
+          "published_total": 143,
+          "first_date": "2026-09-01",
+          "last_date": "2026-10-27",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 121,
+          "published_total": 401,
+          "first_date": "2026-10-31",
+          "last_date": "2027-01-01",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    },
+    "E3": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/england/league-two/fixtures/",
+      "sha256": "bf7c372ead339611954e52302094d734975dbffea796f0667fbdd70c40db6837",
+      "feeds": {
+        "results": {
+          "rows": 115,
+          "published_total": 151,
+          "first_date": "2026-09-01",
+          "last_date": "2026-10-27",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 122,
+          "published_total": 400,
+          "first_date": "2026-10-30",
+          "last_date": "2027-01-01",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    },
+    "SC0": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/scotland/premiership/fixtures/",
+      "sha256": "b0ed50dae5467f114fe191bdefade3c5b292ad4c52ecce9e2a4587eb0f36e54c",
+      "feeds": {
+        "results": {
+          "rows": 66,
+          "published_total": 66,
+          "first_date": "2026-07-31",
+          "last_date": "2026-10-28",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 107,
+          "published_total": 131,
+          "first_date": "2026-10-31",
+          "last_date": "2027-02-27",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    },
+    "D1": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/germany/bundesliga/fixtures/",
+      "sha256": "69d3fbf284badc56f1545e50bde808539c1523f8494368a3036def357df69439",
+      "feeds": {
+        "results": {
+          "rows": 63,
+          "published_total": 63,
+          "first_date": "2026-08-28",
+          "last_date": "2026-10-25",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 117,
+          "published_total": 243,
+          "first_date": "2026-10-30",
+          "last_date": "2027-02-06",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    },
+    "D2": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/germany/2-bundesliga/fixtures/",
+      "sha256": "c6b041124e8875fe68f6a813ae15a4c9cf4d9f1f7ef90312aee42f99e2d2e0c7",
+      "feeds": {
+        "results": {
+          "rows": 81,
+          "published_total": 81,
+          "first_date": "2026-08-07",
+          "last_date": "2026-10-25",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 117,
+          "published_total": 225,
+          "first_date": "2026-10-30",
+          "last_date": "2027-02-21",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    },
+    "I1": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/italy/serie-a/fixtures/",
+      "sha256": "ca3f283645c983e601833c5f430a8f5bdcc641796354c41c07d0d413a26170ad",
+      "feeds": {
+        "results": {
+          "rows": 90,
+          "published_total": 90,
+          "first_date": "2026-08-22",
+          "last_date": "2026-10-29",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 120,
+          "published_total": 290,
+          "first_date": "2026-10-31",
+          "last_date": "2027-01-24",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    },
+    "I2": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/italy/serie-b/fixtures/",
+      "sha256": "9dc472eabbaff27efdd51c1542a1a6e52187ff66dacb1267a1f0e9fa805c78e1",
+      "feeds": {
+        "results": {
+          "rows": 90,
+          "published_total": 90,
+          "first_date": "2026-08-21",
+          "last_date": "2026-10-28",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 110,
+          "published_total": 290,
+          "first_date": "2026-10-31",
+          "last_date": "2027-01-10",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    },
+    "SP1": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/spain/laliga/fixtures/",
+      "sha256": "c1924becc9a9890de44efd7804c52309ee9e343323e37a6bd2b261349e2ae01f",
+      "feeds": {
+        "results": {
+          "rows": 99,
+          "published_total": 99,
+          "first_date": "2026-08-15",
+          "last_date": "2026-10-26",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 120,
+          "published_total": 280,
+          "first_date": "2026-10-30",
+          "last_date": "2027-01-31",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    },
+    "SP2": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/spain/laliga2/fixtures/",
+      "sha256": "c89585fd61fbb6bca40d9e0abf8c6855cb2f56ffe2b4b9b9a3b522002c355b51",
+      "feeds": {
+        "results": {
+          "rows": 105,
+          "published_total": 121,
+          "first_date": "2026-08-23",
+          "last_date": "2026-10-26",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 121,
+          "published_total": 341,
+          "first_date": "2026-10-31",
+          "last_date": "2027-01-17",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    },
+    "F1": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/france/ligue-1/fixtures/",
+      "sha256": "1d76b2c0a3a7db2ac2849411b9dd96bd15f85e36223bbaf2a072f1a3df057887",
+      "feeds": {
+        "results": {
+          "rows": 72,
+          "published_total": 72,
+          "first_date": "2026-08-21",
+          "last_date": "2026-10-26",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 117,
+          "published_total": 234,
+          "first_date": "2026-10-30",
+          "last_date": "2027-02-20",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    },
+    "F2": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/france/ligue-2/fixtures/",
+      "sha256": "7033daf4b432eaf036a6eeb88a585cabb6b430bf8e4fe6e1edab3e9da7cd5ec8",
+      "feeds": {
+        "results": {
+          "rows": 90,
+          "published_total": 90,
+          "first_date": "2026-08-08",
+          "last_date": "2026-10-26",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 117,
+          "published_total": 216,
+          "first_date": "2026-10-30",
+          "last_date": "2027-02-26",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    },
+    "N1": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/netherlands/eredivisie/fixtures/",
+      "sha256": "3861e8fd6ba7f59d488c17104c66134eafc7aa9bdbeb419f2b50e8bab3240830",
+      "feeds": {
+        "results": {
+          "rows": 90,
+          "published_total": 90,
+          "first_date": "2026-08-07",
+          "last_date": "2026-10-25",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 117,
+          "published_total": 216,
+          "first_date": "2026-10-31",
+          "last_date": "2027-02-21",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    },
+    "B1": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/belgium/jupiler-pro-league/fixtures/",
+      "sha256": "c23f7192eb7536ae29cbd8b1fed9bbe67e24fbc63b58bfa19108dd7b2c7d3d30",
+      "feeds": {
+        "results": {
+          "rows": 80,
+          "published_total": 80,
+          "first_date": "2026-08-07",
+          "last_date": "2026-10-25",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 118,
+          "published_total": 226,
+          "first_date": "2026-10-30",
+          "last_date": "2027-02-20",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    },
+    "P1": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/portugal/liga-portugal/fixtures/",
+      "sha256": "3b5959c620cca043dfe9f54e730ccc47fcf36ee4fbaa3a972ded4de099978ccc",
+      "feeds": {
+        "results": {
+          "rows": 81,
+          "published_total": 81,
+          "first_date": "2026-08-07",
+          "last_date": "2026-10-26",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 117,
+          "published_total": 225,
+          "first_date": "2026-10-30",
+          "last_date": "2027-02-14",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    },
+    "T1": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/turkey/super-lig/fixtures/",
+      "sha256": "c6a55625badfb7c47ae13ab2d58453f7ca8c5758858234aaf4a4cc2a48339f4f",
+      "feeds": {
+        "results": {
+          "rows": 81,
+          "published_total": 81,
+          "first_date": "2026-08-14",
+          "last_date": "2026-10-26",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 117,
+          "published_total": 225,
+          "first_date": "2026-10-30",
+          "last_date": "2027-02-21",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    },
+    "G1": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/greece/super-league/fixtures/",
+      "sha256": "ee1462cbcc98115e7f9ceecfee1078fded2606c8e16b3162b5c778108505aa4e",
+      "feeds": {
+        "results": {
+          "rows": 55,
+          "published_total": 55,
+          "first_date": "2026-08-22",
+          "last_date": "2026-10-25",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 112,
+          "published_total": 126,
+          "first_date": "2026-10-31",
+          "last_date": "2027-03-06",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    },
+    "NOR": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/norway/eliteserien/fixtures/",
+      "sha256": "55e1cad0a2011e5d2d4191c377fa9b55a7ffe55dfd4f83a81276876524d84407",
+      "feeds": {
+        "results": {
+          "rows": 110,
+          "published_total": 192,
+          "first_date": "2026-05-29",
+          "last_date": "2026-10-25",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 48,
+          "published_total": 48,
+          "first_date": "2026-10-30",
+          "last_date": "2026-12-13",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    },
+    "SWE": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/sweden/allsvenskan/fixtures/",
+      "sha256": "ca13b35facc3f31c03393db4a68911beec438a51fe22bfbe067ad4d8d81a7eb2",
+      "feeds": {
+        "results": {
+          "rows": 105,
+          "published_total": 208,
+          "first_date": "2026-07-20",
+          "last_date": "2026-10-29",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 32,
+          "published_total": 32,
+          "first_date": "2026-11-01",
+          "last_date": "2026-11-29",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    },
+    "DNK": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/denmark/superliga/fixtures/",
+      "sha256": "a35001e77860776561ef8ae02511d69f8f46602fff34f426fb501c0586c156e5",
+      "feeds": {
+        "results": {
+          "rows": 72,
+          "published_total": 72,
+          "first_date": "2026-07-24",
+          "last_date": "2026-10-26",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 60,
+          "published_total": 60,
+          "first_date": "2026-10-30",
+          "last_date": "2027-03-21",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    },
+    "AUT": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/austria/bundesliga/fixtures/",
+      "sha256": "f8946790fffd6cb1f5cbac8bd3ad3f0fba4538cedff3c7ba58fe975abb70003e",
+      "feeds": {
+        "results": {
+          "rows": 60,
+          "published_total": 60,
+          "first_date": "2026-07-31",
+          "last_date": "2026-10-25",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 72,
+          "published_total": 72,
+          "first_date": "2026-10-30",
+          "last_date": "2027-02-27",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    },
+    "POL": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/poland/ekstraklasa/fixtures/",
+      "sha256": "cc7649c7f274d1230f40ea8f8dfeb5be842740111f05fda73645c09c3fcd25bb",
+      "feeds": {
+        "results": {
+          "rows": 104,
+          "published_total": 106,
+          "first_date": "2026-07-25",
+          "last_date": "2026-10-25",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 110,
+          "published_total": 200,
+          "first_date": "2026-10-30",
+          "last_date": "2027-03-06",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    },
+    "SWZ": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/switzerland/super-league/fixtures/",
+      "sha256": "829058970860293e711fa90665d58cae39906f888f43c583d784a6ad198b0dcb",
+      "feeds": {
+        "results": {
+          "rows": 66,
+          "published_total": 66,
+          "first_date": "2026-07-25",
+          "last_date": "2026-10-25",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 66,
+          "published_total": 66,
+          "first_date": "2026-10-31",
+          "last_date": "2027-02-07",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    },
+    "UCL": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/europe/champions-league/fixtures/",
+      "sha256": "e57fceca4bb3bed5eca57d51d1356ba2bc8102e3fa5f9f0c90eb68ae2647ab93",
+      "feeds": {
+        "results": {
+          "rows": 105,
+          "published_total": 144,
+          "first_date": "2026-07-22",
+          "last_date": "2026-10-21",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 90,
+          "published_total": 90,
+          "first_date": "2026-11-03",
+          "last_date": "2027-01-27",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    },
+    "UEL": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/europe/europa-league/fixtures/",
+      "sha256": "521e5185b8bf94a8feaf5127205cc11d5650f09eeadcda6a50ef3cffa63dd61f",
+      "feeds": {
+        "results": {
+          "rows": 104,
+          "published_total": 134,
+          "first_date": "2026-08-04",
+          "last_date": "2026-10-22",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 90,
+          "published_total": 90,
+          "first_date": "2026-11-04",
+          "last_date": "2027-01-28",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    },
+    "UECL": {
+      "status": "ok",
+      "url": "https://www.soccerway.com/europe/conference-league/fixtures/",
+      "sha256": "f535fda59f16710d17dd2d05a04acb7ca34e15203b5276fd3bfc910fa51d9e17",
+      "feeds": {
+        "results": {
+          "rows": 112,
+          "published_total": 294,
+          "first_date": "2026-08-12",
+          "last_date": "2026-10-22",
+          "requested_window_covered": true
+        },
+        "fixtures": {
+          "rows": 72,
+          "published_total": 72,
+          "first_date": "2026-11-05",
+          "last_date": "2026-12-17",
+          "requested_window_covered": true
+        }
+      },
+      "window_covered": true
+    }
+  },
+  "verification": {
+    "python_tests": 198,
+    "node_tests": 249,
+    "full_browser_acceptances": "pass",
+    "five_append_only_diaries": "pass",
+    "frozen_research": "pass",
+    "public_source_clock": "2026-10-30T16:35:10+00:00",
+    "public_health_rows_warning": false,
+    "script_versions": {
+      "scout": "e3ba138b01bd",
+      "health": "af0f8f99bf0f"
+    }
+  },
+  "note": "Actual production retrieval and public deployment verified. An explicit push is not evidence of reliable native scheduled delivery. The target remains approximately 30 minutes; external scheduler setup stays paused. Statarea and Forebet are inactive; historical/statistical and official UEFA sources retain their roles."
+}
