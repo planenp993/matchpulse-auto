@@ -629,3 +629,27 @@ Do not request the token in chat, generate a replacement unnecessarily, or
 widen permissions. Keep all models, archives and frozen diaries intact.
 See docs/EXTERNAL_CLOCK_BG.md and
 ops/source-probes/external-clock-cadence-2026-10-30.json.
+
+## Authorized isolated TRUE FORM study (31 October 2026)
+
+The user explicitly requested a TRUE FORM test. This authorized only the new
+offline study in `docs/true-form-protocol.md`, registered before replay in commit
+728f1093acbb24dc97c84317085d932e84f0c6b7. Its implementation and result are
+separate from all four pinned older studies and all five frozen live diaries.
+No production module imports `scripts/true_form_model.cjs` or its comparator.
+
+`scripts/compare_true_form.cjs` reads the exact old history Git blob from the
+existing research manifest and verifies its SHA-256. It does not use live history
+or fetch providers. Residuals use each historical game's own pre-week prediction;
+same-day observations enter only after that day's predictions. Keep the fixed
+last-10 / 60-day / prior-6 / bounded-ratio definition, early-only coherent
+calibration and paired goal control explicit. Frozen shot mixtures are secondary
+diagnostics on their exact common intersection, not a matched-calibration test.
+
+The registered result selected zero TRUE FORM weight; it did not qualify for a
+separate prospective comparison. Do not activate or tune it on the later periods.
+Do not regenerate it on data refreshes. Validate with
+`node scripts/compare_true_form.cjs --check`; the ordinary Node suite verifies
+its exact fingerprints and tables. A newly authorized research change can use
+`node scripts/compare_true_form.cjs --write --progress`, preserving older reports,
+protocols, frozen modules, archives and append-only diary records.

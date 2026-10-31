@@ -18,7 +18,7 @@ test('The six-match shrinkage and real-day age match the registered formula',()=
  close(form.rawAttack,(6*2+5*w*3)/(6*2+5*w*2));close(form.vulnerability,1);
  const old=T.teamForm(s,'E0','A','2027-02-21');assert.ok(old.attack<form.attack);
 });
-test('The same goals against higher expected opposition mean weaker residual attack',()=>{
+test('The same goals with a higher pre-match expectation mean weaker residual attack',()=>{
  const s1=T.createState(),s2=T.createState();
  for(let d=1;d<=5;d++){const r=row(`2026-10-0${d}`);T.add(s1,r,expected(r,1,1));T.add(s2,r,expected(r,3,1));}
  assert.ok(T.teamForm(s1,'E0','A',fixture[3]).attack>1);
@@ -96,4 +96,8 @@ test('Report integrity and frozen production/research fingerprints are protected
  for(const [p,expected] of Object.entries(snapshot.files))assert.equal(crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex'),expected,p);
  const config=JSON.parse(fs.readFileSync('docs/data/diary/experiments/opponent-days-v1/config.json','utf8'));
  for(const [p,expected] of Object.entries(config.candidate_files))assert.equal(crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex'),expected,p);
+});
+test('The published TRUE FORM report matches its pinned history, exact code and rendered tables',()=>{
+ const {raw,snapshot}=C.inputs(),r=JSON.parse(fs.readFileSync('docs/data/true_form_comparison.json','utf8'));
+ assert.equal(C.check(r,C.sourceFingerprint(raw,snapshot)),true);
 });
