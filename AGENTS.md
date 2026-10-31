@@ -653,3 +653,28 @@ Do not regenerate it on data refreshes. Validate with
 its exact fingerprints and tables. A newly authorized research change can use
 `node scripts/compare_true_form.cjs --write --progress`, preserving older reports,
 protocols, frozen modules, archives and append-only diary records.
+
+## Authorized isolated hybrid study (31 October 2026)
+
+The user requested a test of a third hybrid between the two existing models,
+with a useful addition if warranted. `docs/hybrid-model-protocol.md` was
+registered before replay in 60436c5504c8a13cd6b085c392c96d2cf412657e. The
+study is isolated; do not change older pinned studies, TRUE FORM fingerprints,
+production formulas, sources, schedules or any of the five append-only diaries.
+
+`scripts/compare_hybrid_models.cjs` reads and verifies the pinned historical Git
+blob. The fixed 50/50 mixture, early-only learned two-model blend and three-way
+SOT extension mix whole score distributions. Preserve matched early calibration
+controls for both the value of SOT and whether model 1 adds to model 2 + SOT.
+Availability uses pre-match data, never the target statistics; missing components
+have explicit shared fallbacks. Do not force nonzero weights or retune on later
+periods. Frozen SOT benchmark weights remain unchanged.
+
+The pure blend did not improve convincingly on model 2. The three-way fit selected
+zero model-1 weight and matched its simpler model-2/SOT control. The older frozen
+raw-goal/SOT mixture remained slightly better. These are retrospective results,
+not authorization for model promotion or a new diary. Validate with
+`node scripts/compare_hybrid_models.cjs --check`; the Node suite verifies its
+exact source/history fingerprints and rendered report. Do not regenerate on
+ordinary refreshes. A separately authorized research change may use
+`node scripts/compare_hybrid_models.cjs --write --progress`.

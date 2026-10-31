@@ -89,3 +89,7 @@ test('All frozen source, original study and TRUE FORM fingerprints stay unchange
  for(const [p,expected] of Object.entries(tf.provenance.files))assert.equal(crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex'),expected,p);
  const bad=H.seal({...report,provenance:{test:true}});bad.n++;assert.throws(()=>H.check(bad,{test:true}),/integrity/);
 });
+test('The published hybrid report matches its registered archive, source fingerprints and tables',()=>{
+ const {raw,snapshot}=H.inputs(),r=JSON.parse(fs.readFileSync('docs/data/hybrid_model_comparison.json','utf8'));
+ assert.equal(H.check(r,H.provenance(raw,snapshot)),true);
+});
