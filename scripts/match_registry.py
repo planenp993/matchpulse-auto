@@ -2,6 +2,7 @@
 import datetime as dt
 import hashlib
 import json
+import re
 from pathlib import Path
 import sys
 from zoneinfo import ZoneInfo
@@ -89,8 +90,11 @@ def observe(registry, observations, stamp):
         if not match:
             year = int(row[3][:4])
             start = year if int(row[3][5:7]) >= 7 else year-1
+            explicit_season = observation.get("season")
+            if explicit_season is not None and not re.fullmatch(r"\d{4}(?:/\d{2})?", str(explicit_season)):
+                raise ValueError("Invalid explicit provider season")
             match = matches[identity] = {"id": identity, "division": row[0], "clubs": clubs,
-                "season": str(year) if row[0] in ("NOR", "SWE") else f"{start}/{str(start+1)[2:]}",
+                "season": explicit_season or (str(year) if row[0] in ("NOR", "SWE") else f"{start}/{str(start+1)[2:]}"),
                 "legacy_keys": [], "provider_ids": [], "first_seen_utc": stamp,
                 "schedule": row[:7], "kickoff_utc": observed_kickoff(row, observation), "last_seen_utc": stamp,
                 "state": "scheduled", "result_key": None, "result": None}

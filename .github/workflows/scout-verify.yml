@@ -58,6 +58,7 @@ jobs:
           python scripts/statarea.py --check
           python scripts/forebet.py --check
           python scripts/soccerway.py --check
+          python scripts/extended_leagues.py check
       - name: Verify provider standings without downloads
         run: python scripts/standings.py --check
       - name: Smoke check real history and fixtures
