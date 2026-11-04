@@ -145,7 +145,7 @@ function renderSchedule(){
    return '<div class="league-group"><div class="league-head"><strong>'+esc(window.MatchpulseHealth.leagueLabel(g))+'</strong><span>'+rows.length+' мача</span></div>'+
      rows.map(({f,i})=>{
        const hint=fixtureHint(f),at=(f[4]||'—')+((f[13]||'').includes('Sofia')?'':'*');
-       return '<button type="button" data-fixture="'+i+'" class="fixture-row'+(activeMatch&&Scout.keyFixture(activeMatch)===Scout.keyFixture(f)?' fixture-active':'')+'"><span class="time">'+esc(at)+'</span>'+
+       return '<button type="button" data-fixture="'+i+'" data-fixture-key="'+esc(Scout.keyFixture(f))+'" class="fixture-row'+(activeMatch&&Scout.keyFixture(activeMatch)===Scout.keyFixture(f)?' fixture-active':'')+'"><span class="time">'+esc(at)+'</span>'+
          '<span class="teams"><span class="fixture-club">'+View.clubMark(f[0],f[5])+'<span>'+esc(f[5])+'</span></span><span class="sr-only"> – </span><span class="fixture-club">'+View.clubMark(f[0],f[6])+'<span>'+esc(f[6])+'</span></span>'+
          (mode==='week'?'<br><small style="color:#8ba2af;font-weight:500">'+esc(f[3])+'</small>':'')+'</span>'+
          '<span class="fixture-tags"><span class="tag '+hint.css+'">'+esc(hint.label)+'</span>'+(archived(f)?'<small class="archive-result">'+esc(Calendar.status(archivedEntry(f)))+'</small>':'')+'</span><span class="chevron">›</span></button>'

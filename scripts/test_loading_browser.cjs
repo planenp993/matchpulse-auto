@@ -55,7 +55,7 @@
   }
   // Lazy calendar enrichment can reorder rows after the first paint. Resolve
   // the intended match by its identity, never by a previously observed index.
-  const target=page.locator('.fixture-row').filter({hasText:sample[5]+' – '+sample[6]});
+  const target=variant==='updated'?page.locator('[data-fixture-key="'+key+'"]'):page.locator('.fixture-row').filter({hasText:sample[5]+' – '+sample[6]});
   assert.equal(await target.count(),1);await target.click();
   if(variant==='updated')await page.locator('[data-match-tab="goals"]').click();
   await page.locator('#matchContent .model-analysis').waitFor({state:'visible',timeout:60000});
