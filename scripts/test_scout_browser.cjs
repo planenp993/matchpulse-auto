@@ -160,6 +160,7 @@
  await mobile.locator('[data-day="7"]').click();
  await mobile.locator('.program-filters > summary').click();
  await mobile.locator('#leagueSelect').selectOption('E0');
+ await mobile.locator('.program-filters > summary').click();
  if(await mobile.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth+1))throw new Error('Mobile schedule overflows horizontally');
  // Real stale/partial provider receipts add a necessary health warning. Keep
  // the layout budget for the program, excluding only that visible warning.
