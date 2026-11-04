@@ -10,6 +10,7 @@
 - Подбор на селекции: [методика](docs/selections-method.md).
 - Отделен дневник на селекциите: [правила](docs/selections-diary-method.md).
 - Програма и скорошни резултати: основен източник [Soccerway](docs/soccerway-method.md). Statarea и Forebet са неактивни; вече събраният архив се запазва.
+- [14 допълнителни първенства](docs/supplemental-leagues-method.md): отделно проверени Soccerway резултати и Football-Data допълване; текущ сезонен префикс, с ясни липси и собствени source receipts.
 - Предишни етапи: [архив](docs/archive/PROJECT_HISTORY_BG.md).
 
 Статичният сайт се публикува от GitHub Actions. Обновяването работи без

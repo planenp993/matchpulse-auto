@@ -1,0 +1,124 @@
+name: Matchpulse Supplemental Leagues
+
+on:
+  workflow_run:
+    workflows: [Matchpulse Refresh Clock, Matchpulse Auto Football-Data Sync]
+    types: [completed]
+    branches: [main]
+  push:
+    branches: [main]
+    paths: ['ops/extended_sync_request.json']
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  plan:
+    if: >-
+      github.event_name == 'push' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+      (github.event.workflow_run.event == 'schedule' || github.event.workflow_run.event == 'workflow_dispatch'))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      due: ${{ steps.plan.outputs.due }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Check separate receipts without taking the primary publication lock
+        id: plan
+        env:
+          RUN_EVENT: ${{ github.event_name }}
+        run: |
+          python scripts/extended_leagues.py plan --event "$RUN_EVENT" --commit "$GITHUB_SHA" > /tmp/mp-supplemental-plan.json
+          python -c 'import json,os; value=json.load(open("/tmp/mp-supplemental-plan.json")); open(os.environ["GITHUB_OUTPUT"],"a").write("due="+str(value["due"]).lower()+"\n")'
+  supplemental:
+    needs: plan
+    if: needs.plan.outputs.due == 'true'
+    # Only due work shares the existing publication lock; there is no new clock.
+    concurrency:
+      group: matchpulse-pages
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check separate receipts without provider requests
+        id: plan
+        env:
+          RUN_EVENT: ${{ github.event_name }}
+        run: |
+          python scripts/extended_leagues.py plan --event "$RUN_EVENT" --commit "$GITHUB_SHA" > /tmp/mp-supplemental-plan.json
+          python -c 'import json,os; value=json.load(open("/tmp/mp-supplemental-plan.json")); open(os.environ["GITHUB_OUTPUT"],"a").write("due="+str(value["due"]).lower()+"\n")'
+      - name: Collect only the fourteen supplemental divisions
+        if: steps.plan.outputs.due == 'true'
+        env:
+          RUN_EVENT: ${{ github.event_name }}
+        run: python scripts/extended_leagues.py collect --event "$RUN_EVENT" --commit "$GITHUB_SHA" --patch /tmp/mp-supplemental-patch.json
+      - name: Apply verified observations and append existing diaries on latest main
+        if: steps.plan.outputs.due == 'true'
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            python scripts/extended_leagues.py apply --patch /tmp/mp-supplemental-patch.json
+            python scripts/extended_leagues.py check
+            python scripts/soccerway.py --check
+            node scripts/forecast_diary.cjs --check --base-ref origin/main
+            node scripts/paired_model_diary.cjs --check --base-ref origin/main
+            node scripts/selection_diary.cjs --check --base-ref origin/main
+            node scripts/match_plan_diary.cjs --check --base-ref origin/main
+            node scripts/curated_diary.cjs --check --base-ref origin/main
+            node scripts/forecast_diary.cjs --write
+            node scripts/paired_model_diary.cjs --write
+            node scripts/selection_diary.cjs --write
+            node scripts/match_plan_diary.cjs --write
+            node scripts/curated_diary.cjs --write
+            node scripts/schedule_archive.cjs --write
+            node scripts/schedule_archive.cjs --check
+            python scripts/audit_scout.py
+            python scripts/selection_quotes.py --check
+            python scripts/check_research.py
+            python scripts/client_manifest.py
+            python scripts/client_manifest.py --check
+            git add data/supplemental_soccerway data/match_registry.json
+            git add docs/data/history.json docs/data/fixtures.json docs/data/status.json docs/data/match_links.json docs/data/coverage_audit.json
+            git add docs/data/diary docs/data/diary_report.json docs/data/paired_model_report.json
+            git add docs/data/selection_diary_report.json docs/data/match_plan_diary_report.json docs/data/curated_diary_report.json
+            git add docs/data/schedule_archive.json docs/data/client_manifest.json
+            if git diff --staged --quiet; then break; fi
+            git commit -m 'Refresh verified supplemental league observations [skip ci]'
+            if git push origin HEAD:main; then break; fi
+            if [ "$attempt" -eq 3 ]; then exit 1; fi
+          done
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.plan.outputs.due == 'true'
+        with:
+          name: MATCHPULSE-SUPPLEMENTAL-RECEIPTS
+          path: /tmp/mp-supplemental-patch.json
+          retention-days: 7
+      - uses: actions/configure-pages@v5
+        if: steps.plan.outputs.due == 'true'
+      - uses: actions/upload-pages-artifact@v3
+        if: steps.plan.outputs.due == 'true'
+        with:
+          path: docs
+      - uses: actions/deploy-pages@v4
+        if: steps.plan.outputs.due == 'true'

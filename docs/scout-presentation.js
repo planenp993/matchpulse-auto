@@ -45,7 +45,7 @@ function hydrateMarks(){
 function loadMarks(){
  if(marksPromise)return marksPromise;
  marksPromise=(root.SCOUT_EMBEDDED_DATA?Promise.resolve(root.SCOUT_EMBEDDED_DATA.clubMarks):
-  fetch('assets/club-marks.json?v=20261104',{cache:'force-cache',signal:AbortSignal.timeout(6000)}).then(r=>r.ok?r.json():null))
+  fetch('assets/club-marks.json?v=9015079bb23b',{cache:'force-cache',signal:AbortSignal.timeout(6000)}).then(r=>r.ok?r.json():null))
   .then(doc=>{for(const e of doc?.entries||[])if(e.division&&e.team&&/^https:\/\/a\.espncdn\.com\//.test(e.url))marks.set(markKey(e.division,e.team),e);hydrateMarks();})
   .catch(()=>{});
  return marksPromise;

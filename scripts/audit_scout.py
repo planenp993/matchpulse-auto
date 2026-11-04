@@ -18,7 +18,7 @@ FIELDS={
 }
 def season(date, div):
     year=int(date[:4])
-    return year if div in ("NOR","SWE") or int(date[5:7])>=7 else year-1
+    return year if div in ("NOR","SWE","BRA","USA","ARG","CHN","FIN","IRL") or int(date[5:7])>=7 else year-1
 
 def audit(history,fixtures,today=None,source_expectations=None):
     today=today or u.today_sofia()

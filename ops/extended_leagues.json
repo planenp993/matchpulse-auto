@@ -1,0 +1,168 @@
+{
+  "schema": 1,
+  "interval_minutes": 120,
+  "leagues": {
+    "BRA": {
+      "country": "Brazil",
+      "league": "Serie A",
+      "path": "/brazil/serie-a/",
+      "template": "Yq4hUnzQ",
+      "season_kind": "calendar",
+      "phase_labels": [
+        "BRAZIL: Serie A"
+      ],
+      "csv_url": "https://www.football-data.co.uk/new/BRA.csv"
+    },
+    "USA": {
+      "country": "USA",
+      "league": "MLS",
+      "path": "/usa/mls/",
+      "template": "CQv5qrFt",
+      "season_kind": "calendar",
+      "phase_labels": [
+        "USA: MLS"
+      ],
+      "csv_url": "https://www.football-data.co.uk/new/USA.csv"
+    },
+    "ARG": {
+      "country": "Argentina",
+      "league": "Liga Profesional",
+      "path": "/argentina/liga-profesional/",
+      "template": "naYhNOaA",
+      "season_kind": "calendar",
+      "phase_labels": [
+        "ARGENTINA: Liga Profesional - Clausura"
+      ],
+      "csv_url": "https://www.football-data.co.uk/new/ARG.csv"
+    },
+    "MEX": {
+      "country": "Mexico",
+      "league": "Liga MX",
+      "path": "/mexico/liga-mx/",
+      "template": "bm2Vlsfl",
+      "season_kind": "split",
+      "phase_labels": [
+        "MEXICO: Liga MX - Apertura"
+      ],
+      "csv_url": "https://www.football-data.co.uk/new/MEX.csv"
+    },
+    "JPN": {
+      "country": "Japan",
+      "league": "J1 League",
+      "path": "/japan/j1-league/",
+      "template": "pAq4eRQ9",
+      "season_kind": "split",
+      "phase_labels": [
+        "JAPAN: J1 League"
+      ],
+      "csv_url": "https://www.football-data.co.uk/new/JPN.csv"
+    },
+    "CHN": {
+      "country": "China",
+      "league": "Super League",
+      "path": "/china/super-league/",
+      "template": "nc9yRmcn",
+      "season_kind": "calendar",
+      "phase_labels": [
+        "CHINA: Super League"
+      ],
+      "csv_url": "https://www.football-data.co.uk/new/CHN.csv"
+    },
+    "FIN": {
+      "country": "Finland",
+      "league": "Veikkausliiga",
+      "path": "/finland/veikkausliiga/",
+      "template": "lpTTNvTq",
+      "season_kind": "calendar",
+      "phase_labels": [
+        "FINLAND: Veikkausliiga",
+        "FINLAND: Veikkausliiga - Championship Group",
+        "FINLAND: Veikkausliiga - Relegation Group"
+      ],
+      "csv_url": "https://www.football-data.co.uk/new/FIN.csv",
+      "excluded_phase_labels": [
+        "FINLAND: Veikkausliiga - Relegation"
+      ]
+    },
+    "IRL": {
+      "country": "Ireland",
+      "league": "Premier Division",
+      "path": "/ireland/premier-division/",
+      "template": "naHiWdnt",
+      "season_kind": "calendar",
+      "phase_labels": [
+        "IRELAND: Premier Division"
+      ],
+      "csv_url": "https://www.football-data.co.uk/new/IRL.csv",
+      "excluded_phase_labels": [
+        "IRELAND: Premier Division - Relegation"
+      ]
+    },
+    "ROU": {
+      "country": "Romania",
+      "league": "Superliga",
+      "path": "/romania/superliga/",
+      "template": "GILi6JC9",
+      "season_kind": "split",
+      "phase_labels": [
+        "ROMANIA: Superliga"
+      ],
+      "csv_url": "https://www.football-data.co.uk/new/ROU.csv"
+    },
+    "RUS": {
+      "country": "Russia",
+      "league": "Premier League",
+      "path": "/russia/premier-league/",
+      "template": "YacqHHdS",
+      "season_kind": "split",
+      "phase_labels": [
+        "RUSSIA: Premier League"
+      ],
+      "csv_url": "https://www.football-data.co.uk/new/RUS.csv"
+    },
+    "EC": {
+      "country": "England",
+      "league": "National League",
+      "path": "/england/national-league/",
+      "template": "4CWHXGM1",
+      "season_kind": "split",
+      "phase_labels": [
+        "ENGLAND: National League"
+      ],
+      "csv_url": "https://www.football-data.co.uk/mmz4281/{season}/EC.csv"
+    },
+    "SC1": {
+      "country": "Scotland",
+      "league": "Championship",
+      "path": "/scotland/championship/",
+      "template": "6uz2cJBL",
+      "season_kind": "split",
+      "phase_labels": [
+        "SCOTLAND: Championship"
+      ],
+      "csv_url": "https://www.football-data.co.uk/mmz4281/{season}/SC1.csv"
+    },
+    "SC2": {
+      "country": "Scotland",
+      "league": "League One",
+      "path": "/scotland/league-one/",
+      "template": "l4P6dwRR",
+      "season_kind": "split",
+      "phase_labels": [
+        "SCOTLAND: League One"
+      ],
+      "csv_url": "https://www.football-data.co.uk/mmz4281/{season}/SC2.csv"
+    },
+    "SC3": {
+      "country": "Scotland",
+      "league": "League Two",
+      "path": "/scotland/league-two/",
+      "template": "UsushcZr",
+      "season_kind": "split",
+      "phase_labels": [
+        "SCOTLAND: League Two"
+      ],
+      "csv_url": "https://www.football-data.co.uk/mmz4281/{season}/SC3.csv"
+    }
+  }
+}
