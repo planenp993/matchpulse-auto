@@ -15,6 +15,7 @@
  }
  stats.calendarCompetitions=covered.filter(Boolean).length;
  await desktop.locator('[data-day="7"]').click();
+ if(!await desktop.locator('.program-filters').evaluate(el=>el.open))await desktop.locator('.program-filters > summary').click();
  await desktop.locator('#leagueSelect').selectOption('E0');
 
  const fixtures=await desktop.locator('.fixture-row').count();
@@ -26,6 +27,7 @@
  if((await desktop.locator('.team-elo').count())!==2)throw new Error('Each team needs its simple Elo reference');
  await desktop.locator('#drawerWindow').selectOption('20');
  if((await desktop.locator('.form-overview').first().locator('.form-chip').count())!==20)throw new Error('The 20-game form is truncated');
+ await desktop.locator('[data-match-tab="form"]').click();
  await desktop.locator('.history-section > summary').click();
  const lists=await desktop.locator('.history-section .history-grid > div').all();
  if((await lists[0].locator('.result-detail').count())!==20)throw new Error('The 20-game result list is truncated');
@@ -52,13 +54,17 @@
  if((await desktop.locator('.form-curve svg').count())!==2||(await desktop.locator('.form-points').count()))throw new Error('Signed form curves did not replace the two five-game bars');
  stats.formChips=await desktop.locator('.form-overview').first().locator('.form-chip').count();
  await desktop.locator('.duel').screenshot({path:'scout-form.png'});
+ await desktop.locator('[data-match-tab="overview"]').click();
+ await desktop.locator('.reading-details > summary').click();
  await desktop.locator('.match-reading').screenshot({path:'scout-reading.png'});
+ await desktop.locator('[data-match-tab="form"]').click();
  await desktop.locator('.tendencies').screenshot({path:'scout-tendencies.png'});
- await desktop.locator('.extra-analytics summary').click();
+ await desktop.locator('[data-match-tab="shots"]').click();
  if(!(await desktop.locator('.extra-analytics').textContent()).includes('На съперниците'))throw new Error('Team statistics and match totals are not distinguished');
  if(!(await desktop.locator('.xg-block').textContent()).includes('Допуснат xG'))throw new Error('xGA sample missing');
  await desktop.locator('.extra-analytics').screenshot({path:'scout-statistics.png'});
- await desktop.locator('.stat-block').nth(3).screenshot({path:'scout-shots.png'});
+ await desktop.locator('[data-stat-category="shots"]').first().screenshot({path:'scout-shots.png'});
+ await desktop.locator('[data-match-tab="overview"]').click();
  await desktop.context().grantPermissions(['clipboard-read','clipboard-write']);
  await desktop.locator('#copyMatch').click();
  await desktop.waitForFunction(()=>document.getElementById('copyStatus').textContent.includes('копирано'));
@@ -72,45 +78,19 @@
  for(const part of ['ПРОЧИТ НА МАЧА','СЪЩЕСТВУВАЩ МОДЕЛ','Наблюдаван xG','ДИРЕКТНИ СРЕЩИ','Удари','Само домакинства'])if(!copied.includes(part))throw new Error('Missing copied evidence: '+part);
  stats.copiedBriefCharacters=copied.length;
  if(!(await desktop.locator('.extra-analytics').textContent()).includes('Корнери'))throw new Error('Missing corner statistics');
- await desktop.locator('#pickMarket').selectOption('1X');
- await desktop.locator('#closeMatch').click();
- await desktop.locator('[data-view="scanner"]').click();
- await desktop.locator('#scanWindow').selectOption('7');
- await desktop.locator('.scanner-more summary').click();
- await desktop.locator('#scanVenue').selectOption('venue');
- if(!(await desktop.locator('#scannerSummary').textContent()).includes('домакинства'))throw new Error('Venue scanner did not activate');
- await desktop.locator('#scanVenue').selectOption('all');
- await desktop.locator('#scanStreak').selectOption('3');
- await desktop.locator('#scanBoth').selectOption('no');
- await desktop.locator('#scanMarket').selectOption('corners85');
- if((await desktop.locator('#scanMarket').inputValue())!=='corners85')throw new Error('Corner scanner selection failed');
- for(const market of ['corners85','yellow35','shots215']){
-  await desktop.locator('#scanMarket').selectOption(market);
-  const count=await desktop.locator('.scan-card').count();
-  if(!count)throw new Error('No observable '+market+' signal despite imported real statistics');
-  stats[market]=count;
+ // The separate scanner has been removed; its underlying evidence and diaries remain.
+ if(await desktop.locator('[data-view="scanner"]').count())throw Error('Removed scanner is still a global view');
+ if(await desktop.locator('[data-match-tab]').count()!==6)throw Error('Match sections are missing');
+ await desktop.locator('[data-match-tab="goals"]').click();
+ const probabilities=await desktop.locator('.goal-probability-table tbody tr').evaluateAll(rows=>rows.map(r=>[...r.querySelectorAll('td b')].map(x=>parseInt(x.textContent,10))));
+ if(probabilities.length!==5||probabilities.some((r,i)=>r.some((v,j)=>!Number.isFinite(v)||v<0||v>100||(i>0&&v>probabilities[i-1][j]))))throw Error('Displayed goal thresholds are invalid');
+ for(const category of ['shots','corners','cards']){
+  await desktop.locator('[data-match-tab="'+category+'"]').click();
+  const visible=await desktop.locator('[data-stat-category]:visible').first().getAttribute('data-stat-category');
+  if(visible!==category)throw Error('The chosen statistics category is not visible');
  }
- await desktop.locator('#scanMarket').selectOption('o25');
- await desktop.locator('#scanMarket').selectOption('all');
- if((await desktop.locator('#scanMarket').inputValue())!=='all')throw new Error('All-markets scanner toggle missing');
- const autoCount=await desktop.locator('.scan-card').count();
- if(!autoCount)throw new Error('Auto-discovery should find at least one observable streak');
- const ranks=await desktop.locator('.scan-card').evaluateAll(cards=>cards.map(c=>Number(c.dataset.evidenceRank)));
- if(ranks.some((value,i)=>!Number.isFinite(value)||(i>0&&value>ranks[i-1])))throw new Error('Scanner evidence ranks are invalid or out of order');
- const contexts=await desktop.locator('.scan-context').allTextContents();
- if(contexts.length!==autoCount||contexts.some(text=>!text.includes('Лига:')&&!text.includes('Малка база за лигата')))throw new Error('Missing league-reference context');
- if(!(await desktop.locator('#scannerSummary').textContent()).startsWith(String(autoCount)+' '))throw new Error('Scanner summary disagrees with visible cards');
- stats.allMarketCandidates=autoCount;
- stats.evidenceRanking=true;
- await desktop.locator('#scanStreak').selectOption('7');
- if((await desktop.locator('#scanStreak').inputValue())!=='7')throw new Error('7+ streak selector missing');
- await desktop.locator('#scanStreak').selectOption('3');
- await desktop.locator('#scanMarket').selectOption('o25');
-
- const scans=await desktop.locator('.scan-card').count();
- stats.scannerCards=scans;
- if(!scans)throw new Error('No goal-trend signal on fixture test data');
- await desktop.locator('.scan-card .button').first().click();
+ stats.matchTabs=true;stats.goalThresholds=true;
+ await desktop.locator('[data-match-tab="overview"]').click();
  await desktop.locator('#pickMarket').selectOption('o25');
  await desktop.locator('#pickOdds').fill('1.85');
  await desktop.locator('#savePick').click();
@@ -163,8 +143,10 @@
   await desktop.locator('#scheduleStandings').screenshot({path:'scout-standings.png'});
   await desktop.locator('#scheduleStandings > summary').click();
   await desktop.locator('[data-day="7"]').click();
-  await desktop.locator('#leagueSelect').selectOption('E0');
+  if(!await desktop.locator('.program-filters').evaluate(el=>el.open))await desktop.locator('.program-filters > summary').click();
+ await desktop.locator('#leagueSelect').selectOption('E0');
   await desktop.locator('.fixture-row').first().click();
+  await desktop.locator('[data-match-tab="form"]').click();
   await desktop.locator('#matchStandingsDetails > summary').click();
   await desktop.waitForFunction(()=>document.querySelectorAll('#matchStandingsContent .standing-selected').length===2);
   stats.standingsHighlighted=await desktop.locator('#matchStandingsContent .standing-selected').count();
@@ -176,6 +158,8 @@
  await mobile.goto(base,{waitUntil:'domcontentloaded',timeout:60000});
  await mobile.waitForFunction(()=>document.getElementById('lastSync')?.textContent.includes('Програма:'),{timeout:20000});
  await mobile.locator('[data-day="7"]').click();
+ await mobile.locator('.program-filters > summary').click();
+ await mobile.locator('#leagueSelect').selectOption('E0');
  if(await mobile.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth+1))throw new Error('Mobile schedule overflows horizontally');
  // Real stale/partial provider receipts add a necessary health warning. Keep
  // the layout budget for the program, excluding only that visible warning.
@@ -189,18 +173,21 @@
  await mobile.waitForFunction(()=>document.documentElement.dataset.scoutArchive==='ready');
  await mobile.locator('#drawerWindow').selectOption('20');
  if(await mobile.locator('.drawer').evaluate(el=>el.scrollWidth>el.clientWidth+1))throw new Error('Mobile analysis overflows horizontally');
+ await mobile.locator('[data-match-tab="form"]').click();
  await mobile.locator('.duel').screenshot({path:'scout-form-mobile.png'});
- await mobile.locator('.extra-analytics summary').click();
+ await mobile.locator('[data-match-tab="corners"]').click();
  if(await mobile.locator('.drawer').evaluate(el=>el.scrollWidth>el.clientWidth+1))throw new Error('Mobile statistics overflow');
- await mobile.locator('.stat-block').nth(1).screenshot({path:'scout-corners-mobile.png'});
+ await mobile.locator('[data-stat-category="corners"]').screenshot({path:'scout-corners-mobile.png'});
+ await mobile.locator('[data-match-tab="goals"]').click();
  await mobile.locator('.xg-block').screenshot({path:'scout-xg-mobile.png'});
+ await mobile.locator('[data-match-tab="form"]').click();
  await mobile.locator('.history-section > summary').click();
  await mobile.locator('.result-summary').first().click();
  if(await mobile.locator('.result-teams').first().evaluate(el=>getComputedStyle(el).whiteSpace==='nowrap'||getComputedStyle(el).overflow==='hidden'))throw new Error('Full match team names are still clipped instead of wrapping');
  if(await mobile.locator('.drawer').evaluate(el=>el.scrollWidth>el.clientWidth+1))throw new Error('Mobile match facts overflow');
  await mobile.locator('.result-detail').first().screenshot({path:'scout-result-mobile.png'});
  await mobile.locator('.history-section > summary').click();
- await mobile.locator('.extra-analytics summary').click();
+
  if(publishedTables.tables[await mobile.evaluate(()=>activeMatch[0])]){
   await mobile.locator('#matchStandingsDetails > summary').click();
   await mobile.waitForFunction(()=>document.querySelectorAll('#matchStandingsContent tbody tr').length>0);
@@ -211,11 +198,7 @@
  await mobile.locator('#closeMatch').click();
  stats.mobileFixtures=await mobile.locator('.fixture-row').count();
  if(!stats.mobileFixtures)throw new Error('Mobile day program is empty');
- await mobile.locator('[data-view="scanner"]').click();
- await mobile.locator('#scanWindow').selectOption('7');
- if(!(await mobile.locator('.scan-context').count()))throw new Error('Mobile scanner context missing');
- if(await mobile.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth+1))throw new Error('Mobile scanner overflows horizontally');
- await mobile.screenshot({path:'scout-scanner.png',fullPage:false});
+ if(await mobile.locator('.nav').count()!==3)throw Error('Mobile main menu is not simplified');
  await mobile.locator('[data-view="diary"]').click();
  await mobile.waitForFunction(()=>document.querySelectorAll('.diary-entry').length>0,{timeout:20000});
  if(paired)await mobile.getByText('Качество по пазари',{exact:true}).click();
@@ -243,10 +226,14 @@
     allCurrent:d.tendencies.every(v=>v.sides.every(s=>s.rows.every(r=>r[3]>=new Date(Date.parse(d.asOfDate+'T12:00:00Z')-90*86400000).toISOString().slice(0,10))))};
   });
   if(!recent.europe||!recent.modelSame||!recent.sourceIsolated||!recent.allCurrent)throw new Error('Recent UEFA form leaked into the model, or active runs include older periods');
+  await desktop.locator('[data-match-tab="form"]').click();
   const point=desktop.locator('.form-dot').last();await point.click();
   if((await desktop.locator('.form-inspection').last().textContent())!==(await point.getAttribute('data-form-message')))throw new Error('Curve point inspection failed');
   await desktop.locator('.duel').screenshot({path:'scout-current-form.png'});
+  await desktop.locator('[data-match-tab="overview"]').click();
+  await desktop.locator('.reading-details > summary').click();
   await desktop.locator('.match-reading').screenshot({path:'scout-current-reading.png'});
+  await desktop.locator('[data-match-tab="form"]').click();
   await desktop.locator('.tendencies').screenshot({path:'scout-current-tendencies.png'});
   await desktop.locator('.history-section > summary').click();
   if(!(await desktop.locator('.result-competition').allTextContents()).some(div=>['UCL','UEL','UECL'].includes(div)))throw new Error('UEFA games are absent from the actual recent-result list');
@@ -266,10 +253,11 @@
   if(!await fault.locator('#notice').isVisible())throw Error('Missing optional data was hidden: '+filename);
   if(!await fault.locator('#matchOverlay').evaluate(el=>el.contains(document.activeElement)))throw Error('Analysis did not take focus');
   await fault.keyboard.press('Shift+Tab');
-  if(!await fault.locator('#matchOverlay').evaluate(el=>el.contains(document.activeElement)))throw Error('Focus escaped analysis');
+  if(await fault.locator('#matchOverlay').getAttribute('role')!=='region'||await fault.locator('.shell').evaluate(el=>el.inert))throw Error('Desktop comparison blocks its program');
   await fault.keyboard.press('Escape');
   if(!await trigger.evaluate(el=>el===document.activeElement))throw Error('Analysis did not restore focus');
-  await fault.locator('[data-view="selections"]').click();
+  await fault.locator('[data-view="picks"]').click();
+  await fault.locator('[data-open-view="selections"]').click();
   if(await fault.locator('.selection-primary').count())throw Error('Selection claims survived missing dependency');
   await fault.close();
  }

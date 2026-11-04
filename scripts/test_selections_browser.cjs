@@ -10,7 +10,7 @@
  async function ready(page){await page.waitForFunction(()=>document.getElementById('lastSync')?.textContent.includes('Програма:'));await page.evaluate(()=>MatchpulseLoading.ensureExtras());}
  async function selectionReady(page){await page.waitForFunction(()=>document.getElementById('selectionList')?.getAttribute('aria-busy')==='false'&&!document.getElementById('selectionSummary').textContent.includes('Преглеждам'),{timeout:60000});}
  async function planReady(page){await page.waitForFunction(()=>document.getElementById('matchPlan')?.getAttribute('aria-busy')==='false');}
- async function selectWeek(page){await page.locator('[data-view="selections"]').click();await selectionReady(page);await page.locator('[data-selection-period="7"]').click();await selectionReady(page);}
+ async function selectWeek(page){await page.locator('[data-view="picks"]').click();await page.locator('[data-open-view="selections"]').click();await selectionReady(page);await page.locator('[data-selection-period="7"]').click();await selectionReady(page);}
  async function noOverflow(page){assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);assert.equal(await page.locator('#matchOverlay').evaluate(el=>el.classList.contains('hidden')||el.scrollWidth<=el.clientWidth),true);}
  const desktop=await browser.newPage({viewport:{width:1440,height:1050},deviceScaleFactor:1});await prepare(desktop);await desktop.goto(base,{waitUntil:'domcontentloaded',timeout:60000});await ready(desktop);
  const privateBefore=await desktop.evaluate(()=>localStorage.getItem('matchpulse-scout-picks-v1'));

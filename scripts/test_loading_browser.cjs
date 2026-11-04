@@ -57,6 +57,7 @@
   // the intended match by its identity, never by a previously observed index.
   const target=page.locator('.fixture-row').filter({hasText:sample[5]+' – '+sample[6]});
   assert.equal(await target.count(),1);await target.click();
+  if(variant==='updated')await page.locator('[data-match-tab="goals"]').click();
   await page.locator('#matchContent .model-analysis').waitFor({state:'visible',timeout:60000});
   const result=await page.evaluate(()=>({calendarMs:Math.round(window.__calendarAt),analysisMs:Math.round(performance.now()),
    encodedJSONBytes:performance.getEntriesByType('resource').filter(r=>new URL(r.name).pathname.includes('/data/')).reduce((n,r)=>n+r.encodedBodySize,0),
