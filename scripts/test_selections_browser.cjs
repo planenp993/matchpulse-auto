@@ -19,7 +19,9 @@
  const firstChoice=await desktop.locator('#matchPlan .selection-primary').getAttribute('data-selection-market');
  for(const size of ['5','20','10']){await desktop.locator('#drawerWindow').selectOption(size);await planReady(desktop);assert.equal(await desktop.locator('#matchPlan .selection-primary').getAttribute('data-selection-market'),firstChoice);}
  assert.ok((await desktop.locator('.match-reading').textContent()).includes('леко предимство'));assert.equal(await desktop.locator('.tendencies .active-match-date').count(),0);assert.ok(!(await desktop.locator('.tendencies').textContent()).includes('✓'));
+ await desktop.locator('[data-match-tab="form"]').click();
  const trend=desktop.locator('.trend-signal').first();if(await trend.count()){assert.equal(await trend.locator('.series-proof').evaluate(el=>el.open),false);await trend.locator('.series-proof summary').click();assert.ok(await trend.locator('.trend-proof-team').count());await trend.locator('.series-proof summary').click();}
+ await desktop.locator('[data-match-tab="overview"]').click();
  await desktop.locator('#matchPlan').screenshot({path:'scout-selection-card.png'});await desktop.locator('#closeMatch').click();await selectWeek(desktop);
  assert.equal(await desktop.locator('[data-selection-tab]').count(),2);assert.equal(await desktop.locator('[data-selection-tab="matches"]').count(),0);assert.ok(await desktop.locator('.selection-builder').count()>0);assert.equal(await desktop.locator('#selectionList .selection-primary').count(),0);
  stats.summary=await desktop.locator('#selectionSummary').textContent();
