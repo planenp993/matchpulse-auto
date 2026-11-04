@@ -138,5 +138,6 @@ test('HTML content versions cover both selection modules and the offline builder
   assert.ok(html.includes(path+'?v='+hash));assert.ok(builder.includes(path));
  }
  assert.ok(builder.includes('selection_quotes.json'));
- assert.ok(html.indexOf('data-view="selections"')>html.indexOf('data-view="diary"'));
+ assert.ok(html.includes('data-open-view="selections"'));
+ assert.equal((html.match(/class="nav(?:\s|")/g)||[]).length,3);
 });

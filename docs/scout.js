@@ -1,12 +1,14 @@
 /* MATCHPULSE SCOUT v1 · minimal personal football research cockpit */
 'use strict';
+const View=window.MatchpulsePresentation;
 const Scout=window.MatchpulseScout,Model=window.MatchpulseModel,Markets=window.MatchpulseMarkets,Elo=window.MatchpulseElo,Patterns=window.MatchpulsePatterns,Analysis=window.MatchpulseAnalysis,Calendar=window.MatchpulseCalendar;
 const el=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
 const fmt=(v,n=1)=>Number.isFinite(v)?v.toFixed(n):'—';
 const percent=v=>Number.isFinite(v)?fmt(v*100,0)+'%':'—';
 const localISO=(d=new Date())=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Sofia',year:'numeric',month:'2-digit',day:'2-digit'}).format(d);
 function offsetISO(n){const a=new Date(localISO()+'T12:00:00Z');a.setUTCDate(a.getUTCDate()+n);return a.toISOString().slice(0,10)}
-let history=[],fixtures=[],status={},index=null,eloIndex=null,windowSize=10,active='schedule',fixtureRows=[],scannerRows=[],mode='today',customDate='',activeMatch=null;
+let history=[],fixtures=[],status={},index=null,eloIndex=null,windowSize=10,active='schedule',fixtureRows=[],mode='today',customDate='',activeMatch=null;
+let matchTab='overview';
 let diaryLoaded=false,diaryLoading=false,archive=null,standingsPromise=null,matchTrigger=null;
 let availability={europe:false,links:false,europeNames:false};
 let dataSnapshot=null,initialPromise=null,corePromise=null,extrasPromise=null,fixturesReady=false,extrasReady=false,coverageLoaded=false,matchOpenToken=0,matchTriggerKind=null;
@@ -50,18 +52,15 @@ function readPicks(){try{const v=JSON.parse(localStorage.getItem(PICK_KEY)||'[]'
 function writePicks(v){try{localStorage.setItem(PICK_KEY,JSON.stringify(v));return true}catch{return false}}
 function profile(f){const k=Scout.keyFixture(f)+'|'+windowSize;if(!PROFILE_CACHE.has(k))PROFILE_CACHE.set(k,archive?archive.profile(f,{windowSize}):Scout.profile(index,f,{windowSize}));return PROFILE_CACHE.get(k)}
 function setView(next){
+ if(!['schedule','picks','diary','selections'].includes(next))next='schedule';
+ if(active!==next&&!el('matchOverlay').classList.contains('hidden'))closeMatch();
  active=next;
- for(const view of ['schedule','scanner','picks','diary','selections'])el('view-'+view).classList.toggle('hidden',view!==next);
- document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.view===next));
- el('pageTitle').textContent={schedule:'Програма',scanner:'Trend Scanner',picks:'Моите прогнози',diary:'Автоматичен дневник',selections:'Селекции'}[next];
+ for(const view of ['schedule','picks','diary','selections'])el('view-'+view).classList.toggle('hidden',view!==next);
+ document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.view===(next==='selections'?'picks':next)));
+ el('pageTitle').textContent={schedule:'Мачове',picks:'Моят подбор',diary:'Автоматичен дневник',selections:'Бет билдъри и колонки'}[next];
  if(next==='schedule')renderSchedule();
  else if(next==='diary')loadDiary();
- else if(next==='scanner'){
-  if(index)renderScanner();else{
-   el('scannerList').innerHTML='<div class="empty">Зареждам историята за скенера…</div>';
-   ensureCore().then(()=>{if(active==='scanner')renderScanner();}).catch(()=>{if(active==='scanner')el('scannerList').innerHTML='<div class="empty">Историята временно не е достъпна. Презареди страницата.</div>';});
-  }
- }else if(next==='selections'){
+ else if(next==='selections'){
   if(extrasReady)window.MatchpulseSelectionUI.render();else{
    el('selectionList').setAttribute('aria-busy','true');el('selectionSummary').textContent='Зареждам данните за селекциите…';
    ensureExtras().then(()=>{if(active==='selections')window.MatchpulseSelectionUI.render();}).catch(()=>{
@@ -81,7 +80,6 @@ function setResearch(value){
  PROFILE_CACHE.clear();syncResearchControls();
  if(index){
   renderSchedule();
-  if(active==='scanner')renderScanner();
   if(activeMatch&&!el('matchOverlay').classList.contains('hidden'))openMatch(activeMatch);
  }
 }
@@ -144,16 +142,17 @@ function renderSchedule(){
  fixtureRows.forEach((f,i)=>{const k=f[0]+'|'+f[2];if(!groups.has(k))groups.set(k,[]);groups.get(k).push({f,i})});
  el('scheduleList').innerHTML=[...groups.values()].map(rows=>{
    const g=rows[0].f;
-   return '<div class="league-group"><div class="league-head"><strong>'+esc(g[1])+' · '+esc(g[2])+'</strong><span>'+rows.length+' мача</span></div>'+
+   return '<div class="league-group"><div class="league-head"><strong>'+esc(window.MatchpulseHealth.leagueLabel(g))+'</strong><span>'+rows.length+' мача</span></div>'+
      rows.map(({f,i})=>{
        const hint=fixtureHint(f),at=(f[4]||'—')+((f[13]||'').includes('Sofia')?'':'*');
-       return '<button type="button" data-fixture="'+i+'" class="fixture-row"><span class="time">'+esc(at)+'</span>'+
-         '<span class="teams">'+esc(f[5])+' <span style="color:#9daeb9;font-weight:500">–</span> '+esc(f[6])+
+       return '<button type="button" data-fixture="'+i+'" data-fixture-key="'+esc(Scout.keyFixture(f))+'" class="fixture-row'+(activeMatch&&Scout.keyFixture(activeMatch)===Scout.keyFixture(f)?' fixture-active':'')+'"><span class="time">'+esc(at)+'</span>'+
+         '<span class="teams"><span class="fixture-club">'+View.clubMark(f[0],f[5])+'<span>'+esc(f[5])+'</span></span><span class="sr-only"> – </span><span class="fixture-club">'+View.clubMark(f[0],f[6])+'<span>'+esc(f[6])+'</span></span>'+
          (mode==='week'?'<br><small style="color:#8ba2af;font-weight:500">'+esc(f[3])+'</small>':'')+'</span>'+
          '<span class="fixture-tags"><span class="tag '+hint.css+'">'+esc(hint.label)+'</span>'+(archived(f)?'<small class="archive-result">'+esc(Calendar.status(archivedEntry(f)))+'</small>':'')+'</span><span class="chevron">›</span></button>'
      }).join('')+'</div>';
  }).join('');
  el('scheduleList').querySelectorAll('[data-fixture]').forEach(b=>b.onclick=()=>openMatch(fixtureRows[+b.dataset.fixture]));
+ View.hydrateMarks();
 }
 const MODEL_RESULTS=new WeakMap(),DOSSIERS=new WeakMap();
 function modelFor(f,p){
@@ -234,13 +233,27 @@ function modelReport(f,p){
   [['Двоен шанс 1X',x.double1X],['Двоен шанс X2',x.doubleX2],['Без равен · 12',x.double12]].map(([label,value])=>'<div><span>'+label+'</span><strong>'+percent(value)+'</strong></div>').join('')+
   '</div><h4>Голове</h4><div class="model-markets">'+markets.map(([name,value])=>'<div><span>'+esc(name)+'</span><strong>'+percent(value)+'</strong></div>').join('')+'</div></section>';
 }
+function syncMatchLayout(){
+ const overlay=el('matchOverlay'),opened=!overlay.classList.contains('hidden');
+ const embedded=opened&&active==='schedule'&&window.matchMedia('(min-width:901px)').matches;
+ const target=embedded?el('analysisArea'):document.body;
+ if(overlay.parentElement!==target)target.append(overlay);
+ overlay.classList.toggle('embedded',embedded);
+ overlay.setAttribute('role',embedded?'region':'dialog');
+ if(embedded)overlay.removeAttribute('aria-modal');else overlay.setAttribute('aria-modal','true');
+ document.querySelector('.shell').inert=opened&&!embedded;
+ document.body.style.overflow=opened&&!embedded?'hidden':'';
+ el('analysisPlaceholder').classList.toggle('hidden',embedded);
+}
 function openMatch(f){
  if(!f)return;
+ const opening=el('matchOverlay').classList.contains('hidden');
+ const changed=!activeMatch||Scout.keyFixture(activeMatch)!==Scout.keyFixture(f);
  const request=++matchOpenToken;
+ if(opening){matchTrigger=document.activeElement;matchTriggerKind=matchTrigger?.dataset.fixture!==undefined?'schedule':null;}
+ if(opening||changed)matchTab='overview';
+ activeMatch=f;el('matchOverlay').classList.remove('hidden');syncMatchLayout();
  if(!extrasReady||(archived(f)&&!scheduleArchive)){
-  const opening=el('matchOverlay').classList.contains('hidden');
-  if(opening){matchTrigger=document.activeElement;matchTriggerKind=matchTrigger?.dataset.fixture!==undefined?'schedule':matchTrigger?.dataset.scan!==undefined?'scanner':null;document.querySelector('.shell').inert=true;}
-  activeMatch=f;el('matchOverlay').classList.remove('hidden');document.body.style.overflow='hidden';
   el('matchContent').innerHTML='<div class="match-header"><h2 class="match-heading" id="matchHeading">'+esc(f[5])+' <span>–</span> '+esc(f[6])+'</h2></div><div class="match-inner"><div class="empty">Зареждам историята за пълния анализ…</div></div>';
   if(opening)el('closeMatch').focus();
   return Promise.all([ensureExtras(),archived(f)?ensureScheduleArchive():Promise.resolve()]).then(()=>{if(request===matchOpenToken&&!el('matchOverlay').classList.contains('hidden'))openMatch(f);}).catch(()=>{
@@ -249,75 +262,71 @@ function openMatch(f){
    el('retryMatch').onclick=()=>openMatch(f);
   });
  }
- const opening=el('matchOverlay').classList.contains('hidden');
- if(opening){matchTrigger=document.activeElement;matchTriggerKind=matchTrigger?.dataset.fixture!==undefined?'schedule':matchTrigger?.dataset.scan!==undefined?'scanner':null;document.querySelector('.shell').inert=true;}
- activeMatch=f;const p=profile(f),d=dossier(f,p),past=archived(f);
- el('matchOverlay').classList.remove('hidden');document.body.style.overflow='hidden';
- const time=(f[4]||'—')+((f[13]||'').includes('Sofia')?'':'*');
- const date=f[3]+' · '+time+' · '+f[2];
+ const p=profile(f),d=dossier(f,p),past=archived(f),z=modelFor(f,p);
+ const ratings={home:Elo.reference(eloIndex,f[0],p.home.name,f[3]),away:Elo.reference(eloIndex,f[0],p.away.name,f[3])};
  const m=[['Домакин',d.home],['Гост',d.away]].map(([role,data])=>{
   const v=data.overall;
   return '<section class="team-panel"><div class="role">'+role+'</div><h3>'+esc(data.name)+'</h3>'+eloReference(f,data.name)+
    '<div class="team-metrics"><div class="metric"><b>'+(v.n?fmt(v.gf,2):'—')+'</b><small>Вкарани</small></div>'+
    '<div class="metric"><b>'+(v.n?fmt(v.ga,2):'—')+'</b><small>Допуснати</small></div>'+
-   '<div class="metric"><b>'+(v.n?fmt(v.total,2):'—')+'</b><small>Голове/мач</small></div></div>'+
-   Analysis.formHTML(role==='Домакин'?d.home:d.away)+'</section>';
+   '<div class="metric"><b>'+(v.n?fmt(v.total,2):'—')+'</b><small>Голове/мач</small></div></div>'+Analysis.formHTML(data)+'</section>';
  }).join('');
- el('matchContent').innerHTML='<div class="match-header"><div class="match-date">'+esc(date)+'</div>'+
-  '<h2 class="match-heading" id="matchHeading">'+esc(f[5])+' <span>–</span> '+esc(f[6])+'</h2>'+
-  '<div class="match-sample">Извадка: '+d.home.overall.n+' / '+d.away.overall.n+' мача · налични първенства + УЕФА</div></div>'+
-  '<div class="match-inner">'+(past?'<p class="card footnote archive-context">Архивна среща · '+esc(Calendar.status(archivedEntry(f)))+'. Показани са само наличните предмачови записи. Останалата справка използва обновения архив, само с мачове преди тази дата.</p>':'')+'<div class="duel">'+m+'</div>'+Analysis.introHTML(d)+
-  '<section class="card match-plan" id="matchPlan" aria-busy="true"><h3>Прогноза за мача</h3><p class="footnote">Подготвям основния избор и алтернативите…</p></section>'+streakReport(d)+modelReport(f,p)+
-  '<details class="card detail-card"><summary>Форма и голове · последните '+windowSize+' мача</summary>'+
-   '<h4>Всички срещи</h4><div class="trend-grid">'+signalTiles(d)+'</div>'+
-   '<h4>Домакинства / гостувания</h4><div class="trend-grid">'+venueTiles(d)+'</div></details>'+
-  extraReport(d)+
-  '<details class="card detail-card history-section"><summary>Последни резултати · '+windowSize+'</summary><p class="footnote history-scope">'+esc(d.coverageNote)+'</p><div class="history-grid">'+
-   '<div><h4>'+esc(f[5])+'</h4>'+Analysis.historyHTML(d.home.all,d.home.name,Scout.keyTeam)+'</div>'+
-   '<div><h4>'+esc(f[6])+'</h4>'+Analysis.historyHTML(d.away.all,d.away.name,Scout.keyTeam)+'</div></div></details>'+
-  '<details class="card detail-card"><summary>Директни срещи</summary>'+directMeetings(f)+'</details>'+
-  '<details class="card detail-card" id="matchStandingsDetails"><summary>Класиране</summary><div id="matchStandingsContent"></div></details>'+
-  '<div class="card"><h3>'+(past?'Архивна справка':'Запази прогноза')+'</h3>'+(past?'':'<div class="pick-form"><label>Пазар<select id="pickMarket">'+
+ const stats=View.splitStatistics(extraReport(d)),overview=document.createElement('div');
+ overview.innerHTML=View.overview(f,{...d,archived:past},z);
+ const numbers=overview.querySelector('.overview-metrics');numbers?.remove();
+ const shortRead=Analysis.reading(d)[0]?.text||'';
+ const panel=(id,html)=>'<section class="'+(id===matchTab?'':'hidden')+'" id="match-panel-'+id+'" data-match-panel="'+id+'" role="tabpanel" aria-labelledby="match-tab-'+id+'">'+html+'</section>';
+ const saveForm='<div class="card personal-save-panel"><h3>'+(past?'Архивна справка':'Моя прогноза')+'</h3>'+(past?'':'<div class="pick-form"><label>Пазар<select id="pickMarket">'+
    Object.entries(marketNames).map(([key,name])=>'<option value="'+key+'">'+esc(name)+'</option>').join('')+'</select></label>'+
    '<label>Коефициент (по избор)<input id="pickOdds" inputmode="decimal" type="text" placeholder="Напр. 1.80"></label>'+
    '<button id="savePick" type="button" class="button">Запази</button></div>')+
-   '<button class="button secondary copy-button" id="copyMatch" type="button">Копирай анализа</button><span id="copyStatus" class="copy-status" role="status"></span></div>'+
-  '<details class="card detail-card"><summary>Как се изчислява анализът</summary>'+
-   '<p class="footnote">Elo е ориентир от архива на показаното първенство. Начална стойност 1500; рейтинги от различни първенства не са пряко сравними.</p>'+
-   '<p class="footnote">Моделните вероятности за резултат и голове идват от една резултатна матрица (Поасон с Dixon–Coles корекция), с до 30 предишни срещи. Изборът 5/10/20 променя статистиките и сериите.</p>'+
-   '<p class="footnote">Честотите и сериите описват историята. Липсващите данни остават празни. Досието включва наличните първенства и евротурнири за 90 минути, включително квалификациите. Националните купи не са в този архив. Моделът и Elo използват отделно историята на първенството. Тенденциите показват поредни известни събития отделно за всеки отбор и общо само при едно и също събитие за двата. Най-малко 3 поредни срещи в последните 90 дни и скорошен последен резултат. Липсващ показател прекъсва поредицата. Историческа поредица не е прогноза.</p></details></div>';
+   '<button class="button secondary copy-button" id="copyMatch" type="button">Копирай анализа</button><span id="copyStatus" class="copy-status" role="status"></span></div>';
+ el('matchContent').innerHTML=View.hero(f,d,ratings)+View.tabs(matchTab)+'<div class="match-inner">'+
+  (past?'<p class="card footnote archive-context">Архивна среща · '+esc(Calendar.status(archivedEntry(f)))+'. Показани са само наличните предмачови записи. Останалата справка използва обновения архив, само с мачове преди тази дата.</p>':'')+
+  panel('overview',overview.innerHTML+'<section class="card match-plan" id="matchPlan" aria-busy="true"><h3>Прогноза за мача</h3><p class="footnote">Подготвям основния избор и алтернативите…</p></section>'+(numbers?.outerHTML||'')+
+   '<section class="match-short-read"><h3>Прочит на мача</h3><p>'+esc(shortRead)+'</p><details class="reading-details"><summary>Целият прочит</summary>'+Analysis.introHTML(d)+'</details></section>'+saveForm)+
+  panel('goals',View.goals(f,z)+modelReport(f,p)+(stats.xg?'<section class="card observed-xg">'+stats.xg+'</section>':''))+
+  panel('form','<div class="view-section-head"><h3>Форма и сравнение</h3><span class="model-label">Последни '+windowSize+' мача</span></div><div class="duel">'+m+'</div>'+streakReport(d)+
+   '<details class="card detail-card"><summary>Форма и голове · последните '+windowSize+' мача</summary><h4>Всички срещи</h4><div class="trend-grid">'+signalTiles(d)+'</div><h4>Домакинства / гостувания</h4><div class="trend-grid">'+venueTiles(d)+'</div></details>'+
+   '<details class="card detail-card history-section"><summary>Последни резултати · '+windowSize+'</summary><p class="footnote history-scope">'+esc(d.coverageNote)+'</p><div class="history-grid"><div><h4>'+esc(f[5])+'</h4>'+Analysis.historyHTML(d.home.all,d.home.name,Scout.keyTeam)+'</div><div><h4>'+esc(f[6])+'</h4>'+Analysis.historyHTML(d.away.all,d.away.name,Scout.keyTeam)+'</div></div></details>'+
+   '<details class="card detail-card direct-meetings"><summary>Директни срещи</summary>'+directMeetings(f)+'</details><details class="card detail-card" id="matchStandingsDetails"><summary>Класиране</summary><div id="matchStandingsContent"></div></details>')+
+  '<section class="hidden" id="match-panel-stats" data-match-panel="stats" role="tabpanel" aria-labelledby="match-tab-shots"><p class="footnote stat-descriptive-note">Историческа статистика · средни стойности и честоти, отделно от моделните прогнози.</p>'+stats.html+'</section>'+
+  '<details class="card detail-card match-method"><summary>Как се изчислява анализът</summary><p class="footnote">Elo е ориентир от архива на показаното първенство. Начална стойност 1500; рейтинги от различни първенства не са пряко сравними.</p><p class="footnote">Моделните вероятности идват от съществуващата резултатна матрица, с до 30 предишни срещи. Изборът 5/10/20 променя статистиките и сериите.</p><p class="footnote">Липсващите данни остават празни. Формата включва наличните първенства и УЕФА за 90 минути; националните купи не са включени. Честотите и сериите описват историята и изискват потвърдени скорошни наблюдения.</p></details></div>';
  if(past){el('matchPlan').innerHTML=Calendar.planHTML(archivedEntry(f));el('matchPlan').setAttribute('aria-busy','false');}
- else window.MatchpulseSelectionUI.renderMatchPlan(el('matchPlan'),f);
+ else window.MatchpulseSelectionUI.renderMatchPlan(el('matchPlan'),f).then(()=>{
+  const target=el('matchPlan');if(!target||!target.isConnected||Scout.keyFixture(activeMatch)!==Scout.keyFixture(f))return;
+  const key=target.querySelector('.selection-primary')?.dataset.selectionMarket;
+  View.decoratePlan(target,marketNames[key]?market=>savePick(market):null);
+ });
+ View.mountTabs(matchTab,key=>{matchTab=key;});
  el('matchStandingsDetails').addEventListener('toggle',()=>{if(el('matchStandingsDetails').open)showStandings(el('matchStandingsContent'),f[0],f)});
  el('matchContent').querySelectorAll('.form-chip,.form-dot').forEach(button=>{
-  const inspect=()=>{
-   const box=button.closest('.form-overview');
-   box.querySelector('.form-inspection').textContent=button.dataset.formMessage;
-   box.querySelectorAll('.form-chip,.form-dot').forEach(point=>point.setAttribute('aria-pressed',String(point===button)));
-  };
+  const inspect=()=>{const box=button.closest('.form-overview');box.querySelector('.form-inspection').textContent=button.dataset.formMessage;box.querySelectorAll('.form-chip,.form-dot').forEach(point=>point.setAttribute('aria-pressed',String(point===button)));};
   button.onclick=inspect;button.onpointerenter=()=>{if(button.matches('.form-dot'))inspect();};
   if(button.matches('.form-dot'))button.onkeydown=e=>{if(['Enter',' '].includes(e.key)){e.preventDefault();inspect();}};
  });
- if(el('savePick'))el('savePick').onclick=savePick;el('copyMatch').onclick=copyMatch;
+ if(el('savePick'))el('savePick').onclick=()=>savePick();el('copyMatch').onclick=copyMatch;
+ document.querySelectorAll('[data-fixture]').forEach(button=>button.classList.toggle('fixture-active',Scout.keyFixture(fixtureRows[+button.dataset.fixture])===Scout.keyFixture(f)));
  if(opening)el('closeMatch').focus();
 }
 function closeMatch(){
  matchOpenToken++;
- el('matchOverlay').classList.add('hidden');document.body.style.overflow='';document.querySelector('.shell').inert=false;
+ el('matchOverlay').classList.add('hidden');syncMatchLayout();
  if(active==='schedule'&&index)renderSchedule();
  let target=matchTrigger?.isConnected?matchTrigger:null;
- if(!target&&activeMatch&&matchTriggerKind){
-  const rows=matchTriggerKind==='schedule'?fixtureRows:scannerRows.map(r=>r.fixture),i=rows.findIndex(f=>Scout.keyFixture(f)===Scout.keyFixture(activeMatch));
-  if(i>=0)target=document.querySelector(matchTriggerKind==='schedule'?'[data-fixture="'+i+'"]':'[data-scan="'+i+'"]');
+ if(!target&&activeMatch&&matchTriggerKind==='schedule'){
+  const i=fixtureRows.findIndex(f=>Scout.keyFixture(f)===Scout.keyFixture(activeMatch));
+  if(i>=0)target=document.querySelector('[data-fixture="'+i+'"]');
  }
  (target||document.querySelector('.nav.active'))?.focus();matchTrigger=null;matchTriggerKind=null;
 }
-function savePick(){
+function savePick(marketOverride=null){
  if(!activeMatch)return;
  const oddsString=el('pickOdds').value.trim().replace(',','.'),odds=oddsString?Number(oddsString):null;
  if(oddsString&&(!Number.isFinite(odds)||odds<1.01||odds>1000)){alert('Въведи реален десетичен коефициент, например 1.80, или остави празно.');return}
  if(!Scout.getUpcoming([activeMatch]).length){alert('Мачът вече е започнал. Презареди програмата.');return}
- const picks=readPicks(),m=el('pickMarket').value;
+ const picks=readPicks(),m=marketOverride||el('pickMarket').value;
+ if(!marketNames[m])return;
  if(picks.some(x=>Scout.keyPick(x)===Scout.keyFixture(activeMatch)&&x.market===m)){
   alert('Вече имаш запазена прогноза за този мач и пазар.');return
  }
@@ -347,38 +356,6 @@ async function copyMatch(){
   if(feedback.isConnected)feedback.textContent='Пълното досие е копирано ✓';
  }catch{if(feedback.isConnected)feedback.textContent='Копирането не е разрешено от браузъра.';}
  finally{if(button.isConnected)button.disabled=false;}
-}
-function renderScanner(){
- if(!index)return;
- const market=el('scanMarket').value,days=+el('scanWindow').value,
-  league=el('scanLeague').value,streak=+el('scanStreak').value,
-  both=el('scanBoth').value==='yes',venue=el('scanVenue').value==='venue';
- const found=(market==='all'?Patterns.runAll:Patterns.run)(index,fixtures,Scout,{market,days,minimum:5,league,streak,both,venue,windowSize});
- scannerRows=found.slice(0,70);
- el('scannerSummary').textContent=(found.length>70?scannerRows.length+' от '+found.length:scannerRows.length)+' мача със серия '+streak+'+'+(venue?' · домакинства / гостувания':'');
- if(!scannerRows.length){el('scannerList').innerHTML='<div class="empty">Няма серии при тези филтри. Опитай друг пазар, по-дълъг период или повече мачове.</div>';return}
- el('scannerList').innerHTML=scannerRows.map((entry,i)=>{
-  const {fixture:f,signal:q}=entry,h=q.home,a=q.away;
-  const signals=entry.signals||[q];
-  const reference=q.evidence.reference,homeBase=percent(reference.homeRate),awayBase=percent(reference.awayRate);
-  const baseline=reference.available?'Лига: '+(homeBase===awayBase?homeBase:homeBase+' / '+awayBase)+' · '+reference.n.toLocaleString('bg-BG')+' мача':'Малка база за лигата';
-  const notes=q.evidence.notes.filter(note=>reference.available||note!=='Малка база за лигата');
-  return '<article class="scan-card" data-evidence-rank="'+q.rank+'"><div class="scan-head"><span class="scan-league">'+esc(f[2])+'</span><span class="scan-date">'+esc(f[3])+' · '+esc(f[4]||'—')+'</span></div>'+
-   '<h3>'+esc(f[5])+' – '+esc(f[6])+'</h3><div class="signal">'+esc(q.label)+'</div>'+
-   '<div class="mini-bars">'+miniBar(scannerLabel(q.market||q.id,f,true),h.hits,h.n)+miniBar(scannerLabel(q.market||q.id,f,false),a.hits,a.n,true)+'</div>'+
-   '<div class="scan-context"><span title="Наблюдавана честота за предходните 3 години, съобразена с домакинствата и гостуванията в извадката. Това е лигова база за сравнение.">'+esc(baseline)+'</span>'+
-   (notes.length?'<span class="scan-quality" title="'+esc(notes.join(' · '))+'">'+esc(notes[0])+'</span>':'')+'</div>'+
-   '<table class="streak-table"><thead><tr><th>Поредни мачове с това събитие</th><th title="'+esc(f[5])+'">Дом.</th><th title="'+esc(f[6])+'">Гост</th></tr></thead><tbody>'+
-   signals.map(v=>'<tr><td>'+esc(v.label)+'</td>'+[v.home,v.away].map(t=>'<td title="Наблюдавано '+t.hits+' / '+t.n+' мача'+(t.missing?' · '+t.missing+' без данни':'')+'">'+t.currentStreak+'</td>').join('')+'</tr>').join('')+'</tbody></table>'+
-   '<div class="scan-actions"><span class="footnote">'+(venue?'Домакинства / гостувания':'Последни '+windowSize+' мача')+'</span><button data-scan="'+i+'" class="button secondary" type="button">Анализ →</button></div></article>';
- }).join('');
- el('scannerList').querySelectorAll('[data-scan]').forEach(x=>x.onclick=()=>openMatch(scannerRows[+x.dataset.scan].fixture));
-}
-function scannerLabel(m,f,home){
- const action=m==='home2'?(home?'вкарва 2+':'допуска 2+'):m==='away2'?(home?'допуска 2+':'вкарва 2+'):
-  m==='1'?(home?'побеждава':'губи'):m==='2'?(home?'губи':'побеждава'):
-  m==='1X'?(home?'не губи':'не печели'):m==='X2'?(home?'не печели':'не губи'):'';
- return f[home?5:6]+(action?' · '+action:'');
 }
 function streakReport(d){return Analysis.trendsHTML(d);}
 const marketNames=Object.fromEntries(Patterns.MARKETS.map(v=>[v.id,v.label]));
@@ -501,7 +478,7 @@ async function loadCoverage(){
 function setupLeagues(europe=[]){
  const current=el('standingsLeague').value,lg=new Map();Calendar.merge(fixtures,scheduleArchive,Scout).forEach(r=>lg.set(r[0],window.MatchpulseHealth.leagueLabel(r)));
  const options='<option value="">Всички първенства</option>'+[...lg].sort((a,b)=>a[1].localeCompare(b[1])).map(([code,name])=>'<option value="'+esc(code)+'">'+esc(name)+'</option>').join('');
- if(!el('leagueSelect').dataset.loaded){el('leagueSelect').innerHTML=options;el('scanLeague').innerHTML=options;el('leagueSelect').dataset.loaded='true';}
+ if(!el('leagueSelect').dataset.loaded){el('leagueSelect').innerHTML=options;el('leagueSelect').dataset.loaded='true';}
  const tables=new Map();[...history,...europe,...fixtures].forEach(r=>tables.set(r[0],window.MatchpulseHealth.leagueLabel(r)));
  el('standingsLeague').innerHTML=[...tables].sort((a,b)=>a[1].localeCompare(b[1],'bg')).map(([code,name])=>'<option value="'+esc(code)+'">'+esc(name)+'</option>').join('');
  if(tables.has(current))el('standingsLeague').value=current;else if(tables.has('E0'))el('standingsLeague').value='E0';
@@ -572,7 +549,7 @@ async function load(){
     fixtures=f;status=s;break;
    }catch(error){if(attempt===1||error.code!=='SNAPSHOT_CHANGED')throw error;}
   }
-  fixturesReady=true;syncResearchControls();setupLeagues();refreshSync();setView(active);
+  fixturesReady=true;View.loadMarks();syncResearchControls();setupLeagues();refreshSync();setView(active);
   document.documentElement.dataset.scoutCalendar='ready';window.performance?.mark('scout-calendar-ready');
   if(fixtures.length)requestAnimationFrame(()=>requestAnimationFrame(()=>{ensureCore().catch(()=>{});ensureScheduleArchive().catch(()=>{});}));
  }catch(e){
@@ -585,6 +562,9 @@ async function load(){
 window.MatchpulseLoading={ensureCore,ensureExtras,ensureScheduleArchive};
 for(const id of ['researchWindow','drawerWindow'])el(id).onchange=e=>setResearch(e.target.value);
 document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>setView(b.dataset.view));
+document.querySelectorAll('[data-open-view]').forEach(b=>b.onclick=()=>setView(b.dataset.openView));
+document.querySelectorAll('[data-ui-icon]').forEach(v=>v.innerHTML=View.icon(v.dataset.uiIcon));
+window.matchMedia('(min-width:901px)').addEventListener('change',syncMatchLayout);
 document.querySelectorAll('[data-day]').forEach(b=>b.onclick=()=>{
  mode=b.dataset.day==='7'?'week':b.dataset.day==='1'?'tomorrow':'today';
  document.querySelectorAll('[data-day]').forEach(x=>x.classList.toggle('active',x===b));
@@ -597,13 +577,13 @@ el('selectionDiary').addEventListener('toggle',()=>{if(el('selectionDiary').open
 el('standingsLeague').addEventListener('change',programStandings);
 el('leagueSelect').addEventListener('change',()=>{if(el('leagueSelect').value){el('standingsLeague').value=el('leagueSelect').value;programStandings()}});
 for(const id of ['leagueSelect','qualitySelect','searchInput'])el(id).addEventListener(id==='searchInput'?'input':'change',renderSchedule);
-for(const id of ['scanMarket','scanWindow','scanLeague','scanStreak','scanBoth','scanVenue'])el(id).addEventListener('change',renderScanner);
+
 el('exportPicks').onclick=exportPicks;el('closeMatch').onclick=closeMatch;
 el('matchOverlay').onclick=e=>{if(e.target===el('matchOverlay'))closeMatch()};
 document.addEventListener('keydown',e=>{
  if(el('matchOverlay').classList.contains('hidden'))return;
  if(e.key==='Escape'){e.preventDefault();closeMatch();return;}
- if(e.key==='Tab'){
+ if(e.key==='Tab'&&!el('matchOverlay').classList.contains('embedded')){
   const controls=[...el('matchOverlay').querySelectorAll('button,select,input,[tabindex="0"],summary,a[href]')].filter(v=>!v.disabled&&v.getClientRects().length);
   const first=controls[0],last=controls.at(-1);
   if(e.shiftKey&&(document.activeElement===first||!el('matchOverlay').contains(document.activeElement))){e.preventDefault();last?.focus();}

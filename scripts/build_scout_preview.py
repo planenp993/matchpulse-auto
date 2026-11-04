@@ -2,6 +2,7 @@
 from pathlib import Path
 import json
 import re
+import base64
 ROOT=Path(__file__).resolve().parents[1]
 DOC=ROOT/"docs"
 html=(DOC/"scout.html").read_text(encoding="utf-8")
@@ -24,6 +25,7 @@ bundle={
  "standings":json.loads((DOC/"data/standings.json").read_text(encoding="utf-8")),
  "selectionQuotes":json.loads((DOC/"data/selection_quotes.json").read_text(encoding="utf-8")),
  "status":json.loads((DOC/"data/status.json").read_text(encoding="utf-8")),
+ "clubMarks":json.loads((DOC/"assets/club-marks.json").read_text(encoding="utf-8")),
  "coverage":json.loads((DOC/"data/coverage_audit.json").read_text(encoding="utf-8")) if (DOC/"data/coverage_audit.json").exists() else None,
  "diary":json.loads((DOC/"data/diary_report.json").read_text(encoding="utf-8")) if (DOC/"data/diary_report.json").exists() else None,
  "selectionDiary":json.loads((DOC/"data/selection_diary_report.json").read_text(encoding="utf-8")),
@@ -31,7 +33,21 @@ bundle={
  "matchPlanDiary":json.loads((DOC/"data/match_plan_diary_report.json").read_text(encoding="utf-8")),
 }
 payload=json.dumps(bundle,ensure_ascii=False,separators=(",",":")).replace("</","<\\/")
-html=re.sub(r'<link rel="stylesheet" href="scout\.css(?:\?[^"<>]*)?">',lambda m:'<style>'+css+'</style>',html)
+def inline_css(match):
+ source=DOC/match[1]
+ content=source.read_text(encoding="utf-8")
+ def inline_font(font):
+  asset=(source.parent/font[2]).resolve()
+  if not asset.is_relative_to(DOC.resolve()) or not asset.is_file():return font[0]
+  mime='font/woff2' if asset.suffix=='.woff2' else 'application/octet-stream'
+  return 'url("data:'+mime+';base64,'+base64.b64encode(asset.read_bytes()).decode('ascii')+'")'
+ content=re.sub(r'url\(([\'\"]?)([^\'\")]+)\1\)',inline_font,content)
+ return '<style>'+content+'</style>'
+html=re.sub(r'<link rel="stylesheet" href="([A-Za-z0-9_.\/-]+\.css)(?:\?[^"<>]*)?">',inline_css,html)
+presentation=(DOC/'scout-presentation.js').read_text(encoding='utf-8')
+marker=re.search(r'<script src="scout-presentation\.js(?:\?[^"<>]*)?"></script>',html)
+if marker is None:raise RuntimeError('Missing presentation module')
+html=html[:marker.start()]+'<script>'+presentation.replace('</script','<\\/script')+'</script>'+html[marker.end():]
 for n,source in [("scout-calendar.js",(DOC/"scout-calendar.js").read_text(encoding="utf-8")),("scout-health.js",health),("club-aliases.js",aliases),("model-core.js",model),("scout-core.js",core),("scout-markets.js",markets),("scout-elo.js",elo),("scout-patterns.js",patterns),("scout-archive.js",(DOC/"scout-archive.js").read_text(encoding="utf-8")),("scout-standings.js",(DOC/"scout-standings.js").read_text(encoding="utf-8")),("scout-analysis.js",(DOC/"scout-analysis.js").read_text(encoding="utf-8")),("scout-selections.js",(DOC/"scout-selections.js").read_text(encoding="utf-8")),("scout-combinations.js",(DOC/"scout-combinations.js").read_text(encoding="utf-8")),("scout-curated.js",(DOC/"scout-curated.js").read_text(encoding="utf-8")),("scout-selection-ui.js",(DOC/"scout-selection-ui.js").read_text(encoding="utf-8")),("scout-data.js",(DOC/"scout-data.js").read_text(encoding="utf-8")),("scout-backup.js",(DOC/"scout-backup.js").read_text(encoding="utf-8")),("scout.js",ui)]:
  marker=re.search(r'<script src="'+re.escape(n)+r'(?:\?[^"<>]*)?"></script>',html)
  replacement='<script>'+source.replace("</script","<\\/script")+'</script>'

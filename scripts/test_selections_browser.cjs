@@ -10,7 +10,7 @@
  async function ready(page){await page.waitForFunction(()=>document.getElementById('lastSync')?.textContent.includes('Програма:'));await page.evaluate(()=>MatchpulseLoading.ensureExtras());}
  async function selectionReady(page){await page.waitForFunction(()=>document.getElementById('selectionList')?.getAttribute('aria-busy')==='false'&&!document.getElementById('selectionSummary').textContent.includes('Преглеждам'),{timeout:60000});}
  async function planReady(page){await page.waitForFunction(()=>document.getElementById('matchPlan')?.getAttribute('aria-busy')==='false');}
- async function selectWeek(page){await page.locator('[data-view="selections"]').click();await selectionReady(page);await page.locator('[data-selection-period="7"]').click();await selectionReady(page);}
+ async function selectWeek(page){await page.locator('[data-view="picks"]').click();await page.locator('[data-open-view="selections"]').click();await selectionReady(page);await page.locator('[data-selection-period="7"]').click();await selectionReady(page);}
  async function noOverflow(page){assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);assert.equal(await page.locator('#matchOverlay').evaluate(el=>el.classList.contains('hidden')||el.scrollWidth<=el.clientWidth),true);}
  const desktop=await browser.newPage({viewport:{width:1440,height:1050},deviceScaleFactor:1});await prepare(desktop);await desktop.goto(base,{waitUntil:'domcontentloaded',timeout:60000});await ready(desktop);
  const privateBefore=await desktop.evaluate(()=>localStorage.getItem('matchpulse-scout-picks-v1'));
@@ -19,7 +19,9 @@
  const firstChoice=await desktop.locator('#matchPlan .selection-primary').getAttribute('data-selection-market');
  for(const size of ['5','20','10']){await desktop.locator('#drawerWindow').selectOption(size);await planReady(desktop);assert.equal(await desktop.locator('#matchPlan .selection-primary').getAttribute('data-selection-market'),firstChoice);}
  assert.ok((await desktop.locator('.match-reading').textContent()).includes('леко предимство'));assert.equal(await desktop.locator('.tendencies .active-match-date').count(),0);assert.ok(!(await desktop.locator('.tendencies').textContent()).includes('✓'));
+ await desktop.locator('[data-match-tab="form"]').click();
  const trend=desktop.locator('.trend-signal').first();if(await trend.count()){assert.equal(await trend.locator('.series-proof').evaluate(el=>el.open),false);await trend.locator('.series-proof summary').click();assert.ok(await trend.locator('.trend-proof-team').count());await trend.locator('.series-proof summary').click();}
+ await desktop.locator('[data-match-tab="overview"]').click();
  await desktop.locator('#matchPlan').screenshot({path:'scout-selection-card.png'});await desktop.locator('#closeMatch').click();await selectWeek(desktop);
  assert.equal(await desktop.locator('[data-selection-tab]').count(),2);assert.equal(await desktop.locator('[data-selection-tab="matches"]').count(),0);assert.ok(await desktop.locator('.selection-builder').count()>0);assert.equal(await desktop.locator('#selectionList .selection-primary').count(),0);
  stats.summary=await desktop.locator('#selectionSummary').textContent();

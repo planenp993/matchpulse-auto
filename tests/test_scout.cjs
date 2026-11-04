@@ -73,8 +73,9 @@ test('standalone Scout HTML and browser JS are syntactically valid',()=>{
  const js=fs.readFileSync(path.join(__dirname,'../docs/scout.js'),'utf8');
  assert.doesNotThrow(()=>new vm.Script(js));
  assert.match(html,/scout-core\.js/);assert.match(html,/scout\.css/);
- for(const name of ['view-schedule','view-scanner','view-picks','matchOverlay'])
+ for(const name of ['view-schedule','view-picks','view-diary','analysisArea','matchOverlay'])
   assert.ok(html.includes(name));
+ assert.ok(!html.includes('view-scanner'));
 });
 test('distinguishes model probabilities from history and needs no paid API',()=>{
  const js=fs.readFileSync(path.join(__dirname,'../docs/scout.js'),'utf8');

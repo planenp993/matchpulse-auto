@@ -75,12 +75,14 @@ test('season regression of Elo does not modify an earlier rating',()=>{
  const e2=Elo.build([...h,futureMatch],Scout.keyTeam);
  assert.equal(Elo.teamAt(e2,'E0','Alpha','2026-11-01').rating,original);
 });
-test('Scout JavaScript is parseable and all research UI controls present',()=>{
+test('Scout JavaScript is parseable and the retained form controls and presentation module are present',()=>{
  assert.doesNotThrow(()=>new vm.Script(file('docs/scout.js')));
  assert.doesNotThrow(()=>new vm.Script(file('docs/scout-patterns.js')));
  const html=file('docs/scout.html');
- for(const id of ['scanMarket','scanStreak','scanBoth','researchWindow','scanVenue'])
+ for(const id of ['researchWindow','drawerWindow','scheduleWorkspace','analysisArea'])
   assert.match(html,new RegExp(id));
+ assert.ok(!html.includes('id="scanMarket"'));
+ assert.match(html,/scout-presentation\.js/);
  assert.match(html,/scout-patterns\.js/);
  assert.match(file('scripts/build_scout_preview.py'),/scout-patterns\.js/);
 });

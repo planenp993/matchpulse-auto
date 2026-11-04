@@ -27,7 +27,7 @@
  }
  async function dayReady(p){await p.waitForFunction(()=>document.querySelectorAll('.fixture-row').length>0&&!document.getElementById('programSummary').textContent.includes('Зареждам'));}
  const p=await page();await dayReady(p);
- const key=record.fixture_key,button=p.locator('.fixture-row').filter({hasText:record.fixture.home+' – '+record.fixture.away});
+ const key=record.fixture_key,button=p.locator('[data-fixture-key="'+key+'"]');
  assert.equal(await button.count(),1);assert.ok((await p.locator('#programTitle').textContent()).includes('Архивна'));
  assert.ok((await button.textContent()).includes('Записана:'));
  const privateBefore=await p.evaluate(()=>localStorage.getItem('matchpulse-scout-picks-v1'));
@@ -46,7 +46,7 @@
  await p.screenshot({path:'scout-calendar-desktop.png',fullPage:false});
  for(const width of [390,320]){
   const mobile=await page(width);await dayReady(mobile);assert.equal(await mobile.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
-  await mobile.locator('.fixture-row').filter({hasText:record.fixture.home+' – '+record.fixture.away}).click();await mobile.waitForFunction(()=>document.getElementById('matchPlan')?.getAttribute('aria-busy')==='false');
+  await mobile.locator('[data-fixture-key="'+key+'"]').click();await mobile.waitForFunction(()=>document.getElementById('matchPlan')?.getAttribute('aria-busy')==='false');
   assert.equal(await mobile.locator('#matchOverlay').evaluate(e=>e.scrollWidth>e.clientWidth),false);
   await mobile.locator('#matchPlan').screenshot({path:'scout-calendar-'+width+'.png'});await mobile.close();
  }

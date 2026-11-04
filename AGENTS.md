@@ -678,3 +678,12 @@ not authorization for model promotion or a new diary. Validate with
 exact source/history fingerprints and rendered report. Do not regenerate on
 ordinary refreshes. A separately authorized research change may use
 `node scripts/compare_hybrid_models.cjs --write --progress`.
+
+
+## Dark Scout presentation (4 November 2026)
+
+The owner authorized direct implementation and publication of the dark redesign. Keep only three global views: matches, personal picks, automatic diary. Builders/columns remain reachable inside picks. The separate scanner view is intentionally removed; preserve its frozen computation, studies and historical diary evidence.
+
+Presentation is in scout-presentation.js and scout-dark.css. Match tabs are overview, goals, form, shots, corners, cards. Desktop embeds analysis next to the fixture program; mobile uses a modal with focus containment and restoration. Form retains the existing Elo, signed graph, tendencies, recent results, direct meetings and standings. Goals sum the existing score matrix; no new prediction model is implied. Archived records without a matrix cannot invent threshold probabilities. Stats stay descriptive. All new styles/modules need content-versioned URLs and offline embedding. Club marks may fail independently without hiding fixtures or analysis. The local font license and provenance must accompany its assets.
+
+Do not change refresh-clock.yml, update.yml, refresh_clock.py, soccerway.py, calendar_source.json or the exact primary soccerway_leagues.json catalog as part of visual or supplemental coverage work. Any additional league pipeline must remain isolated from that working primary automation.

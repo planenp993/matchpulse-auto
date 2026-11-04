@@ -37,6 +37,6 @@ test('Unreviewed clubs remain unhighlighted and provider HTML or hostile URLs ca
 test('Missing tables explain availability and standings remain inside existing panels',()=>{
  assert.match(T.render({tables:{}},'E0',{now}),/още не е налично/);
  const fs=require('node:fs'),html=fs.readFileSync('docs/scout.html','utf8');
- assert.equal((html.match(/class="nav(?:\s|")/g)||[]).length,5);assert.ok(!html.includes('data-view="standings"'));
+ assert.equal((html.match(/class="nav(?:\s|")/g)||[]).length,3);assert.ok(!html.includes('data-view="standings"'));
  assert.ok(html.includes('scheduleStandings'));assert.ok(html.includes('standingsLeague'));
 });
