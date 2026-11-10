@@ -8,6 +8,10 @@ const stamp=v=>Number.isFinite(Date.parse(v))?new Date(v).toLocaleString('bg-BG'
 const day=now=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Sofia',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
 const KEY='matchpulse-selection-quotes-v1';
 let app=null,engine=null,tab='builders',period=1,limit=24,token=0,quotePromise=null,quoteDoc=null,quoteError=false,entries=[],items=[];
+let dailyToken=0,dailyPicks=[],dailyGeneratedAt=null,dailyRequestedDate='';
+const dailyOmissions=new Set();
+const dailyDateLabel=date=>new Date(date+'T12:00:00Z').toLocaleDateString('bg-BG',{timeZone:'Europe/Sofia',weekday:'long',day:'numeric',month:'long',year:'numeric'});
+const dailyCutoff=now=>new Date((Math.ceil(now.getTime()/60000)+30)*60000);
 function readManual(){try{const v=JSON.parse(localStorage.getItem(KEY)||'{}');return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch{return {};}}
 let manual=readManual();
 let band='3-6',columnEntries=null;const columnCache=new Map();
@@ -83,11 +87,106 @@ function planHTML(entry){
   '<p class="footnote plan-method">Подбор по фиксирани 10 мача от първенствата; моделът използва до 30. Изборът 5/10/20 променя прочита и тенденциите. '+(quoteError?'CSV цените временно не са достъпни. ':'')+'Без проверена цена това е избор по данни.</p>'+
   '<button type="button" class="button secondary" data-plan-copy>Копирай прогнозата</button><span class="plan-feedback" role="status"></span>';
 }
-function evaluateFixture(f,now=new Date()){
+function evaluateFixture(f,now=new Date(),quotes=quotesFor(f)){
  if(!engine)engine=S.createEngine(app.history,root.MatchpulseModel,C);
  const profile=app.archive.profile(f,{windowSize:10}),recent=app.archive.recentProfile(f,{windowSize:10,now});
  const unavailable=app.availability&&Object.values(app.availability).some(v=>!v);
- return engine.evaluate(f,{profile,quotes:quotesFor(f),now,pending:!!(unavailable||recent.home.pendingLatest||recent.away.pendingLatest)});
+ return engine.evaluate(f,{profile,quotes,now,pending:!!(unavailable||recent.home.pendingLatest||recent.away.pendingLatest)});
+}
+function dailyShortlist(evaluated){
+ const View=root.MatchpulsePresentation;
+ const strongest=evaluated.flatMap(entry=>{
+  const pick=entry.candidates.filter(p=>p.eligible&&['total','btts'].includes(p.family)&&p.probability>=.55)
+   .sort((a,b)=>b.rank-a.rank||a.id.localeCompare(b.id))[0];
+  return pick?[{entry,pick,key:C.keyFixture(entry.fixture)}]:[];
+ }).sort((a,b)=>b.pick.rank-a.pick.rank||View.leagueOrder(a.entry.fixture)-View.leagueOrder(b.entry.fixture)||a.key.localeCompare(b.key));
+ const seen=new Set(),shortlist=[];
+ for(const item of strongest){
+  if(seen.has(item.key))continue;
+  seen.add(item.key);shortlist.push(item);
+  if(shortlist.length===5)break;
+ }
+ return shortlist;
+}
+function dailyPost(date,selected,now){
+ if(!selected.length)return '';
+ return ['⚽ MATCHPULSE · ДНЕВЕН ПОДБОР',dailyDateLabel(date)+' · часове София',
+  'Алгоритъмът сравнява модела за голове с формата на двата отбора и честотата на пазара в лигата.',
+  ...selected.flatMap(({entry,pick},i)=>{const f=entry.fixture;return ['',
+   (i+1)+'. '+f[5]+' – '+f[6]+' · '+f[4],f[2]+' · '+pick.label,
+   'Модел '+pct(pick.probability)+' · честен коефициент '+price(pick.fair),planReason(entry,pick)];}),
+  '', 'Подбор към '+stamp(now.toISOString())+' ч. · Моделни оценки за наблюдение.',
+  'https://planenp993.github.io/matchpulse-auto/'].join('\n');
+}
+function dailySelection(){return dailyPicks.filter(item=>!dailyOmissions.has(item.key+'::'+item.pick.id));}
+function paintDailyPost(){
+ const selected=dailySelection();
+ el('dailyPost').value=dailyPost(el('dailyDate').value,selected,dailyGeneratedAt);
+ el('dailyCount').textContent=selected.length+(selected.length===1?' избрана':' избрани');
+ el('copyDailyPost').disabled=!selected.length;
+ el('dailyFeedback').textContent='';
+}
+function dailyBlock(now){
+ if(app.availability&&Object.values(app.availability).some(v=>!v))return 'Подборът изчаква допълнителните данни. Презареди, за да опиташ отново.';
+ if(root.MatchpulseHealth.sources(app.status,now)[0].warning)return 'Подборът изчаква актуална потвърдена програма. Презареди след следващото обновяване.';
+ return '';
+}
+async function renderDaily(){
+ if(!app)return;
+ const request=++dailyToken,now=new Date(),today=day(now),end=new Date(today+'T12:00:00Z');
+ end.setUTCDate(end.getUTCDate()+6);
+ const last=end.toISOString().slice(0,10),View=root.MatchpulsePresentation;
+ const dated=app.fixtures.filter(f=>Array.isArray(f)&&f[3]>=today&&f[3]<=last&&View.isEuropeanLeague(f)&&
+  typeof f[13]==='string'&&f[13].includes('Sofia')&&/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(f[4]||''));
+ const pool=C.getUpcoming(dated,dailyCutoff(now));
+ const dateSelect=el('dailyDate'),dates=[...new Set([today,...pool.map(f=>f[3])])];
+ const requested=dates.includes(dailyRequestedDate)?dailyRequestedDate:null;
+ const searchDates=requested?[requested]:pool[0]?.[3]===today?[today]:dates.slice(1);
+ const date=searchDates[0]||today;
+ dateSelect.innerHTML=dates.map(d=>'<option value="'+esc(d)+'">'+esc((d===today?'Днес · ':'')+dailyDateLabel(d))+'</option>').join('');
+ dateSelect.value=date;dateSelect.disabled=dates.length<2;
+ dailyPicks=[];el('dailyList').replaceChildren();paintDailyPost();
+ const panel=el('dailyPanel'),summary=el('dailySummary'),blocked=dailyBlock(now);
+ if(blocked||!pool.some(f=>f[3]===date)){
+  summary.textContent=blocked||'Няма предстоящи европейски мачове с потвърден час за тази дата.';
+  panel.setAttribute('aria-busy','false');return;
+ }
+ panel.setAttribute('aria-busy','true');
+ try{
+  let reviewed=0;
+  for(const candidateDate of searchDates){
+   const rows=pool.filter(f=>f[3]===candidateDate),evaluated=[];
+   summary.textContent='Преглеждам '+rows.length+' мача · '+dailyDateLabel(candidateDate)+'…';
+   for(let i=0;i<rows.length;i++){
+    if(i%6===0){await new Promise(resolve=>setTimeout(resolve,0));if(request!==dailyToken)return;}
+    evaluated.push(evaluateFixture(rows[i],now,{}));
+   }
+   dateSelect.value=candidateDate;reviewed=rows.length;dailyPicks=dailyShortlist(evaluated);
+   if(dailyPicks.length)break;
+  }
+  dailyGeneratedAt=now;
+  summary.textContent=reviewed+' прегледани мача · '+(dailyPicks.length?dailyPicks.length+' за подбор':'без прогнози с достатъчна подкрепа');
+  el('dailyList').innerHTML=dailyPicks.map(({entry,pick,key},i)=>{
+   const f=entry.fixture,teams=f[5]+' – '+f[6],checked=!dailyOmissions.has(key+'::'+pick.id);
+   return '<article class="daily-choice" data-daily-fixture="'+esc(key)+'" data-daily-market="'+esc(pick.id)+'">'+
+    '<div class="daily-choice-meta"><span>'+esc(root.MatchpulseHealth.leagueLabel(f))+'</span><time>'+esc(f[4])+'</time></div>'+
+    '<h3>'+esc(teams)+'</h3><p class="daily-choice-market"><strong>'+esc(pick.label)+'</strong> <span>'+pct(pick.probability)+' · честен '+price(pick.fair)+'</span></p>'+
+    '<p class="daily-choice-reason">'+esc(planReason(entry,pick))+'</p><div class="daily-choice-actions">'+
+    '<label><input type="checkbox" data-daily-include="'+i+'" aria-label="Включи '+esc(teams)+' в поста"'+(checked?' checked':'')+'> В поста</label>'+
+    '<button type="button" class="button secondary" data-daily-analysis="'+i+'">Анализ</button></div></article>';
+  }).join('');
+  paintDailyPost();
+ }catch(error){summary.textContent='Подборът не можа да се изчисли. Презареди, за да опиташ отново.';console.error('Daily selections',error);}
+ finally{if(request===dailyToken)panel.setAttribute('aria-busy','false');}
+}
+async function copyDailyPost(){
+ const now=new Date(),selected=dailySelection(),post=el('dailyPost'),feedback=el('dailyFeedback');
+ if(!selected.length)return;
+ if(dailyBlock(now)||C.getUpcoming(selected.map(item=>item.entry.fixture),dailyCutoff(now)).length!==selected.length){
+  await renderDaily();feedback.textContent='Подборът е обновен. Провери текста, преди да го копираш.';return;
+ }
+ try{await navigator.clipboard.writeText(post.value);feedback.textContent='Копирано. Постави текста в Telegram.';}
+ catch{post.focus();post.select();feedback.textContent='Текстът е маркиран. Избери „Копирай“ от менюто на устройството.';}
 }
 async function planFor(f){await loadQuotes();return evaluateFixture(f);}
 async function renderMatchPlan(target,f){
@@ -198,6 +297,18 @@ async function render(){
 }
 function mount(context){
  app=context;engine=null;
+ el('dailyDate').onchange=event=>{dailyRequestedDate=event.target.value;renderDaily();};
+ el('copyDailyPost').onclick=copyDailyPost;
+ el('dailyList').onchange=event=>{
+  if(!event.target.matches('[data-daily-include]'))return;
+  const {key,pick}=dailyPicks[+event.target.dataset.dailyInclude],id=key+'::'+pick.id;
+  if(event.target.checked)dailyOmissions.delete(id);else dailyOmissions.add(id);
+  paintDailyPost();
+ };
+ el('dailyList').onclick=event=>{
+  const button=event.target.closest('[data-daily-analysis]');
+  if(button)app.openMatch(dailyPicks[+button.dataset.dailyAnalysis].entry.fixture);
+ };
  const mobileFilters=root.matchMedia('(max-width:550px)');
  el('selectionFilters').open=!mobileFilters.matches;
  mobileFilters.addEventListener('change',event=>{el('selectionFilters').open=!event.matches;});
@@ -252,5 +363,5 @@ function changePrice(event,changed,feedback){
   catch{feedback.textContent='Сравнението е приложено само за тази сесия.';}
   changed();
 }
-root.MatchpulseSelectionUI={mount,render,planFor,renderMatchPlan,planBrief,reloadManualPrices(){manual=readManual();}};
+root.MatchpulseSelectionUI={mount,render,renderDaily,dailyShortlist,planFor,renderMatchPlan,planBrief,reloadManualPrices(){manual=readManual();}};
 })(window);

@@ -12,8 +12,35 @@
  async function planReady(page){await page.waitForFunction(()=>document.getElementById('matchPlan')?.getAttribute('aria-busy')==='false');}
  async function selectWeek(page){await page.locator('[data-view="picks"]').click();await page.locator('[data-open-view="selections"]').click();await selectionReady(page);await page.locator('[data-selection-period="7"]').click();await selectionReady(page);}
  async function noOverflow(page){assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);assert.equal(await page.locator('#matchOverlay').evaluate(el=>el.classList.contains('hidden')||el.scrollWidth<=el.clientWidth),true);}
+ async function dailyWithFreshCalendar(page){
+  await page.locator('[data-view="picks"]').click();
+  await page.evaluate(async()=>{
+   Object.assign(status,{fixtures_updated_utc:new Date().toISOString(),fixtures_feed_status:'ok',secondary_fixture_errors:[]});
+   await MatchpulseSelectionUI.renderDaily();
+  });
+ }
  const desktop=await browser.newPage({viewport:{width:1440,height:1050},deviceScaleFactor:1});await prepare(desktop);await desktop.goto(base,{waitUntil:'domcontentloaded',timeout:60000});await ready(desktop);
  const privateBefore=await desktop.evaluate(()=>localStorage.getItem('matchpulse-scout-picks-v1'));
+ await desktop.locator('[data-view="picks"]').click();
+ assert.equal(await desktop.locator('#copyDailyPost').isDisabled(),true);
+ assert.match(await desktop.locator('#dailySummary').textContent(),/актуална потвърдена програма/);
+ await dailyWithFreshCalendar(desktop);
+ const dailyChoices=desktop.locator('.daily-choice'),post=desktop.locator('#dailyPost');
+ const dailyCount=await dailyChoices.count();assert.ok(dailyCount>=3&&dailyCount<=5);
+ assert.equal(new Set(await dailyChoices.evaluateAll(cards=>cards.map(c=>c.dataset.dailyFixture))).size,dailyCount);
+ assert.match(await post.inputValue(),/MATCHPULSE · ДНЕВЕН ПОДБОР/);
+ const removed=await dailyChoices.first().locator('h3').textContent();
+ await dailyChoices.first().getByRole('checkbox').uncheck();
+ assert.ok(!(await post.inputValue()).includes(removed));
+ assert.equal(await desktop.locator('#dailyCount').textContent(),(dailyCount-1)+' избрани');
+ await desktop.evaluate(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async text=>{window.__dailyCopied=text;}}}));
+ await desktop.locator('#copyDailyPost').click();await desktop.waitForFunction(()=>window.__dailyCopied?.includes('ДНЕВЕН ПОДБОР'));
+ assert.equal(await desktop.evaluate(()=>window.__dailyCopied),await post.inputValue());
+ await desktop.evaluate(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async()=>{throw Error('denied');}}}));
+ await desktop.locator('#copyDailyPost').click();
+ assert.equal(await post.evaluate(e=>e.selectionEnd-e.selectionStart),(await post.inputValue()).length);
+ await dailyChoices.first().getByRole('button',{name:'Анализ'}).click();await planReady(desktop);
+ await desktop.locator('#closeMatch').click();stats.dailyPicks={count:dailyCount,manualCopy:true,staleBlocked:true};
  const initial=await desktop.evaluate(()=>{const f=fixtures.find(f=>f[0]==='I1'&&f[5]==='Milan'&&f[6]==='Bologna');return {fixture:f,probabilities:Model.evaluate(history,f,'standard').distribution.probs};});
  await desktop.evaluate(f=>openMatch(f),initial.fixture);await planReady(desktop);assert.ok(await desktop.locator('#matchPlan .selection-primary').count());
  const firstChoice=await desktop.locator('#matchPlan .selection-primary').getAttribute('data-selection-market');
@@ -51,7 +78,9 @@
  await desktop.reload({waitUntil:'domcontentloaded'});await ready(desktop);await selectWeek(desktop);assert.deepEqual(await desktop.evaluate(()=>JSON.parse(localStorage.getItem('matchpulse-selection-quotes-v1')||'{}')),saved);
  assert.equal(await desktop.evaluate(()=>localStorage.getItem('matchpulse-scout-picks-v1')),privateBefore);assert.deepEqual(await desktop.evaluate(f=>Model.evaluate(history,f,'standard').distribution.probs,initial.fixture),initial.probabilities);
  stats.manualPricePersistence=true;stats.unchangedModel=true;stats.privatePicksUntouched=true;stats.everyDossierHasPlan=true;stats.fewerTabs=true;
- const mobile=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});await prepare(mobile);await mobile.goto(base,{waitUntil:'domcontentloaded'});await ready(mobile);await selectWeek(mobile);
+ const mobile=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});await prepare(mobile);await mobile.goto(base,{waitUntil:'domcontentloaded'});await ready(mobile);
+ await dailyWithFreshCalendar(mobile);assert.ok(await mobile.locator('.daily-choice').count()>=3);await noOverflow(mobile);
+ await mobile.setViewportSize({width:320,height:780});await noOverflow(mobile);await mobile.setViewportSize({width:390,height:844});await selectWeek(mobile);
  assert.equal(await mobile.locator('#selectionFilters').evaluate(el=>el.open),false);await mobile.locator('#selectionFilterSummary').click();await mobile.locator('#selectionLeague').selectOption('E0');await selectionReady(mobile);assert.ok((await mobile.locator('#selectionFilterSummary').textContent()).includes('1 активни'));
  await mobile.locator('#selectionLeague').selectOption('');await selectionReady(mobile);await mobile.locator('#selectionFilterSummary').click();await noOverflow(mobile);await mobile.screenshot({path:'scout-selections-mobile.png',fullPage:false});
  await mobile.locator('[data-selection-analysis]').first().click();await planReady(mobile);await noOverflow(mobile);await mobile.locator('#matchPlan').screenshot({path:'scout-selection-card-mobile.png'});

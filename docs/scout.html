@@ -7,7 +7,7 @@
   <title>MATCHPULSE SCOUT · Футболни анализи</title>
   <link rel="stylesheet" href="assets/fonts/manrope.css?v=7d2e28443dbb">
   <link rel="stylesheet" href="scout.css?v=157b4fd35d9d">
-  <link rel="stylesheet" href="scout-dark.css?v=ef67734466c4">
+  <link rel="stylesheet" href="scout-dark.css?v=94482f5cd900">
 </head>
 <body>
 <div class="shell">
@@ -42,6 +42,32 @@
       </div>
     </section>
     <section class="view hidden" id="view-picks" aria-label="Моите прогнози">
+      <section class="card daily-picks" id="dailyPicks" aria-labelledby="dailyPicksTitle">
+        <header class="daily-picks-head">
+          <div><span class="daily-kicker">MATCHPULSE · ГОЛОВИ ПАЗАРИ</span><h2 id="dailyPicksTitle">Дневен подбор</h2>
+            <p>До пет единични прогнози с обосновка и готов текст за Telegram.</p></div>
+          <div class="daily-controls">
+            <label class="control-label daily-date">Дата на подбора<select id="dailyDate" disabled><option>Зареждане…</option></select></label>
+            <button type="button" class="button" id="copyDailyPost" disabled>Копирай поста</button>
+          </div>
+        </header>
+        <p id="dailyFeedback" class="copy-status daily-feedback" role="status"></p>
+        <div class="daily-picks-layout">
+          <div class="daily-picks-panel" id="dailyPanel" aria-busy="false">
+            <p id="dailySummary" class="daily-summary" role="status">Зареждам програмата и историята…</p>
+            <div id="dailyList" class="daily-list"></div>
+          </div>
+          <div class="daily-composer">
+            <div class="daily-composer-head"><h3>Пост за Telegram</h3><span id="dailyCount" class="daily-count">0 избрани</span></div>
+            <textarea id="dailyPost" aria-label="Текст за Telegram" rows="9" readonly placeholder="Избраните прогнози ще се покажат тук."></textarea>
+          </div>
+        </div>
+        <details class="daily-method"><summary>Как подбираме мачовете</summary>
+          <p>Голови пазари и „Гол/гол“ от европейската програма. Сравняваме моделната вероятност с честотата в лигата и с формата на двата отбора в до 10 мача. Отчитаме и домакинства и гостувания, когато има достатъчна извадка.</p>
+          <p>Подреждаме до пет предложения с моделна вероятност поне 55% и достатъчна подкрепа по правилата на MatchPulse. Всеки мач участва с една прогноза и с поне 30 минути до потвърденото начало.</p>
+          <p>Скенерът на серии търси повтарящи се събития в историята. Тук процентът идва от модела за голове, а формата и лиговата честота участват в подреждането.</p>
+        </details>
+      </section>
       <div class="pick-tools-nav"><span>Моят подбор</span><button type="button" class="button secondary" data-open-view="selections">Бет билдъри и прави колонки <span data-ui-icon="arrow"></span></button></div>
       <div class="picks-head"><div id="picksSummary">Няма записани прогнози</div><button id="exportPicks" type="button" class="button secondary">↓ Експорт CSV</button></div>
       <div id="picksList"></div>
@@ -127,10 +153,10 @@
 <script src="scout-selections.js?v=50b470019a05"></script>
 <script src="scout-combinations.js?v=17d77995aa5e"></script>
 <script src="scout-curated.js?v=a870a1b929c2"></script>
-<script src="scout-selection-ui.js?v=5d6e97d89a2b"></script>
+<script src="scout-selection-ui.js?v=0f63cf3f4d77"></script>
 <script src="scout-data.js?v=336f328e1041"></script>
 <script src="scout-backup.js?v=fff44daaf888"></script>
 <script src="scout-calendar.js?v=52d942539aee"></script>
-<script src="scout-presentation.js?v=96e59e5a8b43"></script>
-<script src="scout.js?v=0c9d5a6b4417"></script>
+<script src="scout-presentation.js?v=6e8255e8b6a1"></script>
+<script src="scout.js?v=570eaf08f703"></script>
 </body></html>
