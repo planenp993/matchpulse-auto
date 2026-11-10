@@ -69,7 +69,12 @@ function setView(next){
   }
  }else{
   renderPicks();
-  if(!extrasReady)ensureExtras().then(()=>{if(active==='picks')renderPicks();}).catch(()=>{});
+  if(extrasReady)window.MatchpulseSelectionUI.renderDaily();else{
+   el('dailySummary').textContent='Зареждам програмата и историята…';
+   ensureExtras().then(()=>{if(active==='picks'){renderPicks();window.MatchpulseSelectionUI.renderDaily();}}).catch(()=>{
+    if(active==='picks')el('dailySummary').textContent='Данните временно не са достъпни. Презареди, за да опиташ отново.';
+   });
+  }
  }
 }
 function syncResearchControls(){

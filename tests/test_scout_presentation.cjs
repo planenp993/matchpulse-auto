@@ -33,9 +33,9 @@ test('Match sections escape names and separate unavailable models from historica
 });
 test('Every changed presentation asset is content versioned and available offline',()=>{
  const html=fs.readFileSync('docs/scout.html','utf8'),builder=fs.readFileSync('scripts/build_scout_preview.py','utf8');
- for(const name of ['scout.js','scout-presentation.js','scout.css','scout-dark.css']){
+ for(const name of ['scout.js','scout-presentation.js','scout-selection-ui.js','scout.css','scout-dark.css']){
   const version=crypto.createHash('sha256').update(fs.readFileSync('docs/'+name)).digest('hex').slice(0,12);
   assert.ok(html.includes(name+'?v='+version),name);
  }
- assert.ok(builder.includes('scout-presentation.js'));assert.ok(builder.includes('club-marks.json'));
+ assert.ok(builder.includes('scout-presentation.js'));assert.ok(builder.includes('scout-selection-ui.js'));assert.ok(builder.includes('club-marks.json'));
 });
