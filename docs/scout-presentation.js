@@ -5,6 +5,14 @@
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=(n,d=2)=>Number.isFinite(n)?n.toFixed(d).replace('.',','):'—';
 const percent=n=>Number.isFinite(n)?Math.round(n*100)+'%':'—';
+const leadingLeagues=['UCL','E0','SP1','I1','D1','F1','UEL','UECL'];
+const europeanCountries=new Set(['Austria','Belgium','Denmark','England','Europe','Finland','France','Germany','Greece',
+ 'Ireland','Italy','Netherlands','Norway','Poland','Portugal','Romania','Russia','Scotland','Spain','Sweden','Switzerland','Turkey']);
+function leagueOrder(fixture){
+ const position=leadingLeagues.indexOf(fixture[0]);
+ if(position>=0)return position;
+ return leadingLeagues.length+(europeanCountries.has(fixture[1])?0:1);
+}
 const paths={
  pulse:'M3 12h4l3-8 4 16 3-8h4',
  matches:'M4 5h16v15H4z M8 3v4m8-4v4M4 10h16',
@@ -119,5 +127,5 @@ function decoratePlan(target,save){
 if(typeof document!=='undefined')document.addEventListener('error',event=>{
  if(event.target.matches?.('.club-mark img'))event.target.remove();
 },true);
-root.MatchpulsePresentation={icon,clubMark,hydrateMarks,loadMarks,hero,tabs,overview,goals,splitStatistics,mountTabs,decoratePlan};
+root.MatchpulsePresentation={icon,clubMark,hydrateMarks,loadMarks,hero,tabs,overview,goals,splitStatistics,mountTabs,decoratePlan,leagueOrder};
 })(typeof globalThis!=='undefined'?globalThis:this);

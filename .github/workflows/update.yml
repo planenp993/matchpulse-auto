@@ -36,7 +36,7 @@ jobs:
     timeout-minutes: 25
     environment:
       name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
+      url: ${{ steps.deploy_retry.outputs.page_url || steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -148,6 +148,16 @@ jobs:
       - name: Deploy site
         uses: actions/deploy-pages@v4
         id: deploy
+        continue-on-error: true
+      - name: Allow the previous Pages attempt to clear
+        if: steps.deploy.outcome == 'failure'
+        run: sleep 45
+      - name: Retry the same Pages artifact
+        if: steps.deploy.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+        id: deploy_retry
+        with:
+          timeout: 360000
       - name: Prune only the reviewed merged heads when their recovery map is introduced
         if: github.event_name == 'push'
         run: |

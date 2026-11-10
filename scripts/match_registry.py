@@ -64,6 +64,29 @@ def record_conflict(registry, kind, payload):
     registry["conflicts"][digest(record)] = record
 
 
+def result_slots(history):
+    slots = {}
+    for key in history:
+        for club in key[2:]:
+            slots.setdefault((*key[:2], club), set()).add(key)
+    return slots
+
+
+def reserve_result(slots, history, book, key, row, source):
+    """Quarantine a new result if a club already has a different result that day."""
+    home, away = ((*key[:2], club) for club in key[2:])
+    occupied = slots.get(home, set()) | slots.get(away, set())
+    if occupied or home == away:
+        record_conflict(book, "same_day_result_conflict", {
+            "key": "|".join(key), "source": source, "incoming": row,
+            "kept": [history[k] for k in sorted(occupied)],
+        })
+        return False
+    slots[home] = {key}
+    slots[away] = {key}
+    return True
+
+
 def observe(registry, observations, stamp):
     """Only provider IDs or exact reviewed keys link identities. Never guess pairs."""
     matches = registry["matches"]

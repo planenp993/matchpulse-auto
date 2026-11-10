@@ -144,6 +144,17 @@ class SoccerwayTests(unittest.TestCase):
         conflicts=self.read(sync.REGISTRY)['conflicts'].values()
         self.assertTrue(any(c['kind']=='soccerway_score_conflict' for c in conflicts))
 
+    def test_unlinked_same_day_result_does_not_replace_existing_result_or_stop_calendar(self):
+        earlier=row('2026-10-28',(1,1))
+        old=row('2026-10-29',(3,0),away='Liverpool')
+        u.writejson(self.root/'docs/data/history.json',[earlier,old])
+        report=sync.apply(self.root,self.patch(self.batch()))
+        self.assertEqual(report['conflicts_this_patch'],1)
+        self.assertEqual(self.read('docs/data/history.json'),[earlier,old])
+        self.assertTrue(any(r[3]=='2026-10-31' for r in self.read('docs/data/fixtures.json')))
+        status=self.read('docs/data/status.json')
+        self.assertTrue(any(q['reason']=='same_day_result_conflict' for q in status['soccerway_quarantined']))
+
     def test_own_clock_and_trigger_survive_publish_and_older_patch(self):
         b=self.patch(self.batch());sync.apply(self.root,b)
         s=self.read('docs/data/status.json');self.assertEqual(s['last_soccerway_data_success_utc'],STAMP)

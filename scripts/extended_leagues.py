@@ -71,7 +71,9 @@ def parse(raw,div,c,now):
     feeds={};records={}
     pattern=r'cjs\.initialFeeds\[([\'\"])(fixtures|results)\1\]\s*=\s*\{\s*data:\s*`(.*?)`,\s*allEventsCount:\s*(\d+)'
     for _,kind,data,total in re.findall(pattern,text,re.S):
-        if kind in feeds or '${' in data or not data.startswith('SA÷1'): raise ValueError('Ambiguous/nonliteral football feed')
+        empty_calendar=kind=='fixtures' and data=='' and int(total)==0
+        if kind in feeds or '${' in data or (not empty_calendar and not data.startswith('SA÷1')):
+            raise ValueError('Ambiguous/nonliteral football feed')
         seen=set();dates=[];context={};count=0
         for block in data.split('¬~'):
             fields={}
@@ -260,12 +262,10 @@ def apply(root,batch,now=None):
     if old_primary!={k:v for k,v in history.items() if v[0] not in leagues}: raise ValueError('Primary history changed')
     europe=read(root,'docs/data/europe_history.json',[])
     registry.reconcile(book,[*historical,*europe],fixtures,iso(now),aliases=read(root,'data/result_provenance.json',{}).get('aliases',{}))
-    # Existing frozen diary writers accept a verified division list. Add only
-    # actually checked supplemental divisions; retain the primary source clock.
-    counts={d:n for d,n in status.get('secondary_fixture_counts',{}).items() if d not in leagues}
+    # Remove divisions added by older writers. Diary eligibility now reads
+    # supplemental receipts independently of the primary calendar.
+    status['secondary_fixture_counts']={d:n for d,n in status.get('secondary_fixture_counts',{}).items() if d not in leagues}
     successful=[d for d,c in batch['checks'].items() if c['status']=='ok' and c.get('window_covered')]
-    counts.update({d:sum(r[0]==d for r in projected['fixtures']) for d in successful})
-    status['secondary_fixture_counts']=counts
     receipt={'last_attempt_utc':stamp,'checks':batch['checks'],'sources_total':len(leagues),'sources_ok':len(successful),
              'status':'ok' if len(successful)==len(leagues) and not conflicts and not batch['errors'] and not any(q['reason']!='excluded_competition_phase' for q in projected['quarantined']) else 'partial' if successful else 'error',
              'errors':batch['errors'],'quarantined':projected['quarantined'],'score_conflicts':conflicts,'csv_enriched':projected['csv_enriched'],

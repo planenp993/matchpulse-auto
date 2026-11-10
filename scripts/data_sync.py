@@ -272,18 +272,38 @@ def apply(root, patch):
     # Bootstrap every previously published fixture before applying a rolling view.
     registry.observe(book, [{"row": row} for row in old_fixtures], stamp)
     changed, applied, conflicts = [], 0, 0
+    reviewed_labels, slots = {}, {}
+    if patch["history"]:
+        slots = registry.result_slots(history)
+        for entry in registry.read_strict(root/soccerway.CROSSWALK, {"entries": []})["entries"]:
+            if u.club_key(entry["source_name"]) != u.club_key(entry["target"]):
+                reviewed_labels[(entry["division"], soccerway.normal(entry["source_name"]))] = entry["target"]
+    market_keys, rejected_history = {}, set()
     for item in patch["history"]:
         row = item["row"]
-        key = u.key(row)
+        original_key = key = u.key(row)
         old = history.get(key)
+        if old is None and reviewed_labels:
+            labels = [reviewed_labels.get((row[0], soccerway.normal(club)), club) for club in row[5:7]]
+            if labels != row[5:7]:
+                row = [*row[:5], *labels, *row[7:]]
+                key = u.key(row)
+                old = history.get(key)
+        if old is None and not registry.reserve_result(slots, history, book, key, row, "Football-Data"):
+            rejected_history.add("|".join(original_key))
+            conflicts += 1
+            continue
         try:
             result = conservative_merge(old, row, item["base_sha256"])
             if old != result:
                 changed.append(result)
                 applied += 1
             history[key] = result
+            if key != original_key:
+                market_keys["|".join(original_key)] = "|".join(key)
         except ValueError:
             conflicts += 1
+            rejected_history.add("|".join(original_key))
             registry.record_conflict(book, "final_score_conflict", {"key": registry.row_key(row), "kept": old, "incoming": row})
     bridge_changed, bridge_conflicts = [], 0
     if patch.get("results"):
@@ -350,8 +370,9 @@ def apply(root, patch):
                     source_checks[name].pop("error", None)
         good = sum(c["status"] == "ok" for c in patch["checks"].values())
         complete = good == work["history_targets"] and conflicts == 0
+        errors = [f"Football-Data: {conflicts} conflicting results held for review"] if conflicts else []
         status.update(last_history_attempt_utc=stamp, history_sources_total=work["history_targets"], history_sources_ok=good,
-                      history_refresh_status="ok" if complete else "partial" if good else "error", errors=patch["errors"][:100],
+                      history_refresh_status="ok" if complete else "partial" if good else "error", errors=(errors+patch["errors"])[:100],
                       by_source={k: c["rows"] for k, c in patch["checks"].items() if c["status"] == "ok"})
         if complete:
             status.update(last_history_success_utc=stamp, last_current_history_success_utc=stamp)
@@ -478,7 +499,16 @@ def apply(root, patch):
               "soccerway": {k: status.get(k) for k in ('soccerway_enabled', 'last_soccerway_attempt_utc', 'last_soccerway_data_success_utc', 'last_soccerway_success_utc', 'soccerway_refresh_status', 'soccerway_archived_matches', 'soccerway_errors', 'soccerway_quarantined')},
               "europe_refresh_status": status.get("europe_refresh_status"), "europe_regulation_results": len(europe_rows), "standings": tables["coverage"],
               "note": "Source date alone does not prove missing games during a break. Pending fixtures are retained; unlisted is not cancelled. UEFA regulation scores are archived separately; administrative outcomes never settle analytical picks."}
-    added_markets, market_report = markets.apply(root, patch.get("markets", []), fixtures, registry.row_key, stamp, u.readjson, u.writejson, status.get("quote_check_status"), checked_stamp=view_stamp)
+    observations = []
+    for item in patch.get("markets", []):
+        key = item["key"]
+        if item["kind"] == "historical_csv":
+            if key in rejected_history:
+                continue
+            if key in market_keys:
+                item = {**item, "key": market_keys[key]}
+        observations.append(item)
+    added_markets, market_report = markets.apply(root, observations, fixtures, registry.row_key, stamp, u.readjson, u.writejson, status.get("quote_check_status"), checked_stamp=view_stamp)
     selection_quotes.write(root, fixtures, status)
     health["market_archive"] = {"future_matches_with_saved_quotes": market_report["future_matches_with_saved_quotes"],
                                 "quote_check_status": status.get("quote_check_status")}
