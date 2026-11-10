@@ -115,21 +115,18 @@ jobs:
           path: /tmp/mp-supplemental-patch.json
           retention-days: 7
       - uses: actions/configure-pages@v5
+        id: pages
         if: steps.plan.outputs.due == 'true'
       - uses: actions/upload-pages-artifact@v3
+        id: upload
         if: steps.plan.outputs.due == 'true'
         with:
           path: docs
-      - name: Deploy site
+      - name: Deploy and verify the published snapshot
         if: steps.plan.outputs.due == 'true'
-        uses: actions/deploy-pages@v4
-        id: deploy
-        continue-on-error: true
-      - name: Allow the previous Pages attempt to clear
-        if: steps.deploy.outcome == 'failure'
-        run: sleep 45
-      - name: Retry the same Pages artifact
-        if: steps.deploy.outcome == 'failure'
-        uses: actions/deploy-pages@v4
+        uses: actions/github-script@v8
+        env:
+          PAGES_ARTIFACT_ID: ${{ steps.upload.outputs.artifact_id }}
+          PAGES_BASE_URL: ${{ steps.pages.outputs.base_url }}
         with:
-          timeout: 360000
+          script: await require('./scripts/deploy_pages.cjs')({ github, context, core });

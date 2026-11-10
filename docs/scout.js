@@ -7,7 +7,7 @@ const fmt=(v,n=1)=>Number.isFinite(v)?v.toFixed(n):'—';
 const percent=v=>Number.isFinite(v)?fmt(v*100,0)+'%':'—';
 const localISO=(d=new Date())=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Sofia',year:'numeric',month:'2-digit',day:'2-digit'}).format(d);
 function offsetISO(n){const a=new Date(localISO()+'T12:00:00Z');a.setUTCDate(a.getUTCDate()+n);return a.toISOString().slice(0,10)}
-let history=[],fixtures=[],status={},index=null,eloIndex=null,windowSize=10,active='schedule',fixtureRows=[],mode='today',customDate='',activeMatch=null;
+let history=[],fixtures=[],status={},index=null,eloIndex=null,windowSize=10,active='schedule',fixtureRows=[],mode=null,customDate='',activeMatch=null;
 let matchTab='overview';
 let diaryLoaded=false,diaryLoading=false,archive=null,standingsPromise=null,matchTrigger=null;
 let availability={europe:false,links:false,europeNames:false};
@@ -116,9 +116,17 @@ function dateMode(f){
  if(mode==='custom')return date===customDate;
  return date>=t&&date<=offsetISO(6);
 }
-function visibleFixtures(){
+function setProgramMode(next){
+ mode=next;
+ const activeDay={today:'0',tomorrow:'1',week:'7'}[mode];
+ document.querySelectorAll('[data-day]').forEach(button=>{
+  const selected=button.dataset.day===activeDay;
+  button.classList.toggle('active',selected);
+  button.setAttribute('aria-pressed',String(selected));
+ });
+}
+function visibleFixtures(rows){
  const q=el('searchInput').value.trim().toLowerCase(),league=el('leagueSelect').value,quality=el('qualitySelect').value;
- const rows=Calendar.merge(fixtures,scheduleArchive,Scout);
  return (mode==='week'||mode==='tomorrow'?Scout.getUpcoming(rows):rows).filter(f=>dateMode(f)&&(!league||f[0]===league) &&
   (!q||[f[2],f[5],f[6]].some(x=>String(x).toLowerCase().includes(q))) &&
   (quality==='all'||(index&&quality==='qualified'&&fixtureQualified(f))||
@@ -134,10 +142,21 @@ function renderSchedule(){
   else ensureScheduleArchive().catch(()=>{});
   return;
  }
- fixtureRows=visibleFixtures().sort((a,b)=>View.leagueOrder(a)-View.leagueOrder(b));
+ const rows=Calendar.merge(fixtures,scheduleArchive,Scout);
+ fixtureRows=visibleFixtures(rows).sort((a,b)=>View.leagueOrder(a)-View.leagueOrder(b));
  el('programTitle').textContent=mode==='today'?'Днешната програма':mode==='tomorrow'?'Утрешната програма':mode==='custom'?(customDate<localISO()?'Архивна програма · ':'Програма · ')+customDate:'Програма · 7 дни';
  el('programSummary').textContent=fixtureRows.length+' срещи · '+new Set(fixtureRows.map(x=>x[0])).size+' състезания'+(archiveDate()?' · '+fixtureRows.filter(f=>archivedEntry(f)?.forecast).length+' предмачови записа':'');
- if(!fixtureRows.length){el('scheduleList').innerHTML='<div class="empty">'+(archiveDate()?'Няма записани срещи за тази дата и филтри. Архивът обхваща '+esc(scheduleArchive.start_date)+' → '+esc(scheduleArchive.end_date)+'.':'За избраната дата и филтри няма предстоящи срещи. Опитай „7 дни“ или друго първенство.')+'</div>';return}
+ if(!fixtureRows.length){
+  const hasMatches=rows.some(dateMode);
+  const showWeek=!archiveDate()&&mode!=='week'&&!hasMatches&&Scout.getUpcoming(fixtures).some(f=>f[3]<=offsetISO(6));
+  const date=mode==='custom'?customDate:offsetISO(mode==='tomorrow'?1:0);
+  const dayLabel=new Date(date+'T12:00:00Z').toLocaleDateString('bg-BG',{timeZone:'Europe/Sofia',day:'numeric',month:'long'});
+  const message=archiveDate()?'Няма записани срещи за тази дата и филтри. Архивът обхваща '+scheduleArchive.start_date+' → '+scheduleArchive.end_date+'.':
+   hasMatches?'Няма срещи с избраните филтри.':mode==='week'?'В следващите 7 дни няма насрочени срещи в следените състезания.':'На '+dayLabel+' няма насрочени срещи в следените състезания.';
+  el('scheduleList').innerHTML='<div class="empty">'+esc(message)+(showWeek?'<div><button type="button" class="button secondary" id="showNextWeek">Покажи следващите 7 дни</button></div>':'')+'</div>';
+  if(showWeek)el('showNextWeek').onclick=()=>{setProgramMode('week');renderSchedule();document.querySelector('[data-day="7"]').focus();};
+  return;
+ }
  const groups=new Map();
  fixtureRows.forEach((f,i)=>{const k=f[0]+'|'+f[2];if(!groups.has(k))groups.set(k,[]);groups.get(k).push({f,i})});
  el('scheduleList').innerHTML=[...groups.values()].map(rows=>{
@@ -552,6 +571,11 @@ async function load(){
     fixtures=f;status=s;break;
    }catch(error){if(attempt===1||error.code!=='SNAPSHOT_CHANGED')throw error;}
   }
+  if(mode===null){
+   const hasToday=fixtures.some(f=>f[3]===localISO());
+   const hasWeek=Scout.getUpcoming(fixtures).some(f=>f[3]<=offsetISO(6));
+   setProgramMode(!hasToday&&hasWeek?'week':'today');
+  }
   fixturesReady=true;View.loadMarks();syncResearchControls();setupLeagues();refreshSync();setView(active);
   document.documentElement.dataset.scoutCalendar='ready';window.performance?.mark('scout-calendar-ready');
   if(fixtures.length)requestAnimationFrame(()=>requestAnimationFrame(()=>{ensureCore().catch(()=>{});ensureScheduleArchive().catch(()=>{});}));
@@ -569,11 +593,10 @@ document.querySelectorAll('[data-open-view]').forEach(b=>b.onclick=()=>setView(b
 document.querySelectorAll('[data-ui-icon]').forEach(v=>v.innerHTML=View.icon(v.dataset.uiIcon));
 window.matchMedia('(min-width:901px)').addEventListener('change',syncMatchLayout);
 document.querySelectorAll('[data-day]').forEach(b=>b.onclick=()=>{
- mode=b.dataset.day==='7'?'week':b.dataset.day==='1'?'tomorrow':'today';
- document.querySelectorAll('[data-day]').forEach(x=>x.classList.toggle('active',x===b));
+ setProgramMode(b.dataset.day==='7'?'week':b.dataset.day==='1'?'tomorrow':'today');
  renderSchedule();
 });
-el('dateInput').onchange=e=>{if(e.target.value){mode='custom';customDate=e.target.value;document.querySelectorAll('[data-day]').forEach(x=>x.classList.remove('active'));renderSchedule()}};
+el('dateInput').onchange=e=>{if(e.target.value){customDate=e.target.value;setProgramMode('custom');renderSchedule()}};
 el('scheduleStandings').addEventListener('toggle',programStandings);
 el('dataDetails').addEventListener('toggle',()=>{if(el('dataDetails').open)loadCoverage();});
 el('selectionDiary').addEventListener('toggle',()=>{if(el('selectionDiary').open)loadSelectionDiary();});

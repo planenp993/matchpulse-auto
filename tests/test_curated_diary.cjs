@@ -6,6 +6,13 @@ const history=JSON.parse(fs.readFileSync('docs/data/history.json')).filter(r=>r[
 const now=new Date('2026-10-28T07:00:00Z'),config=D.configFor(new Date('2026-10-28T06:00:00Z'));
 const fixtures=all.filter(f=>['E0','I1'].includes(f[0])&&f[3]>='2026-10-28'&&f[3]<='2026-10-30');
 const args={history,fixtures,now,config,matchLinks:J.readMatchLinks()};
+test('The three published selection diaries can still capture with their registered writers',()=>{
+ for(const name of ['selection_diary','match_plan_diary','curated_diary']){
+  const writer=require('../scripts/'+name+'.cjs');
+  const saved=JSON.parse(fs.readFileSync(writer.RELATIVE+'/config.json','utf8'));
+  assert.deepEqual(writer.configFor().files,saved.files,name);
+ }
+});
 test('Selection records start prospectively, freeze picks and deduplicate captures',()=>{
  const out=D.advance(args);assert.ok(out.newForecasts.length>0);
  const before=J.canonical(out.newForecasts);
