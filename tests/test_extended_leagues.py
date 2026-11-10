@@ -24,7 +24,7 @@ def page(c,events,fixtures=(),season='2026',phase=None):
     def payload(rows):
         context={'SA':'1','ZEE':c['template'],'ZL':c['path'],'ZAF':c['country'],'ZA':phase or c['phase_labels'][0]}
         return '¬'.join(k+'÷'+v for k,v in context.items())+'¬~'+'¬~'.join('¬'.join(k+'÷'+v for k,v in r.items()) for r in rows)
-    return ('tournamentTemplateId: "'+c['template']+'"<div class="heading__info">'+season+'</div>'+''.join('cjs.initialFeeds["'+kind+'"] = { data: `'+payload(rows)+'`, allEventsCount: '+str(len(rows))+'};' for kind,rows in [('results',events),('fixtures',fixtures)])).encode()
+    return ('tournamentTemplateId: "'+c['template']+'"<div class="heading__info">'+season+'</div>'+''.join('cjs.initialFeeds["'+kind+'"] = { data: `'+(payload(rows) if rows or kind=='results' else '')+'`, allEventsCount: '+str(len(rows))+'};' for kind,rows in [('results',events),('fixtures',fixtures)])).encode()
 
 
 class SupplementalTests(unittest.TestCase):
@@ -55,6 +55,14 @@ class SupplementalTests(unittest.TestCase):
         raw=page(self.c,[event()])
         for changed in [raw.replace(self.c['template'].encode(),b'Wrong000'),raw.replace(b'heading__info">2026',b'heading__info">2025'),raw.replace(b'ZAF\xc3\xb7Brazil',b'ZAF\xc3\xb7Wrong'),page(self.c,[event(),event()]),raw.replace(b'SA\xc3\xb71',b'${payload}')]:
             with self.subTest(prefix=changed[:30]), self.assertRaises(ValueError):e.parse(changed,'BRA',self.c,NOW)
+
+    def test_explicit_empty_calendar_preserves_finals_but_truncated_calendar_fails(self):
+        raw=page(self.c,[event()])
+        records,feeds=e.parse(raw,'BRA',self.c,NOW)
+        self.assertEqual([r['id'] for r in records],['Game0001'])
+        self.assertEqual(feeds['fixtures'],{'rows':0,'published_total':0,'first_date':None,'last_date':None,'window_covered':True})
+        with self.assertRaises(ValueError):
+            e.parse(raw.replace(b'data: ``, allEventsCount: 0',b'data: ``, allEventsCount: 1'),'BRA',self.c,NOW)
 
     def test_unapproved_phase_and_changed_club_label_never_enter_training(self):
         batch=self.batch();batch['records'][0]['match']['phase']='BRAZIL: Cup Final'
@@ -93,7 +101,9 @@ class SupplementalTests(unittest.TestCase):
         history=read_json(self.root,'docs/data/history.json');fixtures=read_json(self.root,'docs/data/fixtures.json');status=read_json(self.root,'docs/data/status.json')
         self.assertIn(self.primary_history,history);self.assertIn(self.primary_fixture,fixtures)
         for key in ('fixtures_updated_utc','last_fixture_attempt_utc','last_soccerway_success_utc','soccerway_sources_total','fixtures_feed_status'):self.assertEqual(status[key],self.status[key])
-        self.assertIn('BRA',status['secondary_fixture_counts']);self.assertEqual(e.apply(self.root,batch,NOW)['history_added'],0)
+        self.assertEqual(status['secondary_fixture_counts'],{'E0':1})
+        self.assertEqual(status['supplemental_leagues']['checks']['BRA']['status'],'ok')
+        self.assertEqual(e.apply(self.root,batch,NOW)['history_added'],0)
         self.assertEqual(read_json(self.root,'docs/data/history.json'),history)
         bra=[m for m in read_json(self.root,'data/match_registry.json')['matches'].values() if m['division']=='BRA'];self.assertTrue(all(m['season']=='2026' for m in bra))
 

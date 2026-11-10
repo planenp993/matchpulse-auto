@@ -134,7 +134,7 @@ function renderSchedule(){
   else ensureScheduleArchive().catch(()=>{});
   return;
  }
- fixtureRows=visibleFixtures();
+ fixtureRows=visibleFixtures().sort((a,b)=>View.leagueOrder(a)-View.leagueOrder(b));
  el('programTitle').textContent=mode==='today'?'Днешната програма':mode==='tomorrow'?'Утрешната програма':mode==='custom'?(customDate<localISO()?'Архивна програма · ':'Програма · ')+customDate:'Програма · 7 дни';
  el('programSummary').textContent=fixtureRows.length+' срещи · '+new Set(fixtureRows.map(x=>x[0])).size+' състезания'+(archiveDate()?' · '+fixtureRows.filter(f=>archivedEntry(f)?.forecast).length+' предмачови записа':'');
  if(!fixtureRows.length){el('scheduleList').innerHTML='<div class="empty">'+(archiveDate()?'Няма записани срещи за тази дата и филтри. Архивът обхваща '+esc(scheduleArchive.start_date)+' → '+esc(scheduleArchive.end_date)+'.':'За избраната дата и филтри няма предстоящи срещи. Опитай „7 дни“ или друго първенство.')+'</div>';return}
@@ -476,8 +476,11 @@ async function loadCoverage(){
  }catch(e){target.textContent='Няма актуален отчет за покритието. '+e.message;}
 }
 function setupLeagues(europe=[]){
- const current=el('standingsLeague').value,lg=new Map();Calendar.merge(fixtures,scheduleArchive,Scout).forEach(r=>lg.set(r[0],window.MatchpulseHealth.leagueLabel(r)));
- const options='<option value="">Всички първенства</option>'+[...lg].sort((a,b)=>a[1].localeCompare(b[1])).map(([code,name])=>'<option value="'+esc(code)+'">'+esc(name)+'</option>').join('');
+ const current=el('standingsLeague').value,lg=new Map();
+ Calendar.merge(fixtures,scheduleArchive,Scout).forEach(r=>lg.set(r[0],r));
+ const label=window.MatchpulseHealth.leagueLabel;
+ const leagues=[...lg.values()].sort((a,b)=>View.leagueOrder(a)-View.leagueOrder(b)||label(a).localeCompare(label(b),'bg'));
+ const options='<option value="">Всички първенства</option>'+leagues.map(r=>'<option value="'+esc(r[0])+'">'+esc(label(r))+'</option>').join('');
  if(!el('leagueSelect').dataset.loaded){el('leagueSelect').innerHTML=options;el('leagueSelect').dataset.loaded='true';}
  const tables=new Map();[...history,...europe,...fixtures].forEach(r=>tables.set(r[0],window.MatchpulseHealth.leagueLabel(r)));
  el('standingsLeague').innerHTML=[...tables].sort((a,b)=>a[1].localeCompare(b[1],'bg')).map(([code,name])=>'<option value="'+esc(code)+'">'+esc(name)+'</option>').join('');

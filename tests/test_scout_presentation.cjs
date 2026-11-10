@@ -4,6 +4,12 @@ const Model=require('../docs/model-core.js'),Scout=require('../docs/scout-core.j
 const scope={MatchpulseModel:Model,MatchpulseScout:Scout};
 vm.runInNewContext(fs.readFileSync('docs/scout-presentation.js','utf8'),scope);
 const View=scope.MatchpulsePresentation,fixture=['E0','England','Premier League','2026-11-05','20:00','Home','Away'];
+test('Programme puts leading leagues and Europe ahead of other regions',()=>{
+ const leagues=[['JPN','Japan'],['SC2','Scotland'],['SP1','Spain'],['CHN','China'],['D2','Germany'],
+  ['UCL','Europe'],['BRA','Brazil'],['E0','England'],['UEL','Europe']];
+ leagues.sort((a,b)=>View.leagueOrder(a)-View.leagueOrder(b));
+ assert.deepEqual(leagues.map(r=>r[0]),['UCL','E0','SP1','UEL','SC2','D2','JPN','CHN','BRA']);
+});
 test('Goal threshold presentation sums the existing score matrix and preserves its model',()=>{
  const distribution=Model.distribution(1.45,1.1,-.06),before=JSON.stringify(distribution),html=View.goals(fixture,{distribution});
  const rows=[...html.matchAll(/<tr><th scope="row">Над ([\d,]+)<\/th>(.*?)<\/tr>/g)];

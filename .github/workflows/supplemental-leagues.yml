@@ -45,7 +45,7 @@ jobs:
       group: matchpulse-pages
       cancel-in-progress: false
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
         with:
@@ -120,5 +120,16 @@ jobs:
         if: steps.plan.outputs.due == 'true'
         with:
           path: docs
-      - uses: actions/deploy-pages@v4
+      - name: Deploy site
         if: steps.plan.outputs.due == 'true'
+        uses: actions/deploy-pages@v4
+        id: deploy
+        continue-on-error: true
+      - name: Allow the previous Pages attempt to clear
+        if: steps.deploy.outcome == 'failure'
+        run: sleep 45
+      - name: Retry the same Pages artifact
+        if: steps.deploy.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+        with:
+          timeout: 360000

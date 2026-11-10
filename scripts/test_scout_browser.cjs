@@ -1,12 +1,14 @@
 /* Browser smoke test for Scout, run by branch-only GH Action. */
 (async()=>{
  const {chromium}=require('playwright');
+ const {prepare}=require('./browser_selection_snapshot.cjs');
  const browser=await chromium.launch({headless:true,args:['--no-sandbox'],...(process.env.SCOUT_BROWSER_EXECUTABLE?{executablePath:process.env.SCOUT_BROWSER_EXECUTABLE}:{})});
  console.log('Scout browser: '+browser.version());
  const base='http://127.0.0.1:8765/scout.html';
  const failures=[],stats={};
  const desktop=await browser.newPage({viewport:{width:1365,height:920},deviceScaleFactor:1});
  desktop.on('pageerror',e=>failures.push('desktop: '+String(e)));
+ await prepare(desktop);
  await desktop.goto(base,{waitUntil:'domcontentloaded',timeout:60000});
  await desktop.waitForFunction(()=>document.getElementById('lastSync')?.textContent.includes('Програма:'),{timeout:20000});
  const covered=await desktop.locator('#leagueSelect option').evaluateAll(options=>options.map(x=>x.value));
@@ -155,6 +157,7 @@
 
  const mobile=await browser.newPage({viewport:{width:393,height:852},deviceScaleFactor:1,isMobile:true,hasTouch:true});
  mobile.on('pageerror',e=>failures.push('mobile: '+String(e)));
+ await prepare(mobile);
  await mobile.goto(base,{waitUntil:'domcontentloaded',timeout:60000});
  await mobile.waitForFunction(()=>document.getElementById('lastSync')?.textContent.includes('Програма:'),{timeout:20000});
  await mobile.locator('[data-day="7"]').click();
@@ -244,6 +247,7 @@
  // Independent source failures must not blank a valid domestic calendar.
  for(const filename of ['europe_history.json','match_links.json','europe_fixture_names.json']){
   const fault=await browser.newPage({viewport:{width:1280,height:900}});
+  await prepare(fault);
   await fault.route('**/data/'+filename+'*',route=>route.fulfill({status:503,body:'unavailable'}));
   await fault.goto(base,{waitUntil:'domcontentloaded'});
   await fault.waitForFunction(()=>document.getElementById('lastSync').textContent.includes('Програма:'));

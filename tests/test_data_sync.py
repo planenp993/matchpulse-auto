@@ -99,6 +99,48 @@ class DataSyncTests(unittest.TestCase):
         self.assertEqual(self.read("docs/data/fixtures.json"), [newer])
         self.assertEqual(self.read(sync.HEALTH)["checked_utc"], "2026-10-28T10:00:00+00:00")
 
+    def test_reviewed_csv_name_enriches_the_existing_soccerway_result(self):
+        old = ["E2", "England", "League One", "2026-10-26", "21:45", "Oxford United", "Reading",
+               2, 0, None, None, None, None, {"SRC": "Soccerway"}]
+        fresh = [*old[:4], "19:45", "Oxford Utd", *old[6:13], {"HS": 12}]
+        crosswalk = self.read_crosswalk("E2", "Oxford Utd")
+        u.writejson(self.root/sync.soccerway.CROSSWALK, {"entries": [crosswalk]})
+        u.writejson(self.root/"docs/data/history.json", [old])
+        batch = self.batch()
+        batch["history"] = [{"row": fresh, "base_sha256": reg.digest(None)}]
+        batch["markets"] = [sync.markets.observation(
+            {"B365H": "2.30"}, fresh, ["B365H"], "https://www.football-data.co.uk/mmz4281/2627/E2.csv",
+            "a"*64, "historical_csv", reg.row_key(fresh))[0]]
+        self.assertEqual(sync.apply(self.root, batch)["conflicts_this_patch"], 0)
+        saved, = self.read("docs/data/history.json")
+        self.assertEqual(saved[:13], old[:13])
+        self.assertEqual(saved[13], {"SRC": "Soccerway", "HS": 12})
+        quotes = self.read("data/markets/E2/2026-27.json")["matches"]
+        self.assertEqual(set(quotes), {reg.row_key(old)})
+
+    @staticmethod
+    def read_crosswalk(division, source_name):
+        entries = json.loads((sync.ROOT/sync.soccerway.CROSSWALK).read_text())["entries"]
+        return next(e for e in entries if (e["division"], e["source_name"]) == (division, source_name))
+
+    def test_unverified_same_day_collision_keeps_other_results_and_calendar(self):
+        old = row("2026-10-26", (2, 0))
+        conflict = row("2026-10-26", (2, 0), away="Liverpool")
+        other = row("2026-10-26", (1, 0), home="Fulham", away="Everton")
+        future = row("2026-10-29")
+        u.writejson(self.root/"docs/data/history.json", [old])
+        batch = self.batch(calendar=True)
+        batch["calendar"] = {"rows": [future], "counts": {"E0": 1}, "errors": []}
+        batch["history"] = [{"row": result, "base_sha256": reg.digest(None)} for result in [conflict, other]]
+        for _ in range(2):
+            self.assertEqual(sync.apply(self.root, batch)["conflicts_this_patch"], 1)
+        self.assertEqual(self.read("docs/data/history.json"), [old, other])
+        self.assertEqual(self.read("docs/data/fixtures.json"), [future])
+        saved, = self.read(sync.REGISTRY)["conflicts"].values()
+        self.assertEqual(saved["kind"], "same_day_result_conflict")
+        self.assertEqual(saved["kept"], [old])
+        self.assertEqual(saved["incoming"], conflict)
+
     def test_push_collection_never_contacts_a_provider(self):
         mode, identity = sync.requested_mode(self.root, "push", "full")
         self.assertEqual((mode, identity), ("publish", None))

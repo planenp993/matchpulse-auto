@@ -222,8 +222,8 @@ def apply(root,batch,status,history,book,fixtures,stamp,now,trigger=None):
             rejected.add(o['provider_id']);batch['quarantined'].append({'id':o['provider_id'],'reason':'unlinked_possible_reschedule'})
     batch['observations']=[o for o in batch['observations'] if o['provider_id'] not in rejected]
     batch['results']=[o for o in batch['results'] if o['provider_id'] not in rejected]
-    keys={registry.row_key(o['row']) for o in batch['observations']}
     changed,conflicts=[],0
+    slots=registry.result_slots(history) if batch['results'] else {}
     for observation in batch['results']:
         row=observation['row'];key=u.key(row);old=history.get(key)
         if old is not None and old[7:9]!=row[7:9]:
@@ -231,7 +231,14 @@ def apply(root,batch,status,history,book,fixtures,stamp,now,trigger=None):
                 'provider_id':observation['provider_id'],'kept':old,'incoming':row})
             conflicts+=1
         elif old is None:
-            history[key]=row;changed.append(row)
+            if registry.reserve_result(slots,history,book,key,row,'Soccerway'):
+                history[key]=row;changed.append(row)
+            else:
+                conflicts+=1
+                rejected.add(observation['provider_id'])
+                batch['quarantined'].append({'id':observation['provider_id'],'division':row[0],'reason':'same_day_result_conflict'})
+    batch['observations']=[o for o in batch['observations'] if o['provider_id'] not in rejected]
+    keys={registry.row_key(o['row']) for o in batch['observations']}
     registry.observe(book,batch['observations'],stamp)
     observed={o['provider_id'] for o in batch['observations']}
     affected={k for m in book['matches'].values() if observed.intersection(m['provider_ids']) for k in m['legacy_keys']}
