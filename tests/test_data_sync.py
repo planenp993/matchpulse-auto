@@ -99,6 +99,23 @@ class DataSyncTests(unittest.TestCase):
         self.assertEqual(self.read("docs/data/fixtures.json"), [newer])
         self.assertEqual(self.read(sync.HEALTH)["checked_utc"], "2026-10-28T10:00:00+00:00")
 
+    def test_primary_refresh_projects_only_recent_verified_supplemental_diary_counts(self):
+        recent = {"status": "ok", "window_covered": True, "attempt_utc": STAMP,
+                  "feeds": {"fixtures": {"rows": 2}}}
+        supplemental = {"fixture_counts": {"BRA": 2, "JPN": 1, "CHN": 1, "FIN": 1},
+                        "checks": {"BRA": recent,
+                                   "JPN": {**recent, "attempt_utc": sync.iso(NOW-dt.timedelta(hours=7))},
+                                   "CHN": {**recent, "status": "error"},
+                                   "FIN": {**recent, "feeds": {"fixtures": {"rows": 0}}}}}
+        u.writejson(self.root/"docs/data/status.json", {"supplemental_leagues": supplemental})
+        batch = self.batch(calendar=True)
+        batch["calendar"] = {"rows": [], "counts": {"E0": 0}, "errors": []}
+        sync.apply(self.root, batch)
+        status = self.read("docs/data/status.json")
+        self.assertEqual(status["secondary_fixture_counts"], {"E0": 0, "BRA": 2})
+        self.assertEqual(status["secondary_fixture_sources_ok"], 1)
+        self.assertEqual(status["supplemental_leagues"], supplemental)
+
     def test_reviewed_csv_name_enriches_the_existing_soccerway_result(self):
         old = ["E2", "England", "League One", "2026-10-26", "21:45", "Oxford United", "Reading",
                2, 0, None, None, None, None, {"SRC": "Soccerway"}]

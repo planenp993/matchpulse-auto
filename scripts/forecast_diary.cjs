@@ -29,22 +29,11 @@ function confirmedKickoff(fixture){
  return candidates.length===1?new Date(candidates[0]).toISOString():null;
 }
 function calendarSnapshot(status,fixtures,now=new Date()){
- const stamp=status.fixtures_updated_utc;
- const recent=(value,hours)=>{const age=+now-Date.parse(value);return age>=-60000&&age<=hours*3600000;};
- const primaryFresh=recent(stamp,36)&&['ok','ok_secondary','partial_secondary'].includes(status.fixtures_feed_status);
+ const stamp=status.fixtures_updated_utc,age=+now-Date.parse(stamp);
+ const fresh=Number.isFinite(age)&&age>=-60000&&age<=36*3600000&&['ok','ok_secondary','partial_secondary'].includes(status.fixtures_feed_status);
  const successful=new Set(Object.keys(status.secondary_fixture_counts||{})),stale=new Set(status.stale_secondary_leagues||[]);
- const extra=status.supplemental_leagues;
- const checks=Object.entries(extra?.checks||{});
- const supplemental=new Set([...Object.keys(extra?.fixture_counts||{}),...checks.map(([div])=>div)]);
- const verified=new Map(checks.filter(([,c])=>c.status==='ok'&&c.window_covered===true&&recent(c.attempt_utc,6)));
- const eligible=fixtures.filter(f=>{
-  const div=f[0];
-  if(supplemental.has(div))return verified.get(div)?.feeds?.fixtures?.rows>0;
-  return primaryFresh&&successful.has(div)&&!stale.has(div);
- });
- const stamps=[...(primaryFresh?[stamp]:[]),...[...verified.values()].map(c=>c.attempt_utc)];
- const latest=stamps.reduce((newest,value)=>!newest||Date.parse(value)>Date.parse(newest)?value:newest,null);
- return {fixtures:eligible,stamp:latest||stamp||null,blocked:fixtures.length-eligible.length,fresh:primaryFresh||verified.size>0};
+ const eligible=fresh?fixtures.filter(f=>successful.has(f[0])&&!stale.has(f[0])):[];
+ return {fixtures:eligible,stamp:stamp||null,blocked:fixtures.length-eligible.length,fresh};
 }
 function fixtureRow(f){return [f.div,f.country,f.league,f.date,f.time,f.home,f.away,null,null,null,null,null,null,f.source];}
 const fixtureKey=f=>S.keyFixture(fixtureRow(f));

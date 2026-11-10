@@ -36,7 +36,7 @@ jobs:
     timeout-minutes: 25
     environment:
       name: github-pages
-      url: ${{ steps.deploy_retry.outputs.page_url || steps.deploy.outputs.page_url }}
+      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -142,22 +142,19 @@ jobs:
           retention-days: 7
           if-no-files-found: warn
       - uses: actions/configure-pages@v5
+        id: pages
       - uses: actions/upload-pages-artifact@v3
+        id: upload
         with:
           path: docs
-      - name: Deploy site
-        uses: actions/deploy-pages@v4
+      - name: Deploy and verify the published snapshot
+        uses: actions/github-script@v8
         id: deploy
-        continue-on-error: true
-      - name: Allow the previous Pages attempt to clear
-        if: steps.deploy.outcome == 'failure'
-        run: sleep 45
-      - name: Retry the same Pages artifact
-        if: steps.deploy.outcome == 'failure'
-        uses: actions/deploy-pages@v4
-        id: deploy_retry
+        env:
+          PAGES_ARTIFACT_ID: ${{ steps.upload.outputs.artifact_id }}
+          PAGES_BASE_URL: ${{ steps.pages.outputs.base_url }}
         with:
-          timeout: 360000
+          script: await require('./scripts/deploy_pages.cjs')({ github, context, core });
       - name: Prune only the reviewed merged heads when their recovery map is introduced
         if: github.event_name == 'push'
         run: |

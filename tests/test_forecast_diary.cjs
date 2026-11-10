@@ -178,22 +178,6 @@ test('Missing, future, old or failed calendar snapshots cannot add prospective f
  for(const change of [{fixtures_updated_utc:undefined},{fixtures_updated_utc:'2026-10-24T08:00:00Z'},{fixtures_updated_utc:'2026-10-27T08:00:00Z'},{fixtures_feed_status:'stale_secondary'}])
   assert.equal(J.calendarSnapshot({...status,...change},[fixture()],NOW).fixtures.length,0);
 });
-test('Supplemental diary eligibility follows separate receipts across primary calendar refreshes',()=>{
- const primary=fixture(),brazil=fixture(),japan=fixture(),china=fixture(),finland=fixture(),ireland=fixture();
- [brazil[0],japan[0],china[0],finland[0],ireland[0]]=['BRA','JPN','CHN','FIN','IRL'];
- const stamp=NOW.toISOString();
- const ok={status:'ok',window_covered:true,attempt_utc:stamp,feeds:{fixtures:{rows:1}}};
- const status={fixtures_updated_utc:stamp,fixtures_feed_status:'ok',secondary_fixture_counts:{E0:1},
-  supplemental_leagues:{fixture_counts:{BRA:1,JPN:1,CHN:1,FIN:1,IRL:1},
-   checks:{BRA:ok,JPN:{...ok,attempt_utc:new Date(+NOW-7*3600000).toISOString()},
-    CHN:{...ok,status:'error'},FIN:{...ok,feeds:{fixtures:{rows:0}}}}}};
- const fixtures=[primary,brazil,japan,china,finland,ireland];
- assert.deepEqual(J.calendarSnapshot(status,fixtures,NOW).fixtures,[primary,brazil]);
- const legacyCounts={...status,secondary_fixture_counts:{E0:1,BRA:1,JPN:1,CHN:1,FIN:1,IRL:1}};
- assert.deepEqual(J.calendarSnapshot(legacyCounts,fixtures,NOW).fixtures,[primary,brazil]);
- const supplementalOnly=J.calendarSnapshot({...status,fixtures_feed_status:'error'},fixtures,NOW);
- assert.deepEqual(supplementalOnly.fixtures,[brazil]);assert.equal(supplementalOnly.fresh,true);
-});
 test('An unavailable calendar still allows existing forecasts to settle from new history',()=>{
  const first=capture(),now=new Date('2026-10-27T08:00:00Z'),calendar=J.calendarSnapshot({},[fixture()],now);
  const result=capture({now,forecasts:first.newForecasts,fixtures:calendar.fixtures,history:[...history(),row('2026-10-26')]});

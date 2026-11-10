@@ -26,6 +26,7 @@ import selection_quotes
 import statarea
 import forebet
 import soccerway
+import diary_calendar
 from threading import Lock
 from concurrent.futures import Future
 from fixtures_fallback import collect as calendars, CALENDAR_DIVISIONS, is_secondary
@@ -456,6 +457,7 @@ def apply(root, patch):
                 status["quote_window"] = work["quote_window"]
     # Exports are rolling views; the book above never drops old pending matches.
     fixtures = u.merge_fixtures([r for r in fixtures if future(r) and u.key(r) not in history])
+    diary_calendar.project(status, view_now)
     registry.observe(book, [{"row": row} for row in fixtures], stamp)
     historical = sorted(history.values(), key=lambda r: (r[3], r[0], r[5], r[6]))
     europe.fixture_names(root, fixtures, europe_clubs)

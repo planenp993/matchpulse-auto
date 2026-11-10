@@ -24,6 +24,7 @@ import update as u
 import match_registry as registry
 import provider_archive
 import soccerway as primary
+import diary_calendar
 
 CATALOG='ops/extended_leagues.json'
 CLUBS='data/extended_clubs.json'
@@ -262,9 +263,6 @@ def apply(root,batch,now=None):
     if old_primary!={k:v for k,v in history.items() if v[0] not in leagues}: raise ValueError('Primary history changed')
     europe=read(root,'docs/data/europe_history.json',[])
     registry.reconcile(book,[*historical,*europe],fixtures,iso(now),aliases=read(root,'data/result_provenance.json',{}).get('aliases',{}))
-    # Remove divisions added by older writers. Diary eligibility now reads
-    # supplemental receipts independently of the primary calendar.
-    status['secondary_fixture_counts']={d:n for d,n in status.get('secondary_fixture_counts',{}).items() if d not in leagues}
     successful=[d for d,c in batch['checks'].items() if c['status']=='ok' and c.get('window_covered')]
     receipt={'last_attempt_utc':stamp,'checks':batch['checks'],'sources_total':len(leagues),'sources_ok':len(successful),
              'status':'ok' if len(successful)==len(leagues) and not conflicts and not batch['errors'] and not any(q['reason']!='excluded_competition_phase' for q in projected['quarantined']) else 'partial' if successful else 'error',
@@ -277,6 +275,7 @@ def apply(root,batch,now=None):
     if batch.get('trigger'): receipt['trigger']=batch['trigger']
     if request_id: status['processed_extended_requests']=sorted(set(status.get('processed_extended_requests',[])+[request_id]))
     status['supplemental_leagues']=receipt
+    diary_calendar.project(status,now)
     status.update(history_count=len(historical),fixtures_count=len(fixtures))
     for path,value in [('docs/data/history.json',historical),('docs/data/fixtures.json',fixtures),('data/match_registry.json',book),('docs/data/match_links.json',registry.links(book)),('docs/data/status.json',status)]: u.writejson(root/path,value)
     return {'sources_ok':len(successful),'history_added':len(history)-before_count,'supplemental_history':sum(r[0] in leagues for r in historical),'fixtures':len(projected['fixtures']),'csv_enriched':projected['csv_enriched'],'conflicts':conflicts,'quarantined':len(projected['quarantined'])}

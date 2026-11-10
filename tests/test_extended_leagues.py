@@ -42,7 +42,7 @@ class SupplementalTests(unittest.TestCase):
 
     def batch(self,rows=None,fixtures=()):
         records,feeds=e.parse(page(self.c,rows or [event()],fixtures), 'BRA',self.c,NOW)
-        return {'schema':1,'observed_at_utc':e.iso(NOW),'records':[{'match':r,'source':self.source} for r in records], 'csv_rows':{},'errors':[], 'checks':{'BRA':{'status':'ok','window_covered':True,'feeds':feeds}}}
+        return {'schema':1,'observed_at_utc':e.iso(NOW),'records':[{'match':r,'source':self.source} for r in records], 'csv_rows':{},'errors':[], 'checks':{'BRA':{'status':'ok','window_covered':True,'attempt_utc':e.iso(NOW),'feeds':feeds}}}
 
     def test_public_epochs_define_sofia_date_and_only_ordinary_regulation_enters_history(self):
         rows=[event(),event('Game0002',state='3',stage='37',score=(3,3))]
@@ -101,7 +101,7 @@ class SupplementalTests(unittest.TestCase):
         history=read_json(self.root,'docs/data/history.json');fixtures=read_json(self.root,'docs/data/fixtures.json');status=read_json(self.root,'docs/data/status.json')
         self.assertIn(self.primary_history,history);self.assertIn(self.primary_fixture,fixtures)
         for key in ('fixtures_updated_utc','last_fixture_attempt_utc','last_soccerway_success_utc','soccerway_sources_total','fixtures_feed_status'):self.assertEqual(status[key],self.status[key])
-        self.assertEqual(status['secondary_fixture_counts'],{'E0':1})
+        self.assertEqual(status['secondary_fixture_counts'],{'E0':1,'BRA':1})
         self.assertEqual(status['supplemental_leagues']['checks']['BRA']['status'],'ok')
         self.assertEqual(e.apply(self.root,batch,NOW)['history_added'],0)
         self.assertEqual(read_json(self.root,'docs/data/history.json'),history)

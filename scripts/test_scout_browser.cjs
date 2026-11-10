@@ -284,6 +284,19 @@
  await historyFault.waitForFunction(()=>document.getElementById('lastSync').textContent.includes('Програма:'));
  if(!await historyFault.locator('#notice').isVisible()||!(await historyFault.locator('#notice').textContent()).includes('Основен архив'))throw Error('History failure was hidden by healthy calendar');
  await historyFault.close();
+ const emptyDay=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+ await require('./browser_selection_snapshot.cjs').prepare(emptyDay,'2026-10-26T07:00:00Z');
+ await emptyDay.goto(base,{waitUntil:'domcontentloaded'});
+ await emptyDay.locator('.fixture-row').first().waitFor();
+ if(await emptyDay.locator('[data-day="7"]').getAttribute('aria-pressed')!=='true')throw Error('Empty opening day hid the available weekly programme');
+ for(const day of ['0','1']){
+  await emptyDay.locator('[data-day="'+day+'"]').click();
+  if(await emptyDay.locator('.fixture-row').count())throw Error('An explicitly empty day showed matches from another date');
+  await emptyDay.locator('#showNextWeek').click();
+  await emptyDay.locator('.fixture-row').first().waitFor();
+ }
+ await emptyDay.close();
+ stats.emptyDayFallback=true;
  const rootEntry=await browser.newPage();await rootEntry.goto('http://127.0.0.1:8765/',{waitUntil:'domcontentloaded'});
  await rootEntry.waitForURL('**/scout.html');await rootEntry.close();
  stats.optionalFailureFallback=true;stats.focusManagement=true;stats.historyWarning=true;stats.scoutDefaultEntry=true;
