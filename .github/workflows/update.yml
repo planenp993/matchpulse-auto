@@ -82,16 +82,19 @@ jobs:
             node scripts/selection_diary.cjs --check --base-ref origin/main
             node scripts/match_plan_diary.cjs --check --base-ref origin/main
             node scripts/curated_diary.cjs --check --base-ref origin/main
+            node scripts/telegram_diary.cjs --check --base-ref origin/main
             node scripts/forecast_diary.cjs --write
             node scripts/paired_model_diary.cjs --write --base-ref origin/main
             node scripts/selection_diary.cjs --write
             node scripts/match_plan_diary.cjs --write
             node scripts/curated_diary.cjs --write
+            node scripts/telegram_diary.cjs --write
             node scripts/forecast_diary.cjs --check
             node scripts/paired_model_diary.cjs --check
             node scripts/selection_diary.cjs --check
             node scripts/match_plan_diary.cjs --check
             node scripts/curated_diary.cjs --check
+            node scripts/telegram_diary.cjs --check
             node scripts/schedule_archive.cjs
             node scripts/schedule_archive.cjs --check
             node scripts/smoke_scout.cjs
@@ -115,6 +118,7 @@ jobs:
             git add docs/data/diary docs/data/diary_report.json docs/data/paired_model_report.json
             git add docs/data/selection_diary_report.json
             git add docs/data/match_plan_diary_report.json docs/data/curated_diary_report.json
+            git add docs/data/telegram_diary_report.json
             git add docs/data/client_manifest.json docs/data/schedule_archive.json
             if git diff --staged --quiet; then
               echo "No data changes"

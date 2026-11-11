@@ -137,6 +137,12 @@
  await desktop.waitForFunction(()=>document.getElementById('selectionDiaryContent').textContent.includes('предмачови записа'));
  if(!(await desktop.locator('#selectionDiaryContent').textContent()).includes('Старите дневници са отделни'))throw Error('Separate selection diary summary is missing');
  await desktop.locator('#selectionDiary > summary').click();
+ await desktop.locator('#telegramDiary > summary').click();
+ await desktop.waitForFunction(()=>document.querySelectorAll('#telegramDiaryContent tbody tr').length>=4);
+ const telegramLabels=await desktop.locator('#telegramDiaryContent tbody tr td:first-child').allTextContents();
+ for(const label of ['Лига и форма','Сурова вероятност','Калибрирана вероятност','Сила на съперника']){
+  if(!telegramLabels.includes(label))throw new Error('Missing Telegram comparison: '+label);
+ }
  await desktop.screenshot({path:'scout-diary.png',fullPage:false});
  stats.diaryForecasts=diaryDoc.totals.recorded;
  await desktop.locator('[data-view="schedule"]').click();
@@ -211,6 +217,8 @@
  await mobile.locator('[data-view="diary"]').click();
  await mobile.waitForFunction(()=>document.querySelectorAll('.diary-entry').length>0,{timeout:20000});
  if(paired)await mobile.getByText('Качество по пазари',{exact:true}).click();
+ await mobile.locator('#telegramDiary > summary').click();
+ await mobile.waitForFunction(()=>document.querySelectorAll('#telegramDiaryContent tbody tr').length>=4);
  if(await mobile.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth+1))throw new Error('Mobile diary overflows horizontally');
  stats.europeArchive=await desktop.evaluate(()=>({domestic:index.history.length,total:archive.international.history.length,
   europeanInDomestic:index.history.some(r=>MatchpulseArchive.european(r))}));
