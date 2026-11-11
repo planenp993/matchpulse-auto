@@ -23,7 +23,7 @@ function safeKeys(value,depth=0){
  }
 }
 function validate(doc){
- if(!plain(doc)||doc.format!==FORMAT||doc.schema!==1||!clock(doc.exported_at_utc)||!Array.isArray(doc.picks)||!plain(doc.manual_prices))throw Error('Избери JSON резервно копие от MATCHPULSE.');
+ if(!plain(doc)||doc.format!==FORMAT||doc.schema!==1||!clock(doc.exported_at_utc)||!Array.isArray(doc.picks)||!plain(doc.manual_prices))throw Error('Избери JSON резервно копие на Prime Syndicate.');
  if(doc.picks.length>MAX_RECORDS||Object.keys(doc.manual_prices).length>MAX_RECORDS)throw Error('Файлът съдържа твърде много записи.');
  safeKeys(doc);
  const ids=new Set(),keys=new Set();
@@ -105,7 +105,7 @@ function mount({storage,onChanged,onRecovered=()=>{}}){
  el('backupExport').onclick=()=>{
   try{
    const raw=create(storage),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([raw],{type:'application/json'}));
-   a.download='MATCHPULSE-personal-backup-'+new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Sofia',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+   a.download='prime-syndicate-personal-backup-'+new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Sofia',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
    status.textContent='Копието е подготвено за изтегляне. Пази JSON файла за възстановяване.';
   }catch{status.textContent='Не успях да подготвя копието. Провери дали браузърът разрешава локално запазване.';}
  };

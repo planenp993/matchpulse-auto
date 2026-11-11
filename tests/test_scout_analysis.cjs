@@ -9,8 +9,8 @@ test('Form preserves selected order and counts draws, losses and real 5-game poi
  const rows=history();rows[0][7]=0;rows[0][8]=0;rows[1][7]=2;rows[1][8]=0;
  const before=JSON.stringify(rows),f=A.form(rows,'Alpha',S.keyTeam);
  assert.deepEqual([f.wins,f.draws,f.losses,f.points],[8,1,1,25]);assert.equal(f.recentFive,10);assert.equal(f.previousFive,15);
- const html=A.formHTML({form:f});assert.equal((html.match(/class="form-chip /g)||[]).length,10);
- assert.ok(html.indexOf('2026-10-18')<html.indexOf('2026-10-27'));assert.equal(JSON.stringify(rows),before);
+ const html=A.formHTML({form:f}),dates=[...html.matchAll(/data-result-date="([^"]+)"/g)].map(match=>match[1]);
+ assert.deepEqual(dates,rows.map(row=>row[3]));assert.equal(JSON.stringify(rows),before);
  assert.equal(A.form(rows.slice(0,5),'Alpha',S.keyTeam).previousFive,null);
 });
 test('For, against and match totals use the correct venue and the same observed cohort',()=>{

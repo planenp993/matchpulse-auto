@@ -167,15 +167,16 @@ function formChart(series,extent){
    '<polyline class="form-line" points="'+line+'"/></g>');
   for(const [index,game] of points.entries()){
    const [left,top]=coordinates[index],message=esc(formMessage(game));
-   targets.push('<button type="button" class="form-dot'+(index===points.length-1?' form-dot-latest':'')+'" tabindex="-1"'+
-    ' data-form-side="'+side+'" data-form-index="'+index+'" data-form-message="'+message+'" aria-label="'+message+'" aria-pressed="false"'+
+   const recentIndex=points.length-1-index;
+   targets.push('<button type="button" class="form-dot'+(recentIndex===0?' form-dot-latest':'')+'" tabindex="-1"'+
+    ' data-form-side="'+side+'" data-form-index="'+recentIndex+'" data-form-message="'+message+'" aria-label="'+message+'" aria-pressed="false"'+
     ' style="--point-x:'+left+'%;--point-y:'+top+'%"></button>');
   }
  }
  return '<div class="form-plot"><div class="form-axis" aria-hidden="true"><span>'+signed(extent)+'</span><span>0</span><span>'+signed(-extent)+'</span></div>'+
   '<div class="form-canvas"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">'+
   [10,30,50,70,90].map(level=>'<line class="'+(level===50?'form-zero':'form-grid-line')+'" x1="4" y1="'+level+'" x2="96" y2="'+level+'"/>').join('')+
-  curves.join('')+'</svg>'+targets.join('')+'</div></div>'+
+  curves.join('')+'</svg><span class="form-guide" hidden aria-hidden="true"></span>'+targets.join('')+'</div></div>'+
   '<div class="form-plot-order"><span>По-стари</span><span>Най-нови</span></div>';
 }
 function graphHTML(form){
@@ -185,17 +186,18 @@ function graphHTML(form){
 }
 function formChips(form,side){
  return '<div class="form-strip" style="--form-count:'+Math.min(10,form.n)+'">'+
-  [...form.games].reverse().map((game,index)=>{
+  form.games.map((game,index)=>{
    const message=esc(formMessage(game));
    return '<button type="button" class="form-chip result-'+game.points+'" data-form-side="'+side+'" data-form-index="'+index+
     '" data-form-message="'+message+'" data-result-date="'+esc(game.row[3])+'" title="'+message+'" aria-label="'+message+
     '" aria-pressed="false">'+game.result+'</button>';
   }).join('')+'</div>';
 }
+const resultsOrder='<div class="form-direction">Резултати · най-новите първо</div>';
 function formHTML(t){
  const f=t.form;
  if(!f.n)return '<p class="footnote">Няма срещи в избраната история.</p>';
- return '<div class="form-overview"><div class="form-balance">'+balance(f)+'</div>'+formChips(f,'home')+
+ return '<div class="form-overview"><div class="form-balance">'+balance(f)+'</div>'+resultsOrder+formChips(f,'home')+
   '<div class="form-inspection" role="status">Избери мач от графиката или поредицата.</div>'+graphHTML(f)+'</div>';
 }
 function formComparisonHTML(d){
@@ -211,7 +213,7 @@ function formComparisonHTML(d){
   '<span class="model-label">Последни '+d.windowSize+' мача</span></div><div class="form-series-legend">'+legend+'</div>'+
   '<div class="form-curve">'+formChart(teams,extent)+'</div>'+
   '<div class="form-inspection" role="status">Избери мач от графиката или поредицата.</div>'+
-  '<div class="form-team-strips">'+results+'</div>'+
+  resultsOrder+'<div class="form-team-strips">'+results+'</div>'+
   '<small class="form-curve-legend">Поредност за всеки отбор · Победа +1 · Равенство 0 · Загуба −1</small></section>';
 }
 function trendExplanation(v){return v.sides.map(side=>side.sentence).join(' ');}
@@ -349,7 +351,7 @@ function standingsBrief(doc,division,names,keyTeam){
  return out;
 }
 function brief(d,{status={},standings=null,keyTeam,generatedAt=new Date().toISOString(),direct=[]}={}){
- const f=d.fixture,out=['MATCHPULSE SCOUT · ДОСИЕ ЗА АНАЛИЗ',f[5]+' – '+f[6]+' · '+f[2],
+ const f=d.fixture,out=['PRIME SYNDICATE · ДОСИЕ ЗА АНАЛИЗ',f[5]+' – '+f[6]+' · '+f[2],
   'Начало: '+f[3]+' '+(f[4]||'часът не е потвърден')+' · '+(typeof f[13]==='string'&&f[13].includes('Sofia')?'Europe/Sofia':'часовата зона не е потвърдена'),
   'Генерирано: '+generatedAt,'Избрана извадка: последни '+d.windowSize+' мача. Само срещи с дата преди '+f[3]+'.',
   d.coverageNote||'Архивът е ограничен до показаното състезание.',

@@ -28,7 +28,7 @@
  const dailyChoices=desktop.locator('.daily-choice'),post=desktop.locator('#dailyPost');
  const dailyCount=await dailyChoices.count();assert.ok(dailyCount>=3&&dailyCount<=5);
  assert.equal(new Set(await dailyChoices.evaluateAll(cards=>cards.map(c=>c.dataset.dailyFixture))).size,dailyCount);
- assert.match(await post.inputValue(),/MATCHPULSE · ДНЕВЕН ПОДБОР/);
+ assert.match(await post.inputValue(),/PRIME SYNDICATE · ДНЕВЕН ПОДБОР/);
  const removed=await dailyChoices.first().locator('h3').textContent();
  await dailyChoices.first().getByRole('checkbox').uncheck();
  assert.ok(!(await post.inputValue()).includes(removed));

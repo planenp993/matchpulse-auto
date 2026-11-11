@@ -97,7 +97,7 @@ function dailyShortlist(evaluated){
 }
 function dailyPost(date,selected,now){
  if(!selected.length)return '';
- return ['⚽ MATCHPULSE · ДНЕВЕН ПОДБОР',dailyDateLabel(date)+' · часове София',
+ return ['⚽ PRIME SYNDICATE · ДНЕВЕН ПОДБОР',dailyDateLabel(date)+' · часове София',
   'Алгоритъмът сравнява модела за голове с формата на двата отбора и честотата на пазара в лигата.',
   ...selected.flatMap(({entry,pick},i)=>{const f=entry.fixture;return ['',
    (i+1)+'. '+f[5]+' – '+f[6]+' · '+f[4],f[2]+' · '+pick.label,
@@ -217,10 +217,10 @@ function columnCard(item,index){
 }
 function brief(item){
  const now=new Date().toISOString();
- if(tab==='columns')return ['MATCHPULSE · ПРАВА КОЛОНКА · '+item.date+' · Ниво '+item.bandLabel,...item.legs.map(l=>l.fixture[5]+' – '+l.fixture[6]+' | '+l.pick.label+' | '+pct(l.pick.probability)),
+ if(tab==='columns')return ['PRIME SYNDICATE · ПРАВА КОЛОНКА · '+item.date+' · Ниво '+item.bandLabel,...item.legs.map(l=>l.fixture[5]+' – '+l.fixture[6]+' | '+l.pick.label+' | '+pct(l.pick.probability)),
   'Приблизителна обща вероятност: '+pct(item.probability),'Моделен общ коефициент: '+price(item.fair),'Допускане: независимост между мачовете. Общ букмейкърски коефициент не е проверен.',S.VERSION+' · '+now].join('\n');
  const entry=item.entry,chosen=item.picks,f=entry.fixture;
- return ['MATCHPULSE · БЕТ БИЛДЪРИ',f[5]+' – '+f[6],f[2]+' · '+f[3]+' '+f[4],
+ return ['PRIME SYNDICATE · БЕТ БИЛДЪРИ',f[5]+' – '+f[6],f[2]+' · '+f[3]+' '+f[4],
   ...chosen.flatMap((p,i)=>['Вариант '+(i+1)+': '+p.label,'Моделна вероятност: '+pct(p.probability)+' · честен коефициент '+price(p.fair),
    p.quote.status==='available'?'Цена '+price(p.quote.odds)+' · '+sourceText(p.quote)+' · моделна разлика '+(100*p.quote.edge).toFixed(1)+'%':'Няма актуална пазарна цена.',
    'Подкрепа в последните 10: '+p.evidence.home.hits+'/'+p.evidence.home.n+' и '+p.evidence.away.hits+'/'+p.evidence.away.n+'; лига '+pct(p.evidence.baseline)+' от '+p.evidence.leagueN+'.']),

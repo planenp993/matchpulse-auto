@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="bg"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#07121b"><title>MATCHPULSE NEXT | Match Lab</title>
+<meta name="theme-color" content="#07121b"><title>Prime Syndicate · Match Lab</title>
 <style>
 :root{color-scheme:dark;--bg:#07111a;--side:#0b1720;--panel:#101f2b;--panel2:#142836;--line:#294150;--muted:#91adba;--text:#f2f9fb;--mint:#72efaf;--mint2:#16c6a7;--yellow:#efcc78;--red:#f3a09b;font:14px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 10% -14%,#184253 0,transparent 36%),#07111a;color:var(--text)}button,select,input{font:inherit}a{color:var(--mint);text-decoration:none}button{cursor:pointer}button:disabled{opacity:.45;cursor:default}select:focus,input:focus,button:focus-visible{outline:2px solid #87f8c5;outline-offset:2px}
@@ -16,7 +16,7 @@
 <div class="identity">MATCH<b>PULSE</b> <span style="font-size:11px;color:#96c7b8">NEXT</span></div><div class="tagline">MATCH LAB / AUTOMATED GOAL INTELLIGENCE</div>
 <nav class="nav"><a href="scout.html" style="background:#1b493a;color:#9ef7c9;font-weight:850;border:1px solid #5aa883;">✦ &nbsp; SCOUT · НОВО</a><a href="index.html?dashboard=1">▦ &nbsp; Програма и подбор</a><a class="active" href="lab.html">◉ &nbsp; MATCH LAB</a><a href="index.html?dashboard=1#teams">▤ &nbsp; История на отборите</a><a href="index.html?dashboard=1#model">◇ &nbsp; Тестове на модела</a></nav>
 <div class="aside-note">Football-Data UK: история и резултати<br>FixtureDownload: календар<br>Без ръчно въвеждане на резултати.</div></aside>
-<main class="main"><header class="mast"><div><div class="eyebrow">MATCHPULSE NEXT · MATCH LAB</div><h1>Анализирай двубоя.</h1><p class="sub">Два отбора, автоматична история и прозрачни вероятности за голове.</p></div><div class="status" id="sync">● Зареждане на данни</div></header>
+<main class="main"><header class="mast"><div><div class="eyebrow">PRIME SYNDICATE · MATCH LAB</div><h1>Анализирай двубоя.</h1><p class="sub">Два отбора, автоматична история и прозрачни вероятности за голове.</p></div><div class="status" id="sync">● Зареждане на данни</div></header>
 <div class="safety" id="notice">Системата не предоставя live данни. Сверявай датата и часа на програмата преди публикуване на прогноза.</div>
 <section class="panel section"><div class="modebox"><div><h2>01 / Избери предстоящ двубой</h2><div class="help">Срещите са от автоматичния календар. Не въвеждаш резултати и статистика ръчно.</div></div><button class="btn small" id="reload">↻ Обнови екрана</button></div>
 <div class="filters"><div class="field"><label>Първенство</label><select class="input" id="league"><option value="">Всички</option></select></div><div class="field"><label>Период</label><select class="input" id="period"><option value="7">7 дни</option><option value="15">15 дни</option><option value="30" selected>30 дни</option></select></div><div class="field"><label>Отбор или среща</label><input class="input" type="search" id="search" placeholder="Например Arsenal, Barcelona..." autocomplete="off"></div><button class="btn" id="clear">Изчисти</button></div>
@@ -39,7 +39,7 @@
 <section class="section hidden" id="report"><div class="panel"><div class="eyebrow">04 / GOAL INTELLIGENCE</div><div class="report-head"><h2>Голов модел и очаквано развитие</h2><div class="pill" id="reportMode">—</div></div><div class="kpi" id="kpis"></div><div class="caution hidden" id="risk"></div>
 <h3 style="margin-top:19px">Вероятности от едно общо разпределение</h3><div class="market-groups" id="marketGroups"></div>
 </div><div class="two-col section"><div class="panel"><h2>Матрица на точните резултати</h2><div class="help" style="margin:0 0 10px">Редове: домакин · Колони: гост · процент за всеки резултат</div><div class="matrix" id="matrix"></div></div><div class="panel"><h2>Как се получава оценката?</h2><div class="explanation" id="explanation"></div><div id="topScores" style="margin-top:14px"></div><div class="caution">Това са статистически вероятности, не проверени пазарни коефициенти. Няма надеждна оценка за value без актуална цена.</div></div></div></section>
-<footer class="foot">MATCHPULSE NEXT · Football-Data UK + допълнителен календар. Без платен API. Неизвестните xG стойности не се заместват с нули. Моделът е експериментален; сравнението с историческите тестове в основния сайт е за предишния двигател, не за този.</footer></main></div>
+<footer class="foot">PRIME SYNDICATE · Football-Data UK + допълнителен календар. Без платен API. Неизвестните xG стойности не се заместват с нули. Моделът е експериментален; сравнението с историческите тестове в основния сайт е за предишния двигател, не за този.</footer></main></div>
 <script src="club-aliases.js"></script><script src="model-core.js"></script><script>
 'use strict';
 const M=window.MatchpulseModel;const $=id=>document.getElementById(id);let H=[],F=[],S={},current=null,analysis=null,preset='standard',manual=false;
@@ -173,7 +173,7 @@ $('copy').onclick=async()=>{
  if(!current){alert('Първо избери среща.');return}
  const z=analysis||M.evaluate(H,current,settings());
  if(z.error){alert(z.error);return}
- const t=['MATCHPULSE NEXT · ANALYTICAL BRIEF',
+ const t=['PRIME SYNDICATE · ANALYTICAL BRIEF',
  current[3]+' '+current[4]+' | '+current[5]+' – '+current[6]+' | '+current[2],
  'Source: '+(current[13]||'Football-Data'),
  'Model: '+(preset==='custom'?'manual':preset)+'; lambda '+num(z.lambdaHome)+' / '+num(z.lambdaAway),

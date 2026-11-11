@@ -1,4 +1,4 @@
-/* MATCHPULSE SCOUT v1 · minimal personal football research cockpit */
+/* Prime Syndicate match, picks and diary interface. */
 'use strict';
 const View=window.MatchpulsePresentation;
 const Scout=window.MatchpulseScout,Model=window.MatchpulseModel,Markets=window.MatchpulseMarkets,Elo=window.MatchpulseElo,Patterns=window.MatchpulsePatterns,Analysis=window.MatchpulseAnalysis,Calendar=window.MatchpulseCalendar;
@@ -277,6 +277,33 @@ function syncMatchLayout(){
  document.body.style.overflow=opened&&!embedded?'hidden':'';
  el('analysisPlaceholder').classList.toggle('hidden',embedded);
 }
+function mountMatchForm(content){
+ // The shared hero renderer is pinned by the Telegram diary.
+ for(const strip of content.querySelectorAll('.hero-form')){
+  const results=Array.from(strip.children).reverse();
+  strip.append(...results);
+  strip.setAttribute('role','group');
+  strip.setAttribute('aria-label','Последни резултати, най-новите първо');
+ }
+ const section=content.querySelector('.form-comparison');
+ if(!section)return;
+ const detail=section.querySelector('.form-inspection'),guide=section.querySelector('.form-guide');
+ const controls=section.querySelectorAll('[data-form-message]');
+ for(const button of controls){
+  button.onclick=()=>{
+   const {formSide,formIndex,formMessage}=button.dataset;
+   detail.textContent=formMessage;
+   for(const control of controls){
+    const selected=control.dataset.formSide===formSide&&control.dataset.formIndex===formIndex;
+    control.setAttribute('aria-pressed',String(selected));
+    if(selected&&control.classList.contains('form-dot')){
+     guide.style.left=control.style.getPropertyValue('--point-x');
+     guide.hidden=false;
+    }
+   }
+  };
+ }
+}
 function openMatch(f){
  if(!f)return;
  const opening=el('matchOverlay').classList.contains('hidden');
@@ -331,16 +358,7 @@ function openMatch(f){
  });
  View.mountTabs(matchTab,key=>{matchTab=key;});
  el('matchStandingsDetails').addEventListener('toggle',()=>{if(el('matchStandingsDetails').open)showStandings(el('matchStandingsContent'),f[0],f)});
- const formControls=[...el('matchContent').querySelectorAll('[data-form-message]')];
- for(const button of formControls){
-  button.onclick=()=>{
-   el('matchContent').querySelector('.form-inspection').textContent=button.dataset.formMessage;
-   for(const point of formControls){
-    const selected=point.dataset.formSide===button.dataset.formSide&&point.dataset.formIndex===button.dataset.formIndex;
-    point.setAttribute('aria-pressed',String(selected));
-   }
-  };
- }
+ mountMatchForm(el('matchContent'));
  if(el('savePick'))el('savePick').onclick=()=>savePick();el('copyMatch').onclick=copyMatch;
  document.querySelectorAll('[data-fixture]').forEach(button=>button.classList.toggle('fixture-active',Scout.keyFixture(fixtureRows[+button.dataset.fixture])===Scout.keyFixture(f)));
  if(opening)el('closeMatch').focus();
@@ -422,7 +440,7 @@ function exportPicks(){
   const v=k==='result'?(settled===null?'pending':settled?'win':'loss'):k==='score'?(done?done[7]+':'+done[8]:''):(p[k]??'');
   return '"'+String(v).replace(/"/g,'""')+'"';
  }).join(','))).join('\r\n');
- const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF',csv],{type:'text/csv;charset=utf-8'}));a.download='matchpulse_my_picks.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF',csv],{type:'text/csv;charset=utf-8'}));a.download='prime-syndicate-my-picks.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 }
 function reportTable(headers,rows,{compact=false}={}){
  return '<div class="report-wrap"><table class="report-table'+(compact?' report-table-compact':'')+'" role="table">'+
