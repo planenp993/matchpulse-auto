@@ -35,6 +35,7 @@
  await desktop.clock.setFixedTime(programmeClock);
  await desktop.goto(base,{waitUntil:'domcontentloaded',timeout:60000});
  await desktop.waitForFunction(()=>document.getElementById('lastSync')?.textContent.includes('Програма:'),{timeout:20000});
+ if(!(await desktop.title()).startsWith('Prime Syndicate')||(await desktop.locator('.brand-name').innerText())!=='PRIME SYNDICATE')throw new Error('The new project name is missing');
  const covered=await desktop.locator('#leagueSelect option').evaluateAll(options=>options.map(x=>x.value));
  for(const league of ['D1','I1','D2','I2','B1','G1','SP2','SC0','P1','T1','E2','E3']){
   if(!covered.includes(league))throw new Error('Expanded calendar is missing '+league);
@@ -53,6 +54,17 @@
  if((await desktop.locator('.team-elo').count())!==2)throw new Error('Each team needs its simple Elo reference');
  await desktop.locator('#drawerWindow').selectOption('20');
  if((await desktop.locator('.form-team-results').first().locator('.form-chip').count())!==20)throw new Error('The 20-game form is truncated');
+ const newestFirst=await desktop.evaluate(()=>{
+  const d=dossier(activeMatch);
+  return ['home','away'].every((side,index)=>{
+   const dates=d[side].form.games.map(game=>game.row[3]);
+   const hero=[...document.querySelectorAll('.hero-form')[index].children].map(result=>result.title.slice(0,10));
+   const strip=[...document.querySelectorAll('.form-team-results[data-form-side="'+side+'"] .form-chip')].map(result=>result.dataset.resultDate);
+   return hero.length===Math.min(5,dates.length)&&hero.every((date,i)=>date===dates[i])&&
+    strip.length===dates.length&&strip.every((date,i)=>date===dates[i]);
+  });
+ });
+ if(!newestFirst)throw new Error('Result strips must start with the latest match for both teams');
  await desktop.locator('[data-match-tab="form"]').click();
  await desktop.locator('.history-section > summary').click();
  const lists=await desktop.locator('.history-section .history-grid > div').all();
@@ -78,7 +90,10 @@
  if((await desktop.locator('.form-inspection').first().textContent())!==(await chip.getAttribute('title')))throw new Error('Touched form chip does not reveal its match');
  if(!/модел/i.test(await desktop.locator('.match-reading').textContent()))throw new Error('Descriptive intro missing existing model estimates');
  if((await desktop.locator('.form-curve svg').count())!==1||(await desktop.locator('.form-line').count())!==2)throw new Error('Both form series must use the same graph');
- if((await desktop.locator('.form-dot[aria-pressed="true"]').count())!==1)throw new Error('The selected match is missing from the form graph');
+ const selectedPoint=desktop.locator('.form-dot[aria-pressed="true"]');
+ if(await selectedPoint.count()!==1||await selectedPoint.getAttribute('data-form-message')!==await chip.getAttribute('data-form-message'))throw new Error('The result and its chart point must show the same match');
+ const guide=desktop.locator('.form-guide');
+ if(!await guide.isVisible()||await guide.evaluate(el=>el.style.left)!==await selectedPoint.evaluate(el=>el.style.getPropertyValue('--point-x')))throw new Error('The guide must mark the selected match');
  stats.formChips=await desktop.locator('.form-team-results').first().locator('.form-chip').count();
  await desktop.locator('.form-comparison').screenshot({path:'scout-form.png'});
  await desktop.locator('[data-match-tab="overview"]').click();
@@ -211,6 +226,9 @@
  await mobile.locator('#drawerWindow').selectOption('20');
  if(await mobile.locator('.drawer').evaluate(el=>el.scrollWidth>el.clientWidth+1))throw new Error('Mobile analysis overflows horizontally');
  await mobile.locator('[data-match-tab="form"]').click();
+ const mobileChips=mobile.locator('.form-team-results').first().locator('.form-chip');
+ if(!await mobileChips.evaluateAll(chips=>chips[0].getBoundingClientRect().left<chips[1].getBoundingClientRect().left))throw new Error('The newest result should be on the left');
+ await mobileChips.nth(1).click();
  await mobile.locator('.form-comparison').screenshot({path:'scout-form-mobile.png'});
  await mobile.locator('[data-match-tab="corners"]').click();
  if(await mobile.locator('.drawer').evaluate(el=>el.scrollWidth>el.clientWidth+1))throw new Error('Mobile statistics overflow');
