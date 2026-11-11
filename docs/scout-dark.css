@@ -100,6 +100,13 @@ body{background:var(--bg);color:var(--ink)}button,input,select{font:inherit}butt
 .trend-proof-team {
   border-color: var(--line);
 }
+.standings-warning,
+.series-notice {
+  background: #2b281e;
+  color: #e6c58a;
+}
+.standings-meta a { color: var(--blue); }
+.backup-actions input[type="file"] { background: var(--raised); color: var(--ink); border-color: var(--line); }
 .diary-entry .tag { color: var(--ink); }
 .diary-entry .tag.amber { color: #f1ce8e; background: #352a1d; }
 input::placeholder,
@@ -269,9 +276,13 @@ textarea::placeholder { color: var(--muted); opacity: 1; }
 .overview-metric > b { margin-top: 2px; font-size: 27px; font-weight: 800; }
 .overview-metric > small { font-size: 11px; }
 .metric-track { margin: 7px 0 4px; }
-.match-plan .selection-primary { border-left: 3px solid var(--mint); }
 
 .stat-summary { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+.stat-summary .stat-frequency > span { color: var(--muted); }
+.stat-summary .observed-rate .bar-fill { background: var(--blue); }
+.stat-summary .observed-rate .bar-fill.alt { background: var(--mint); }
+.result-toggle { color: var(--muted); }
+.result-toggle::before { background: transparent; }
 .goal-summary { margin-bottom: 12px; padding: 13px 14px; }
 .goal-numbers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; text-align: center; }
 .goal-numbers > div { display: grid; align-content: start; gap: 2px; padding: 5px 3px; }
@@ -454,6 +465,9 @@ textarea::placeholder { color: var(--muted); opacity: 1; }
   list-style: none;
 }
 .daily-composer > summary::-webkit-details-marker { display: none; }
+.daily-composer > summary::after { content: '+'; color: var(--mint); font-size: 16px; }
+.daily-composer[open] > summary::after { content: '−'; }
+.daily-composer .daily-count { margin-left: auto; }
 .daily-composer textarea { margin-bottom: 12px; min-height: 140px; }
 .daily-composer > summary strong { color: var(--ink); font-size: 13px; }
 .daily-list { gap: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }

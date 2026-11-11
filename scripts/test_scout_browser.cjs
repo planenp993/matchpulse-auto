@@ -214,6 +214,7 @@
  await mobile.locator('.form-comparison').screenshot({path:'scout-form-mobile.png'});
  await mobile.locator('[data-match-tab="corners"]').click();
  if(await mobile.locator('.drawer').evaluate(el=>el.scrollWidth>el.clientWidth+1))throw new Error('Mobile statistics overflow');
+ await readable(mobile,'[data-stat-category="corners"] .stat-frequency > span:first-child');
  await mobile.locator('[data-stat-category="corners"]').screenshot({path:'scout-corners-mobile.png'});
  await mobile.locator('[data-match-tab="goals"]').click();
  await mobile.locator('.xg-block').screenshot({path:'scout-xg-mobile.png'});
@@ -229,6 +230,7 @@
   await mobile.locator('#matchStandingsDetails > summary').click();
   await mobile.waitForFunction(()=>document.querySelectorAll('#matchStandingsContent tbody tr').length>0);
   if(await mobile.locator('.drawer').evaluate(el=>el.scrollWidth>el.clientWidth+1))throw new Error('Mobile standings overflow the analysis');
+  if(await mobile.locator('#matchStandingsContent .standings-warning').isVisible())await readable(mobile,'#matchStandingsContent .standings-warning');
   await mobile.locator('#matchStandingsDetails').screenshot({path:'scout-standings-mobile.png'});
   if(await mobile.locator('#matchStandingsContent .standings-table th').first().boundingBox()===null)throw new Error('Mobile standings are hidden');
  }
