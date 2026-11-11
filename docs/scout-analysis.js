@@ -148,38 +148,81 @@ function formCurve(form){
  let value=0;
  return [...form.games].reverse().map(g=>({...g,value:value+=(g.result==='П'?1:g.result==='З'?-1:0)}));
 }
+const signed=value=>value>0?'+'+value:value<0?'−'+Math.abs(value):'0';
+const formMessage=game=>game.row[3]+' · '+score(game.row)+' · '+game.row[2]+' · '+
+ ({П:'Победа',Р:'Равенство',З:'Загуба'})[game.result];
+
+function formChart(series,extent){
+ const count=Math.max(1,...series.map(team=>team.points.length));
+ const x=index=>4+92*index/count;
+ const y=value=>50-40*value/extent;
+ const curves=[];
+ const targets=[];
+ for(const {side,points} of series){
+  if(!points.length)continue;
+  const first=count-points.length;
+  const coordinates=points.map((game,index)=>[x(first+index+1),y(game.value)]);
+  const line=[[x(first),50],...coordinates].map(point=>point.join(',')).join(' ');
+  curves.push('<g data-form-side="'+side+'"><polygon class="form-area" points="'+line+' '+x(count)+',50"/>'+
+   '<polyline class="form-line" points="'+line+'"/></g>');
+  for(const [index,game] of points.entries()){
+   const [left,top]=coordinates[index],message=esc(formMessage(game));
+   targets.push('<button type="button" class="form-dot'+(index===points.length-1?' form-dot-latest':'')+'" tabindex="-1"'+
+    ' data-form-side="'+side+'" data-form-index="'+index+'" data-form-message="'+message+'" aria-label="'+message+'" aria-pressed="false"'+
+    ' style="--point-x:'+left+'%;--point-y:'+top+'%"></button>');
+  }
+ }
+ return '<div class="form-plot"><div class="form-axis" aria-hidden="true"><span>'+signed(extent)+'</span><span>0</span><span>'+signed(-extent)+'</span></div>'+
+  '<div class="form-canvas"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">'+
+  [10,30,50,70,90].map(level=>'<line class="'+(level===50?'form-zero':'form-grid-line')+'" x1="4" y1="'+level+'" x2="96" y2="'+level+'"/>').join('')+
+  curves.join('')+'</svg>'+targets.join('')+'</div></div>'+
+  '<div class="form-plot-order"><span>По-стари</span><span>Най-нови</span></div>';
+}
 function graphHTML(form){
  const points=formCurve(form),extent=form.extent||Math.max(1,...points.map(p=>Math.abs(p.value)));
- const x=i=>14+(i+1)*272/points.length,y=value=>60-value/extent*49;
- const path='14,60 '+points.map((p,i)=>x(i).toFixed(2)+','+y(p.value).toFixed(2)).join(' ');
- const markers=points.map((p,i)=>{
-  const title=p.row[3]+' · '+score(p.row)+' · '+p.row[2]+' · '+({П:'Победа',Р:'Равенство',З:'Загуба'})[p.result];
-  return '<g class="form-dot" role="button" tabindex="0" data-form-index="'+i+'" data-form-message="'+esc(title)+'" aria-label="'+esc(title)+'"><title>'+esc(title)+'</title><circle class="form-dot-target" cx="'+x(i)+'" cy="'+y(p.value)+'" r="10"/><circle class="form-dot-visible" cx="'+x(i)+'" cy="'+y(p.value)+'" r="3.2"/></g>';
- }).join('');
- return '<div class="form-curve"><div class="form-curve-heading"><span>Движение на формата</span><b>'+((points.at(-1)?.value||0)>0?'+':'')+(points.at(-1)?.value||0)+'</b></div>'+
-  '<div class="form-plot"><div class="form-axis" aria-hidden="true"><span>+'+extent+'</span><span>0</span><span>−'+extent+'</span></div>'+
-  '<svg viewBox="0 0 300 120" preserveAspectRatio="none" aria-label="Графика на формата: победа плюс едно, равенство без промяна, загуба минус едно">'+
-  '<line class="form-zero" x1="14" y1="60" x2="286" y2="60"/><polyline class="form-line" points="'+path+'"/>'+markers+'</svg></div>'+
-  '<small class="form-curve-legend">Победа +1 · равенство 0 · загуба −1</small></div>';
+ return '<div class="form-curve"><div class="form-curve-heading"><span>Движение на формата</span><b>'+
+  signed(points.at(-1)?.value||0)+'</b></div>'+formChart([{side:'home',points}],extent)+'</div>';
+}
+function formChips(form,side){
+ return '<div class="form-strip" style="--form-count:'+Math.min(10,form.n)+'">'+
+  [...form.games].reverse().map((game,index)=>{
+   const message=esc(formMessage(game));
+   return '<button type="button" class="form-chip result-'+game.points+'" data-form-side="'+side+'" data-form-index="'+index+
+    '" data-form-message="'+message+'" data-result-date="'+esc(game.row[3])+'" title="'+message+'" aria-label="'+message+
+    '" aria-pressed="false">'+game.result+'</button>';
+  }).join('')+'</div>';
 }
 function formHTML(t){
  const f=t.form;
  if(!f.n)return '<p class="footnote">Няма срещи в избраната история.</p>';
- const chips=[...f.games].reverse().map(g=>{
-  const text=g.row[3]+' · '+score(g.row)+' · '+({П:'Победа',Р:'Равенство',З:'Загуба'})[g.result];
-  return '<button type="button" class="form-chip result-'+g.points+'" data-form-message="'+esc(text)+'" data-result-date="'+esc(g.row[3])+'" title="'+esc(text)+'" aria-label="'+esc(text)+'">'+g.result+'</button>';
- }).join('');
- return '<div class="form-overview"><div class="form-balance">'+balance(f)+'</div>'+
-  '<div class="form-strip" style="--form-count:'+Math.min(10,f.n)+'">'+chips+'</div><div class="form-direction">Ред: по-стари → най-нови</div>'+
-  '<div class="form-inspection" role="status">Докосни резултат или точка от графиката</div>'+graphHTML(f)+'</div>';
+ return '<div class="form-overview"><div class="form-balance">'+balance(f)+'</div>'+formChips(f,'home')+
+  '<div class="form-inspection" role="status">Избери мач от графиката или поредицата.</div>'+graphHTML(f)+'</div>';
+}
+function formComparisonHTML(d){
+ const teams=['home','away'].map(side=>({side,name:d[side].name,form:d[side].form,points:formCurve(d[side].form)}));
+ const extent=Math.max(1,...teams.flatMap(team=>team.points.map(point=>Math.abs(point.value))));
+ if(!teams.some(team=>team.points.length))return '<p class="empty">Няма предишни срещи за сравнение на формата.</p>';
+ const legend=teams.map(({side,name,points})=>'<div class="form-series" data-form-side="'+side+'"><span class="form-swatch"></span>'+
+  '<span>'+esc(name)+'</span><b>'+(points.length?signed(points.at(-1).value):'—')+'</b></div>').join('');
+ const results=teams.map(({side,name,form})=>'<div class="form-team-results" data-form-side="'+side+'"><div class="form-team-label">'+
+  '<strong>'+esc(name)+'</strong><span>'+(form.n?balance(form):'Няма мачове')+'</span></div>'+
+  (form.n?formChips(form,side):'')+'</div>').join('');
+ return '<section class="form-overview form-comparison"><div class="view-section-head"><h3>Движение на формата</h3>'+
+  '<span class="model-label">Последни '+d.windowSize+' мача</span></div><div class="form-series-legend">'+legend+'</div>'+
+  '<div class="form-curve">'+formChart(teams,extent)+'</div>'+
+  '<div class="form-inspection" role="status">Избери мач от графиката или поредицата.</div>'+
+  '<div class="form-team-strips">'+results+'</div>'+
+  '<small class="form-curve-legend">Поредност за всеки отбор · Победа +1 · Равенство 0 · Загуба −1</small></section>';
 }
 function trendExplanation(v){return v.sides.map(side=>side.sentence).join(' ');}
 function trendsHTML(d){
  const item=v=>'<article class="trend-signal" data-trend-scope="'+v.scope+'" data-trend-market="'+v.market+'">'+
-  (v.scope==='both'?'<h5>'+esc(v.title)+'</h5>':'')+
-  '<p class="trend-statement">'+esc(trendExplanation(v))+'</p>'+
-  '<details class="series-proof"><summary>Данни зад тенденцията</summary>'+v.sides.map(t=>'<div class="trend-proof-team"><strong>'+esc(t.name)+'</strong><p>Показаната поредица: '+t.measure.currentStreak+' мача. В цялата скорошна извадка: '+t.measure.hits+'/'+t.measure.n+'.'+(t.measure.missing?' Липсват '+t.measure.missing+' по-стари наблюдения.':'')+'</p>'+t.rows.map(row=>'<p>'+esc(row[3]+' · '+score(row)+' · '+row[2])+'</p>').join('')+'</div>').join('')+'</details></article>';
- const groups=[['home',d.home.name,'Домакин'],['away',d.away.name,'Гост'],['both','Общи тенденции','Потвърдени отделно при двата отбора']];
+  '<details class="series-proof"><summary><span class="trend-market">'+esc(v.title)+'</span><span class="trend-streaks">'+v.sides.map(t=>
+   '<span class="trend-streak" data-form-side="'+t.side+'">'+(v.scope==='both'?'<span>'+esc(t.name)+'</span>':'')+
+   '<b>'+t.measure.currentStreak+' поред</b></span>').join('')+'</span></summary>'+
+  '<p class="trend-statement">'+esc(trendExplanation(v))+'</p><div class="trend-evidence" role="group" aria-label="Данни зад тенденцията">'+
+  v.sides.map(t=>'<div class="trend-proof-team"><strong>'+esc(t.name)+'</strong><p>В цялата скорошна извадка: '+t.measure.hits+'/'+t.measure.n+'.'+(t.measure.missing?' Липсват '+t.measure.missing+' по-стари наблюдения.':'')+'</p>'+t.rows.map(row=>'<p>'+esc(row[3]+' · '+score(row)+' · '+row[2])+'</p>').join('')+'</div>').join('')+'</div></details></article>';
+ const groups=[['both','Общи тенденции','И при двата отбора'],['home',d.home.name,'Домакин'],['away',d.away.name,'Гост']];
  const body=groups.map(([scope,label,note])=>{
   const list=d.tendencies.filter(v=>v.scope===scope);if(!list.length)return '';
   return '<section class="trend-group" data-trend-group="'+scope+'"><div class="trend-club-heading"><h4>'+esc(label)+'</h4><span>'+note+'</span></div>'+list.slice(0,3).map(item).join('')+
@@ -193,14 +236,13 @@ function trendsHTML(d){
 function rateBar(sample,alt=false){return sample.n?'<div class="observed-rate"><span class="bar-track"><i class="bar-fill '+(alt?'alt':'')+'" style="width:'+(sample.hits/sample.n*100)+'%"></i></span><b>'+pct(sample.hits/sample.n)+'</b><small>'+sample.hits+'/'+sample.n+'</small></div>':'<span class="extra-missing">няма данни</span>';}
 function statsHTML(d){
  const blocks=STATISTICS.map(def=>{
-  const rows=['home','away'].map(side=>{
-   const t=d[side],s=t.stats[def.key];
-   return '<div class="stat-team"><h4>'+esc(t.name)+'</h4><div class="stat-kpis">'+
-    [['На отбора',s.own],['На съперниците',s.opponent],['Общо в мача',s.total]].map(([label,value])=>'<div><b>'+fmt(value)+'</b><span>'+label+'</span></div>').join('')+
-    '</div><small class="stat-coverage">Средно на мач · данни за '+s.n+'/'+s.possible+' срещи'+(s.n>0&&s.n<5?' · малка извадка':'')+'</small></div>';
-  }).join('');
   const h=d.home.stats[def.key],a=d.away.stats[def.key];
-  return '<article class="stat-block"><h3>'+def.label+'</h3><div class="stat-teams">'+rows+'</div>'+
+  const compareRow=(label,home,away,extra='')=>'<tr class="'+extra+'"><th scope="row">'+label+'</th><td>'+home+'</td><td>'+away+'</td></tr>';
+  const sample=s=>s.n+'/'+s.possible+(s.n>0&&s.n<5?' · малка извадка':'');
+  return '<article class="stat-block stat-summary"><div class="view-section-head"><h3>'+def.label+'</h3><span class="model-label">Средно на мач</span></div>'+
+   '<table class="stat-comparison"><thead><tr><th scope="col">Показател</th><th scope="col">'+esc(d.home.name)+'</th><th scope="col">'+esc(d.away.name)+'</th></tr></thead><tbody>'+
+   compareRow('На отбора',fmt(h.own),fmt(a.own),'stat-primary')+compareRow('На съперниците',fmt(h.opponent),fmt(a.opponent))+
+   compareRow('Общо в мача',fmt(h.total),fmt(a.total))+compareRow('Мачове с данни',sample(h),sample(a),'stat-sample')+'</tbody></table>'+
    '<div class="stat-lines"><div class="stat-line-header"><span>Общо в мача</span><strong>'+esc(d.home.name)+'</strong><strong>'+esc(d.away.name)+'</strong></div>'+
    h.lines.map((v,i)=>'<div class="stat-frequency"><span>Над '+fmt(v.line)+'</span>'+rateBar(v)+rateBar(a.lines[i],true)+'</div>').join('')+'</div></article>';
  }).join('');
@@ -351,6 +393,6 @@ function brief(d,{status={},standings=null,keyTeam,generatedAt=new Date().toISOS
   'Провери актуални състави, отсъствия, новини, качество на съперниците и реални коефициенти отделно. Те не са проверени в това досие.');
  return out.join('\n');
 }
-const api={STATISTICS,form,formCurve,graphHTML,statistics,expectedGoals,eventText,tendencies,describe,formHTML,trendsHTML,statsHTML,detailStats,historyHTML,reading,intro,introHTML,brief,standingsBrief};
+const api={STATISTICS,form,formCurve,graphHTML,statistics,expectedGoals,eventText,tendencies,describe,formHTML,formComparisonHTML,trendsHTML,statsHTML,detailStats,historyHTML,reading,intro,introHTML,brief,standingsBrief};
 if(typeof module==='object'&&module.exports)module.exports=api;root.MatchpulseAnalysis=api;
 })(typeof window!=='undefined'?window:globalThis);

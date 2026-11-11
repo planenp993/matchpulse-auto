@@ -5,6 +5,25 @@
  console.log('Scout browser: '+browser.version());
  const base='http://127.0.0.1:8765/scout.html';
  const failures=[],stats={};
+ async function readable(page,selector){
+  const colors=await page.locator(selector).first().evaluate(node=>{
+   const foreground=getComputedStyle(node).color;
+   let background;
+   for(let parent=node;parent;parent=parent.parentElement){
+    const color=getComputedStyle(parent).backgroundColor;
+    if(color!=='rgba(0, 0, 0, 0)'&&color!=='transparent'){background=color;break;}
+   }
+   return [foreground,background];
+  });
+  function luminance(color){
+   return color.match(/[\d.]+/g).slice(0,3).map(Number).map(value=>{
+    const c=value/255;
+    return c<=.04045?c/12.92:((c+.055)/1.055)**2.4;
+   }).reduce((sum,value,index)=>sum+value*[.2126,.7152,.0722][index],0);
+  }
+  const [a,b]=colors.map(luminance).sort((x,y)=>y-x);
+  if((a+.05)/(b+.05)<4.5)throw new Error('Low text contrast in '+selector+' '+colors.join(' / '));
+ }
  const programme=JSON.parse(require('node:fs').readFileSync('docs/data/fixtures.json','utf8'));
  const premierLeague=programme.find(row=>row[0]==='E0');
  if(!premierLeague)throw new Error('Published calendar has no upcoming Premier League fixture');
@@ -33,7 +52,7 @@
  await desktop.waitForFunction(()=>document.documentElement.dataset.scoutArchive==='ready');
  if((await desktop.locator('.team-elo').count())!==2)throw new Error('Each team needs its simple Elo reference');
  await desktop.locator('#drawerWindow').selectOption('20');
- if((await desktop.locator('.form-overview').first().locator('.form-chip').count())!==20)throw new Error('The 20-game form is truncated');
+ if((await desktop.locator('.form-team-results').first().locator('.form-chip').count())!==20)throw new Error('The 20-game form is truncated');
  await desktop.locator('[data-match-tab="form"]').click();
  await desktop.locator('.history-section > summary').click();
  const lists=await desktop.locator('.history-section .history-grid > div').all();
@@ -58,9 +77,10 @@
  const chip=desktop.locator('.form-chip').first();await chip.click();
  if((await desktop.locator('.form-inspection').first().textContent())!==(await chip.getAttribute('title')))throw new Error('Touched form chip does not reveal its match');
  if(!/модел/i.test(await desktop.locator('.match-reading').textContent()))throw new Error('Descriptive intro missing existing model estimates');
- if((await desktop.locator('.form-curve svg').count())!==2||(await desktop.locator('.form-points').count()))throw new Error('Signed form curves did not replace the two five-game bars');
- stats.formChips=await desktop.locator('.form-overview').first().locator('.form-chip').count();
- await desktop.locator('.duel').screenshot({path:'scout-form.png'});
+ if((await desktop.locator('.form-curve svg').count())!==1||(await desktop.locator('.form-line').count())!==2)throw new Error('Both form series must use the same graph');
+ if((await desktop.locator('.form-dot[aria-pressed="true"]').count())!==1)throw new Error('The selected match is missing from the form graph');
+ stats.formChips=await desktop.locator('.form-team-results').first().locator('.form-chip').count();
+ await desktop.locator('.form-comparison').screenshot({path:'scout-form.png'});
  await desktop.locator('[data-match-tab="overview"]').click();
  await desktop.locator('.reading-details > summary').click();
  await desktop.locator('.match-reading').screenshot({path:'scout-reading.png'});
@@ -129,20 +149,22 @@
   const quality=desktop.locator('#diaryQuality');
   if(!(await quality.textContent()).includes('Паралелна проверка: '+paired.totals.recorded))throw new Error('Paired comparison count is missing');
   if(!(await quality.locator('thead').textContent()).includes('Кандидат'))throw new Error('Paired model columns are missing');
-  const ns=await quality.locator('tbody tr td:nth-child(2)').allTextContents();
+  const ns=await quality.locator('tbody tr td:nth-child(2) span:last-child').allTextContents();
   if(ns.some(n=>n!==String(paired.totals.settled)))throw new Error('Paired quality table mixes different cohorts');
   await desktop.getByText('Качество по пазари',{exact:true}).click();
  }
  await desktop.locator('#selectionDiary > summary').click();
  await desktop.waitForFunction(()=>document.getElementById('selectionDiaryContent').textContent.includes('предмачови записа'));
  if(!(await desktop.locator('#selectionDiaryContent').textContent()).includes('Старите дневници са отделни'))throw Error('Separate selection diary summary is missing');
+ await readable(desktop,'#selectionDiaryContent tbody td');
  await desktop.locator('#selectionDiary > summary').click();
  await desktop.locator('#telegramDiary > summary').click();
  await desktop.waitForFunction(()=>document.querySelectorAll('#telegramDiaryContent tbody tr').length>=4);
- const telegramLabels=await desktop.locator('#telegramDiaryContent tbody tr td:first-child').allTextContents();
+ const telegramLabels=await desktop.locator('#telegramDiaryContent tbody tr th[scope="row"]').allTextContents();
  for(const label of ['Лига и форма','Сурова вероятност','Калибрирана вероятност','Сила на съперника']){
   if(!telegramLabels.includes(label))throw new Error('Missing Telegram comparison: '+label);
  }
+ await readable(desktop,'#telegramDiaryContent tbody th[scope="row"]');
  await desktop.screenshot({path:'scout-diary.png',fullPage:false});
  stats.diaryForecasts=diaryDoc.totals.recorded;
  await desktop.locator('[data-view="schedule"]').click();
@@ -189,7 +211,7 @@
  await mobile.locator('#drawerWindow').selectOption('20');
  if(await mobile.locator('.drawer').evaluate(el=>el.scrollWidth>el.clientWidth+1))throw new Error('Mobile analysis overflows horizontally');
  await mobile.locator('[data-match-tab="form"]').click();
- await mobile.locator('.duel').screenshot({path:'scout-form-mobile.png'});
+ await mobile.locator('.form-comparison').screenshot({path:'scout-form-mobile.png'});
  await mobile.locator('[data-match-tab="corners"]').click();
  if(await mobile.locator('.drawer').evaluate(el=>el.scrollWidth>el.clientWidth+1))throw new Error('Mobile statistics overflow');
  await mobile.locator('[data-stat-category="corners"]').screenshot({path:'scout-corners-mobile.png'});
@@ -219,6 +241,13 @@
  if(paired)await mobile.getByText('Качество по пазари',{exact:true}).click();
  await mobile.locator('#telegramDiary > summary').click();
  await mobile.waitForFunction(()=>document.querySelectorAll('#telegramDiaryContent tbody tr').length>=4);
+ await mobile.setViewportSize({width:360,height:800});
+ if(await mobile.locator('#telegramDiaryContent .report-wrap').first().evaluate(el=>el.scrollWidth>el.clientWidth+1))throw new Error('Telegram comparison needs horizontal scrolling');
+ await readable(mobile,'#telegramDiaryContent tbody td');
+ await mobile.locator('#selectionDiary > summary').click();
+ await mobile.waitForFunction(()=>document.querySelectorAll('#selectionDiaryContent tbody tr').length>=4);
+ if(await mobile.locator('#selectionDiaryContent .report-wrap').first().evaluate(el=>el.scrollWidth>el.clientWidth+1))throw new Error('Selection diary needs horizontal scrolling');
+ await readable(mobile,'#selectionDiaryContent .report-mobile-label');
  if(await mobile.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth+1))throw new Error('Mobile diary overflows horizontally');
  stats.europeArchive=await desktop.evaluate(()=>({domestic:index.history.length,total:archive.international.history.length,
   europeanInDomestic:index.history.some(r=>MatchpulseArchive.european(r))}));
@@ -246,7 +275,7 @@
   await desktop.locator('[data-match-tab="form"]').click();
   const point=desktop.locator('.form-dot').last();await point.click();
   if((await desktop.locator('.form-inspection').last().textContent())!==(await point.getAttribute('data-form-message')))throw new Error('Curve point inspection failed');
-  await desktop.locator('.duel').screenshot({path:'scout-current-form.png'});
+  await desktop.locator('.form-comparison').screenshot({path:'scout-current-form.png'});
   await desktop.locator('[data-match-tab="overview"]').click();
   await desktop.locator('.reading-details > summary').click();
   await desktop.locator('.match-reading').screenshot({path:'scout-current-reading.png'});

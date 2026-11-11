@@ -124,6 +124,8 @@ function dateMode(f){
 function setProgramMode(next){
  mode=next;
  const activeDay={today:'0',tomorrow:'1',week:'7'}[mode];
+ el('programDateLabel').textContent=mode==='custom'?customDate.slice(8)+'.'+customDate.slice(5,7):'Дата';
+ el('dateInput').closest('.date-wrap').classList.toggle('active',mode==='custom');
  document.querySelectorAll('[data-day]').forEach(button=>{
   const selected=button.dataset.day===activeDay;
   button.classList.toggle('active',selected);
@@ -169,9 +171,10 @@ function renderSchedule(){
    return '<div class="league-group"><div class="league-head"><strong>'+esc(window.MatchpulseHealth.leagueLabel(g))+'</strong><span>'+rows.length+' мача</span></div>'+
      rows.map(({f,i})=>{
        const hint=fixtureHint(f),at=(f[4]||'—')+((f[13]||'').includes('Sofia')?'':'*');
-       return '<button type="button" data-fixture="'+i+'" data-fixture-key="'+esc(Scout.keyFixture(f))+'" class="fixture-row'+(activeMatch&&Scout.keyFixture(activeMatch)===Scout.keyFixture(f)?' fixture-active':'')+'"><span class="time">'+esc(at)+'</span>'+
+       const date=mode==='week'?'<small class="fixture-date">'+esc(f[3].slice(8)+'.'+f[3].slice(5,7))+'</small>':'';
+       return '<button type="button" data-fixture="'+i+'" data-fixture-key="'+esc(Scout.keyFixture(f))+'" class="fixture-row'+(activeMatch&&Scout.keyFixture(activeMatch)===Scout.keyFixture(f)?' fixture-active':'')+'"><span class="time"><b>'+esc(at)+'</b>'+date+'</span>'+
          '<span class="teams"><span class="fixture-club">'+View.clubMark(f[0],f[5])+'<span>'+esc(f[5])+'</span></span><span class="sr-only"> – </span><span class="fixture-club">'+View.clubMark(f[0],f[6])+'<span>'+esc(f[6])+'</span></span>'+
-         (mode==='week'?'<br><small style="color:#8ba2af;font-weight:500">'+esc(f[3])+'</small>':'')+'</span>'+
+         '</span>'+
          '<span class="fixture-tags"><span class="tag '+hint.css+'">'+esc(hint.label)+'</span>'+(archived(f)?'<small class="archive-result">'+esc(Calendar.status(archivedEntry(f)))+'</small>':'')+'</span><span class="chevron">›</span></button>'
      }).join('')+'</div>';
  }).join('');
@@ -250,12 +253,17 @@ function modelReport(f,p){
  const x=z.distribution.probs;
  const markets=[['Над 1,5',x.over15],['Над 2,5',x.over25],['Под 2,5',1-x.over25],['Над 3,5',x.over35],['Под 3,5',1-x.over35],['Гол/гол Да',x.btts],['Гол/гол Не',1-x.btts],['Домакин 2+',x.homeOver15],['Гост 2+',x.awayOver15]];
  return '<section class="card model-analysis"><h3>'+(archived(f)?'Записани моделни вероятности':'Моделни вероятности')+'</h3>'+
-  '<div class="model-kpis"><div><b>'+fmt(z.lambdaHome,2)+'</b><span>Голове домакин</span></div><div><b>'+fmt(z.lambdaAway,2)+'</b><span>Голове гост</span></div><div><b>'+fmt(z.total,2)+'</b><span>Общо</span></div></div>'+
   '<h4>1X2 и двоен шанс</h4><div class="outcome-grid">'+
   [['1',x.homeWin],['X',x.draw],['2',x.awayWin]].map(([label,value])=>'<div class="outcome-cell"><strong>'+label+'</strong><b>'+percent(value)+'</b></div>').join('')+
   '</div><div class="model-markets">'+
   [['Двоен шанс 1X',x.double1X],['Двоен шанс X2',x.doubleX2],['Без равен · 12',x.double12]].map(([label,value])=>'<div><span>'+label+'</span><strong>'+percent(value)+'</strong></div>').join('')+
   '</div><h4>Голове</h4><div class="model-markets">'+markets.map(([name,value])=>'<div><span>'+esc(name)+'</span><strong>'+percent(value)+'</strong></div>').join('')+'</div></section>';
+}
+function goalSummary(f,z){
+ if(!z||z.error)return '';
+ const rows=[[f[5],z.lambdaHome],['Общо',z.total],[f[6],z.lambdaAway]];
+ return '<section class="stat-summary goal-summary"><div class="view-section-head"><h3>Очаквани голове</h3><span class="model-label">Модел</span></div>'+
+  '<div class="goal-numbers">'+rows.map(([label,value])=>'<div><b>'+fmt(value,2)+'</b><span>'+esc(label)+'</span></div>').join('')+'</div></section>';
 }
 function syncMatchLayout(){
  const overlay=el('matchOverlay'),opened=!overlay.classList.contains('hidden');
@@ -293,11 +301,10 @@ function openMatch(f){
   return '<section class="team-panel"><div class="role">'+role+'</div><h3>'+esc(data.name)+'</h3>'+eloReference(f,data.name)+
    '<div class="team-metrics"><div class="metric"><b>'+(v.n?fmt(v.gf,2):'—')+'</b><small>Вкарани</small></div>'+
    '<div class="metric"><b>'+(v.n?fmt(v.ga,2):'—')+'</b><small>Допуснати</small></div>'+
-   '<div class="metric"><b>'+(v.n?fmt(v.total,2):'—')+'</b><small>Голове/мач</small></div></div>'+Analysis.formHTML(data)+'</section>';
+   '<div class="metric"><b>'+(v.n?fmt(v.total,2):'—')+'</b><small>Голове/мач</small></div></div></section>';
  }).join('');
- const stats=View.splitStatistics(extraReport(d)),overview=document.createElement('div');
- overview.innerHTML=View.overview(f,{...d,archived:past},z);
- const numbers=overview.querySelector('.overview-metrics');numbers?.remove();
+ const stats=View.splitStatistics(extraReport(d));
+ const overview=View.overview(f,{...d,archived:past},z);
  const shortRead=Analysis.reading(d)[0]?.text||'';
  const panel=(id,html)=>'<section class="'+(id===matchTab?'':'hidden')+'" id="match-panel-'+id+'" data-match-panel="'+id+'" role="tabpanel" aria-labelledby="match-tab-'+id+'">'+html+'</section>';
  const saveForm='<div class="card personal-save-panel"><h3>'+(past?'Архивна справка':'Моя прогноза')+'</h3>'+(past?'':'<div class="pick-form"><label>Пазар<select id="pickMarket">'+
@@ -307,10 +314,10 @@ function openMatch(f){
    '<button class="button secondary copy-button" id="copyMatch" type="button">Копирай анализа</button><span id="copyStatus" class="copy-status" role="status"></span></div>';
  el('matchContent').innerHTML=View.hero(f,d,ratings)+View.tabs(matchTab)+'<div class="match-inner">'+
   (past?'<p class="card footnote archive-context">Архивна среща · '+esc(Calendar.status(archivedEntry(f)))+'. Показани са само наличните предмачови записи. Останалата справка използва обновения архив, само с мачове преди тази дата.</p>':'')+
-  panel('overview',overview.innerHTML+'<section class="card match-plan" id="matchPlan" aria-busy="true"><h3>Прогноза за мача</h3><p class="footnote">Подготвям основния избор и алтернативите…</p></section>'+(numbers?.outerHTML||'')+
+  panel('overview',overview+'<section class="card match-plan" id="matchPlan" aria-busy="true"><h3>Прогноза за мача</h3><p class="footnote">Подготвям основния избор и алтернативите…</p></section>'+
    '<section class="match-short-read"><h3>Прочит на мача</h3><p>'+esc(shortRead)+'</p><details class="reading-details"><summary>Целият прочит</summary>'+Analysis.introHTML(d)+'</details></section>'+saveForm)+
-  panel('goals',View.goals(f,z)+modelReport(f,p)+(stats.xg?'<section class="card observed-xg">'+stats.xg+'</section>':''))+
-  panel('form','<div class="view-section-head"><h3>Форма и сравнение</h3><span class="model-label">Последни '+windowSize+' мача</span></div><div class="duel">'+m+'</div>'+streakReport(d)+
+  panel('goals',goalSummary(f,z)+View.goals(f,z)+modelReport(f,p)+(stats.xg?'<section class="card observed-xg">'+stats.xg+'</section>':''))+
+  panel('form',Analysis.formComparisonHTML(d)+'<div class="duel form-team-metrics">'+m+'</div>'+streakReport(d)+
    '<details class="card detail-card"><summary>Форма и голове · последните '+windowSize+' мача</summary><h4>Всички срещи</h4><div class="trend-grid">'+signalTiles(d)+'</div><h4>Домакинства / гостувания</h4><div class="trend-grid">'+venueTiles(d)+'</div></details>'+
    '<details class="card detail-card history-section"><summary>Последни резултати · '+windowSize+'</summary><p class="footnote history-scope">'+esc(d.coverageNote)+'</p><div class="history-grid"><div><h4>'+esc(f[5])+'</h4>'+Analysis.historyHTML(d.home.all,d.home.name,Scout.keyTeam)+'</div><div><h4>'+esc(f[6])+'</h4>'+Analysis.historyHTML(d.away.all,d.away.name,Scout.keyTeam)+'</div></div></details>'+
    '<details class="card detail-card direct-meetings"><summary>Директни срещи</summary>'+directMeetings(f)+'</details><details class="card detail-card" id="matchStandingsDetails"><summary>Класиране</summary><div id="matchStandingsContent"></div></details>')+
@@ -324,11 +331,16 @@ function openMatch(f){
  });
  View.mountTabs(matchTab,key=>{matchTab=key;});
  el('matchStandingsDetails').addEventListener('toggle',()=>{if(el('matchStandingsDetails').open)showStandings(el('matchStandingsContent'),f[0],f)});
- el('matchContent').querySelectorAll('.form-chip,.form-dot').forEach(button=>{
-  const inspect=()=>{const box=button.closest('.form-overview');box.querySelector('.form-inspection').textContent=button.dataset.formMessage;box.querySelectorAll('.form-chip,.form-dot').forEach(point=>point.setAttribute('aria-pressed',String(point===button)));};
-  button.onclick=inspect;button.onpointerenter=()=>{if(button.matches('.form-dot'))inspect();};
-  if(button.matches('.form-dot'))button.onkeydown=e=>{if(['Enter',' '].includes(e.key)){e.preventDefault();inspect();}};
- });
+ const formControls=[...el('matchContent').querySelectorAll('[data-form-message]')];
+ for(const button of formControls){
+  button.onclick=()=>{
+   el('matchContent').querySelector('.form-inspection').textContent=button.dataset.formMessage;
+   for(const point of formControls){
+    const selected=point.dataset.formSide===button.dataset.formSide&&point.dataset.formIndex===button.dataset.formIndex;
+    point.setAttribute('aria-pressed',String(selected));
+   }
+  };
+ }
  if(el('savePick'))el('savePick').onclick=()=>savePick();el('copyMatch').onclick=copyMatch;
  document.querySelectorAll('[data-fixture]').forEach(button=>button.classList.toggle('fixture-active',Scout.keyFixture(fixtureRows[+button.dataset.fixture])===Scout.keyFixture(f)));
  if(opening)el('closeMatch').focus();
@@ -412,6 +424,13 @@ function exportPicks(){
  }).join(','))).join('\r\n');
  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF',csv],{type:'text/csv;charset=utf-8'}));a.download='matchpulse_my_picks.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 }
+function reportTable(headers,rows,{compact=false}={}){
+ return '<div class="report-wrap"><table class="report-table'+(compact?' report-table-compact':'')+'" role="table">'+
+  '<thead role="rowgroup"><tr role="row">'+headers.map(label=>'<th scope="col" role="columnheader">'+esc(label)+'</th>').join('')+
+  '</tr></thead><tbody role="rowgroup">'+rows.map(([label,...cells])=>'<tr role="row"><th scope="row" role="rowheader">'+esc(label)+'</th>'+
+   cells.map((value,index)=>'<td role="cell"><span class="report-mobile-label" aria-hidden="true">'+esc(headers[index+1])+'</span><span>'+
+    esc(value)+'</span></td>').join('')+'</tr>').join('')+'</tbody></table></div>';
+}
 async function loadDiary(){
  if(diaryLoaded||diaryLoading)return;
  diaryLoading=true;
@@ -431,12 +450,16 @@ async function loadDiary(){
   el('diaryQuality').innerHTML=paired?.schema_version===1&&paired.current?.markets&&paired.candidate?.markets?
    '<p class="footnote">Паралелна проверка: '+esc(paired.totals.recorded)+' двойни записа · '+esc(paired.totals.settled)+' с резултат. Начало: '+esc(stamp(paired.started_at_utc))+'. Двата модела използват едни и същи данни и час на запис.</p>'+
    '<p class="footnote">Грешка Brier: по-ниска стойност е по-добра. Общият 1X2 е по отделна скала.</p>'+
-   '<table><thead><tr><th>Пазар</th><th>Мачове</th><th>Сегашен</th><th>Кандидат</th></tr></thead><tbody>'+
-   selected.map(id=>{const a=paired.current.markets[id],b=paired.candidate.markets[id];return '<tr><td>'+esc(doc.market_labels[id])+'</td><td>'+esc(a.n)+'</td><td>'+fmt(a.brier,4)+'</td><td>'+fmt(b.brier,4)+'</td></tr>'}).join('')+'</tbody></table>'+
+   reportTable(['Пазар','Мачове','Сегашен','Кандидат'],selected.map(id=>{
+    const a=paired.current.markets[id],b=paired.candidate.markets[id];
+    return [doc.market_labels[id],a.n,fmt(a.brier,4),fmt(b.brier,4)];
+   }))+
    '<p class="footnote">'+(paired.capture_paused?'Записването на нови двойки е спряно за проверка.':paired.decision.status==='ready_for_review'?'Има достатъчно данни за преглед на новия модел.':paired.decision.status==='insufficient_evidence'?'Няма достатъчно доказателства за смяна на модела.':'Събират се нови резултати.')+' Живият анализ използва сегашния модел.</p>':
    t.settled?'<p class="footnote">Грешка Brier: по-ниска стойност е по-добра. Общият 1X2 е по отделна скала.</p>'+
-   '<table><thead><tr><th>Пазар</th><th>Мачове</th><th>Модел</th><th>Лигова база</th></tr></thead><tbody>'+
-   selected.map(id=>{const m=doc.markets[id];return '<tr><td>'+esc(doc.market_labels[id])+'</td><td>'+m.n+'</td><td>'+fmt(m.brier,4)+'</td><td>'+fmt(m.baselines.league_frequencies.brier,4)+'</td></tr>'}).join('')+'</tbody></table>'+
+   reportTable(['Пазар','Мачове','Модел','Лигова база'],selected.map(id=>{
+    const m=doc.markets[id];
+    return [doc.market_labels[id],m.n,fmt(m.brier,4),fmt(m.baselines.league_frequencies.brier,4)];
+   }))+
    (Object.keys(doc.versions).length>1?'<p class="footnote">Общо за '+Object.keys(doc.versions).length+' версии на модела; отделните резултати се пазят в отчета.</p>':''):
    '<p class="footnote">Оценката ще се появи след първите приключили мачове. Историческите тестове не са включени тук.</p>';
   const statuses={pending:'Чака резултат',settled:'Приключил',excluded:'Изключен',unmatched:'За проверка'};
@@ -463,32 +486,33 @@ async function loadTelegramDiary(){
  const variants=Object.keys(labels);
  const pct=p=>Number.isFinite(p)?fmt(p*100,1).replace('.',',')+'%':'—';
  const hits=t=>t?.settled?t.hits+'/'+t.settled+' · '+pct(t.hit_rate):'—';
- const table=(headers,rows)=>'<div class="coverage-scroll"><table><thead><tr>'+
-  headers.map(h=>'<th scope="col">'+esc(h)+'</th>').join('')+'</tr></thead><tbody>'+
-  rows.map(row=>'<tr>'+row.map(cell=>'<td>'+esc(cell)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
  try{
   await initialPromise;
   const doc=await dataSnapshot.get('telegram_diary_report.json');
   if(doc?.schema!==1||!doc.variants||!doc.calibration||!Array.isArray(doc.recent))throw Error('Telegram diary format');
-  const totals=table(['Подреждане','Записани','Познати','На общите дни'],variants.map(id=>{
-   const {overall,comparable}=doc.variants[id];
-   return [labels[id],overall.recorded,hits(overall),hits(comparable)];
-  }));
+  const totals=reportTable(['Подреждане','Познати / оценени','Успеваемост'],variants.map(id=>{
+   const {comparable}=doc.variants[id];
+   return [labels[id],comparable.settled?comparable.hits+'/'+comparable.settled:'—',pct(comparable.hit_rate)];
+  }),{compact:true});
+  const allRecords=variants.map(id=>{
+   const {overall}=doc.variants[id];
+   return [labels[id],overall.recorded,overall.pending,overall.excluded,hits(overall)];
+  });
   const marketRows=Object.entries(doc.market_labels).map(([id,label])=>
    [label,...variants.map(key=>hits(doc.variants[key].markets[id]))]);
   const dayRows=doc.recent.map(day=>[day.date,...variants.map(key=>hits(day.variants[key]))]);
   const bins=Object.entries(doc.calibration).flatMap(([model,markets])=>Object.entries(markets).flatMap(([id,metrics])=>
    metrics.bins.map(bin=>[doc.market_labels[id],labels[model],bin.range.join('–')+'%',bin.n,pct(bin.forecast),pct(bin.actual),fmt(metrics.brier,4)])));
-  target.innerHTML='<p>'+esc(doc.days)+' записани дни · '+esc(doc.comparable_days)+' общи дни с резултат за всички варианти.</p>'+totals+
-   '<p>Всеки вариант избира еднакъв брой прогнози от една и съща програма. Записът е преди мачовете.</p>'+
+  target.innerHTML='<p class="report-caption">'+(doc.days?esc(doc.comparable_days)+' сравними от '+esc(doc.days)+' записани дни.':'Чака първия ден с допустими прогнози.')+'</p>'+totals+
    (doc.last_run.capture_paused?'<p>Записването изчаква проверка на версията. Старите записи продължават да получават резултати.</p>':
-    doc.days?'':'<p>Дневникът очаква първия ден с допустими прогнози и потвърдени часове.</p>')+
-   (doc.days?'<details><summary>По пазари</summary>'+table(['Пазар',...Object.values(labels)],marketRows)+'</details>'+
-    '<details><summary>Последни дни</summary>'+table(['Дата',...Object.values(labels)],dayRows)+'</details>'+
+    '')+
+   (doc.days?'<details class="report-details"><summary>Всички записи</summary>'+reportTable(['Подреждане','Записани','Чакат','Изключени','Познати'],allRecords)+'</details>'+
+    '<details class="report-details"><summary>По пазари</summary>'+reportTable(['Пазар',...Object.values(labels)],marketRows)+'</details>'+
+    '<details class="report-details"><summary>Последни дни</summary>'+reportTable(['Дата',...Object.values(labels)],dayRows)+'</details>'+
     '<p class="footnote">Оценка със сила на съперника е налична за '+esc(doc.coverage.opponent_fitted)+' от '+esc(doc.coverage.fixtures)+' мача.</p>':'')+
    (bins.length?'<details><summary>Калибрация на вероятностите</summary>'+
     '<p>Средна прогноза и реална честота в един и същ диапазон. По-ниска грешка Brier за пазара е по-добра.</p>'+
-    table(['Пазар','Модел','Диапазон','Мачове','Прогноза','Реално','Brier'],bins)+'</details>':'');
+    reportTable(['Пазар','Модел','Диапазон','Мачове','Прогноза','Реално','Brier'],bins)+'</details>':'');
   target.dataset.loaded='true';
  }catch{target.textContent='Отчетът за Telegram временно е недостъпен. Отвори секцията отново за нов опит.';}
  finally{delete target.dataset.loading;}
@@ -499,8 +523,8 @@ async function loadSelectionDiary(){
   if(doc?.schema!==1||!doc.groups||!doc.totals)throw Error('diary format');
   const labels={main:'Основни',alternatives:'Алтернативи',builders:'Бет билдъри',columns:'Колонки'};
   return '<h4>'+label+'</h4><p>'+doc.totals.recorded+' предмачови записа · '+doc.totals.abstained+' без основен избор. Първият автоматичен избор остава замразен; личните цени и филтри не участват.</p>'+
-   '<div class="coverage-scroll"><table><thead><tr><th>Вид</th><th>Записани</th><th>Приключили</th><th>Успешни</th><th>Чакащи</th></tr></thead><tbody>'+
-   Object.entries(labels).map(([key,label])=>'<tr><td>'+label+'</td>'+['recorded','settled','hits','pending'].map(k=>'<td>'+doc.groups[key][k]+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>'+
+   reportTable(['Вид','Записани','Приключили','Успешни','Чакащи'],Object.entries(labels).map(([key,label])=>
+    [label,...['recorded','settled','hits','pending'].map(metric=>doc.groups[key][metric])]))+
    '<p>Само бъдещи записи от регистрацията на '+new Date(doc.registered_at_utc).toLocaleDateString('bg-BG',{timeZone:'Europe/Sofia'})+'. Старите дневници са отделни. Честотата на успех още не доказва доходност.</p>'+
    (doc.last_run.capture_paused?'<p>Новите записи са спрени: кодът се различава от регистрираната версия. Съществуващите записи продължават да получават резултати.</p>':'');
  }
@@ -561,7 +585,15 @@ function refreshSync(){
  const count=(files?.['history.json'].rows??(index?history.length:s.history_count||0))+(files?.['europe_history.json'].rows??embedded?.europe?.length??(archive?archive.international.history.length-history.length:0));
  el('sourceStatus').textContent=count?count.toLocaleString('bg-BG')+' мача в архива':'Архивът се зарежда…';
  el('notice').classList.toggle('hidden',!partial);
- el('notice').textContent=partial?'Непълни данни: '+[...sources.filter(r=>r.warning).map(r=>r.label),...failures].join(', ')+'. Виж „Данни и обновяване“.':'';
+ el('notice').innerHTML=partial?'<strong>Непълни данни</strong><span class="notice-sources">'+
+  esc([...sources.filter(r=>r.warning).map(r=>r.label),...failures].join(' · '))+
+  '</span><button type="button" class="notice-link">Източници</button>':'';
+ const noticeLink=el('notice').querySelector('.notice-link');
+ if(noticeLink)noticeLink.onclick=()=>{
+  const details=el('dataDetails');
+  details.open=true;
+  details.querySelector('summary').focus();
+ };
  el('syncContent').innerHTML='<div class="sync-grid">'+sources.map(r=>'<div><strong>'+esc(r.label)+'</strong><span>'+esc(showStamp(r.stamp))+'</span><span class="sync-state '+(r.warning?'sync-state-warning':'')+'">'+esc(r.text)+'</span></div>').join('')+'</div>'+
   '<p>Публикуване: '+esc(showStamp(s.last_build_utc))+'. То е отделно от проверките на източниците.</p>'+
   (s.calendar_provider==='Soccerway'?'<p>Soccerway е основният източник за програмата и скорошните резултати: 24 първенства и трите евротурнира, с преглед 7 дни назад и напред. Целевият интервал е около 30 минути; GitHub може да забави стартирането. Получените резултати се пазят в нашия архив. Историческите статистики и архивът на УЕФА запазват отделните си източници.</p>':s.last_statarea_attempt_utc?'<p>Statarea: целевият интервал за програмата и скорошните резултати е около 30 минути; GitHub може да забави стартирането. По-широк преглед назад и до 7 дни напред се прави ежедневно. Вече получените резултати се пазят в нашия архив.</p>':'')+
