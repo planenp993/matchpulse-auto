@@ -7,7 +7,7 @@
   <title>MATCHPULSE SCOUT · Футболни анализи</title>
   <link rel="stylesheet" href="assets/fonts/manrope.css?v=7d2e28443dbb">
   <link rel="stylesheet" href="scout.css?v=157b4fd35d9d">
-  <link rel="stylesheet" href="scout-dark.css?v=94482f5cd900">
+  <link rel="stylesheet" href="scout-dark.css?v=871df7bc04c4">
 </head>
 <body>
 <div class="shell">
@@ -29,23 +29,24 @@
     <section class="view" id="view-schedule" aria-label="Програма">
       <div class="schedule-workspace" id="scheduleWorkspace">
       <div class="program-pane">
-      <div class="toolbar">
-        <div class="days" aria-label="Дата"><button type="button" data-day="0" class="active">Днес</button><button type="button" data-day="1">Утре</button><button type="button" data-day="7">7 дни</button><label class="date-wrap" title="Избери дата"><input type="date" id="dateInput" aria-label="Избери дата"></label></div>
+      <div class="toolbar program-toolbar">
+        <div class="days" aria-label="Дата"><button type="button" data-day="0" class="active">Днес</button><button type="button" data-day="1">Утре</button><button type="button" data-day="7">7 дни</button><label class="date-wrap" title="Избери дата"><span id="programDateLabel" aria-hidden="true">Дата</span><input type="date" id="dateInput" aria-label="Избери дата"></label></div>
         <label class="control-label program-search"><span data-ui-icon="search"></span><span class="sr-only">Търси</span><input id="searchInput" type="search" placeholder="Отбор или първенство" autocomplete="off"></label>
+        <div class="program-tools">
         <details class="program-filters"><summary>Филтри и първенства</summary><div class="filterbar"><label class="control-label">Първенство<select id="leagueSelect"><option value="">Всички първенства</option></select></label><label class="control-label">Покажи<select id="qualitySelect"><option value="all">Всички срещи</option><option value="qualified">С достатъчна история</option><option value="trending">С голов тренд</option></select></label><label class="control-label">Извадка за формата<select id="researchWindow"><option value="5">5 мача</option><option value="10" selected>10 мача</option><option value="20">20 мача</option></select></label></div></details>
         <details class="detail-card schedule-standings" id="scheduleStandings"><summary>Класиране</summary><label class="control-label standings-select">Състезание<select id="standingsLeague" aria-label="Състезание за класиране"></select></label><div id="standingsContent"><p class="footnote">Избери състезание.</p></div></details>
+        </div>
       </div>
       <div class="section-heading"><div><h2 id="programTitle">Днешната програма</h2><span id="programSummary">—</span></div><small class="timezone-label">Часове: София</small></div>
       <div id="scheduleList" class="league-list"><div class="empty">Зареждане на програмата…</div></div>
       </div>
-      <div class="analysis-area" id="analysisArea"><div class="analysis-placeholder" id="analysisPlaceholder"><span data-ui-icon="goal"></span><h2>Избери мач</h2><p>Прогнози, форма и статистика.<br>Цялата картина, подредена.</p><div class="placeholder-topics"><span>Голове</span><span>Форма</span><span>Тенденции</span></div></div></div>
+      <div class="analysis-area" id="analysisArea"><div class="analysis-placeholder" id="analysisPlaceholder"><span data-ui-icon="goal"></span><h2>Избери мач</h2><p>Отвори прогнозите, формата и статистиката.</p></div></div>
       </div>
     </section>
     <section class="view hidden" id="view-picks" aria-label="Моите прогнози">
       <section class="card daily-picks" id="dailyPicks" aria-labelledby="dailyPicksTitle">
         <header class="daily-picks-head">
-          <div><span class="daily-kicker">MATCHPULSE · ГОЛОВИ ПАЗАРИ</span><h2 id="dailyPicksTitle">Дневен подбор</h2>
-            <p>До пет единични прогнози с обосновка и готов текст за Telegram.</p></div>
+          <h2 id="dailyPicksTitle">Дневен подбор</h2>
           <div class="daily-controls">
             <label class="control-label daily-date">Дата на подбора<select id="dailyDate" disabled><option>Зареждане…</option></select></label>
             <button type="button" class="button" id="copyDailyPost" disabled>Копирай поста</button>
@@ -57,10 +58,10 @@
             <p id="dailySummary" class="daily-summary" role="status">Зареждам програмата и историята…</p>
             <div id="dailyList" class="daily-list"></div>
           </div>
-          <div class="daily-composer">
-            <div class="daily-composer-head"><h3>Пост за Telegram</h3><span id="dailyCount" class="daily-count">0 избрани</span></div>
+          <details class="daily-composer">
+            <summary class="daily-composer-head"><strong>Преглед на поста</strong><span id="dailyCount" class="daily-count">0 избрани</span></summary>
             <textarea id="dailyPost" aria-label="Текст за Telegram" rows="9" readonly placeholder="Избраните прогнози ще се покажат тук."></textarea>
-          </div>
+          </details>
         </div>
         <details class="daily-method"><summary>Как подбираме мачовете</summary>
           <p>Голови пазари и „Гол/гол“ от европейската програма. Сравняваме моделната вероятност с честотата в лигата и с формата на двата отбора в до 10 мача. Отчитаме и домакинства и гостувания, когато има достатъчна извадка.</p>
@@ -87,7 +88,7 @@
       <div id="diaryScanner" class="footnote"></div>
       <details class="card detail-card" id="telegramDiary"><summary>Дневен подбор за Telegram</summary><div id="telegramDiaryContent" class="coverage-content">Зарежда се при отваряне.</div></details>
       <details class="card detail-card" id="selectionDiary"><summary>Отделен дневник на „Селекции“</summary><div id="selectionDiaryContent" class="coverage-content">Зарежда се при отваряне.</div></details>
-      <details class="card detail-card"><summary>Качество по пазари</summary><div id="diaryQuality" class="coverage-scroll coverage-content">Очакват се първите резултати.</div></details>
+      <details class="card detail-card"><summary>Качество по пазари</summary><div id="diaryQuality" class="coverage-content">Очакват се първите резултати.</div></details>
       <div class="section-heading"><h2>Последни записи</h2><small class="timezone-label">Записани преди мача</small></div>
       <div id="diaryList"><div class="empty">Зареждане…</div></div>
     </section>
@@ -150,15 +151,15 @@
 <script src="scout-archive.js?v=6bb2b510343d"></script>
 <script src="scout-health.js?v=721f08a772cf"></script>
 <script src="scout-standings.js?v=3203c03c0852"></script>
-<script src="scout-analysis.js?v=3f3a33726e58"></script>
+<script src="scout-analysis.js?v=2ca2d285dfc5"></script>
 <script src="scout-selections.js?v=50b470019a05"></script>
 <script src="scout-combinations.js?v=17d77995aa5e"></script>
 <script src="scout-curated.js?v=a870a1b929c2"></script>
 <script src="scout-daily.js?v=0091a228607a"></script>
-<script src="scout-selection-ui.js?v=2affa5294be8"></script>
+<script src="scout-selection-ui.js?v=b7f94600447f"></script>
 <script src="scout-data.js?v=358828ae04f2"></script>
 <script src="scout-backup.js?v=fff44daaf888"></script>
 <script src="scout-calendar.js?v=52d942539aee"></script>
 <script src="scout-presentation.js?v=6e8255e8b6a1"></script>
-<script src="scout.js?v=112f1b622c2a"></script>
+<script src="scout.js?v=5fd7ba741d58"></script>
 </body></html>

@@ -172,7 +172,11 @@ async function copyDailyPost(){
   await renderDaily();feedback.textContent='Подборът е обновен. Провери текста, преди да го копираш.';return;
  }
  try{await navigator.clipboard.writeText(post.value);feedback.textContent='Копирано. Постави текста в Telegram.';}
- catch{post.focus();post.select();feedback.textContent='Текстът е маркиран. Избери „Копирай“ от менюто на устройството.';}
+ catch{
+  post.closest('details').open=true;
+  post.focus();post.select();
+  feedback.textContent='Текстът е маркиран. Избери „Копирай“ от менюто на устройството.';
+ }
 }
 async function planFor(f){await loadQuotes();return evaluateFixture(f);}
 async function renderMatchPlan(target,f){
