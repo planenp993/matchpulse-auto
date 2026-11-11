@@ -86,11 +86,14 @@ jobs:
             node scripts/selection_diary.cjs --check --base-ref origin/main
             node scripts/match_plan_diary.cjs --check --base-ref origin/main
             node scripts/curated_diary.cjs --check --base-ref origin/main
+            node scripts/telegram_diary.cjs --check --base-ref origin/main
             node scripts/forecast_diary.cjs --write
             node scripts/paired_model_diary.cjs --write
             node scripts/selection_diary.cjs --write
             node scripts/match_plan_diary.cjs --write
             node scripts/curated_diary.cjs --write
+            node scripts/telegram_diary.cjs --write
+            node scripts/telegram_diary.cjs --check
             node scripts/schedule_archive.cjs --write
             node scripts/schedule_archive.cjs --check
             python scripts/audit_scout.py
@@ -102,6 +105,7 @@ jobs:
             git add docs/data/history.json docs/data/fixtures.json docs/data/status.json docs/data/match_links.json docs/data/coverage_audit.json
             git add docs/data/diary docs/data/diary_report.json docs/data/paired_model_report.json
             git add docs/data/selection_diary_report.json docs/data/match_plan_diary_report.json docs/data/curated_diary_report.json
+            git add docs/data/telegram_diary_report.json
             git add docs/data/schedule_archive.json docs/data/client_manifest.json
             if git diff --staged --quiet; then break; fi
             git commit -m 'Refresh verified supplemental league observations [skip ci]'

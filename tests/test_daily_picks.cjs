@@ -1,7 +1,7 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const Scout=require('../docs/scout-core.js');
-const scope={window:{MatchpulseScout:Scout}};
+const scope={window:{MatchpulseScout:Scout,MatchpulseDaily:require('../docs/scout-daily.js')}};
 vm.runInNewContext(fs.readFileSync('docs/scout-presentation.js','utf8'),scope);
 scope.window.MatchpulsePresentation=scope.MatchpulsePresentation;
 vm.runInNewContext(fs.readFileSync('docs/scout-selection-ui.js','utf8'),scope);

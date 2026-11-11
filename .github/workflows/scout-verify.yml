@@ -45,6 +45,7 @@ jobs:
           node scripts/selection_diary.cjs --check --base-ref origin/main
           node scripts/match_plan_diary.cjs --check --base-ref origin/main
           node scripts/curated_diary.cjs --check --base-ref origin/main
+          node scripts/telegram_diary.cjs --check --base-ref origin/main
       - name: Verify historical calendar against sealed pre-match records
         run: node scripts/schedule_archive.cjs --check
       - name: Check registered research against its frozen inputs

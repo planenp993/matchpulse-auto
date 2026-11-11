@@ -455,6 +455,44 @@ async function loadDiary(){
  }catch(e){el('diarySummary').textContent=e.message;el('diaryList').innerHTML='<div class="empty">Отчетът ще се появи след автоматичното обновяване.</div>';}
  finally{diaryLoading=false;}
 }
+async function loadTelegramDiary(){
+ const target=el('telegramDiaryContent');
+ if(target.dataset.loaded||target.dataset.loading)return;
+ target.dataset.loading='true';
+ const labels={league_form:'Лига и форма',probability:'Сурова вероятност',calibrated:'Калибрирана вероятност',opponent:'Сила на съперника'};
+ const variants=Object.keys(labels);
+ const pct=p=>Number.isFinite(p)?fmt(p*100,1).replace('.',',')+'%':'—';
+ const hits=t=>t?.settled?t.hits+'/'+t.settled+' · '+pct(t.hit_rate):'—';
+ const table=(headers,rows)=>'<div class="coverage-scroll"><table><thead><tr>'+
+  headers.map(h=>'<th scope="col">'+esc(h)+'</th>').join('')+'</tr></thead><tbody>'+
+  rows.map(row=>'<tr>'+row.map(cell=>'<td>'+esc(cell)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
+ try{
+  await initialPromise;
+  const doc=await dataSnapshot.get('telegram_diary_report.json');
+  if(doc?.schema!==1||!doc.variants||!doc.calibration||!Array.isArray(doc.recent))throw Error('Telegram diary format');
+  const totals=table(['Подреждане','Записани','Познати','На общите дни'],variants.map(id=>{
+   const {overall,comparable}=doc.variants[id];
+   return [labels[id],overall.recorded,hits(overall),hits(comparable)];
+  }));
+  const marketRows=Object.entries(doc.market_labels).map(([id,label])=>
+   [label,...variants.map(key=>hits(doc.variants[key].markets[id]))]);
+  const dayRows=doc.recent.map(day=>[day.date,...variants.map(key=>hits(day.variants[key]))]);
+  const bins=Object.entries(doc.calibration).flatMap(([model,markets])=>Object.entries(markets).flatMap(([id,metrics])=>
+   metrics.bins.map(bin=>[doc.market_labels[id],labels[model],bin.range.join('–')+'%',bin.n,pct(bin.forecast),pct(bin.actual),fmt(metrics.brier,4)])));
+  target.innerHTML='<p>'+esc(doc.days)+' записани дни · '+esc(doc.comparable_days)+' общи дни с резултат за всички варианти.</p>'+totals+
+   '<p>Всеки вариант избира еднакъв брой прогнози от една и съща програма. Записът е преди мачовете.</p>'+
+   (doc.last_run.capture_paused?'<p>Записването изчаква проверка на версията. Старите записи продължават да получават резултати.</p>':
+    doc.days?'':'<p>Дневникът очаква първия ден с допустими прогнози и потвърдени часове.</p>')+
+   (doc.days?'<details><summary>По пазари</summary>'+table(['Пазар',...Object.values(labels)],marketRows)+'</details>'+
+    '<details><summary>Последни дни</summary>'+table(['Дата',...Object.values(labels)],dayRows)+'</details>'+
+    '<p class="footnote">Оценка със сила на съперника е налична за '+esc(doc.coverage.opponent_fitted)+' от '+esc(doc.coverage.fixtures)+' мача.</p>':'')+
+   (bins.length?'<details><summary>Калибрация на вероятностите</summary>'+
+    '<p>Средна прогноза и реална честота в един и същ диапазон. По-ниска грешка Brier за пазара е по-добра.</p>'+
+    table(['Пазар','Модел','Диапазон','Мачове','Прогноза','Реално','Brier'],bins)+'</details>':'');
+  target.dataset.loaded='true';
+ }catch{target.textContent='Отчетът за Telegram временно е недостъпен. Отвори секцията отново за нов опит.';}
+ finally{delete target.dataset.loading;}
+}
 async function loadSelectionDiary(){
  const target=el('selectionDiaryContent');
  function summary(doc,label){
@@ -605,6 +643,7 @@ el('dateInput').onchange=e=>{if(e.target.value){customDate=e.target.value;setPro
 el('scheduleStandings').addEventListener('toggle',programStandings);
 el('dataDetails').addEventListener('toggle',()=>{if(el('dataDetails').open)loadCoverage();});
 el('selectionDiary').addEventListener('toggle',()=>{if(el('selectionDiary').open)loadSelectionDiary();});
+el('telegramDiary').addEventListener('toggle',()=>{if(el('telegramDiary').open)loadTelegramDiary();});
 el('standingsLeague').addEventListener('change',programStandings);
 el('leagueSelect').addEventListener('change',()=>{if(el('leagueSelect').value){el('standingsLeague').value=el('leagueSelect').value;programStandings()}});
 for(const id of ['leagueSelect','qualitySelect','searchInput'])el(id).addEventListener(id==='searchInput'?'input':'change',renderSchedule);

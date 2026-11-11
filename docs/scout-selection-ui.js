@@ -1,7 +1,7 @@
 /* Small view controller for the separate, versioned selection rules. */
 (function(root){
 'use strict';
-const S=root.MatchpulseCurated,C=root.MatchpulseScout;
+const S=root.MatchpulseCurated,C=root.MatchpulseScout,Daily=root.MatchpulseDaily;
 const el=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pct=p=>Number.isFinite(p)?(100*p).toFixed(1)+'%':'—',price=p=>Number.isFinite(p)?p.toFixed(2):'—';
 const stamp=v=>Number.isFinite(Date.parse(v))?new Date(v).toLocaleString('bg-BG',{timeZone:'Europe/Sofia',dateStyle:'short',timeStyle:'short'}):'неизвестен час';
@@ -11,7 +11,6 @@ let app=null,engine=null,tab='builders',period=1,limit=24,token=0,quotePromise=n
 let dailyToken=0,dailyPicks=[],dailyGeneratedAt=null,dailyRequestedDate='';
 const dailyOmissions=new Set();
 const dailyDateLabel=date=>new Date(date+'T12:00:00Z').toLocaleDateString('bg-BG',{timeZone:'Europe/Sofia',weekday:'long',day:'numeric',month:'long',year:'numeric'});
-const dailyCutoff=now=>new Date((Math.ceil(now.getTime()/60000)+30)*60000);
 function readManual(){try{const v=JSON.parse(localStorage.getItem(KEY)||'{}');return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch{return {};}}
 let manual=readManual();
 let band='3-6',columnEntries=null;const columnCache=new Map();
@@ -94,19 +93,7 @@ function evaluateFixture(f,now=new Date(),quotes=quotesFor(f)){
  return engine.evaluate(f,{profile,quotes,now,pending:!!(unavailable||recent.home.pendingLatest||recent.away.pendingLatest)});
 }
 function dailyShortlist(evaluated){
- const View=root.MatchpulsePresentation;
- const strongest=evaluated.flatMap(entry=>{
-  const pick=entry.candidates.filter(p=>p.eligible&&['total','btts'].includes(p.family)&&p.probability>=.55)
-   .sort((a,b)=>b.rank-a.rank||a.id.localeCompare(b.id))[0];
-  return pick?[{entry,pick,key:C.keyFixture(entry.fixture)}]:[];
- }).sort((a,b)=>b.pick.rank-a.pick.rank||View.leagueOrder(a.entry.fixture)-View.leagueOrder(b.entry.fixture)||a.key.localeCompare(b.key));
- const seen=new Set(),shortlist=[];
- for(const item of strongest){
-  if(seen.has(item.key))continue;
-  seen.add(item.key);shortlist.push(item);
-  if(shortlist.length===5)break;
- }
- return shortlist;
+ return Daily.shortlist(evaluated,C,root.MatchpulsePresentation);
 }
 function dailyPost(date,selected,now){
  if(!selected.length)return '';
@@ -136,9 +123,8 @@ async function renderDaily(){
  const request=++dailyToken,now=new Date(),today=day(now),end=new Date(today+'T12:00:00Z');
  end.setUTCDate(end.getUTCDate()+6);
  const last=end.toISOString().slice(0,10),View=root.MatchpulsePresentation;
- const dated=app.fixtures.filter(f=>Array.isArray(f)&&f[3]>=today&&f[3]<=last&&View.isEuropeanLeague(f)&&
-  typeof f[13]==='string'&&f[13].includes('Sofia')&&/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(f[4]||''));
- const pool=C.getUpcoming(dated,dailyCutoff(now));
+ const dated=app.fixtures.filter(f=>Daily.isFixture(f,View)&&f[3]>=today&&f[3]<=last);
+ const pool=C.getUpcoming(dated,Daily.cutoff(now));
  const dateSelect=el('dailyDate'),dates=[...new Set([today,...pool.map(f=>f[3])])];
  const requested=dates.includes(dailyRequestedDate)?dailyRequestedDate:null;
  const searchDates=requested?[requested]:pool[0]?.[3]===today?[today]:dates.slice(1);
@@ -182,7 +168,7 @@ async function renderDaily(){
 async function copyDailyPost(){
  const now=new Date(),selected=dailySelection(),post=el('dailyPost'),feedback=el('dailyFeedback');
  if(!selected.length)return;
- if(dailyBlock(now)||C.getUpcoming(selected.map(item=>item.entry.fixture),dailyCutoff(now)).length!==selected.length){
+ if(dailyBlock(now)||C.getUpcoming(selected.map(item=>item.entry.fixture),Daily.cutoff(now)).length!==selected.length){
   await renderDaily();feedback.textContent='Подборът е обновен. Провери текста, преди да го копираш.';return;
  }
  try{await navigator.clipboard.writeText(post.value);feedback.textContent='Копирано. Постави текста в Telegram.';}
