@@ -22,6 +22,9 @@
       "phase_labels": [
         "USA: MLS"
       ],
+      "excluded_phase_labels": [
+        "USA: MLS - Play Offs"
+      ],
       "csv_url": "https://www.football-data.co.uk/new/USA.csv"
     },
     "ARG": {
@@ -32,6 +35,9 @@
       "season_kind": "calendar",
       "phase_labels": [
         "ARGENTINA: Liga Profesional - Clausura"
+      ],
+      "excluded_phase_labels": [
+        "ARGENTINA: Liga Profesional - Clausura - Play Offs"
       ],
       "csv_url": "https://www.football-data.co.uk/new/ARG.csv"
     },
