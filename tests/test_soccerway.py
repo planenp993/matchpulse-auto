@@ -78,6 +78,16 @@ class SoccerwayTests(unittest.TestCase):
             with self.assertRaises(ValueError):sw.parse(bad,'E0',CATALOG['E0'],NOW)
         self.assertEqual(sw.parse(page([],[]),'E0',CATALOG['E0'],NOW)[0],[])
 
+    def test_countryless_feed_path_still_requires_exact_country_and_template(self):
+        config=CATALOG['E0']
+        short=page().replace(config['path'].encode(),b'/premier-league/')
+        self.assertEqual(sw.parse(short,'E0',config,NOW),sw.parse(page(),'E0',config,NOW))
+        for changed in [short.replace(b'/premier-league/',b'/wales/premier-league/'),
+                        short.replace(b'England',b'Wales'),
+                        short.replace(('ZEE÷'+config['template']).encode(),'ZEE÷Wrong000'.encode())]:
+            with self.assertRaisesRegex(ValueError,'Mixed Soccerway competition'):
+                sw.parse(changed,'E0',config,NOW)
+
     def test_short_visible_payload_does_not_claim_uncovered_window(self):
         _,feeds=sw.parse(page(total=300),'E0',CATALOG['E0'],NOW)
         self.assertFalse(feeds['fixtures']['requested_window_covered'])

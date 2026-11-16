@@ -55,6 +55,14 @@ def fetch(url):
     return raw
 
 
+def matches_competition(context,competition):
+    path=competition['path']
+    league_path='/'+path.strip('/').rsplit('/',1)[-1]+'/'
+    return (context.get('ZEE')==competition['template']
+            and context.get('ZAF',context.get('ZY'))==competition['country']
+            and context.get('ZL') in (path,league_path))
+
+
 def parse(raw,div,competition,now):
     if len(raw)>LIMIT:raise ValueError('Soccerway page exceeds bound')
     text=raw.decode('utf-8-sig',errors='strict')
@@ -79,7 +87,7 @@ def parse(raw,div,competition,now):
                     fields[key]=html.unescape(value)
             if 'ZEE' in fields:context=fields
             if 'AA' not in fields:continue
-            if context.get('ZEE')!=competition['template'] or context.get('ZL')!=competition['path'] or context.get('ZAF',context.get('ZY'))!=competition['country']:raise ValueError('Mixed Soccerway competition')
+            if not matches_competition(context,competition):raise ValueError('Mixed Soccerway competition')
             identity=fields['AA'];club_ids=[fields.get('PX',''),fields.get('PY','')]
             if identity in seen or not re.fullmatch(r'[A-Za-z0-9]{8}',identity) or not all(re.fullmatch(r'[A-Za-z0-9]{8}',x) for x in club_ids) or club_ids[0]==club_ids[1]:raise ValueError('Invalid/duplicate Soccerway identity')
             seen.add(identity);count+=1

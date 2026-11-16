@@ -56,6 +56,13 @@ class SupplementalTests(unittest.TestCase):
         for changed in [raw.replace(self.c['template'].encode(),b'Wrong000'),raw.replace(b'heading__info">2026',b'heading__info">2025'),raw.replace(b'ZAF\xc3\xb7Brazil',b'ZAF\xc3\xb7Wrong'),page(self.c,[event(),event()]),raw.replace(b'SA\xc3\xb71',b'${payload}')]:
             with self.subTest(prefix=changed[:30]), self.assertRaises(ValueError):e.parse(changed,'BRA',self.c,NOW)
 
+    def test_countryless_feed_path_is_bound_to_the_same_competition(self):
+        raw=page(self.c,[event()])
+        short=raw.replace(self.c['path'].encode(),b'/serie-a/')
+        self.assertEqual(e.parse(short,'BRA',self.c,NOW),e.parse(raw,'BRA',self.c,NOW))
+        with self.assertRaisesRegex(ValueError,'Mixed competition/country'):
+            e.parse(short.replace(b'Brazil',b'Italy'),'BRA',self.c,NOW)
+
     def test_explicit_empty_calendar_preserves_finals_but_truncated_calendar_fails(self):
         raw=page(self.c,[event()])
         records,feeds=e.parse(raw,'BRA',self.c,NOW)
@@ -122,6 +129,11 @@ class SupplementalTests(unittest.TestCase):
         with patch('urllib.request.urlopen',side_effect=AssertionError('Provider called by planner')):
             self.assertTrue(e.due(self.root,NOW));status={**self.status,'supplemental_leagues':{'last_attempt_utc':e.iso(NOW)}};u.writejson(self.root/'docs/data/status.json',status)
             self.assertFalse(e.due(self.root,NOW+dt.timedelta(minutes=30)));self.assertTrue(e.due(self.root,NOW+dt.timedelta(hours=2)))
+            self.assertFalse(e.due(self.root,NOW,event='push'))
+            status['supplemental_leagues'].update(status='error',sources_ok=0)
+            u.writejson(self.root/'docs/data/status.json',status)
+            self.assertFalse(e.due(self.root,NOW))
+            self.assertTrue(e.due(self.root,NOW,event='push'))
             self.assertFalse(e.requested(self.root,'pull_request'));self.assertFalse(e.requested(self.root,'push'))
 
     def test_blocked_source_stops_bounded_collection_without_retry_or_fallback(self):

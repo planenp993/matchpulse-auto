@@ -85,7 +85,7 @@ def parse(raw,div,c,now):
                     fields[key]=html.unescape(value)
             if 'ZEE' in fields: context=fields
             if 'AA' not in fields: continue
-            if context.get('ZEE')!=c['template'] or context.get('ZL')!=c['path'] or context.get('ZAF',context.get('ZY'))!=c['country']:
+            if not primary.matches_competition(context,c):
                 raise ValueError('Mixed competition/country')
             identity=fields['AA'];ids=[fields.get('PX',''),fields.get('PY','')]
             if identity in seen or not re.fullmatch(r'[A-Za-z0-9]{8}',identity) or not all(re.fullmatch(r'[A-Za-z0-9]{8}',v) for v in ids) or ids[0]==ids[1]: raise ValueError('Invalid/duplicate stable IDs')
@@ -157,8 +157,10 @@ def parse_csv(raw,div,c,now):
     return out
 
 
-def due(root,now):
+def due(root,now,event='workflow_run'):
     doc=catalog(root);status=read(root,'docs/data/status.json',{}).get('supplemental_leagues',{})
+    if event=='push' and status.get('status')=='error' and status.get('sources_ok')==0:
+        return True
     try: elapsed=(now-dt.datetime.fromisoformat(status['last_attempt_utc'])).total_seconds()/60
     except (KeyError,ValueError,TypeError): elapsed=float('inf')
     return elapsed>=doc['interval_minutes']-5
@@ -300,11 +302,11 @@ def requested(root,event,commit=None):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('action',choices=['plan','collect','apply','check']);p.add_argument('--patch',type=Path);p.add_argument('--event',default='workflow_run');p.add_argument('--commit');args=p.parse_args();now=dt.datetime.now(UTC)
-    if args.action=='plan': print(json.dumps({'due':requested(u.ROOT,args.event,args.commit) and due(u.ROOT,now)}));return
+    if args.action=='plan': print(json.dumps({'due':requested(u.ROOT,args.event,args.commit) and due(u.ROOT,now,args.event)}));return
     if args.action=='check': print(json.dumps(check(u.ROOT)));return
     if not args.patch: p.error('--patch required')
     if args.action=='collect':
-        if not requested(u.ROOT,args.event,args.commit) or not due(u.ROOT,now): raise SystemExit('Supplemental collection is not due/authorized')
+        if not requested(u.ROOT,args.event,args.commit) or not due(u.ROOT,now,args.event): raise SystemExit('Supplemental collection is not due/authorized')
         trigger={k:v for k,v in {'event':args.event,'run_id':__import__('os').environ.get('GITHUB_RUN_ID'),'commit':args.commit}.items() if v}
         if args.event=='push': trigger['request_id']=read(u.ROOT,REQUEST,{})['id']
         u.writejson(args.patch,collect(u.ROOT,now,trigger=trigger))
