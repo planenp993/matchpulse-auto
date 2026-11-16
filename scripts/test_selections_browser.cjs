@@ -41,6 +41,19 @@
  assert.equal(await post.evaluate(e=>e.selectionEnd-e.selectionStart),(await post.inputValue()).length);
  await dailyChoices.first().getByRole('button',{name:'Анализ'}).click();await planReady(desktop);
  await desktop.locator('#closeMatch').click();stats.dailyPicks={count:dailyCount,manualCopy:true,staleBlocked:true};
+ const withheld=await dailyChoices.first().getAttribute('data-daily-fixture');
+ const withheldDivision=withheld.split('|')[0];
+ await desktop.evaluate(async division=>{
+  const divisions=[...new Set(fixtures.map(f=>f[0]))];
+  Object.assign(status,{calendar_provider:'Soccerway',fixtures_feed_status:'partial_secondary',
+   secondary_fixture_sources_ok:divisions.length-1,secondary_fixture_counts:Object.fromEntries(divisions.map(d=>[d,1])),
+   stale_secondary_leagues:[division]});
+  await MatchpulseSelectionUI.renderDaily();
+ },withheldDivision);
+ const verified=await dailyChoices.evaluateAll(cards=>cards.map(c=>c.dataset.dailyFixture));
+ assert.ok(verified.length&&verified.every(key=>!key.startsWith(withheldDivision+'|')));
+ stats.dailyPicks.partialCalendarFiltered=true;
+ await dailyWithFreshCalendar(desktop);
  const initial=await desktop.evaluate(()=>{const f=fixtures.find(f=>f[0]==='I1'&&f[5]==='Milan'&&f[6]==='Bologna');return {fixture:f,probabilities:Model.evaluate(history,f,'standard').distribution.probs};});
  await desktop.evaluate(f=>openMatch(f),initial.fixture);await planReady(desktop);assert.ok(await desktop.locator('#matchPlan .selection-primary').count());
  const firstChoice=await desktop.locator('#matchPlan .selection-primary').getAttribute('data-selection-market');

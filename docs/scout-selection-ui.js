@@ -115,15 +115,23 @@ function paintDailyPost(){
 }
 function dailyBlock(now){
  if(app.availability&&Object.values(app.availability).some(v=>!v))return 'Подборът изчаква допълнителните данни. Презареди, за да опиташ отново.';
- if(root.MatchpulseHealth.sources(app.status,now)[0].warning)return 'Подборът изчаква актуална потвърдена програма. Презареди след следващото обновяване.';
- return '';
+ const status=app.status,calendar=root.MatchpulseHealth.sources(status,now)[0];
+ if(!calendar.warning)return '';
+ const age=now-Date.parse(calendar.stamp);
+ if(status.calendar_provider==='Soccerway'&&status.fixtures_feed_status==='partial_secondary'&&
+    status.secondary_fixture_sources_ok>0&&age>=0&&age<=2*3600000)return '';
+ return 'Подборът изчаква актуална потвърдена програма. Презареди след следващото обновяване.';
+}
+function dailyFixtureVerified(f,status){
+ if(status.fixtures_feed_status!=='partial_secondary')return true;
+ return Object.hasOwn(status.secondary_fixture_counts||{},f[0])&&!(status.stale_secondary_leagues||[]).includes(f[0]);
 }
 async function renderDaily(){
  if(!app)return;
  const request=++dailyToken,now=new Date(),today=day(now),end=new Date(today+'T12:00:00Z');
  end.setUTCDate(end.getUTCDate()+6);
  const last=end.toISOString().slice(0,10),View=root.MatchpulsePresentation;
- const dated=app.fixtures.filter(f=>Daily.isFixture(f,View)&&f[3]>=today&&f[3]<=last);
+ const dated=app.fixtures.filter(f=>Daily.isFixture(f,View)&&dailyFixtureVerified(f,app.status)&&f[3]>=today&&f[3]<=last);
  const pool=C.getUpcoming(dated,Daily.cutoff(now));
  const dateSelect=el('dailyDate'),dates=[...new Set([today,...pool.map(f=>f[3])])];
  const requested=dates.includes(dailyRequestedDate)?dailyRequestedDate:null;
@@ -168,7 +176,8 @@ async function renderDaily(){
 async function copyDailyPost(){
  const now=new Date(),selected=dailySelection(),post=el('dailyPost'),feedback=el('dailyFeedback');
  if(!selected.length)return;
- if(dailyBlock(now)||C.getUpcoming(selected.map(item=>item.entry.fixture),Daily.cutoff(now)).length!==selected.length){
+ const fixtures=selected.map(item=>item.entry.fixture);
+ if(dailyBlock(now)||!fixtures.every(f=>dailyFixtureVerified(f,app.status))||C.getUpcoming(fixtures,Daily.cutoff(now)).length!==selected.length){
   await renderDaily();feedback.textContent='Подборът е обновен. Провери текста, преди да го копираш.';return;
  }
  try{await navigator.clipboard.writeText(post.value);feedback.textContent='Копирано. Постави текста в Telegram.';}

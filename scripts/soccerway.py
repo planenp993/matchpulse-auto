@@ -33,6 +33,7 @@ MATCH_LINKS='data/soccerway_matches.json'
 CATALOG='ops/soccerway_leagues.json'
 LIMIT=6_000_000
 FIELDS={'AA','AD','AE','AF','FH','FK','PX','PY','AG','AH','AB','AC','ER'}
+EXCLUDED_PHASES={'SWE': {'SWEDEN: Allsvenskan - Relegation'}}
 
 
 def catalog(root):
@@ -66,13 +67,14 @@ def parse(raw,div,competition,now):
     pattern=r'cjs\.initialFeeds\[([\'\"])(fixtures|results)\1\]\s*=\s*\{\s*data:\s*`(.*?)`,\s*allEventsCount:\s*(\d+)'
     for _,kind,data,total in re.findall(pattern,text,re.S):
         if kind in feeds or '${' in data:raise ValueError('Ambiguous/nonliteral Soccerway full feed')
-        if not data.startswith('SA÷1'):raise ValueError('Wrong Soccerway sport')
+        empty_calendar=kind=='fixtures' and data=='' and int(total)==0
+        if not empty_calendar and not data.startswith('SA÷1'):raise ValueError('Wrong Soccerway sport')
         count=0;dates=[];context={};seen=set()
         for block in data.split('¬~'):
             fields={}
             for part in block.split('¬'):
                 key,sep,value=part.partition('÷')
-                if sep and (key in FIELDS or key in ('ZEE','ZL','ZY','ZAF')):
+                if sep and (key in FIELDS or key in ('ZA','ZEE','ZL','ZY','ZAF')):
                     if key in fields:raise ValueError('Duplicate Soccerway field')
                     fields[key]=html.unescape(value)
             if 'ZEE' in fields:context=fields
@@ -97,6 +99,9 @@ def parse(raw,div,competition,now):
                 'source_date_utc':instant.date().isoformat() if instant else None,
                 'state':state,'stage':stage,'display_score':score,
                 'regulation':score if (state,stage)==('3','3') and all(x is not None for x in score) else None}
+            phase=context.get('ZA')
+            if phase in EXCLUDED_PHASES.get(div,()):
+                record['excluded_phase']=phase
             if identity in records and records[identity]!=record:raise ValueError('Contradictory Soccerway full feeds')
             records[identity]=record
         if count>int(total) or not count and int(total)>0:raise ValueError('Missing Soccerway full-feed rows')
@@ -147,15 +152,26 @@ class Names(sta.Names):
         return direct
 
 
-def project(batch,names,now):
+def project(batch,names,now,tracked=None):
     batch.update(rows=[],results=[],observations=[],quarantined=[])
-    today=u.today_sofia(now)
+    today=u.today_sofia(now);start=today-dt.timedelta(days=7);end=today+dt.timedelta(days=7)
+    tracked=tracked or {}
     for item in batch['records']:
         r=item['match'];clock=r['kickoff_utc']
+        if r.get('excluded_phase') in EXCLUDED_PHASES.get(r['division'],()):
+            continue
         if not clock:
             batch['quarantined'].append({'id':r['id'],'division':r['division'],'reason':'unconfirmed_kickoff'});continue
         instant=dt.datetime.fromisoformat(clock);local=instant.astimezone(ZoneInfo('Europe/Sofia'))
-        if not today-dt.timedelta(days=7)<=local.date()<=today+dt.timedelta(days=7):continue
+        in_window=start<=local.date()<=end
+        if not in_window:
+            # Preserve a confirmed new date for an already tracked fixture,
+            # even when it is too far away to enter the seven-day programme.
+            old=tracked.get(r['id'])
+            if (not old or local.date()<=end or (r['state'],r['stage'])!=('1','1')
+                    or old['division']!=r['division'] or old.get('kickoff_utc')==clock
+                    or old.get('round') not in (None,r.get('round'))):
+                continue
         home=names.club(r['division'],r['home'],r['club_ids'][0]);away=names.club(r['division'],r['away'],r['club_ids'][1])
         reason=None
         if not home or not away or u.club_key(home)==u.club_key(away):reason='unmatched_or_ambiguous_club'
@@ -200,6 +216,11 @@ def collect(root,now,download=None,divisions=None):
 def apply(root,batch,status,history,book,fixtures,stamp,now,trigger=None):
     check(root);total=provider_archive.persist(root,ARCHIVE,batch['records'],stamp)
     if status.get('last_soccerway_attempt_utc','')>stamp:return fixtures,[],0
+    tracked={provider.removeprefix('Soccerway:'):match for match in book['matches'].values()
+             if match.get('result') is None and match['state'] not in ('cancelled','conflict')
+             for provider in match['provider_ids'] if provider.startswith('Soccerway:')}
+    archived=[*history.values(),*registry.read_strict(root/'docs/data/europe_history.json',[])]
+    batch=project(batch,Names(root,archived,fixtures),now,tracked)
     # A one-time reviewed stable-ID bridge may connect an already published
     # future fixture whose date moved before this provider was introduced.
     raw={r['match']['id']:r['match'] for r in batch['records']}
@@ -219,10 +240,11 @@ def apply(root,batch,status,history,book,fixtures,stamp,now,trigger=None):
         if u.key(row) in history:continue  # The archived dated score already proves this identity.
         candidates=[m for m in book['matches'].values() if m['division']==row[0] and m['clubs']==pair and abs((dt.date.fromisoformat(m['schedule'][3])-dt.date.fromisoformat(row[3])).days)<=2]
         if candidates and not any(key in m['legacy_keys'] or o['provider_id'] in m['provider_ids'] for m in candidates):
-            rejected.add(o['provider_id']);batch['quarantined'].append({'id':o['provider_id'],'reason':'unlinked_possible_reschedule'})
+            rejected.add(o['provider_id']);batch['quarantined'].append({'id':o['provider_id'],'division':row[0],'reason':'unlinked_possible_reschedule'})
     batch['observations']=[o for o in batch['observations'] if o['provider_id'] not in rejected]
     batch['results']=[o for o in batch['results'] if o['provider_id'] not in rejected]
     changed,conflicts=[],0
+    conflict_divisions=set()
     slots=registry.result_slots(history) if batch['results'] else {}
     for observation in batch['results']:
         row=observation['row'];key=u.key(row);old=history.get(key)
@@ -230,6 +252,7 @@ def apply(root,batch,status,history,book,fixtures,stamp,now,trigger=None):
             registry.record_conflict(book,'soccerway_score_conflict',{'key':registry.row_key(row),
                 'provider_id':observation['provider_id'],'kept':old,'incoming':row})
             conflicts+=1
+            conflict_divisions.add(row[0])
         elif old is None:
             if registry.reserve_result(slots,history,book,key,row,'Soccerway'):
                 history[key]=row;changed.append(row)
@@ -249,8 +272,12 @@ def apply(root,batch,status,history,book,fixtures,stamp,now,trigger=None):
         if old is not None:fresh[9:13]=old[9:13]
         incoming.append(fresh)
     fixtures=u.merge_fixtures([*incoming,*[r for r in fixtures if registry.row_key(r) not in affected]])
-    good=[d for d,c in batch['checks'].items() if c['status']=='ok'];covered=[d for d in good if batch['checks'][d]['window_covered']]
-    complete=len(covered)==len(sta.DIVISIONS) and not batch['quarantined'] and not conflicts
+    good={d for d,c in batch['checks'].items() if c['status']=='ok'}
+    covered={d for d in good if batch['checks'][d]['window_covered']}
+    review={q.get('division') or raw.get(q['id'].removeprefix('Soccerway:'),{}).get('division')
+            for q in batch['quarantined']}
+    verified=covered-review-conflict_divisions if None not in review else set()
+    complete=verified==set(sta.DIVISIONS)
     state='ok' if complete else 'partial' if good else 'error'
     status.update(last_soccerway_attempt_utc=stamp,soccerway_refresh_status=state,soccerway_checks=batch['checks'],
         soccerway_errors=batch['errors'],soccerway_quarantined=batch['quarantined'],soccerway_archived_matches=total,
@@ -263,11 +290,12 @@ def apply(root,batch,status,history,book,fixtures,stamp,now,trigger=None):
         status['last_soccerway_success_utc']=stamp
         if trigger:status['last_soccerway_success_trigger']=trigger
     if changed:status['last_soccerway_result_change_utc']=stamp
-    status.update(last_fixture_attempt_utc=stamp,fixtures_checked_utc=stamp,fixtures_feed_status=state,
+    status.update(last_fixture_attempt_utc=stamp,fixtures_checked_utc=stamp,
+        fixtures_feed_status='ok' if complete else 'partial_secondary' if verified else 'error',
         fixtures_source='Soccerway / verified competition IDs and UTC epochs; Football-Data historical statistics and quotes',
-        secondary_fixture_sources_ok=len(covered),secondary_fixture_sources_total=len(sta.DIVISIONS),
+        secondary_fixture_sources_ok=len(verified),secondary_fixture_sources_total=len(sta.DIVISIONS),
         secondary_fixture_counts={d:sum(r[0]==d for r in incoming) for d in sta.DIVISIONS},
-        stale_secondary_leagues=sorted(set(sta.DIVISIONS)-set(covered)),secondary_fixture_errors=batch['errors'])
+        stale_secondary_leagues=sorted(set(sta.DIVISIONS)-verified),secondary_fixture_errors=batch['errors'])
     return fixtures,changed,conflicts
 
 

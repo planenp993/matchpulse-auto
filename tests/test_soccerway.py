@@ -33,7 +33,8 @@ def page(results=None, fixtures=None, total=None, div='E0'):
     def feed(kind, events):
         data='SA÷1¬~ZEE÷'+c['template']+'¬ZL÷'+c['path']+'¬ZAF÷'+c['country']+'¬~'+'¬~'.join(events)
         return "cjs.initialFeeds['"+kind+"'] = {data: `"+data+'`, allEventsCount: '+str(len(events) if total is None else total)+'};'
-    return ('tournamentTemplateId: "'+c['template']+'"; <div class="heading__info">2026/2027</div>'+
+    season='2026' if div=='SWE' else '2026/2027'
+    return ('tournamentTemplateId: "'+c['template']+'"; <div class="heading__info">'+season+'</div>'+
         'cjs.initialFeeds["summary-fixtures"]={data:`DECOY`,allEventsCount:999};'+
         feed('results', [event()] if results is None else results)+
         feed('fixtures',[event('future01','2026-10-31T20:00:00+00:00','1','1',('',''))] if fixtures is None else fixtures)).encode()
@@ -81,6 +82,60 @@ class SoccerwayTests(unittest.TestCase):
         _,feeds=sw.parse(page(total=300),'E0',CATALOG['E0'],NOW)
         self.assertFalse(feeds['fixtures']['requested_window_covered'])
         self.assertFalse(feeds['results']['requested_window_covered'])
+
+    def test_explicit_zero_fixture_feed_keeps_recent_finals(self):
+        raw=page(fixtures=[])
+        start=raw.index(b'data: `',raw.index(b"['fixtures']"))+len(b'data: `')
+        raw=raw[:start]+raw[raw.index(b'`',start):]
+        b=self.batch(raw)
+        self.assertTrue(b['checks']['E0']['window_covered'])
+        self.assertEqual(len(b['results']),1)
+        self.assertEqual(b['rows'],[])
+        with self.assertRaises(ValueError):
+            sw.parse(raw.replace(b'data: ``, allEventsCount: 0',b'data: ``, allEventsCount: 1'),
+                     'E0',CATALOG['E0'],NOW)
+
+    def test_swedish_promotion_relegation_phase_is_archived_outside_the_league(self):
+        raw=page(results=[],fixtures=[event('playoff1','2026-11-01T13:00:00+00:00','1','1',('',''),
+                                           home='Östersunds FK',away='Varbergs BoIS')],div='SWE')
+        phase='SWEDEN: Allsvenskan - Relegation'
+        raw=raw.replace(b'ZEE',('ZA÷'+phase+'¬ZEE').encode())
+        b=sw.collect(self.root,NOW,download=lambda url:raw,divisions=['SWE'])
+        self.assertEqual(b['records'][0]['match']['excluded_phase'],phase)
+        self.assertEqual(b['rows'],[])
+        self.assertEqual(b['quarantined'],[])
+        sync.apply(self.root,self.patch(b))
+        self.assertEqual(self.read(sw.ARCHIVE+'/2026-11.json')['matches']['playoff1']['current']['excluded_phase'],phase)
+
+    def test_only_unverified_competitions_are_excluded_from_diary_capture(self):
+        swe=page(results=[],fixtures=[event('unknown1','2026-11-01T13:00:00+00:00','1','1',('',''))],div='SWE')
+        b=sw.collect(self.root,NOW,download=lambda url:swe if '/sweden/' in url else page(),divisions=['E0','SWE'])
+        sync.apply(self.root,self.patch(b))
+        status=self.read('docs/data/status.json')
+        self.assertEqual(status['fixtures_feed_status'],'partial_secondary')
+        self.assertEqual(status['secondary_fixture_sources_ok'],1)
+        self.assertNotIn('E0',status['stale_secondary_leagues'])
+        self.assertIn('SWE',status['stale_secondary_leagues'])
+        self.assertEqual(status['soccerway_quarantined'][0]['id'],'unknown1')
+
+    def test_stable_id_reschedule_outside_week_updates_link_and_preserves_forecast_key(self):
+        old=row('2026-10-28',(None,None),clock='20:00')
+        book=registry.empty()
+        first_seen=sync.iso(NOW-dt.timedelta(days=5))
+        registry.observe(book,[{'row':old,'provider_id':'Soccerway:future01','round':12}],first_seen)
+        match=next(iter(book['matches'].values()))
+        u.writejson(self.root/sync.REGISTRY,book)
+        b=self.batch(page(results=[],fixtures=[
+            event('future01','2026-11-14T20:00:00+00:00','1','1',('','')),
+            event('unseen01','2026-11-15T20:00:00+00:00','1','1',('',''))]))
+        self.assertEqual(b['observations'],[])
+        sync.apply(self.root,self.patch(b))
+        saved=self.read(sync.REGISTRY)['matches']
+        self.assertEqual(set(saved),{match['id']})
+        self.assertEqual(saved[match['id']]['schedule'][3:5],['2026-11-14','22:00'])
+        self.assertEqual(saved[match['id']]['first_seen_utc'],first_seen)
+        self.assertIn(registry.row_key(old),saved[match['id']]['legacy_keys'])
+        self.assertEqual(self.read('docs/data/fixtures.json')[0][3:5],['2026-11-14','22:00'])
 
     def test_only_ordinary_ft_has_regulation_goals_no_inferred_stats(self):
         for state,stage in [('3','10'),('3','11'),('2','2'),('3','5')]:
