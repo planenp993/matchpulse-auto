@@ -1,5 +1,5 @@
-/* MATCH LAB X public frontend. Soccerway fixtures via existing public snapshot,
-   Football-Data.co.uk via independently sourced CSV histories. */
+/* MATCH LAB X browser viewer. Public estimates are built from source snapshots
+   in GitHub Actions; no full history download or private model exposure. */
 (function(){
 "use strict";
 const M=window.MLXModel,$=id=>document.getElementById(id);
@@ -23,8 +23,7 @@ const nowBG=()=>new Intl.DateTimeFormat("sv-SE",{timeZone:"Europe/Sofia",year:"n
 const shift=(day,n)=>{const x=new Date(day+"T12:00:00Z");x.setUTCDate(x.getUTCDate()+n);return x.toISOString().slice(0,10);};
 const human=day=>new Intl.DateTimeFormat("bg-BG",{day:"2-digit",month:"long",weekday:"long",timeZone:"UTC"}).format(new Date(day+"T12:00:00Z"));
 const key=f=>[f.div,f.date,f.home,f.away].join("|");
-let fixtures=[],coverage=null,sync=null,active=null,selected="ALL",daysBrief=7,screen="overview",analysisToken=0;
-const histCache=new Map(),histPending=new Map();
+let fixtures=[],coverage=null,sync=null,analysisSnapshot=null,analysisError="",active=null,selected="ALL",daysBrief=7,screen="overview";
 const supported=()=>CORE.concat(EXTRA.filter(d=>(coverage?.leagues?.[d]?.matches||0)>=500));
 const current=()=>fixtures.filter(f=>supported().includes(f.div));
 const future=(days=90)=>{const now=nowBG(),end=shift(dateBG(),days);
@@ -33,27 +32,6 @@ async function fetchJSON(path){
  const res=await fetch(path+"?v="+Date.now(),{cache:"no-store"});
  if(!res.ok)throw Error("HTTP "+res.status+" за "+path);
  return res.json();
-}
-let sharedHistoryPending=null;
-async function history(div){
- if(histCache.has(div))return histCache.get(div);
- if(!sharedHistoryPending)sharedHistoryPending=fetchJSON("../data/history.json").then(data=>{
-   if(!Array.isArray(data))throw Error("Невалиден публикуван исторически архив");
-   for(const row of data){
-     if(!Array.isArray(row)||!META[row[0]]||!Number.isInteger(row[7])||!Number.isInteger(row[8]))continue;
-     const extra=row[13]||{};
-     const validNum=v=>Number.isInteger(v)&&v>=0?v:null;
-     const item=[row[3],row[5],row[6],row[7],row[8],
-       validNum(extra.HTHG),validNum(extra.HTAG),
-       validNum(extra.HS),validNum(extra.AS),validNum(extra.HST),validNum(extra.AST),
-       validNum(extra.HC),validNum(extra.AC),validNum(extra.HY),validNum(extra.AY)];
-     if(!histCache.has(row[0]))histCache.set(row[0],[]);
-     histCache.get(row[0]).push(item);
-   }
-   for(const list of histCache.values())list.sort((a,b)=>a[0].localeCompare(b[0]));
- }).catch(err=>{sharedHistoryPending=null;throw err});
- await sharedHistoryPending;
- return histCache.get(div)||[];
 }
 function closeMenu(){$("sidebar").classList.remove("open");$("menuBackdrop").classList.remove("open");}
 function goto(next){
@@ -267,22 +245,23 @@ function showAnalysis(f,estimate){
  );
  lower.append(sim,quality);root.appendChild(lower);return root;
 }
-async function renderAnalysis(){
+function renderAnalysis(){
  const id=active||$("matchSelect").value;
  const f=fixtures.find(x=>key(x)===id),root=clear("analysisBody");
  if(!f){root.appendChild(node("div","empty-state","Избери бъдещ мач от програмата."));return;}
  $("matchSelect").value=key(f);
  set("matchSource","Soccerway · "+f.div+" · "+f.date);
- root.appendChild(node("div","loading-state","Зареждане на историческия архив (Football-Data UK + проверени допълнения)…"));
- const token=++analysisToken;
- try{
-  const rows=await history(f.div);
-  if(token!==analysisToken)return;
-  root.replaceChildren(showAnalysis(f,M.estimate(rows,f)));
- }catch(e){
-  if(token!==analysisToken)return;
-  root.replaceChildren(node("div","empty-state","Общият исторически архив за "+f.div+" не е достъпен: "+e.message));
+ if(!analysisSnapshot){
+  root.appendChild(node("div","empty-state","Няма потвърден актуален аналитичен snapshot. "+(analysisError||"Провери следващото обновяване.")));
+  return;
  }
+ const estimate=analysisSnapshot.estimates[key(f)];
+ if(!estimate){
+  root.appendChild(node("div","empty-state","За тази среща няма валиден предварително изчислен анализ. Не показваме стара или измислена вероятност."));
+  return;
+ }
+ const model=estimate.ready?{...estimate,matrix:M.scoreMatrix(estimate.lh,estimate.la)}:estimate;
+ root.appendChild(showAnalysis(f,model));
 }
 function renderCoverage(){
  const root=clear("coverageRows"),info=coverage?.leagues||{};
@@ -298,10 +277,12 @@ function renderCoverage(){
 async function init(){
  wire();
  const errors=[];
+ let manifest=null;
  try{loadFixtures(await fetchJSON("../data/fixtures.json"));}catch(e){errors.push(e.message);}
  try{
-  const [manifest,audit]=await Promise.all([
+  const [loaded,audit]=await Promise.all([
     fetchJSON("../data/client_manifest.json"),fetchJSON("../data/coverage_audit.json")]);
+  manifest=loaded;
   const divisions=manifest?.files?.["history.json"]?.divisions;
   if(!divisions||!audit?.leagues)throw Error("Липсва проверен каталог");
   coverage={schema:1,generated_utc:audit.checked_utc,
@@ -310,6 +291,20 @@ async function init(){
       on_target_matches:audit.leagues[div]?.coverage?.on_target?.available||0
     }]))};
  }catch(e){errors.push(e.message);}
+ try{
+  const snapshot=await fetchJSON("./data/analyses.json");
+  if(!manifest||snapshot?.schema!==1||
+     snapshot.history_sha256!==manifest.files?.["history.json"]?.sha256||
+     snapshot.fixtures_sha256!==manifest.files?.["fixtures.json"]?.sha256||
+     snapshot.model!=="Public empirical Poisson v1"||
+     !snapshot.estimates||typeof snapshot.estimates!=="object")
+   throw Error("Анализът не съответства на последните проверени данни");
+  analysisSnapshot=snapshot;
+  set("analysisSnapshotState",snapshot.ready_count+" проверени моделни оценки от "+snapshot.match_count+" срещи");
+ }catch(e){
+  analysisError=e.message;errors.push("analysis: "+e.message);
+  set("analysisSnapshotState","Аналитичните данни не са синхронизирани");
+ }
  try{sync=await fetchJSON("../data/status.json");}catch(e){errors.push(e.message);}
  sidebar();counters();chooseMatches();renderOverview();renderFreshness();
  if(errors.length)console.warn("MATCH LAB X",errors.join("; "));
