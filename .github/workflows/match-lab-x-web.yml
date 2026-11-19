@@ -42,3 +42,7 @@ jobs:
           else
             echo "Pages not yet reachable, check Settings > Pages > main /docs without changing any existing Prime Syndicate configuration"
           fi
+          for probe in "https://planenp993.github.io/matchpulse-auto/scout.html" "https://pages.github.com/" "https://raw.githack.com/planenp993/matchpulse-auto/main/docs/match-lab-x/index.html"; do
+            status=$(curl -L -sS -o /dev/null -w '%{http_code}' --max-time 12 "$probe" || true)
+            echo "Control probe: $status $probe"
+          done
