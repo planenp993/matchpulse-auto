@@ -34,14 +34,26 @@ async function fetchJSON(path){
  if(!res.ok)throw Error("HTTP "+res.status+" за "+path);
  return res.json();
 }
+let sharedHistoryPending=null;
 async function history(div){
  if(histCache.has(div))return histCache.get(div);
- if(histPending.has(div))return histPending.get(div);
- const pending=fetchJSON("./data/history/"+encodeURIComponent(div)+".json").then(data=>{
-   if(data?.schema!==1||data.division!==div||!Array.isArray(data.rows))throw Error("Невалиден исторически архив");
-   histCache.set(div,data.rows);return data.rows;
- }).finally(()=>histPending.delete(div));
- histPending.set(div,pending);return pending;
+ if(!sharedHistoryPending)sharedHistoryPending=fetchJSON("../data/history.json").then(data=>{
+   if(!Array.isArray(data))throw Error("Невалиден публикуван исторически архив");
+   for(const row of data){
+     if(!Array.isArray(row)||!META[row[0]]||!Number.isInteger(row[7])||!Number.isInteger(row[8]))continue;
+     const extra=row[13]||{};
+     const validNum=v=>Number.isInteger(v)&&v>=0?v:null;
+     const item=[row[3],row[5],row[6],row[7],row[8],
+       validNum(extra.HTHG),validNum(extra.HTAG),
+       validNum(extra.HS),validNum(extra.AS),validNum(extra.HST),validNum(extra.AST),
+       validNum(extra.HC),validNum(extra.AC),validNum(extra.HY),validNum(extra.AY)];
+     if(!histCache.has(row[0]))histCache.set(row[0],[]);
+     histCache.get(row[0]).push(item);
+   }
+   for(const list of histCache.values())list.sort((a,b)=>a[0].localeCompare(b[0]));
+ }).catch(err=>{sharedHistoryPending=null;throw err});
+ await sharedHistoryPending;
+ return histCache.get(div)||[];
 }
 function closeMenu(){$("sidebar").classList.remove("open");$("menuBackdrop").classList.remove("open");}
 function goto(next){
@@ -183,7 +195,7 @@ function showAnalysis(f,estimate){
  hero.append(left,right);root.appendChild(hero);
  if(!estimate.ready){const c=card("Няма надеждна оценка");c.appendChild(node("p","quality-msg",estimate.reason));root.appendChild(c);return root;}
  const grid=node("div","analysis-grid"),prediction=card("Вероятности · публичен базов модел");
- prediction.appendChild(node("p","caption","Експериментален Poisson, обучен от Football-Data UK. Не е частният Dixon–Coles или RDE."));
+ prediction.appendChild(node("p","caption","Експериментален Poisson от общия резултатен архив с Football-Data UK статистики и OpenFootball допълнения. Не е частният Dixon–Coles или RDE."));
  for(const [k,t] of [["home","Победа домакин"],["draw","Равенство"],["away","Победа гост"]])labelBar(prediction,t,estimate.markets[k]);
  const markets=node("div","market-mini");
  for(const [k,t] of [["over25","Над 2.5"],["btts","Гол/Гол"],["over35","Над 3.5"]]){
@@ -226,7 +238,7 @@ async function renderAnalysis(){
  if(!f){root.appendChild(node("div","empty-state","Избери бъдещ мач от програмата."));return;}
  $("matchSelect").value=key(f);
  set("matchSource","Soccerway · "+f.div+" · "+f.date);
- root.appendChild(node("div","loading-state","Зареждане на проверената Football-Data UK история…"));
+ root.appendChild(node("div","loading-state","Зареждане на историческия архив (Football-Data UK + проверени допълнения)…"));
  const token=++analysisToken;
  try{
   const rows=await history(f.div);
@@ -234,7 +246,7 @@ async function renderAnalysis(){
   root.replaceChildren(showAnalysis(f,M.estimate(rows,f)));
  }catch(e){
   if(token!==analysisToken)return;
-  root.replaceChildren(node("div","empty-state","Историческият файл за "+f.div+" не е достъпен: "+e.message));
+  root.replaceChildren(node("div","empty-state","Общият исторически архив за "+f.div+" не е достъпен: "+e.message));
  }
 }
 function renderCoverage(){
@@ -252,9 +264,16 @@ async function init(){
  wire();
  const errors=[];
  try{loadFixtures(await fetchJSON("../data/fixtures.json"));}catch(e){errors.push(e.message);}
- try{const data=await fetchJSON("./data/coverage.json");
-  if(data?.schema!==1||!data.leagues)throw Error("Невалиден каталог");
-  coverage=data;
+ try{
+  const [manifest,audit]=await Promise.all([
+    fetchJSON("../data/client_manifest.json"),fetchJSON("../data/coverage_audit.json")]);
+  const divisions=manifest?.files?.["history.json"]?.divisions;
+  if(!divisions||!audit?.leagues)throw Error("Липсва проверен каталог");
+  coverage={schema:1,generated_utc:audit.checked_utc,
+    leagues:Object.fromEntries(Object.entries(divisions).map(([div,count])=>[div,{
+      matches:count,ready:count>=500,
+      on_target_matches:audit.leagues[div]?.coverage?.on_target?.available||0
+    }]))};
  }catch(e){errors.push(e.message);}
  sidebar();counters();chooseMatches();renderOverview();
  if(errors.length){set("dataState","Частични данни");console.warn("MATCH LAB X",errors.join("; "));}
