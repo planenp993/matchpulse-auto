@@ -57,6 +57,15 @@ main{padding:28px 36px 55px;max-width:1700px;margin:0 auto}
 .hero-orbit{position:absolute;right:5%;top:-20%;width:380px;height:380px;border:1px solid #9aeeee15;border-radius:50%;transform:rotate(-25deg)}.orbit-b{right:1%;top:-28%;width:470px;height:470px}
 .graphic-caption{position:absolute;top:15%;right:-3%;font:700 9px/1.55 'Space Grotesk';letter-spacing:.22em;color:#7ba9bb}
 .tiny-metric{position:absolute;bottom:4%;left:-3%;font:700 11px 'Space Grotesk';letter-spacing:.08em;color:#a6eae4}
+.freshness-bar{display:flex;align-items:center;flex-wrap:wrap;gap:12px 22px;padding:12px 17px;margin:15px 0 18px;border:1px solid #235f59;background:#102a2b;border-radius:12px;color:#9fe8dc;font-size:11px}
+.freshness-title{font-weight:800;letter-spacing:.09em;font-size:10px;color:#67c9b9}
+.freshness-warn{background:#30271d;border-color:#69512a;color:#ebc887}
+.freshness-warn .freshness-title{color:#e8ba77}
+.fair-odds-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.fair-odd{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#172a39;padding:12px 15px;border:1px solid #2b4050;border-radius:10px}
+.fair-odd small{font-size:11px;color:#9ab1c3}
+.fair-odd strong{font:700 21px 'Space Grotesk';color:#b9f3e5}
+@media(max-width:640px){.freshness-bar{gap:7px 14px}.freshness-title{width:100%}.fair-odds-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.fair-odd{padding:11px 10px}.fair-odd strong{font-size:17px}}
 .stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:17px 0 31px}
 .metric,.panel,.filterbox,.analysis-selector,.research-card,.source-card,.research-note{background:linear-gradient(145deg,#121f31d9,#0c1523f2);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:16px}
 .metric{padding:20px 21px;min-width:0}
