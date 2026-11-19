@@ -56,12 +56,37 @@ check("Fair model price is the reciprocal of probability, not an offered quote",
 check("App reads only prepublished history and Soccerway calendar",()=>{
  const html=fs.readFileSync(path.join(__dirname,"../docs/match-lab-x/index.html"),"utf8");
  const js=fs.readFileSync(path.join(__dirname,"../docs/match-lab-x/app.js"),"utf8");
- for(const pathname of ["../data/fixtures.json","../data/history.json",
-                          "../data/client_manifest.json","../data/coverage_audit.json","../data/status.json"])
+ for(const pathname of ["../data/fixtures.json","../data/client_manifest.json",
+                          "../data/coverage_audit.json","../data/status.json","./data/analyses.json"])
   assert.ok(js.includes(pathname),"Missing "+pathname);
  assert.ok(!/soccerway\.com|football-data\.co\.uk\/mmz4281/i.test(js),"No direct provider scraping in browser");
- for(const id of ["metricFixtures","matchSelect","fixtureGroups","analysisBody","leagueNav","coverageRows","freshnessBar","freshnessCalendar","freshnessHistory"])
+ assert.ok(!js.includes('fetchJSON("../data/history.json")'),"Browser must not download full history");
+ assert.ok(js.includes("snapshot.history_sha256")&&js.includes("snapshot.fixtures_sha256"),"Reject out-of-sync estimates");
+ for(const id of ["metricFixtures","matchSelect","fixtureGroups","analysisBody","leagueNav","coverageRows","freshnessBar","freshnessCalendar","freshnessHistory","analysisSnapshotState"])
   assert.ok(html.includes('id="'+id+'"'));
  new vm.Script(js,{filename:"app.js"});
+});
+check("Compiled snapshot follows the published manifest",()=>{
+ const {execFileSync}=require("node:child_process");
+ const os=require("node:os");
+ const tmp=fs.mkdtempSync(path.join(os.tmpdir(),"mlx-check-"));
+ try{
+  const out=path.join(tmp,"compiled.json");
+  execFileSync(process.execPath,[path.join(__dirname,"build_match_lab_x_snapshot.cjs"),"--output",out],{stdio:"pipe"});
+  const compiled=JSON.parse(fs.readFileSync(out,"utf8"));
+  const manifest=JSON.parse(fs.readFileSync(path.join(__dirname,"../docs/data/client_manifest.json"),"utf8"));
+  assert.equal(compiled.schema,1);
+  assert.equal(compiled.history_sha256,manifest.files["history.json"].sha256);
+  assert.equal(compiled.fixtures_sha256,manifest.files["fixtures.json"].sha256);
+  assert.ok(compiled.ready_count>0);
+  assert.ok(compiled.match_count>=compiled.ready_count);
+  assert.ok(fs.statSync(out).size<2_000_000);
+  for(const value of Object.values(compiled.estimates)){
+   if(!value.ready)continue;
+   assert.ok(Math.abs(value.markets.home+value.markets.draw+value.markets.away-1)<1e-8);
+   assert.ok(!Object.hasOwn(value.home.all,"rows"),"No raw fixture archive replicated");
+   break;
+  }
+ }finally{fs.rmSync(tmp,{recursive:true,force:true});}
 });
 console.log("MATCH LAB X: all public site tests passed.");

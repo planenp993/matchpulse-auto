@@ -101,6 +101,9 @@ jobs:
             # Last writer: version the exact files that this artifact publishes.
             python scripts/client_manifest.py
             python scripts/client_manifest.py --check
+            node scripts/build_match_lab_x_snapshot.cjs
+            node scripts/build_match_lab_x_snapshot.cjs --check
+            git add docs/match-lab-x/data/analyses.json
             git add data/match_registry.json docs/data/history.json docs/data/fixtures.json docs/data/status.json docs/data/coverage_audit.json
             git add docs/data/match_links.json docs/data/data_health.json
             git add docs/data/europe_history.json docs/data/europe_coverage.json docs/data/europe_fixture_names.json

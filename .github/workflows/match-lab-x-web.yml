@@ -5,6 +5,7 @@ on:
     paths:
       - 'docs/match-lab-x/**'
       - 'scripts/test_match_lab_x_site.cjs'
+      - 'scripts/build_match_lab_x_snapshot.cjs'
       - '.github/workflows/match-lab-x-web.yml'
 permissions:
   contents: read
