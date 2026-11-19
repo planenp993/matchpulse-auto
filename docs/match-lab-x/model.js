@@ -31,6 +31,7 @@ const poisson=(lambda,max=11)=>{
   for(let n=1;n<=max;n++)p.push(p[n-1]*lambda/n);
   return p;
 };
+const fairOdds=p=>typeof p==="number"&&Number.isFinite(p)&&p>0&&p<=1?1/p:null;
 const pct=x=>typeof x==="number"&&Number.isFinite(x)?(100*x).toFixed(1)+"%":"—";
 function stats(rows,team,date){
   const key=norm(team);
@@ -125,5 +126,5 @@ function sample(matrix,n=10000,random=Math.random){
   for(const k of ["home","draw","away","over25","btts"])result[k]/=n;
   return result;
 }
-return {norm,valid,stats,estimate,poisson,scoreMatrix,markets,afterHalf,sample,pct};
+return {norm,valid,stats,estimate,poisson,scoreMatrix,markets,afterHalf,sample,pct,fairOdds};
 });
