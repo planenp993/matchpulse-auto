@@ -47,14 +47,20 @@ check("Explicit team aliases protect important matches",()=>{
  assert.equal(M.norm("Nottingham Forest"),M.norm("Nott'm Forest"));
  assert.equal(M.norm("FC Bayern München"),M.norm("Bayern Munich"));
 });
+check("Fair model price is the reciprocal of probability, not an offered quote",()=>{
+ assert.equal(M.fairOdds(.5),2);
+ assert.equal(M.fairOdds(.25),4);
+ assert.equal(M.fairOdds(0),null);
+ assert.equal(M.fairOdds(Number.NaN),null);
+});
 check("App reads only prepublished history and Soccerway calendar",()=>{
  const html=fs.readFileSync(path.join(__dirname,"../docs/match-lab-x/index.html"),"utf8");
  const js=fs.readFileSync(path.join(__dirname,"../docs/match-lab-x/app.js"),"utf8");
  for(const pathname of ["../data/fixtures.json","../data/history.json",
-                          "../data/client_manifest.json","../data/coverage_audit.json"])
+                          "../data/client_manifest.json","../data/coverage_audit.json","../data/status.json"])
   assert.ok(js.includes(pathname),"Missing "+pathname);
  assert.ok(!/soccerway\.com|football-data\.co\.uk\/mmz4281/i.test(js),"No direct provider scraping in browser");
- for(const id of ["metricFixtures","matchSelect","fixtureGroups","analysisBody","leagueNav","coverageRows"])
+ for(const id of ["metricFixtures","matchSelect","fixtureGroups","analysisBody","leagueNav","coverageRows","freshnessBar","freshnessCalendar","freshnessHistory"])
   assert.ok(html.includes('id="'+id+'"'));
  new vm.Script(js,{filename:"app.js"});
 });
