@@ -66,6 +66,23 @@ check("App reads only prepublished history and Soccerway calendar",()=>{
   assert.ok(html.includes('id="'+id+'"'));
  new vm.Script(js,{filename:"app.js"});
 });
+check("Verified aliases resolve provider names without guessing",()=>{
+ const B=require("./build_match_lab_x_snapshot.cjs");
+ const dictionary=JSON.parse(fs.readFileSync(path.join(__dirname,"../docs/data/club_aliases.json"),"utf8"));
+ assert.equal(dictionary.version,1);
+ const a=dictionary.aliases;
+ for(const [provider,archive] of [
+  ["EN Avant Guingamp","Guingamp"],
+  ["1. FC Nürnberg","Nurnberg"],
+  ["Rayo Vallecano","Vallecano"],
+  ["Hellas Verona","Verona"],
+  ["Bolton Wanderers","Bolton"],
+  ["Stade DE Reims","Reims"]])
+  assert.equal(B.canonical(provider,a),B.canonical(archive,a),provider);
+ assert.notEqual(B.canonical("Red Star Belgrade",a),B.canonical("Red Star FC",a),
+   "Different clubs must remain separate");
+ assert.notEqual(B.canonical("Random Unknown Team",a),B.canonical("Arsenal",a));
+});
 check("Compiled snapshot follows the published manifest",()=>{
  const {execFileSync}=require("node:child_process");
  const os=require("node:os");
