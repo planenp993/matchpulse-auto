@@ -25,3 +25,20 @@ jobs:
           test -s docs/data/history.json
           test -s docs/data/client_manifest.json
           test -s docs/data/coverage_audit.json
+      - name: 'Check public GitHub Pages URL without failing the build'
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          url="https://planenp993.github.io/matchpulse-auto/match-lab-x/"
+          code=$(curl -L -sS -o /tmp/mlx_page.html -w '%{http_code}' --max-time 20 "$url" || true)
+          echo "MATCH LAB X GitHub Pages URL: $url"
+          echo "GitHub Pages HTTP status: $code"
+          if [ "$code" = "200" ]; then
+            if grep -q 'MATCH LAB X' /tmp/mlx_page.html; then
+              echo "Website is reachable and has MATCH LAB X branding"
+            else
+              echo "Page is reachable but does not contain the expected site yet"
+            fi
+          else
+            echo "Pages not yet reachable, check Settings > Pages > main /docs without changing any existing Prime Syndicate configuration"
+          fi
