@@ -1,0 +1,64 @@
+name: MATCH LAB X | Public site data
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 5 * * *"
+  push:
+    paths:
+      - 'docs/match-lab-x/index.html'
+      - 'docs/match-lab-x/app.js'
+      - 'docs/match-lab-x/model.js'
+      - 'docs/match-lab-x/style.css'
+      - 'scripts/build_match_lab_x_site.py'
+      - 'scripts/test_match_lab_x_site.cjs'
+      - 'tests/test_match_lab_x_site.py'
+      - '.github/workflows/match-lab-x-public.yml'
+concurrency:
+  group: match-lab-x-public-data
+  cancel-in-progress: false
+permissions:
+  contents: write
+jobs:
+  verify_and_build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: 'Python parsing and source safeguards'
+        run: python -m unittest discover -s tests -p 'test_match_lab_x_site.py' -v
+      - name: 'Browser model and UI syntax tests'
+        run: node scripts/test_match_lab_x_site.cjs
+      - name: 'Build 18 real Football-Data UK league archives on main'
+        if: github.ref == 'refs/heads/main'
+        run: python scripts/build_match_lab_x_site.py
+      - name: 'Publish isolated static data without changing Prime Syndicate'
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          git add -- docs/match-lab-x/data/
+          if ! git diff --cached --quiet; then
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "MATCH LAB X: refresh Football-Data UK public history"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          else
+            echo "No changed football history data"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: match-lab-x-public-site-data
+          path: |
+            docs/match-lab-x/index.html
+            docs/match-lab-x/app.js
+            docs/match-lab-x/model.js
+            docs/match-lab-x/style.css
+            docs/match-lab-x/data/coverage.json
+          if-no-files-found: warn
