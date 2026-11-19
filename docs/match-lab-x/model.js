@@ -1,11 +1,23 @@
 /* MATCH LAB X public analytical baseline. Distinct from private four-model research. */
 (function(root,factory){const api=factory();if(typeof module==="object"&&module.exports)module.exports=api;if(root)root.MLXModel=api;})(typeof globalThis!=="undefined"?globalThis:this,function(){
 "use strict";
-const aliases={"man utd":"man united","man city":"man city","nott m forest":"nott m forest",
-"inter milan":"inter","internazionale":"inter","ac milan":"milan","atletico madrid":"ath madrid",
-"real sociedad":"sociedad","bayern munchen":"bayern munich",
+const aliases={
+"manchester united":"man united","manchester utd":"man united","man utd":"man united",
+"manchester city":"man city","man city":"man city",
+"nottingham forest":"nott m forest","nott m forest":"nott m forest",
+"tottenham hotspur":"tottenham","spurs":"tottenham",
+"inter milan":"inter","internazionale":"inter","fc internazionale":"inter",
+"ac milan":"milan","milan":"milan","atletico madrid":"ath madrid",
+"atletico de madrid":"ath madrid","atletico":"ath madrid",
+"real sociedad":"sociedad","real sociedad de futbol":"sociedad",
+"athletic club":"ath bilbao","athletic bilbao":"ath bilbao",
+"bayern munchen":"bayern munich","fc bayern munchen":"bayern munich",
 "borussia monchengladbach":"m gladbach","paris saint germain":"paris sg",
-"rb leipzig":"rb leipzig","athletic club":"ath bilbao"};
+"rcd espanyol":"espanol","espanyol barcelona":"espanol","deportivo alaves":"alaves",
+"real betis":"betis","villarreal cf":"villarreal","getafe cf":"getafe",
+"sevilla fc":"sevilla","valencia cf":"valencia",
+"bayer 04 leverkusen":"leverkusen","borussia dortmund":"dortmund",
+"fc augsburg":"augsburg","vfb stuttgart":"stuttgart","rb leipzig":"rb leipzig"};
 const norm=v=>{
   const s=String(v||"").normalize("NFKD").replace(/[\u0300-\u036f]/g,"")
     .replace(/[^a-zA-Z0-9]+/g," ").trim().toLowerCase();
