@@ -23,7 +23,7 @@ const nowBG=()=>new Intl.DateTimeFormat("sv-SE",{timeZone:"Europe/Sofia",year:"n
 const shift=(day,n)=>{const x=new Date(day+"T12:00:00Z");x.setUTCDate(x.getUTCDate()+n);return x.toISOString().slice(0,10);};
 const human=day=>new Intl.DateTimeFormat("bg-BG",{day:"2-digit",month:"long",weekday:"long",timeZone:"UTC"}).format(new Date(day+"T12:00:00Z"));
 const key=f=>[f.div,f.date,f.home,f.away].join("|");
-let fixtures=[],coverage=null,active=null,selected="ALL",daysBrief=7,screen="overview",analysisToken=0;
+let fixtures=[],coverage=null,sync=null,active=null,selected="ALL",daysBrief=7,screen="overview",analysisToken=0;
 const histCache=new Map(),histPending=new Map();
 const supported=()=>CORE.concat(EXTRA.filter(d=>(coverage?.leagues?.[d]?.matches||0)>=500));
 const current=()=>fixtures.filter(f=>supported().includes(f.div));
@@ -119,6 +119,28 @@ function counters(){
  set("clockText",dateBG()+" · София");
  set("dataState",fixtures.length&&coverage?"Актуални източници":fixtures.length?"Частично покритие":"Проверка на данните");
 }
+function ageMinutes(iso){
+ const ms=Date.parse(iso||"");
+ return Number.isFinite(ms)?Math.max(0,Math.floor((Date.now()-ms)/60000)):null;
+}
+function ageLabel(min){
+ if(min===null)return "неизвестно";
+ if(min<60)return min+" мин";
+ if(min<1440)return Math.floor(min/60)+" ч";
+ return Math.floor(min/1440)+" дни";
+}
+function renderFreshness(){
+ const calendarTime=sync?.last_soccerway_data_success_utc||sync?.fixtures_checked_utc;
+ const historyTime=sync?.last_current_history_success_utc||sync?.last_history_success_utc;
+ const calendarAge=ageMinutes(calendarTime),historyAge=ageMinutes(historyTime);
+ set("freshnessCalendar",calendarAge===null?"Календар: няма потвърдена актуализация":"Календар: преди "+ageLabel(calendarAge));
+ set("freshnessHistory",historyAge===null?"История: няма потвърдена актуализация":"История: преди "+ageLabel(historyAge));
+ const complete=fixtures.length>0&&Boolean(coverage);
+ const fresh=calendarAge!==null&&calendarAge<=180&&historyAge!==null&&historyAge<=72*60;
+ const feedOK=sync?.soccerway_refresh_status==="ok";
+ set("dataState",complete&&fresh&&feedOK?"Актуални данни":complete?"Провери свежестта":"Частични данни");
+ $("freshnessBar").classList.toggle("freshness-warn",!complete||!fresh||!feedOK);
+}
 function gameButton(f,small=false){
  const b=node("button",small?"match-row":"fixture-line");b.type="button";
  if(small){
@@ -205,6 +227,15 @@ function showAnalysis(f,estimate){
  const form=card("Отбори · последна форма");
  teamStats(form,f.home,estimate.home);teamStats(form,f.away,estimate.away);
  grid.append(prediction,form);root.appendChild(grid);
+ const fair=card("Моделни коефициенти · без марж"),fairGrid=node("div","fair-odds-grid");
+ for(const [k,title] of [["home","1 · Домакин"],["draw","X · Равен"],["away","2 · Гост"],
+  ["over15","Над 1.5"],["over25","Над 2.5"],["btts","Гол / Гол"]]){
+  const item=node("div","fair-odd"),value=M.fairOdds(estimate.markets[k]);
+  item.append(node("small",null,title),node("strong",null,value===null?"—":value.toFixed(2)));
+  fairGrid.appendChild(item);
+ }
+ fair.append(fairGrid,node("p","caption","Математическа цена 1 / P от некалибрирания базов модел. Не е реален букмейкърски коефициент и не е доказана стойност за залог."));
+ root.appendChild(fair);
  const section=node("div","analysis-grid"),exact=card("Вероятни крайни резултати"),direct=card("Директни срещи");
  estimate.matrix.slice().sort((a,b)=>b[2]-a[2]).slice(0,7).forEach(x=>labelBar(exact,x[0]+":"+x[1],x[2]));
  if(!estimate.h2h.length)direct.appendChild(node("p","caption","Няма достатъчно проверени директни срещи в разглеждания период."));
@@ -228,8 +259,12 @@ function showAnalysis(f,estimate){
  };
  sh.addEventListener("change",()=>render(false));sa.addEventListener("change",()=>render(false));
  button.addEventListener("click",()=>render(true));sim.append(button,result);
- quality.append(node("p","caption","Използвани "+estimate.n+" исторически срещи от Football-Data UK с дата преди "+f.date+". Отделна версия на базов Poisson, без частните модели."),
-  node("p","quality-msg","Оценките не доказват предимство срещу букмейкърските коефициенти. Не представляват съвет за залог."));
+ const homeVenue=estimate.home.home.n,awayVenue=estimate.away.away.n;
+ quality.append(
+  node("p","caption","Исторически срещи в лигата: "+num(estimate.n)+". Влизат само завършени мачове преди "+f.date+" от общия архив (Football-Data UK и проверени допълнения)."),
+  node("p","caption","Съответна извадка: "+f.home+" · "+homeVenue+" домакинства; "+f.away+" · "+awayVenue+" гостувания. Мачове с точни удари в последните 10: "+estimate.home.all.shotN+" / "+estimate.away.all.shotN+"."),
+  node("p","quality-msg",(homeVenue<4||awayVenue<4?"Внимание: малко срещи на съответния терен, моделът разчита силно на средните за лигата. ":"")+"Оценките не са доказано калибрирани към пазара и не представляват съвет за залог.")
+ );
  lower.append(sim,quality);root.appendChild(lower);return root;
 }
 async function renderAnalysis(){
@@ -275,8 +310,9 @@ async function init(){
       on_target_matches:audit.leagues[div]?.coverage?.on_target?.available||0
     }]))};
  }catch(e){errors.push(e.message);}
- sidebar();counters();chooseMatches();renderOverview();
- if(errors.length){set("dataState","Частични данни");console.warn("MATCH LAB X",errors.join("; "));}
+ try{sync=await fetchJSON("../data/status.json");}catch(e){errors.push(e.message);}
+ sidebar();counters();chooseMatches();renderOverview();renderFreshness();
+ if(errors.length)console.warn("MATCH LAB X",errors.join("; "));
 }
 window.MLXSite={loadFixtures,future,goto};
 init();
