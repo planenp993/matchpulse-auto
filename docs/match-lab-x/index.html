@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="bg">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width,initial-scale=1">
+ <meta name="theme-color" content="#080e1a">
+ <meta name="description" content="MATCH LAB X: футболна аналитична лаборатория. Исторически архив с Football-Data UK статистики и Soccerway програма.">
+ <title>MATCH LAB X | Football Intelligence</title>
+ <link rel="stylesheet" href="./style.css?v=1">
+</head>
+<body>
+<div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
+<div class="shell">
+ <aside class="sidebar" id="sidebar">
+  <a class="brand" href="./" aria-label="MATCH LAB X начало"><span class="brand-mark">M<span>✦</span></span><span class="brand-copy"><strong>MATCH LAB <i>X</i></strong><small>FOOTBALL INTELLIGENCE</small></span></a>
+  <div class="navlabel">ЛАБОРАТОРИЯ</div>
+  <nav class="nav" aria-label="Основна навигация">
+   <button class="navitem active" data-screen="overview"><span class="navicon">◫</span><span>Общ преглед</span></button>
+   <button class="navitem" data-screen="fixtures"><span class="navicon">▦</span><span>Програма</span></button>
+   <button class="navitem" data-screen="analysis"><span class="navicon">◈</span><span>Анализ на мач</span></button>
+   <button class="navitem" data-screen="research"><span class="navicon">⌁</span><span>Research Lab</span></button>
+   <button class="navitem" data-screen="sources"><span class="navicon">▤</span><span>Данни и източници</span></button>
+  </nav>
+  <div class="navlabel leagueslabel">ПЪРВЕНСТВА</div>
+  <div class="league-nav" id="leagueNav"><div class="skeleton short"></div></div>
+  <div class="sidebar-bottom"><span class="live-dot"></span><span>PUBLIC VIEWER <small>PRIVATE CORE PROTECTED</small></span></div>
+ </aside>
+ <div class="main-frame">
+  <header class="topbar">
+   <div class="top-left"><button id="menuToggle" class="mobile-menu" aria-label="Меню">☰</button><span class="crumb">MATCH LAB X <span>/</span> <span id="crumb">Общ преглед</span></span></div>
+   <div class="top-right"><span class="clock" id="clockText">Europe / Sofia</span><span class="status-chip"><span class="live-dot"></span><span id="dataState">Проверка на данните</span></span><a class="github-top" href="https://github.com/planenp993/goal-lab-research/tree/main/match_lab_x" target="_blank" rel="noopener noreferrer">Research GitHub ↗</a></div>
+  </header>
+  <main>
+   <section class="screen active" id="screen-overview">
+    <div class="hero">
+     <div class="hero-orbit orbit-a"></div><div class="hero-orbit orbit-b"></div>
+     <div class="hero-copy"><span class="eyebrow"><span class="eyedot"></span> NEXT-GEN FOOTBALL RESEARCH</span>
+       <h1>Numbers reveal<br><em>the unseen game.</em></h1>
+       <p>Един екран за бъдещата програма, футболна статистика, изследователски модели и вероятностни сценарии.</p>
+       <div class="hero-actions"><button class="btn primary" data-goto="fixtures">Разгледай мачовете <span>↗</span></button><button class="btn ghost" data-goto="research">Нашите алгоритми <span>→</span></button></div>
+     </div>
+     <div class="hero-graphic" aria-hidden="true"><div class="sphere"><div class="sphere-inner">X</div></div><div class="graphic-caption">PROBABILITY<br>ENGINE</div><div class="tiny-metric">Σ P = 1.0000</div></div>
+    </div>
+    <div class="stat-grid">
+      <div class="metric"><div class="metric-label">Исторически мачове <span>↗</span></div><div class="metric-value" id="metricHistory">—</div><div class="metric-sub">История · FD UK + OpenFootball</div></div>
+      <div class="metric"><div class="metric-label">Първенства <span>◈</span></div><div class="metric-value" id="metricLeagues">18</div><div class="metric-sub">Топ 5, втори лиги и още</div></div>
+      <div class="metric"><div class="metric-label">Бъдещи срещи <span>↗</span></div><div class="metric-value" id="metricFixtures">—</div><div class="metric-sub">Soccerway · публикуван календар</div></div>
+      <div class="metric"><div class="metric-label">Точни удари <span>◎</span></div><div class="metric-value" id="metricShots">—</div><div class="metric-sub">Мачове с проверени данни</div></div>
+    </div>
+    <div class="section-head"><div><span class="overline">UPCOMING FIXTURES</span><h2>Следващи срещи</h2></div><button class="text-btn" data-goto="fixtures">Цялата програма ↗</button></div>
+    <div class="feed-grid"><div class="panel fixture-panel"><div class="panel-tools"><span class="hint">Подбрани първенства · час София</span><div class="day-pills" id="quickDates"><button class="active" data-days="7">7 дни</button><button data-days="14">14 дни</button><button data-days="30">30 дни</button></div></div><div id="overviewMatches" class="match-list"><div class="loading-state">Зареждане на програмата…</div></div></div>
+      <div class="panel insight-panel"><div class="eyebrow soft">LAB INSIGHT</div><div class="insight-decoration">◌</div><h3>От резултатите<br>към вероятностите.</h3><p>Използваме историческите голове и домакинско/гостуване за прозрачен публичен Poisson ориентир. Основните четири изследователски модела остават в частния GitHub.</p><div class="insight-footer"><span class="mini-trace">POISSON · 1X2 · O/U · BTTS</span><button class="text-btn" data-goto="analysis">Отвори анализа ↗</button></div></div>
+    </div>
+   </section>
+   <section class="screen" id="screen-fixtures">
+    <div class="page-header"><div><span class="overline">MATCH CENTER</span><h1>Футболна програма</h1><p>Soccerway · предстоящи мачове · часове за България</p></div><span class="pill" id="fixtureCountHeader">— срещи</span></div>
+    <div class="filterbox"><label class="input-wrap">⌕ <input id="searchMatches" placeholder="Търси отбор или първенство…" autocomplete="off"></label><select id="leagueFilter" aria-label="Първенство"><option value="ALL">Всички първенства</option></select><select id="rangeFilter" aria-label="Период"><option value="7">Следващите 7 дни</option><option value="14" selected>Следващите 14 дни</option><option value="30">Следващите 30 дни</option><option value="90">Всички налични</option></select></div>
+    <div class="legend"><span><b class="dot turquoise"></b> Soccerway</span><span><b class="dot amber"></b> Възможно разминаване на часа</span><span>Натисни мач за подробности</span></div>
+    <div id="fixtureGroups" class="group-list"><div class="loading-state">Зареждане…</div></div>
+   </section>
+   <section class="screen" id="screen-analysis">
+    <div class="page-header"><div><span class="overline">MATCH INTELLIGENCE</span><h1>Анализ на среща</h1><p>Реална история, ясно разграничени статистика и моделни оценки.</p></div></div>
+    <div class="analysis-selector"><label for="matchSelect">Избран мач</label><select id="matchSelect"><option value="">Избери среща от програмата</option></select><span id="matchSource" class="hint"></span></div>
+    <div id="analysisBody" class="analysis-body"><div class="empty-state"><div class="empty-icon">◈</div><h3>Избери среща</h3><p>Ще видиш формата, голове, точни удари, вероятности и условни сценарии.</p></div></div>
+   </section>
+   <section class="screen" id="screen-research">
+    <div class="page-header"><div><span class="overline">RESEARCH & MODEL DEVELOPMENT</span><h1>Четири модела. Един стандарт.</h1><p>Независими проверки, прогнозни дневници и симулация.</p></div></div>
+    <div class="research-grid">
+      <article class="research-card"><span class="research-num">01 / BASELINE</span><div class="research-glyph">λ</div><h3>Rolling Poisson</h3><p>Базова вероятностна оценка от историята на головете, разделена по домакинства и гостувания.</p><span class="research-chip">Сравнителна основа</span></article>
+      <article class="research-card"><span class="research-num">02 / DEPENDENCY</span><div class="research-glyph">Σ</div><h3>RDE</h3><p>Изследва зависимостта между първото и второто полувреме.</p><span class="research-chip">Research engine</span></article>
+      <article class="research-card"><span class="research-num">03 / STATISTICAL</span><div class="research-glyph">ρ</div><h3>Dixon–Coles</h3><p>Обучаеми нападение, защита и корекция на ниски футболни резултати.</p><span class="research-chip">Изследователски модел</span></article>
+      <article class="research-card"><span class="research-num">04 / PERFORMANCE</span><div class="research-glyph">◎</div><h3>Shot Intelligence</h3><p>Тества дали историческите точни удари дават допълнителна стойност.</p><span class="research-chip">Проверка на сигнала</span></article>
+    </div>
+    <div class="research-note"><div><span class="overline">PRIVATE RESEARCH DATA</span><h3>Запечатани прогнози, дневник и симулатор</h3><p>За да не публикуваме частния архив в отворен сайт, пълните четири модела и тяхната история засега се отварят през GitHub с твоя акаунт.</p></div><a class="btn primary" href="https://github.com/planenp993/goal-lab-research/tree/main/match_lab_x" target="_blank" rel="noopener noreferrer">Отвори Research Lab ↗</a></div>
+   </section>
+   <section class="screen" id="screen-sources">
+    <div class="page-header"><div><span class="overline">DATA INTEGRITY</span><h1>Данни и покритие</h1><p>Никакви измислени източници или проценти.</p></div></div>
+    <div class="source-grid">
+      <div class="source-card"><span class="source-kicker">01 · HISTORY</span><h3>Football-Data UK</h3><p>Вече поддържаният общ архив включва Football-Data UK статистики и проверени допълнения от OpenFootball за резултатите. Няма ново масово теглене от Football-Data.</p><a href="https://www.football-data.co.uk/" target="_blank" rel="noopener noreferrer">Официален източник ↗</a></div>
+      <div class="source-card"><span class="source-kicker">02 · FIXTURES</span><h3>Soccerway</h3><p>Програмата се чете от вече поддържания публичен календарен snapshot. В този сайт не се правят нови заявки и не се скрейпва Soccerway.</p><a href="https://www.soccerway.com/" target="_blank" rel="noopener noreferrer">Soccerway ↗</a></div>
+    </div>
+    <div class="panel coverage-panel"><div class="section-head tight"><div><span class="overline">DATA QUALITY</span><h2>Покритие по първенства</h2></div><span class="hint" id="lastSync">—</span></div><div class="table-wrap"><table class="coverage-table"><thead><tr><th>Първенство</th><th>История</th><th>Точни удари</th><th>Програма</th><th>Състояние</th></tr></thead><tbody id="coverageRows"></tbody></table></div></div>
+    <p class="disclaimer">Бележка: времето на бъдещите срещи идва от публичен външен календар и може да бъде променено. Данните се използват за аналитично изследване, не като гаранция за букмейкърско предимство.</p>
+   </section>
+  </main>
+  <footer class="footer"><span>© MATCH LAB X <b>✦</b> RESEARCH</span><span>FOOTBALL-DATA UK + OPENFOOTBALL × SOCCERWAY · Софийско време · Не е финансов съвет</span></footer>
+ </div>
+</div>
+<div class="backdrop" id="menuBackdrop"></div>
+<script src="./model.js?v=1"></script>
+<script src="./app.js?v=1"></script>
+</body></html>

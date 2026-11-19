@@ -1,0 +1,27 @@
+name: MATCH LAB X | Public website checks
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'docs/match-lab-x/**'
+      - 'scripts/test_match_lab_x_site.cjs'
+      - '.github/workflows/match-lab-x-web.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: 'Test viewer, model and syntax'
+        run: node scripts/test_match_lab_x_site.cjs
+      - name: 'Check shared public snapshot locations'
+        run: |
+          test -s docs/data/fixtures.json
+          test -s docs/data/history.json
+          test -s docs/data/client_manifest.json
+          test -s docs/data/coverage_audit.json
