@@ -25,6 +25,7 @@ jobs:
           test -s docs/data/history.json
           test -s docs/data/client_manifest.json
           test -s docs/data/coverage_audit.json
+          test -s docs/data/status.json
       - name: 'Check public GitHub Pages URL without failing the build'
         if: github.ref == 'refs/heads/main'
         shell: bash
