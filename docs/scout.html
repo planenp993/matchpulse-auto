@@ -3,30 +3,64 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0b1115">
-  <meta name="description" content="Футболна програма, статистика и анализ на мачове.">
+  <meta name="description" content="Предмачов подбор за голове, футболна програма и отчет на селекциите.">
   <title>Prime Syndicate · Футболни анализи</title>
   <link rel="stylesheet" href="assets/fonts/manrope.css?v=7d2e28443dbb">
   <link rel="stylesheet" href="scout.css?v=157b4fd35d9d">
   <link rel="stylesheet" href="scout-dark.css?v=9ba5e95302b4">
+  <link rel="stylesheet" href="scout-today.css?v=f5dbd759928a">
 </head>
 <body>
 <div class="shell">
   <aside class="sidebar">
     <div class="brand"><span class="brandball" data-ui-icon="pulse"></span><span class="brand-name">PRIME <em>SYNDICATE</em></span></div>
     <nav class="navigation" aria-label="Главно меню">
-      <button type="button" class="nav active" data-view="schedule"><span data-ui-icon="matches"></span> Мачове</button>
-      <button type="button" class="nav" data-view="picks"><span data-ui-icon="bookmark"></span> Подбор</button>
-      <button type="button" class="nav" data-view="diary"><span data-ui-icon="chart"></span> Дневник</button>
+      <button type="button" class="nav active" data-view="today" aria-current="page"><span data-ui-icon="goal"></span> Днес</button>
+      <button type="button" class="nav" data-view="schedule"><span data-ui-icon="matches"></span> Мачове</button>
+      <button type="button" class="nav" data-view="diary"><span data-ui-icon="chart"></span> Резултати</button>
     </nav>
     <div class="sidebar-bottom"><div class="source-status" id="sourceStatus">Зареждане…</div></div>
   </aside>
   <main class="main">
     <header class="topbar">
-      <h1 id="pageTitle">Мачове</h1>
+      <h1 id="pageTitle">Днес</h1>
       <div class="top-right" id="syncBadge"><span class="sync-dot"></span><span id="lastSync">Зареждане…</span></div>
     </header>
     <div class="notice hidden" id="notice" role="status"></div>
-    <section class="view" id="view-schedule" aria-label="Програма">
+    <section class="view" id="view-today" aria-label="Голови селекции">
+      <header class="goal-intro">
+        <p id="goalTodayDate" class="goal-date"></p>
+        <h2>Голови селекции</h2>
+        <div class="goal-tabs" role="group" aria-label="Вид подбор">
+          <button type="button" data-goal-tab="single" aria-pressed="true">Единични</button>
+          <button type="button" data-goal-tab="builder" aria-pressed="false">Бет билдър</button>
+          <button type="button" data-goal-tab="column" aria-pressed="false">Колонка</button>
+        </div>
+      </header>
+      <div id="goalTodayCards" class="goal-public" aria-live="polite"><p class="goal-editor-empty">Зареждам дневния подбор…</p></div>
+      <details id="goalDesk" class="goal-desk card detail-card">
+        <summary>Редактор на подбора</summary>
+        <div class="goal-desk-content">
+          <div class="goal-fields">
+            <label class="control-label">Букмейкър<input id="goalBook" type="text" maxlength="64" autocomplete="off" placeholder="Име на букмейкъра"></label>
+            <label class="control-label" id="goalSearchField">Търси мач<input id="goalSearch" type="search" autocomplete="off" placeholder="Отбор или първенство"></label>
+            <label class="control-label" id="goalColumnField" hidden>Мачове в колонката<select id="goalColumnSize"><option value="2">2 мача</option><option value="3">3 мача</option></select></label>
+          </div>
+          <p id="goalEditorSummary" class="goal-editor-summary" role="status"></p>
+          <div class="goal-post-actions">
+            <button type="button" id="goalCopyFree" class="button secondary" disabled>Копирай FREE</button>
+            <button type="button" id="goalCopyVip" class="button secondary" disabled>Копирай VIP</button>
+            <button type="button" id="goalExport" class="button secondary" disabled>Изтегли публичен отчет</button>
+          </div>
+          <p id="goalFeedback" class="goal-feedback" role="status"></p>
+          <textarea id="goalPost" rows="6" aria-label="Текст за Telegram" readonly hidden></textarea>
+          <div id="goalChoices" class="goal-editor-grid"></div>
+          <button type="button" id="goalMore" class="button secondary" hidden>Покажи още</button>
+        </div>
+      </details>
+      <button type="button" class="button secondary goal-personal" data-open-view="picks">Лични записи и инструменти</button>
+    </section>
+    <section class="view hidden" id="view-schedule" aria-label="Програма">
       <div class="schedule-workspace" id="scheduleWorkspace">
       <div class="program-pane">
       <div class="toolbar program-toolbar">
@@ -44,6 +78,7 @@
       </div>
     </section>
     <section class="view hidden" id="view-picks" aria-label="Моите прогнози">
+      <button type="button" class="button secondary goal-back" data-open-view="today">Към Днес</button>
       <section class="card daily-picks" id="dailyPicks" aria-labelledby="dailyPicksTitle">
         <header class="daily-picks-head">
           <h2 id="dailyPicksTitle">Дневен подбор</h2>
@@ -81,7 +116,12 @@
         <p class="footnote" id="backupStatus" role="status"></p>
       </details>
     </section>
-    <section class="view hidden" id="view-diary" aria-label="Автоматичен дневник">
+    <section class="view hidden" id="view-diary" aria-label="Резултати и дневници">
+      <section class="goal-results card" aria-labelledby="goalResultsTitle">
+        <div class="goal-results-heading"><h2 id="goalResultsTitle">Публикуван подбор</h2><span id="goalResultSummary"></span></div>
+        <div id="goalPublishedResults"><p class="goal-editor-empty">Зареждам отчета…</p></div>
+      </section>
+      <details class="card detail-card goal-diaries" id="goalDiaries"><summary>Автоматични дневници и модели</summary>
       <div class="section-heading"><span id="diarySummary" role="status">Зареждане на дневника…</span><small class="timezone-label" id="diaryUpdated"></small></div>
       <div class="diary-totals" id="diaryTotals"></div>
       <p class="footnote diary-note">Първите проценти се запазват преди мача. Резултатите се отчитат при обновяване на архива.</p>
@@ -91,6 +131,7 @@
       <details class="card detail-card"><summary>Качество по пазари</summary><div id="diaryQuality" class="coverage-content">Очакват се първите резултати.</div></details>
       <div class="section-heading"><h2>Последни записи</h2><small class="timezone-label">Записани преди мача</small></div>
       <div id="diaryList"><div class="empty">Зареждане…</div></div>
+      </details>
     </section>
     <section class="view hidden" id="view-selections" aria-label="Бет билдъри и прави колонки">
       <button type="button" class="back-to-picks" data-open-view="picks"><span data-ui-icon="back"></span> Към моя подбор</button>
@@ -156,10 +197,12 @@
 <script src="scout-combinations.js?v=17d77995aa5e"></script>
 <script src="scout-curated.js?v=a870a1b929c2"></script>
 <script src="scout-daily.js?v=0091a228607a"></script>
-<script src="scout-selection-ui.js?v=68638c2bc8e4"></script>
+<script src="scout-selection-ui.js?v=018fcc81090c"></script>
 <script src="scout-data.js?v=358828ae04f2"></script>
 <script src="scout-backup.js?v=fb03b1bf321e"></script>
 <script src="scout-calendar.js?v=52d942539aee"></script>
 <script src="scout-presentation.js?v=6e8255e8b6a1"></script>
-<script src="scout.js?v=db08dd0144da"></script>
+<script src="scout-today-core.js?v=6b291b37f0cb"></script>
+<script src="scout-today.js?v=284096302561"></script>
+<script src="scout.js?v=d92fead2ab91"></script>
 </body></html>

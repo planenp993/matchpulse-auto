@@ -24,6 +24,7 @@ bundle={
  "fixtures":json.loads((DOC/"data/fixtures.json").read_text(encoding="utf-8")),
  "standings":json.loads((DOC/"data/standings.json").read_text(encoding="utf-8")),
  "selectionQuotes":json.loads((DOC/"data/selection_quotes.json").read_text(encoding="utf-8")),
+ "goalPublications":json.loads((DOC/"goal_publications.json").read_text(encoding="utf-8")),
  "status":json.loads((DOC/"data/status.json").read_text(encoding="utf-8")),
  "clubMarks":json.loads((DOC/"assets/club-marks.json").read_text(encoding="utf-8")),
  "coverage":json.loads((DOC/"data/coverage_audit.json").read_text(encoding="utf-8")) if (DOC/"data/coverage_audit.json").exists() else None,
@@ -45,6 +46,11 @@ def inline_css(match):
  content=re.sub(r'url\(([\'\"]?)([^\'\")]+)\1\)',inline_font,content)
  return '<style>'+content+'</style>'
 html=re.sub(r'<link rel="stylesheet" href="([A-Za-z0-9_.\/-]+\.css)(?:\?[^"<>]*)?">',inline_css,html)
+for name in ('scout-today-core.js', 'scout-today.js'):
+ marker=re.search(r'<script src="'+re.escape(name)+r'(?:\?[^"<>]*)?"></script>',html)
+ if marker is None:raise RuntimeError(f"Missing script {name}")
+ content=(DOC/name).read_text(encoding="utf-8").replace('</script','<\\/script')
+ html=html[:marker.start()]+'<script>'+content+'</script>'+html[marker.end():]
 presentation=(DOC/'scout-presentation.js').read_text(encoding='utf-8')
 marker=re.search(r'<script src="scout-presentation\.js(?:\?[^"<>]*)?"></script>',html)
 if marker is None:raise RuntimeError('Missing presentation module')

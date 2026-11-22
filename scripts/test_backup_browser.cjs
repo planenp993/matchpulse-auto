@@ -8,7 +8,7 @@
   const p=await browser.newPage({viewport});p.on('pageerror',e=>errors.push(String(e)));
   await require('./browser_selection_snapshot.cjs').prepare(p,'2026-10-28T08:00:00Z');
   await p.goto(url,{waitUntil:'domcontentloaded'});await p.waitForFunction(()=>document.getElementById('lastSync').textContent.includes('Програма:'));
-  await p.locator('[data-view="picks"]').click();await p.locator('.personal-backup > summary').click();return p;
+  await p.locator('#view-today [data-open-view="picks"]').click();await p.locator('.personal-backup > summary').click();return p;
  }
  const source=await page();
  const seed=await source.evaluate(()=>{
@@ -35,7 +35,6 @@
  const card=target.locator('#matchPlan');
  assert.ok((await card.textContent()).includes('Въведена от теб'));assert.ok((await card.textContent()).includes('Стара / непотвърдена цена'));
  await target.locator('#closeMatch').click();
- await target.locator('[data-view="picks"]').click();
  await target.locator('#backupFile').setInputFiles(file(raw));await target.waitForFunction(()=>!document.getElementById('backupPreview').classList.contains('hidden'));
  assert.equal(await target.locator('#backupApply').isEnabled(),false);await target.locator('#backupCancel').click();
  const before=await target.evaluate(()=>MatchpulseBackup.read(localStorage));

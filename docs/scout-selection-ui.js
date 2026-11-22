@@ -86,9 +86,9 @@ function planHTML(entry){
   '<p class="footnote plan-method">Подбор по фиксирани 10 мача от първенствата; моделът използва до 30. Изборът 5/10/20 променя прочита и тенденциите. '+(quoteError?'CSV цените временно не са достъпни. ':'')+'Без проверена цена това е избор по данни.</p>'+
   '<button type="button" class="button secondary" data-plan-copy>Копирай прогнозата</button><span class="plan-feedback" role="status"></span>';
 }
-function evaluateFixture(f,now=new Date(),quotes=quotesFor(f)){
+function evaluateFixture(f,now=new Date(),quotes=quotesFor(f),profile=app.archive.profile(f,{windowSize:10})){
  if(!engine)engine=S.createEngine(app.history,root.MatchpulseModel,C);
- const profile=app.archive.profile(f,{windowSize:10}),recent=app.archive.recentProfile(f,{windowSize:10,now});
+ const recent=app.archive.recentProfile(f,{windowSize:10,now});
  const unavailable=app.availability&&Object.values(app.availability).some(v=>!v);
  return engine.evaluate(f,{profile,quotes,now,pending:!!(unavailable||recent.home.pendingLatest||recent.away.pendingLatest)});
 }
@@ -125,6 +125,20 @@ function dailyBlock(now){
 function dailyFixtureVerified(f,status){
  if(status.fixtures_feed_status!=='partial_secondary')return true;
  return Object.hasOwn(status.secondary_fixture_counts||{},f[0])&&!(status.stale_secondary_leagues||[]).includes(f[0]);
+}
+async function reviewToday(now){
+ const date=day(now),blocked=dailyBlock(now);
+ if(blocked)return {date,blocked,reviewed:0,entries:[]};
+ const rows=C.getUpcoming(app.fixtures.filter(f=>f[3]===date&&
+  Daily.isFixture(f,root.MatchpulsePresentation)&&dailyFixtureVerified(f,app.status)),Daily.cutoff(now));
+ await loadQuotes();
+ const entries=[];
+ for(let i=0;i<rows.length;i++){
+  if(i%6===0)await new Promise(resolve=>setTimeout(resolve,0));
+  const f=rows[i],profile=app.archive.profile(f,{windowSize:10});
+  entries.push({...evaluateFixture(f,now,{},profile),profile,csv:quoteDoc?.fixtures?.[C.keyFixture(f)]||{}});
+ }
+ return {date,blocked:'',reviewed:rows.length,entries};
 }
 async function renderDaily(){
  if(!app)return;
@@ -362,5 +376,7 @@ function changePrice(event,changed,feedback){
   catch{feedback.textContent='Сравнението е приложено само за тази сесия.';}
   changed();
 }
-root.MatchpulseSelectionUI={mount,render,renderDaily,dailyShortlist,planFor,renderMatchPlan,planBrief,reloadManualPrices(){manual=readManual();}};
+root.MatchpulseSelectionUI={mount,render,renderDaily,dailyShortlist,planFor,renderMatchPlan,planBrief,reviewToday,
+ publicationBlock(f,now){return dailyBlock(now)||(!dailyFixtureVerified(f,app.status)?'Програмата за този мач чака потвърждение.':'');},
+ reloadManualPrices(){manual=readManual();}};
 })(window);

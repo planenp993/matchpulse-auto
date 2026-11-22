@@ -3,7 +3,7 @@
  const {chromium}=require('playwright');
  const browser=await chromium.launch({headless:true,args:['--no-sandbox'],...(process.env.SCOUT_BROWSER_EXECUTABLE?{executablePath:process.env.SCOUT_BROWSER_EXECUTABLE}:{})});
  console.log('Scout browser: '+browser.version());
- const base='http://127.0.0.1:8765/scout.html';
+ const base='http://127.0.0.1:8765/scout.html?view=schedule';
  const failures=[],stats={};
  async function readable(page,selector){
   const colors=await page.locator(selector).first().evaluate(node=>{
@@ -151,6 +151,7 @@
  const retained=await desktop.evaluate(()=>JSON.parse(localStorage.getItem('matchpulse-scout-picks-v1')));
  if(retained[0].modelProbability!==saved[0].modelProbability)throw new Error('Saved probability changed on reload');
  await desktop.locator('[data-view="diary"]').click();
+ await desktop.locator('#goalDiaries > summary').click();
  await desktop.waitForFunction(()=>document.querySelectorAll('.diary-entry').length>0,{timeout:20000});
  const diary=require('node:fs').readFileSync('docs/data/diary_report.json','utf8'),diaryDoc=JSON.parse(diary),firstForecast=diaryDoc.recent[0];
  if((await desktop.locator('.diary-totals b').first().textContent())!==String(diaryDoc.totals.recorded))throw new Error('Diary count is not the published prospective count');
@@ -257,6 +258,7 @@
  if(!stats.mobileFixtures)throw new Error('Mobile day program is empty');
  if(await mobile.locator('.nav').count()!==3)throw Error('Mobile main menu is not simplified');
  await mobile.locator('[data-view="diary"]').click();
+ await mobile.locator('#goalDiaries > summary').click();
  await mobile.waitForFunction(()=>document.querySelectorAll('.diary-entry').length>0,{timeout:20000});
  if(paired)await mobile.getByText('Качество по пазари',{exact:true}).click();
  await mobile.locator('#telegramDiary > summary').click();
@@ -323,7 +325,8 @@
   if(await fault.locator('#matchOverlay').getAttribute('role')!=='region'||await fault.locator('.shell').evaluate(el=>el.inert))throw Error('Desktop comparison blocks its program');
   await fault.keyboard.press('Escape');
   if(!await trigger.evaluate(el=>el===document.activeElement))throw Error('Analysis did not restore focus');
-  await fault.locator('[data-view="picks"]').click();
+  await fault.locator('[data-view="today"]').click();
+  await fault.locator('#view-today [data-open-view="picks"]').click();
   await fault.locator('[data-open-view="selections"]').click();
   if(await fault.locator('.selection-primary').count())throw Error('Selection claims survived missing dependency');
   await fault.close();
@@ -355,7 +358,10 @@
  await emptyDay.close();
  stats.emptyDayFallback=true;
  const rootEntry=await browser.newPage();await rootEntry.goto('http://127.0.0.1:8765/',{waitUntil:'domcontentloaded'});
- await rootEntry.waitForURL('**/scout.html');await rootEntry.close();
+ await rootEntry.waitForURL('**/scout.html');
+ await rootEntry.locator('#view-today').waitFor({state:'visible'});
+ if(await rootEntry.locator('[data-view="today"]').getAttribute('aria-current')!=='page')throw new Error('Today is not the default view');
+ await rootEntry.close();
  stats.optionalFailureFallback=true;stats.focusManagement=true;stats.historyWarning=true;stats.scoutDefaultEntry=true;
  if(failures.length)throw new Error('Browser JS errors: '+failures.join(' | '));
  console.log('SCOUT_BROWSER_OK '+JSON.stringify(stats));

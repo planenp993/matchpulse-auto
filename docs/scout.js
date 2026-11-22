@@ -2,12 +2,14 @@
 'use strict';
 const View=window.MatchpulsePresentation;
 const Scout=window.MatchpulseScout,Model=window.MatchpulseModel,Markets=window.MatchpulseMarkets,Elo=window.MatchpulseElo,Patterns=window.MatchpulsePatterns,Analysis=window.MatchpulseAnalysis,Calendar=window.MatchpulseCalendar;
+const Today=window.MatchpulseToday,views=['today','schedule','picks','diary','selections'];
 const el=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
 const fmt=(v,n=1)=>Number.isFinite(v)?v.toFixed(n):'—';
 const percent=v=>Number.isFinite(v)?fmt(v*100,0)+'%':'—';
 const localISO=(d=new Date())=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Sofia',year:'numeric',month:'2-digit',day:'2-digit'}).format(d);
 function offsetISO(n){const a=new Date(localISO()+'T12:00:00Z');a.setUTCDate(a.getUTCDate()+n);return a.toISOString().slice(0,10)}
-let history=[],fixtures=[],status={},index=null,eloIndex=null,windowSize=10,active='schedule',fixtureRows=[],mode=null,customDate='',activeMatch=null;
+const initialView=new URLSearchParams(location.search).get('view');
+let history=[],fixtures=[],status={},index=null,eloIndex=null,windowSize=10,active=views.includes(initialView)?initialView:'today',fixtureRows=[],mode=null,customDate='',activeMatch=null;
 let matchTab='overview';
 let diaryLoaded=false,diaryLoading=false,archive=null,standingsPromise=null,matchTrigger=null;
 let availability={europe:false,links:false,europeNames:false};
@@ -52,14 +54,19 @@ function readPicks(){try{const v=JSON.parse(localStorage.getItem(PICK_KEY)||'[]'
 function writePicks(v){try{localStorage.setItem(PICK_KEY,JSON.stringify(v));return true}catch{return false}}
 function profile(f){const k=Scout.keyFixture(f)+'|'+windowSize;if(!PROFILE_CACHE.has(k))PROFILE_CACHE.set(k,archive?archive.profile(f,{windowSize}):Scout.profile(index,f,{windowSize}));return PROFILE_CACHE.get(k)}
 function setView(next){
- if(!['schedule','picks','diary','selections'].includes(next))next='schedule';
+ if(!views.includes(next))next='today';
  if(active!==next&&!el('matchOverlay').classList.contains('hidden'))closeMatch();
  active=next;
- for(const view of ['schedule','picks','diary','selections'])el('view-'+view).classList.toggle('hidden',view!==next);
- document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.view===(next==='selections'?'picks':next)));
- el('pageTitle').textContent={schedule:'Мачове',picks:'Моят подбор',diary:'Автоматичен дневник',selections:'Бет билдъри и колонки'}[next];
- if(next==='schedule')renderSchedule();
- else if(next==='diary')loadDiary();
+ for(const view of views)el('view-'+view).classList.toggle('hidden',view!==next);
+ document.querySelectorAll('.nav').forEach(b=>{
+  const selected=b.dataset.view=== (['picks','selections'].includes(next)?'today':next);
+  b.classList.toggle('active',selected);
+  if(selected)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');
+ });
+ el('pageTitle').textContent={today:'Днес',schedule:'Мачове',picks:'Лични записи и инструменти',diary:'Резултати',selections:'Бет билдъри и колонки'}[next];
+ if(next==='today')Today.show();
+ else if(next==='schedule')renderSchedule();
+ else if(next==='diary')Today.results();
  else if(next==='selections'){
   if(extrasReady)window.MatchpulseSelectionUI.render();else{
    el('selectionList').setAttribute('aria-busy','true');el('selectionSummary').textContent='Зареждам данните за селекциите…';
@@ -677,6 +684,7 @@ async function load(){
   el('notice').classList.remove('hidden');el('notice').textContent='Не успях да заредя програмата. Презареди страницата.';
   console.error('Scout data load failed',e);
   el('scheduleList').innerHTML='<div class="empty">'+esc(e.message)+'</div>';
+  el('goalTodayCards').textContent='Програмата временно не е достъпна.';
  }
 }
 window.MatchpulseLoading={ensureCore,ensureExtras,ensureScheduleArchive};
@@ -692,6 +700,7 @@ document.querySelectorAll('[data-day]').forEach(b=>b.onclick=()=>{
 el('dateInput').onchange=e=>{if(e.target.value){customDate=e.target.value;setProgramMode('custom');renderSchedule()}};
 el('scheduleStandings').addEventListener('toggle',programStandings);
 el('dataDetails').addEventListener('toggle',()=>{if(el('dataDetails').open)loadCoverage();});
+el('goalDiaries').addEventListener('toggle',()=>{if(el('goalDiaries').open)loadDiary();});
 el('selectionDiary').addEventListener('toggle',()=>{if(el('selectionDiary').open)loadSelectionDiary();});
 el('telegramDiary').addEventListener('toggle',()=>{if(el('telegramDiary').open)loadTelegramDiary();});
 el('standingsLeague').addEventListener('change',programStandings);
@@ -713,4 +722,5 @@ document.addEventListener('keydown',e=>{
 try{window.MatchpulseBackup.mount({storage:localStorage,onChanged:()=>{renderPicks();window.MatchpulseSelectionUI.reloadManualPrices();},onRecovered:()=>window.MatchpulseSelectionUI.reloadManualPrices()});}
 catch{el('backupStatus').textContent='Локалното запазване не е достъпно в този браузър.';}
 el('qualitySelect').disabled=true;
+Today.mount({fixtures:()=>fixtures,history:()=>history,loadData:ensureExtras,result:leg=>archive?.result(leg),openMatch});
 initialPromise=load();

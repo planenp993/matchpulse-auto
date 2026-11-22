@@ -10,10 +10,11 @@
  async function ready(page){await page.waitForFunction(()=>document.getElementById('lastSync')?.textContent.includes('Програма:'));await page.evaluate(()=>MatchpulseLoading.ensureExtras());}
  async function selectionReady(page){await page.waitForFunction(()=>document.getElementById('selectionList')?.getAttribute('aria-busy')==='false'&&!document.getElementById('selectionSummary').textContent.includes('Преглеждам'),{timeout:60000});}
  async function planReady(page){await page.waitForFunction(()=>document.getElementById('matchPlan')?.getAttribute('aria-busy')==='false');}
- async function selectWeek(page){await page.locator('[data-view="picks"]').click();await page.locator('[data-open-view="selections"]').click();await selectionReady(page);await page.locator('[data-selection-period="7"]').click();await selectionReady(page);}
+ async function personal(page){await page.locator('[data-view="today"]').click();await page.locator('#view-today [data-open-view="picks"]').click();}
+ async function selectWeek(page){await personal(page);await page.locator('[data-open-view="selections"]').click();await selectionReady(page);await page.locator('[data-selection-period="7"]').click();await selectionReady(page);}
  async function noOverflow(page){assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);assert.equal(await page.locator('#matchOverlay').evaluate(el=>el.classList.contains('hidden')||el.scrollWidth<=el.clientWidth),true);}
  async function dailyWithFreshCalendar(page){
-  await page.locator('[data-view="picks"]').click();
+  await personal(page);
   await page.evaluate(async()=>{
    Object.assign(status,{fixtures_updated_utc:new Date().toISOString(),fixtures_feed_status:'ok',secondary_fixture_errors:[]});
    await MatchpulseSelectionUI.renderDaily();
@@ -21,7 +22,7 @@
  }
  const desktop=await browser.newPage({viewport:{width:1440,height:1050},deviceScaleFactor:1});await prepare(desktop);await desktop.goto(base,{waitUntil:'domcontentloaded',timeout:60000});await ready(desktop);
  const privateBefore=await desktop.evaluate(()=>localStorage.getItem('matchpulse-scout-picks-v1'));
- await desktop.locator('[data-view="picks"]').click();
+ await personal(desktop);
  assert.equal(await desktop.locator('#copyDailyPost').isDisabled(),true);
  assert.match(await desktop.locator('#dailySummary').textContent(),/актуална потвърдена програма/);
  await dailyWithFreshCalendar(desktop);
@@ -93,6 +94,22 @@
  stats.manualPricePersistence=true;stats.unchangedModel=true;stats.privatePicksUntouched=true;stats.everyDossierHasPlan=true;stats.fewerTabs=true;
  const mobile=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});await prepare(mobile);await mobile.goto(base,{waitUntil:'domcontentloaded'});await ready(mobile);
  await dailyWithFreshCalendar(mobile);assert.ok(await mobile.locator('.daily-choice').count()>=3);await noOverflow(mobile);
+ await mobile.locator('[data-view="today"]').click();
+ await mobile.locator('#goalDesk > summary').click();
+ const goal=mobile.locator('.goal-candidate').first();await goal.waitFor();
+ await mobile.setViewportSize({width:320,height:780});await noOverflow(mobile);
+ await mobile.locator('#goalBook').fill('Тестови коефициенти');
+ await goal.locator('input[name="odds"]').fill('1,10');
+ await goal.getByRole('button',{name:'Потвърди цена'}).click();
+ assert.equal(await goal.locator('[data-goal-record]').count(),0);
+ await goal.locator('input[name="odds"]').fill('2,10');
+ await goal.getByRole('button',{name:'Провери отново'}).click();
+ await goal.getByRole('button',{name:'Запиши FREE',exact:true}).click();
+ await mobile.locator('.goal-feature').waitFor();await noOverflow(mobile);
+ assert.match(await mobile.locator('.goal-feature').textContent(),/2,10/);
+ await mobile.locator('[data-view="diary"]').click();
+ assert.equal(await mobile.locator('.goal-result-row').count(),1);
+ stats.goalsBoard={verifiedPriceGate:true,mobileWidth:320,recordedResult:true};
  await mobile.setViewportSize({width:320,height:780});await noOverflow(mobile);await mobile.setViewportSize({width:390,height:844});await selectWeek(mobile);
  assert.equal(await mobile.locator('#selectionFilters').evaluate(el=>el.open),false);await mobile.locator('#selectionFilterSummary').click();await mobile.locator('#selectionLeague').selectOption('E0');await selectionReady(mobile);assert.ok((await mobile.locator('#selectionFilterSummary').textContent()).includes('1 активни'));
  await mobile.locator('#selectionLeague').selectOption('');await selectionReady(mobile);await mobile.locator('#selectionFilterSummary').click();await noOverflow(mobile);await mobile.screenshot({path:'scout-selections-mobile.png',fullPage:false});
