@@ -22,6 +22,7 @@
   },{fixed:+fixed,doc,date});
   await p.goto(offline?'file://'+path.resolve('scout-offline.html'):'http://127.0.0.1:8765/scout.html',{waitUntil:'domcontentloaded'});
   await p.waitForFunction(()=>document.getElementById('lastSync').textContent.includes('Програма:'));
+  await p.locator('[data-view="schedule"]').click();
   await p.locator('#dateInput').fill(date);await p.locator('#dateInput').dispatchEvent('change');
   return p;
  }

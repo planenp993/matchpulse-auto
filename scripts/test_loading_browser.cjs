@@ -46,7 +46,7 @@
  }
  async function measure(page,variant,reload=false){
   const seen=[],listener=r=>{if(r.url().includes('/data/'))seen.push(new URL(r.url()).pathname.split('/').at(-1));};page.on('request',listener);
-  if(reload)await page.reload({waitUntil:'domcontentloaded'});else await page.goto('http://127.0.0.1:'+port+'/'+variant+'/scout.html',{waitUntil:'domcontentloaded'});
+  if(reload)await page.reload({waitUntil:'domcontentloaded'});else await page.goto('http://127.0.0.1:'+port+'/'+variant+'/scout.html?view=schedule',{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>Number.isFinite(window.__calendarAt),{timeout:60000});
   const calendar=await page.evaluate(()=>({ms:window.__calendarAt,coreReady:window.__coreAtCalendar}));
   if(variant==='updated'){
