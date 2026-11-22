@@ -326,7 +326,7 @@
   await fault.keyboard.press('Escape');
   if(!await trigger.evaluate(el=>el===document.activeElement))throw Error('Analysis did not restore focus');
   await fault.locator('[data-view="today"]').click();
-  await fault.locator('[data-open-view="picks"]').click();
+  await fault.locator('#view-today [data-open-view="picks"]').click();
   await fault.locator('[data-open-view="selections"]').click();
   if(await fault.locator('.selection-primary').count())throw Error('Selection claims survived missing dependency');
   await fault.close();

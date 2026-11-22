@@ -8,7 +8,7 @@
   const p=await browser.newPage({viewport});p.on('pageerror',e=>errors.push(String(e)));
   await require('./browser_selection_snapshot.cjs').prepare(p,'2026-10-28T08:00:00Z');
   await p.goto(url,{waitUntil:'domcontentloaded'});await p.waitForFunction(()=>document.getElementById('lastSync').textContent.includes('Програма:'));
-  await p.locator('[data-open-view="picks"]').click();await p.locator('.personal-backup > summary').click();return p;
+  await p.locator('#view-today [data-open-view="picks"]').click();await p.locator('.personal-backup > summary').click();return p;
  }
  const source=await page();
  const seed=await source.evaluate(()=>{

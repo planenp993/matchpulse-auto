@@ -10,7 +10,7 @@
  async function ready(page){await page.waitForFunction(()=>document.getElementById('lastSync')?.textContent.includes('Програма:'));await page.evaluate(()=>MatchpulseLoading.ensureExtras());}
  async function selectionReady(page){await page.waitForFunction(()=>document.getElementById('selectionList')?.getAttribute('aria-busy')==='false'&&!document.getElementById('selectionSummary').textContent.includes('Преглеждам'),{timeout:60000});}
  async function planReady(page){await page.waitForFunction(()=>document.getElementById('matchPlan')?.getAttribute('aria-busy')==='false');}
- async function personal(page){await page.locator('[data-view="today"]').click();await page.locator('[data-open-view="picks"]').click();}
+ async function personal(page){await page.locator('[data-view="today"]').click();await page.locator('#view-today [data-open-view="picks"]').click();}
  async function selectWeek(page){await personal(page);await page.locator('[data-open-view="selections"]').click();await selectionReady(page);await page.locator('[data-selection-period="7"]').click();await selectionReady(page);}
  async function noOverflow(page){assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);assert.equal(await page.locator('#matchOverlay').evaluate(el=>el.classList.contains('hidden')||el.scrollWidth<=el.clientWidth),true);}
  async function dailyWithFreshCalendar(page){
