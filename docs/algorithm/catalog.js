@@ -71,8 +71,8 @@ export function sofiaKickoff(day, time) {
 export function fairPrice(p) {
   return p > 0 && p <= 1 ? 1 / p : null;
 }
-export function priceFrom(p) {
-  return p > 0 && p <= 1 ? Math.ceil(100 * (1 + PRICE_BUFFER) / p - 1e-10) / 100 : null;
+export function priceFrom(p, buffer = PRICE_BUFFER) {
+  return p > 0 && p <= 1 ? Math.ceil(100 * (1 + buffer) / p - 1e-10) / 100 : null;
 }
 export const matchKey = x => [x[0], x[3], model.clubKey(x[5]), model.clubKey(x[6])].join('|');
 const isDomestic = m => Array.isArray(m) && LEAGUE_BY_ID[m[0]] && !LEAGUE_BY_ID[m[0]].europe;
@@ -194,6 +194,14 @@ export function forecastVersion(f) {
   if (f.model === 'results') return 'Лигов модел';
   if (f.model === 'retrospective') return 'V3 / ' + f.bttsVersion;
   return 'Сходни защити';
+}
+
+export function eligibleForSelection(match, fitted, europeFitted) {
+  if (match.model === 'europe') return europeFitted[match.league]?.selected === true;
+  if (match.model !== 'results') return true;
+  const model = fitted[match.league];
+  return model?.qualified && model.test.overLoss + model.test.bttsLoss <
+    model.reference.overLoss + model.reference.bttsLoss;
 }
 
 export function selectDaily(matches) {

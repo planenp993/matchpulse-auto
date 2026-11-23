@@ -96,6 +96,24 @@ h3{font-size:1.14rem;letter-spacing:-.021em}
 .segmented button{padding:6px 10px;border:0;border-radius:7px;background:transparent;color:var(--soft);font-size:.87rem;font-weight:800}
 .segmented button[aria-pressed=true]{background:#2b4229;color:var(--accent)}
 .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
+.diary-readout{grid-column:1/-1;margin:3px 0 0;font-size:.9rem}
+.daily-entry{display:grid;grid-template-columns:minmax(140px,1fr) auto auto auto;align-items:center;gap:12px;width:100%;padding:12px 14px;text-align:left;border:0;border-top:1px solid var(--line);background:transparent;color:inherit;cursor:pointer}
+.daily-entry:hover,.daily-entry:focus-visible{background:#19271d}
+.daily-teams{display:grid;gap:2px;min-width:0;overflow-wrap:anywhere}
+.daily-teams small,.daily-prices{color:var(--soft);font-size:.82rem}
+.daily-market{font-size:.87rem;white-space:nowrap}
+.daily-market b{color:var(--accent)}
+.daily-prices b{color:var(--fg)}
+.daily-outcome{justify-self:end;display:inline-block;white-space:nowrap;border:1px solid var(--line);border-radius:8px;padding:4px 8px;color:var(--soft);font-size:.82rem;font-weight:800}
+.daily-outcome.hit{color:#cff59d;background:#253d22}
+.daily-outcome.miss{color:#ffc8bd;background:#3a2724}
+@media(max-width:760px){
+  .daily-entry{grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:11px 10px}
+  .daily-teams{grid-column:1/-1}
+  .daily-market{grid-column:1}
+  .daily-prices{grid-column:1;grid-row:3}
+  .daily-outcome{grid-column:2;grid-row:2/4}
+}
 .metric{border:1px solid var(--line);background:var(--surface);border-radius:15px;padding:14px 16px}
 .metric>strong{display:block;color:var(--accent);font-size:1.6rem;letter-spacing:-.04em}
 .metric small{color:var(--soft);font-size:.84rem}
