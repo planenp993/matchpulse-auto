@@ -108,6 +108,8 @@ h3{font-size:1.14rem;letter-spacing:-.021em}
 .daily-outcome.hit{color:#cff59d;background:#253d22}
 .daily-outcome.miss{color:#ffc8bd;background:#3a2724}
 @media(max-width:760px){
+  #diary > .section-head:first-child{flex-direction:column;align-items:stretch}
+  #diary .segmented button{flex:1;min-width:0}
   .daily-entry{grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:11px 10px}
   .daily-teams{grid-column:1/-1}
   .daily-market{grid-column:1}
