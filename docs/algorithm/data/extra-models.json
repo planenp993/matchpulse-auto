@@ -1,0 +1,275 @@
+{
+  "E1": {
+    "preset": "cautious",
+    "qualified": true,
+    "fit": {
+      "n": 557,
+      "overLoss": 0.6910074661568687,
+      "bttsLoss": 0.6952995998551216
+    },
+    "test": {
+      "n": 552,
+      "overLoss": 0.7035881474280411,
+      "bttsLoss": 0.6958306025741117
+    },
+    "reference": {
+      "n": 552,
+      "overLoss": 0.6963220688370546,
+      "bttsLoss": 0.6884913044901864
+    },
+    "testPeriod": "2025/26",
+    "tuningPeriod": "2024/25"
+  },
+  "E2": {
+    "preset": "cautious",
+    "qualified": true,
+    "fit": {
+      "n": 552,
+      "overLoss": 0.6901798139498605,
+      "bttsLoss": 0.6838006439667922
+    },
+    "test": {
+      "n": 560,
+      "overLoss": 0.6963771679720384,
+      "bttsLoss": 0.6898351380878622
+    },
+    "reference": {
+      "n": 560,
+      "overLoss": 0.6951989665051521,
+      "bttsLoss": 0.6922971932620897
+    },
+    "testPeriod": "2025/26",
+    "tuningPeriod": "2024/25"
+  },
+  "E3": {
+    "preset": "cautious",
+    "qualified": true,
+    "fit": {
+      "n": 542,
+      "overLoss": 0.6973571043429162,
+      "bttsLoss": 0.7045968743080931
+    },
+    "test": {
+      "n": 554,
+      "overLoss": 0.7025937229970614,
+      "bttsLoss": 0.7002538473350615
+    },
+    "reference": {
+      "n": 554,
+      "overLoss": 0.6928978800198831,
+      "bttsLoss": 0.6929846349138312
+    },
+    "testPeriod": "2025/26",
+    "tuningPeriod": "2024/25"
+  },
+  "SP2": {
+    "preset": "cautious",
+    "qualified": true,
+    "fit": {
+      "n": 448,
+      "overLoss": 0.6966126002489684,
+      "bttsLoss": 0.6885120892805296
+    },
+    "test": {
+      "n": 452,
+      "overLoss": 0.6990293441847095,
+      "bttsLoss": 0.6879476247404607
+    },
+    "reference": {
+      "n": 452,
+      "overLoss": 0.7048885572031465,
+      "bttsLoss": 0.698269593579133
+    },
+    "testPeriod": "2025/26",
+    "tuningPeriod": "2024/25"
+  },
+  "D2": {
+    "preset": "cautious",
+    "qualified": true,
+    "fit": {
+      "n": 296,
+      "overLoss": 0.6699332678238025,
+      "bttsLoss": 0.6758847614003595
+    },
+    "test": {
+      "n": 306,
+      "overLoss": 0.701537382201957,
+      "bttsLoss": 0.6922899515295725
+    },
+    "reference": {
+      "n": 306,
+      "overLoss": 0.6815532487579204,
+      "bttsLoss": 0.6757864328422022
+    },
+    "testPeriod": "2025/26",
+    "tuningPeriod": "2024/25"
+  },
+  "I2": {
+    "preset": "standard",
+    "qualified": true,
+    "fit": {
+      "n": 368,
+      "overLoss": 0.7036807247436565,
+      "bttsLoss": 0.6998665323777887
+    },
+    "test": {
+      "n": 362,
+      "overLoss": 0.7106952783403546,
+      "bttsLoss": 0.697814692661356
+    },
+    "reference": {
+      "n": 362,
+      "overLoss": 0.6956621396885884,
+      "bttsLoss": 0.69289535909239
+    },
+    "testPeriod": "2025/26",
+    "tuningPeriod": "2024/25"
+  },
+  "F2": {
+    "preset": "cautious",
+    "qualified": true,
+    "fit": {
+      "n": 296,
+      "overLoss": 0.7028514109469124,
+      "bttsLoss": 0.6892551236239703
+    },
+    "test": {
+      "n": 295,
+      "overLoss": 0.6818320967201768,
+      "bttsLoss": 0.700418661874248
+    },
+    "reference": {
+      "n": 295,
+      "overLoss": 0.6941600084966079,
+      "bttsLoss": 0.6923638578071769
+    },
+    "testPeriod": "2025/26",
+    "tuningPeriod": "2024/25"
+  },
+  "N1": {
+    "preset": "cautious",
+    "qualified": true,
+    "fit": {
+      "n": 301,
+      "overLoss": 0.6906983680180002,
+      "bttsLoss": 0.6912101875987704
+    },
+    "test": {
+      "n": 301,
+      "overLoss": 0.6555897390748786,
+      "bttsLoss": 0.6572358672933282
+    },
+    "reference": {
+      "n": 301,
+      "overLoss": 0.6647628547522944,
+      "bttsLoss": 0.6583406473297466
+    },
+    "testPeriod": "2025/26",
+    "tuningPeriod": "2024/25"
+  },
+  "B1": {
+    "preset": "cautious",
+    "qualified": true,
+    "fit": {
+      "n": 308,
+      "overLoss": 0.6807179477495837,
+      "bttsLoss": 0.6897394988427838
+    },
+    "test": {
+      "n": 306,
+      "overLoss": 0.7068615849372164,
+      "bttsLoss": 0.6903825000953119
+    },
+    "reference": {
+      "n": 306,
+      "overLoss": 0.6970878449359886,
+      "bttsLoss": 0.6903931916700843
+    },
+    "testPeriod": "2025/26",
+    "tuningPeriod": "2024/25"
+  },
+  "P1": {
+    "preset": "standard",
+    "qualified": true,
+    "fit": {
+      "n": 297,
+      "overLoss": 0.6835546250429471,
+      "bttsLoss": 0.7054940717164992
+    },
+    "test": {
+      "n": 301,
+      "overLoss": 0.6787027841834525,
+      "bttsLoss": 0.6978494522458514
+    },
+    "reference": {
+      "n": 301,
+      "overLoss": 0.6931301207222327,
+      "bttsLoss": 0.7011651521425906
+    },
+    "testPeriod": "2025/26",
+    "tuningPeriod": "2024/25"
+  },
+  "T1": {
+    "preset": "cautious",
+    "qualified": true,
+    "fit": {
+      "n": 333,
+      "overLoss": 0.6711019896996239,
+      "bttsLoss": 0.6878999855867693
+    },
+    "test": {
+      "n": 296,
+      "overLoss": 0.692498936127043,
+      "bttsLoss": 0.6952025406386189
+    },
+    "reference": {
+      "n": 296,
+      "overLoss": 0.6932930482532661,
+      "bttsLoss": 0.6910686790192153
+    },
+    "testPeriod": "2025/26",
+    "tuningPeriod": "2024/25"
+  },
+  "G1": {
+    "preset": "recent",
+    "qualified": true,
+    "fit": {
+      "n": 231,
+      "overLoss": 0.7056926468687734,
+      "bttsLoss": 0.6951653086059836
+    },
+    "test": {
+      "n": 231,
+      "overLoss": 0.6868104573565675,
+      "bttsLoss": 0.710697854439545
+    },
+    "reference": {
+      "n": 231,
+      "overLoss": 0.6935310241710828,
+      "bttsLoss": 0.6999792495492588
+    },
+    "testPeriod": "2025/26",
+    "tuningPeriod": "2024/25"
+  },
+  "SC0": {
+    "preset": "cautious",
+    "qualified": true,
+    "fit": {
+      "n": 228,
+      "overLoss": 0.6762726455121233,
+      "bttsLoss": 0.681929140291271
+    },
+    "test": {
+      "n": 223,
+      "overLoss": 0.6998856550221435,
+      "bttsLoss": 0.6837770013954206
+    },
+    "reference": {
+      "n": 223,
+      "overLoss": 0.6933092517235142,
+      "bttsLoss": 0.7014335111189041
+    },
+    "testPeriod": "2025/26",
+    "tuningPeriod": "2024/25"
+  }
+}

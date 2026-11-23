@@ -1,0 +1,268 @@
+{
+  "version": "living-algorithm-scoring-frequency-v1",
+  "training_matches": 8996,
+  "training_period": [
+    "2017/18",
+    "2022/23"
+  ],
+  "training_sources": {
+    "bundesliga_2017.csv": {
+      "url": "https://www.xgtables.io/history/bundesliga/2017/fixtures.csv",
+      "sha256": "4f5225008abc7a11597deaaeb2df8e68b00bbc213fbf1dd6dd9f40ce88b6075a",
+      "bytes": 44149
+    },
+    "bundesliga_2018.csv": {
+      "url": "https://www.xgtables.io/history/bundesliga/2018/fixtures.csv",
+      "sha256": "73740b47b1cb6c488319e08fc5e47fd38b04e1eb67ed67d39504279cb3b52c72",
+      "bytes": 44824
+    },
+    "bundesliga_2019.csv": {
+      "url": "https://www.xgtables.io/history/bundesliga/2019/fixtures.csv",
+      "sha256": "feb9b8cd606920e695d8ca7ef111a25079de84945d9ba3f6bd89be9b74e9ddd8",
+      "bytes": 44781
+    },
+    "bundesliga_2020.csv": {
+      "url": "https://www.xgtables.io/history/bundesliga/2020/fixtures.csv",
+      "sha256": "195b74d0f48058580ceae70ece9fcaf8bee74b0df0566afa372d959bd9c4bc14",
+      "bytes": 44912
+    },
+    "bundesliga_2021.csv": {
+      "url": "https://www.xgtables.io/history/bundesliga/2021/fixtures.csv",
+      "sha256": "72b4d63046e071f74a894439369c59f8ad9b5fcf6efcfac24b93e0f09de162ac",
+      "bytes": 44786
+    },
+    "bundesliga_2022.csv": {
+      "url": "https://www.xgtables.io/history/bundesliga/2022/fixtures.csv",
+      "sha256": "8b3dc0a920049885ac42aa8c19dbb4145e082ca1ccf034411ebaed325d74132a",
+      "bytes": 44507
+    },
+    "epl_2017.csv": {
+      "url": "https://www.xgtables.io/history/epl/2017/fixtures.csv",
+      "sha256": "d22f229cf7b549f808c959d0f80070f43a1e85eb40783859286d956fd9795db1",
+      "bytes": 50236
+    },
+    "epl_2018.csv": {
+      "url": "https://www.xgtables.io/history/epl/2018/fixtures.csv",
+      "sha256": "d6e332a7d097afb5bdbfc344a46f88c574f26da9f057ae3886e485f5d7296391",
+      "bytes": 50633
+    },
+    "epl_2019.csv": {
+      "url": "https://www.xgtables.io/history/epl/2019/fixtures.csv",
+      "sha256": "cc26a2c5ac170899958d5f1036d95abcf64e2b9ce79c7c6c1754b70e368e9dc2",
+      "bytes": 51377
+    },
+    "epl_2020.csv": {
+      "url": "https://www.xgtables.io/history/epl/2020/fixtures.csv",
+      "sha256": "59bd5c2518d90d405a5670524a3806e35387a1e6b2387ee611e911a12aa6b065",
+      "bytes": 51655
+    },
+    "epl_2021.csv": {
+      "url": "https://www.xgtables.io/history/epl/2021/fixtures.csv",
+      "sha256": "8bc2eba8cdbfabf2b9b489df618b0db8d836d441b4d8d0588501dc4bbed2aeee",
+      "bytes": 50930
+    },
+    "epl_2022.csv": {
+      "url": "https://www.xgtables.io/history/epl/2022/fixtures.csv",
+      "sha256": "44cb34d57f535d67cee74988b416dfd2d74b72166efb97a3c1ff9e9ab2af0757",
+      "bytes": 51327
+    },
+    "la-liga_2017.csv": {
+      "url": "https://www.xgtables.io/history/la-liga/2017/fixtures.csv",
+      "sha256": "076cb5d52889cb75a7cbdcd6d0e4d89ac18d3169cf43b8e5c6fdbb166ff30702",
+      "bytes": 50937
+    },
+    "la-liga_2018.csv": {
+      "url": "https://www.xgtables.io/history/la-liga/2018/fixtures.csv",
+      "sha256": "f1b3f1b1a729f29781fc51066392791af66de3e5334dbcd59f0925b5948e6be1",
+      "bytes": 51717
+    },
+    "la-liga_2019.csv": {
+      "url": "https://www.xgtables.io/history/la-liga/2019/fixtures.csv",
+      "sha256": "6ef3bf46c2ab9d527ab02fe08318a8ddbfe6c2656518080e9e52d22476fbd1f0",
+      "bytes": 51542
+    },
+    "la-liga_2020.csv": {
+      "url": "https://www.xgtables.io/history/la-liga/2020/fixtures.csv",
+      "sha256": "e5ae1fec41b48f9a64d1725f9fe5b43ffee7a517fc82a3059f9e8d80227d8085",
+      "bytes": 51505
+    },
+    "la-liga_2021.csv": {
+      "url": "https://www.xgtables.io/history/la-liga/2021/fixtures.csv",
+      "sha256": "a57069a0de5be9d82f1f89cd82749af0033fe6f61add5f9bbdaf6f9ba3b4dfb4",
+      "bytes": 51455
+    },
+    "la-liga_2022.csv": {
+      "url": "https://www.xgtables.io/history/la-liga/2022/fixtures.csv",
+      "sha256": "1516a78b741dac329565007e9da179a5813b747861f722d374831cbe0a9e8024",
+      "bytes": 51688
+    },
+    "ligue-1_2017.csv": {
+      "url": "https://www.xgtables.io/history/ligue-1/2017/fixtures.csv",
+      "sha256": "25bd045ebe7f9bf34b36dade9e00fd61395ad273178a0be4ce1886c855b8d72a",
+      "bytes": 49577
+    },
+    "ligue-1_2018.csv": {
+      "url": "https://www.xgtables.io/history/ligue-1/2018/fixtures.csv",
+      "sha256": "061db0d75a0f3384d33469991aa128be70c6a106193c44f7b0849250474e48e5",
+      "bytes": 50271
+    },
+    "ligue-1_2019.csv": {
+      "url": "https://www.xgtables.io/history/ligue-1/2019/fixtures.csv",
+      "sha256": "1c18d4fdca90c096e0db3b5d97eb0f2065adb4793f0f50b14741ffa59005090d",
+      "bytes": 36945
+    },
+    "ligue-1_2020.csv": {
+      "url": "https://www.xgtables.io/history/ligue-1/2020/fixtures.csv",
+      "sha256": "399edf3b707f030563afab8693577c6c7848aa438b02fb8de4b83a3d593fa63e",
+      "bytes": 55064
+    },
+    "ligue-1_2021.csv": {
+      "url": "https://www.xgtables.io/history/ligue-1/2021/fixtures.csv",
+      "sha256": "acffde945ef44a5fdb1b9d047cc4ba8dddca798b334be284f164cc47a93f0587",
+      "bytes": 50398
+    },
+    "ligue-1_2022.csv": {
+      "url": "https://www.xgtables.io/history/ligue-1/2022/fixtures.csv",
+      "sha256": "fdb982ca99c953e699c3d8fa29b0db27f59885c82fffefee41bbbcf41edff708",
+      "bytes": 50179
+    },
+    "serie-a_2017.csv": {
+      "url": "https://www.xgtables.io/history/serie-a/2017/fixtures.csv",
+      "sha256": "cebf1801a723135ed4714f5c7cf911440d618899ec4adfec6dfed040aca70e65",
+      "bytes": 49302
+    },
+    "serie-a_2018.csv": {
+      "url": "https://www.xgtables.io/history/serie-a/2018/fixtures.csv",
+      "sha256": "ba3f620ba26edef3d6bfc1b41c17d4644f18b3911b621b4b7c5cc4ef661cd36d",
+      "bytes": 49929
+    },
+    "serie-a_2019.csv": {
+      "url": "https://www.xgtables.io/history/serie-a/2019/fixtures.csv",
+      "sha256": "cd240dd5c9a6b05e39781ed79058af0223e4f9d30719b714439d616b68f911ac",
+      "bytes": 50104
+    },
+    "serie-a_2020.csv": {
+      "url": "https://www.xgtables.io/history/serie-a/2020/fixtures.csv",
+      "sha256": "172adc8edf9b6890a1d6f9ac8c00f99e7e6b7fbd8e912cb1b7d577f2dd50bff3",
+      "bytes": 50109
+    },
+    "serie-a_2021.csv": {
+      "url": "https://www.xgtables.io/history/serie-a/2021/fixtures.csv",
+      "sha256": "8d7ceb8b0f0778103c68ef9b1333b0bf68450ffc77ea8de8e8662d8946dd0636",
+      "bytes": 49912
+    },
+    "serie-a_2022.csv": {
+      "url": "https://www.xgtables.io/history/serie-a/2022/fixtures.csv",
+      "sha256": "b114b524cfd38241978862cd627c8686cf5ea8832becdb3c1e6d633031659088",
+      "bytes": 49905
+    }
+  },
+  "v2_commit": "c19aa860e934ad88f8bd29bf811d54c7cdd811ef",
+  "parameters": {
+    "scoring": {
+      "base": [
+        0.7253159023128383,
+        0.06962380660978613,
+        0.1549353056712818,
+        -0.00597433497727182,
+        0.10232655707022208,
+        0.06838351237520848,
+        0.34499283683499243,
+        0.9839848688509725,
+        -0.345674785653413,
+        0.4384010136097832,
+        -0.3036279296679821,
+        -0.07079293601456624,
+        0.04390912359285232,
+        0.07389657987400419
+      ],
+      "last_six": [
+        0.7169775332887903,
+        0.0653485681269284,
+        0.1550347092663217,
+        -0.004809576840806076,
+        0.1038249948889712,
+        0.06967214269357774,
+        0.3648970116009732,
+        0.9867023396967257,
+        -0.3420294747310334,
+        0.44617313199663383,
+        -0.30152316516863314,
+        -0.07457465755079551,
+        0.041417350737925136,
+        0.07459429455858597,
+        0.015153246108725942
+      ],
+      "same_venue": [
+        0.7276430345108714,
+        0.07064373802931674,
+        0.15502814693671646,
+        -0.006630414010619724,
+        0.10168867937509656,
+        0.06729798353746212,
+        0.3378079636414155,
+        0.9851045536674659,
+        -0.34626623019845326,
+        0.43549658231168126,
+        -0.3042954159113789,
+        -0.06950963683738322,
+        0.04463393807913712,
+        0.07351565629211611,
+        -0.0071437054531578795
+      ],
+      "similar_defence": [
+        0.7281640664552153,
+        0.07094093814802115,
+        0.15564065035194774,
+        -0.006068873859593386,
+        0.102567453001461,
+        0.0685475457205049,
+        0.3386035130897402,
+        0.9821855381668668,
+        -0.3469807717960417,
+        0.43457445112660825,
+        -0.30348948572173634,
+        -0.0700441304982416,
+        0.04394394357039987,
+        0.07191031603191465,
+        -0.019875562068305038,
+        -0.02643000145706326
+      ]
+    },
+    "positive_counts": [
+      0.0497252623058944,
+      0.0006918165461512962,
+      0.06932432482488328,
+      -0.05729978127880551,
+      -0.020049387274323666,
+      -0.00781925815916097,
+      0.12395888181312206,
+      0.722685212005569,
+      -0.16175764281849558,
+      0.14058681137337964,
+      -0.06361697354646073,
+      -0.09413710361257203,
+      0.07458814734854138,
+      0.049618041087516974
+    ],
+    "signal_mean": [
+      0.26941603675707404,
+      0.005178821917449234,
+      -0.001145722338471852
+    ],
+    "signal_scale": [
+      0.1980971428809988,
+      0.09597924455603228,
+      0.026696669311372545
+    ],
+    "dependence": 0.04342334987882713
+  },
+  "code_sha256": {
+    "data.py": "c444aa50e6ecf4960ebd896a5929070c86d134a741eb9ea55781abf3f2650234",
+    "experiment.py": "43dac1bec92dc573c6d353e8ad3468fe6b47e025692331c09492ce96f4885e52",
+    "prospective.py": "37badcb877ca177f5838fbfa35850bfcc0d662d1636b8b7a853b6060c7f5100b",
+    "context_experiment.py": "bee9f622d597453f517be897e31d523b10be3628193714fc8ada9c78873ce91b",
+    "scoring_frequency.py": "54de871d82988fd43538ae297c759013042951bc13ff26cd7e4ba0a5c5447831",
+    "scoring_prospective.py": "2e0e4e5903682bd589fe6f87330e45609c1ddafe01bcf97193f46b653f1f6d07"
+  }
+}

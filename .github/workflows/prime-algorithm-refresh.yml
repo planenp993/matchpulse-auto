@@ -1,0 +1,42 @@
+name: Prime Algorithm snapshot
+
+on:
+  schedule:
+    - cron: '21 */4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: prime-algorithm-snapshot
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify sources and update only the Prime Algorithm snapshot
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            node scripts/refresh_prime_algorithm.mjs
+            path=docs/algorithm/data/snapshot.json.gz
+            if git diff --quiet -- "$path"; then exit 0; fi
+            git add -- "$path"
+            git commit -m "Refresh Prime Algorithm forecasts"
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1

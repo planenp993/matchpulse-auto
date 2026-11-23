@@ -1,0 +1,119 @@
+{
+  "UCL": {
+    "weight": 0.45,
+    "fit": {
+      "n": 279,
+      "overLoss": 0.6642687285369842,
+      "bttsLoss": 0.702647018250058
+    },
+    "test": {
+      "n": 281,
+      "overLoss": 0.6562940951079367,
+      "bttsLoss": 0.6973170978090977
+    },
+    "reference": {
+      "n": 281,
+      "overLoss": 0.6645529431537972,
+      "bttsLoss": 0.7049645578399435
+    },
+    "selected": true
+  },
+  "UEL": {
+    "weight": 0,
+    "fit": {
+      "n": 269,
+      "overLoss": 0.68995693409121,
+      "bttsLoss": 0.6975491037801387
+    },
+    "test": {
+      "n": 271,
+      "overLoss": 0.6958904928907887,
+      "bttsLoss": 0.7022304860656724
+    },
+    "reference": {
+      "n": 271,
+      "overLoss": 0.6958904928907887,
+      "bttsLoss": 0.7022304860656724
+    },
+    "selected": false,
+    "matchWeights": {
+      "main": {
+        "europe": 0.08,
+        "domestic": 0
+      },
+      "qualifying": {
+        "europe": 0.34,
+        "domestic": 0
+      }
+    },
+    "matchValidation": {
+      "main": {
+        "weights": {
+          "europe": 0.08,
+          "domestic": 0
+        },
+        "fit": {
+          "n": 189,
+          "overLoss": 0.6880290311379335,
+          "bttsLoss": 0.6881423652193996,
+          "mean": 0.6880856981786666
+        },
+        "test": {
+          "n": 189,
+          "overLoss": 0.6951197438215528,
+          "bttsLoss": 0.7031733803112294,
+          "mean": 0.6991465620663911
+        },
+        "reference": {
+          "n": 189,
+          "overLoss": 0.6947119634486297,
+          "bttsLoss": 0.7026754483522578,
+          "mean": 0.6986937059004438
+        }
+      },
+      "qualifying": {
+        "weights": {
+          "europe": 0.34,
+          "domestic": 0
+        },
+        "fit": {
+          "n": 80,
+          "overLoss": 0.6934481445672556,
+          "bttsLoss": 0.7167974093751847,
+          "mean": 0.70512277697122
+        },
+        "test": {
+          "n": 82,
+          "overLoss": 0.706105150705001,
+          "bttsLoss": 0.7000847998193026,
+          "mean": 0.7030949752621518
+        },
+        "reference": {
+          "n": 82,
+          "overLoss": 0.698606859531867,
+          "bttsLoss": 0.7012049022587832,
+          "mean": 0.699905880895325
+        }
+      }
+    }
+  },
+  "UECL": {
+    "weight": 0.45,
+    "fit": {
+      "n": 407,
+      "overLoss": 0.6926612869234122,
+      "bttsLoss": 0.7017825112609438
+    },
+    "test": {
+      "n": 409,
+      "overLoss": 0.6941426309906265,
+      "bttsLoss": 0.7000739992706628
+    },
+    "reference": {
+      "n": 409,
+      "overLoss": 0.695403474633009,
+      "bttsLoss": 0.7027218603606782
+    },
+    "selected": true
+  }
+}

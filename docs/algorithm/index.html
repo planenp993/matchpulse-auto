@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="bg">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0d1310">
+  <meta name="description" content="Предмачови футболни вероятности, дневен подбор и история на Живия алгоритъм.">
+  <title>Prime Syndicate Algorithm</title>
+  <link rel="stylesheet" href="./style.css?v=08c05a43670f">
+  <script type="module" src="./app.js?v=08c05a43670f"></script>
+  <meta name="prime-public-feed" content="https://raw.githubusercontent.com/planenp993/matchpulse-auto/main/docs/algorithm/data/snapshot.json.gz">
+</head>
+<body>
+  <a class="skip" href="#main">Към съдържанието</a>
+  <header class="topbar">
+    <div class="frame header-row">
+      <a class="brand" href="#matches" aria-label="Prime Syndicate · Мачове">
+        <span class="mark" aria-hidden="true">P</span>
+        <span>PRIME <strong>SYNDICATE</strong></span>
+      </a>
+      <nav class="nav" aria-label="Основна навигация">
+        <a href="#matches" data-view="matches" aria-current="page">Мачове</a>
+        <a href="#diary" data-view="diary">Дневник</a>
+        <a href="#coverage" data-view="coverage">Покритие</a>
+      </nav>
+      <button class="button small sync" type="button" id="refresh" aria-label="Обнови данните">Обнови</button>
+    </div>
+  </header>
+  <main class="frame" id="main">
+    <div id="notice" class="sr-only" role="status"></div>
+    <section class="hero" aria-labelledby="headline">
+      <div class="hero-content">
+        <p class="eyebrow accent"><span class="dot"></span> ПРЕДМАЧОВ АНАЛИЗ</p>
+        <h1 id="headline">Prime Algorithm</h1>
+        <p class="hero-copy">Прогнози за голове, Гол/Гол и краен резултат с обяснение за всеки мач.</p>
+        <div class="hero-counts">
+          <div><strong id="hero-leagues">—</strong><span>първенства и турнира</span></div>
+          <div><strong id="hero-matches">—</strong><span>предстоящи анализа</span></div>
+          <div><strong id="hero-capture">—</strong><span>обновен календар</span></div>
+        </div>
+      </div>
+    </section>
+    <section class="view" id="matches" aria-labelledby="fixture-title">
+      <div class="date-wrap">
+        <div class="dates" id="dates" role="group" aria-label="Ден на мачовете"></div>
+        <label class="date-field" for="date-picker"><span class="sr-only">Избери дата</span><input type="date" id="date-picker"></label>
+      </div>
+      <section class="picks" aria-labelledby="picks-title">
+        <div class="section-head">
+          <div><div class="eyebrow accent">СЕЛЕКЦИЯ</div><h2 id="picks-title">Дневен подбор</h2></div>
+          <span id="pick-caption" class="muted"></span>
+        </div>
+        <div id="picks" class="pick-list"><p class="empty">Зареждане на прогнозите…</p></div>
+      </section>
+      <section aria-labelledby="fixture-title">
+        <div class="section-head fixture-tools">
+          <div><h2 id="fixture-title">Мачове</h2><p class="muted" id="match-count"></p></div>
+          <div class="filters">
+            <label class="sr-only" for="league-filter">Първенство</label>
+            <select id="league-filter"><option value="">Всички първенства</option></select>
+            <label class="sr-only" for="market-filter">Пазар в списъка</label>
+            <select id="market-filter">
+              <option value="">Основни пазари</option>
+              <option value="over_2_5">Над 2,5</option><option value="under_2_5">Под 2,5</option>
+              <option value="btts_yes">Гол/Гол Да</option><option value="btts_no">Гол/Гол Не</option>
+            </select>
+          </div>
+        </div>
+        <div id="fixture-list"></div>
+      </section>
+    </section>
+    <section class="view" id="diary" aria-labelledby="diary-title" hidden>
+      <div class="section-head">
+        <div><h2 id="diary-title">Дневник</h2><p class="muted" id="diary-subtitle"></p></div>
+        <div class="segmented" role="group" aria-label="Източник на прогнозите">
+          <button type="button" data-diary="pilot" aria-pressed="true">Запечатани</button>
+          <button type="button" data-diary="replay" aria-pressed="false">Архивен тест</button>
+        </div>
+      </div>
+      <div id="diary-summary" class="metrics"></div>
+      <div class="section-head">
+        <h3>Мачове в дневника</h3>
+        <label class="sr-only" for="diary-league">Първенство в дневника</label>
+        <select id="diary-league"><option value="">Всички първенства</option></select>
+      </div>
+      <div id="diary-list"></div>
+      <div id="diary-more-wrap" class="more-row"><button type="button" id="diary-more" class="button">Покажи още</button></div>
+    </section>
+    <section class="view" id="coverage" aria-labelledby="coverage-title" hidden>
+      <div class="section-head"><div><h2 id="coverage-title">Покритие на данните</h2>
+        <p class="muted" id="coverage-caption"></p></div></div>
+      <div class="method" id="coverage-method"></div>
+      <div class="table-wrap"><table class="audit-table">
+        <thead><tr><th scope="col">Първенство</th><th scope="col">Удари · 2025/26</th>
+          <th scope="col">Текущ сезон</th><th scope="col">Анализи</th><th scope="col">Модел</th></tr></thead>
+        <tbody id="coverage-rows"></tbody>
+      </table></div>
+      <section class="euro-coverage" aria-labelledby="euro-title">
+        <div class="section-head"><div><h3 id="euro-title">Евротурнири</h3><p class="muted" id="euro-caption"></p></div></div>
+        <div class="table-wrap"><table class="audit-table euro-table">
+          <thead><tr><th scope="col">Турнир</th><th scope="col">Предстоящи анализи</th>
+            <th scope="col">Резултати · предишен сезон</th><th scope="col">Резултати · текущ сезон</th>
+            <th scope="col">Мачове с xG</th></tr></thead>
+          <tbody id="euro-rows"></tbody>
+        </table></div>
+      </section>
+      <div id="sources" class="method">
+        <h3>Данни и метод</h3>
+        <p>Топ 5 използват общо xG от xGTables и предмачовия модел „Сходни защити“. V3 и V9b са в архивния тест. Текущият поток съдържа общо xG по отбор.</p>
+        <p>Допълнителните лиги използват резултатите от архива на Prime Syndicate и наличния календар. За европейските турнири головите вероятности са за редовното време. Формата показва последните налични мачове от УЕФА и първенството.</p>
+        <p><a href="https://www.xgtables.io/data/" rel="noopener noreferrer" target="_blank">xGTables</a>
+          <span aria-hidden="true"> · </span><a href="https://planenp993.github.io/matchpulse-auto/" rel="noopener noreferrer" target="_blank">Архив и календар на Prime Syndicate</a></p>
+      </div>
+    </section>
+    <footer class="footer">
+      <span>Prime Syndicate</span><span id="footer-sync"></span>
+      <a href="#coverage">Данни и метод</a>
+    </footer>
+  </main>
+  <dialog id="match-dialog" aria-labelledby="detail-title">
+    <div class="dialog-inner">
+      <form method="dialog" class="dialog-close"><button class="button small" aria-label="Затвори анализа">Затвори</button></form>
+      <div id="detail"></div>
+    </div>
+  </dialog>
+</body>
+</html>
