@@ -3,6 +3,14 @@
 
 const {execFileSync}=require('node:child_process');
 const {readFileSync}=require('node:fs');
+const {createHash}=require('node:crypto');
+const {gunzipSync}=require('node:zlib');
+const primePath='algorithm/data/snapshot.json.gz';
+
+function primeDigest(bytes){
+ const body=bytes[0]===0x1f && bytes[1]===0x8b ? gunzipSync(bytes) : bytes;
+ return createHash('sha256').update(body).digest('hex');
+}
 const {setTimeout:wait}=require('node:timers/promises');
 const route='/repos/{owner}/{repo}/pages/deployments';
 const terminalFailures=new Set(['deployment_failed','deployment_perms_error','deployment_content_failed','deployment_cancelled','deployment_lost']);
@@ -11,6 +19,7 @@ async function publishPages({
  github,core,context,artifactId=Number(process.env.PAGES_ARTIFACT_ID),site=process.env.PAGES_BASE_URL,
  revision=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),
  version=JSON.parse(readFileSync('docs/data/client_manifest.json','utf8')).version,
+ expectedPrime=primeDigest(readFileSync('docs/'+primePath)),
  fetchPage=fetch,pause=wait
 }){
  if(!Number.isSafeInteger(artifactId)||artifactId<=0||!/^[a-f0-9]{40}$/.test(revision)||!/^[a-f0-9]{64}$/.test(version))throw Error('Invalid Pages artifact or snapshot version');
@@ -39,12 +48,17 @@ async function publishPages({
     throw Error('Pages deployment timed out');
    }
    const manifestUrl=new URL('data/client_manifest.json',siteUrl);
+   const primeUrl=new URL(primePath,siteUrl);
    for(let check=0;check<12;check++){
     manifestUrl.searchParams.set('verify',revision+'-'+process.env.GITHUB_RUN_ATTEMPT+'-'+timeout+'-'+check);
     try{
      const response=await fetchPage(manifestUrl,{cache:'no-store',signal:AbortSignal.timeout(8000)});
      if(response.ok&&(await response.json()).version===version){
-      core.info('Public Pages snapshot verified: '+version);
+      primeUrl.search=manifestUrl.search;
+      const forecast=await fetchPage(primeUrl,{cache:'no-store',signal:AbortSignal.timeout(10000)});
+      if(!forecast.ok || primeDigest(Buffer.from(await forecast.arrayBuffer()))!==expectedPrime)
+       throw Error('Published Prime forecast differs from the uploaded snapshot');
+      core.info('Public Pages and Prime forecast verified: '+version+' / '+expectedPrime);
       core.setOutput('page_url',siteUrl.href);
       return;
      }

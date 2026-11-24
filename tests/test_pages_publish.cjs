@@ -2,12 +2,15 @@
 const assert=require('node:assert/strict');
 const test=require('node:test');
 const publishPages=require('../scripts/deploy_pages.cjs');
+const {createHash}=require('node:crypto');
+const {gzipSync}=require('node:zlib');
 
 test('Pages retries the same artifact if the public manifest is from an older build',async()=>{
  const revision='a'.repeat(40), version='b'.repeat(64), deployments=[], warnings=[], outputs={};
- let requests=0;
+ let requests=0, forecasts=0;
+ const bytes=Buffer.from('{"version":1}'),expectedPrime=createHash('sha256').update(bytes).digest('hex');
  await publishPages({
-  artifactId:42, revision, version, site:'https://example.test/scout',
+  artifactId:42, revision, version, expectedPrime, site:'https://example.test/scout',
   context:{repo:{owner:'example',repo:'scout'},sha:'c'.repeat(40)},
   github:{async request(method,params){
    if(method.startsWith('POST ')){
@@ -20,6 +23,10 @@ test('Pages retries the same artifact if the public manifest is from an older bu
   core:{info(){}, warning(message){warnings.push(message);},async getIDToken(){return 'test-token';},
    setOutput(key,value){outputs[key]=value;}},
   fetchPage:async url=>{
+   if(url.pathname==='/scout/algorithm/data/snapshot.json.gz'){
+    forecasts++;
+    return new Response(forecasts===1?gzipSync('outdated'):gzipSync(bytes));
+   }
    assert.equal(url.pathname,'/scout/data/client_manifest.json');
    requests++;
    return {ok:true,json:async()=>({version:requests<=12?'d'.repeat(64):version})};
@@ -28,5 +35,6 @@ test('Pages retries the same artifact if the public manifest is from an older bu
  });
  assert.deepEqual(deployments,[[42,revision],[42,revision]]);
  assert.match(warnings[0],/did not serve the uploaded snapshot/);
+ assert.equal(forecasts,2);
  assert.equal(outputs.page_url,'https://example.test/scout/');
 });

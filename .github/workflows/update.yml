@@ -59,6 +59,8 @@ jobs:
       - name: Verify frozen registered studies without delaying live data
         run: python scripts/check_research.py
       - name: Apply, audit and persist on the latest main
+        env:
+          PRIME_UPDATE: ${{ github.event_name != 'push' && inputs.mode != 'publish' }}
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
@@ -69,6 +71,15 @@ jobs:
             # Reapply observations to the newest files; never copy an old whole
             # history or calendar over another writer's newer publication.
             python scripts/data_sync.py apply --patch /tmp/mp-patch.json
+            if [ "$PRIME_UPDATE" = "true" ]; then
+              if node scripts/refresh_prime_algorithm.mjs --if-due; then
+                git add -- docs/algorithm/data/snapshot.json.gz docs/algorithm/data/diary/
+              else
+                git restore -- docs/algorithm/data/snapshot.json.gz docs/algorithm/data/diary/
+                rm -f docs/algorithm/data/snapshot.json.gz.tmp
+                echo "::warning::Prime update failed. Publishing the last verified Prime forecast with the new calendar."
+              fi
+            fi
             python scripts/statarea.py --check
             python scripts/forebet.py --check
             python scripts/soccerway.py --check
@@ -162,6 +173,9 @@ jobs:
           PAGES_BASE_URL: ${{ steps.pages.outputs.base_url }}
         with:
           script: await require('./scripts/deploy_pages.cjs')({ github, context, core });
+      - name: Check Prime forecast freshness after the calendar has been published
+        if: github.event_name != 'push' && inputs.mode != 'publish'
+        run: node scripts/refresh_prime_algorithm.mjs --check-age
       - name: Prune only the reviewed merged heads when their recovery map is introduced
         if: github.event_name == 'push'
         run: |

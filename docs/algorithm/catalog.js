@@ -242,7 +242,8 @@ export function selectDaily(matches) {
 export function makeData({ raw, base, live, now, keep = [], quotes = null, previousEuropeanAudit = [] }) {
   const xgTime = Date.parse(live.index.data_updated_at ?? live.index.generated_at);
   const baseTime = Date.parse(base.status.last_build_utc);
-  if (!Number.isFinite(xgTime) || !Number.isFinite(baseTime) || Math.max(xgTime, baseTime) > now + 60_000)
+  const calendarTime = Date.parse(base.status.fixtures_updated_utc ?? base.status.last_build_utc);
+  if (!Number.isFinite(xgTime) || !Number.isFinite(baseTime) || !Number.isFinite(calendarTime) || Math.max(xgTime, baseTime, calendarTime) > now + 60_000)
     throw new Error('Невалиден час на данните');
   const { rows, audit } = extraCoverage(raw.history, raw.fixtures, now);
   const coreById = new Map();
@@ -310,5 +311,6 @@ export function makeData({ raw, base, live, now, keep = [], quotes = null, previ
     row.latest = row.latest || null;
   }
   return { version: 1, asOf: new Date(now).toISOString(), xgTime: new Date(xgTime).toISOString(),
-    calendarTime: new Date(baseTime).toISOString(), matches, audit, euroAudit: europe.audit, euroCached: Boolean(europe.cached), settlements, state: base.status.fixtures_feed_status };
+    calendarTime: new Date(calendarTime).toISOString(), archiveTime: new Date(baseTime).toISOString(),
+    europeTime: raw.europeCoverage?.checked_utc ?? null, matches, audit, euroAudit: europe.audit, euroCached: Boolean(europe.cached), settlements, state: base.status.fixtures_feed_status };
 }

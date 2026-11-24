@@ -1,5 +1,7 @@
+import { DELAY_AFTER, loadSnapshot } from './refresh-state.js?v=ad7cbaff7250';
+import { MIN_LEAD } from './core.js?v=d017cb640a6f';
 import { LEAGUES, LEAGUE_BY_ID, MARKETS, PRICE_BUFFER, SELECTION, eligibleForSelection, fairPrice, forecastVersion,
-  priceFrom, selectDaily, selectionMatch, sofiaDate, SOFIA } from './catalog.js?v=bdd233d7a3c4';
+  priceFrom, selectDaily, selectionMatch, sofiaDate, SOFIA } from './catalog.js?v=4f76ffc0618c';
 
 import { attachFormInteraction, formView } from './form-view.js?v=08c05a43670f';
 import { marketFacts } from './market-facts.js?v=08c05a43670f';
@@ -26,21 +28,41 @@ const tonight = () => sofiaDate(Date.now());
 const publicFeed = document.querySelector('meta[name="prime-public-feed"]')?.content;
 async function get(path, options) {
   const url = new URL(path, import.meta.url);
-  const r = await fetch(url, options);
+  const r = await fetch(url, { signal: AbortSignal.timeout(12_000), ...options });
   if (!r.ok) throw new Error(String(r.status));
-  return url.pathname.endsWith('.gz')
-    ? new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).json() : r.json();
+  if (!url.pathname.endsWith('.gz')) return r.json();
+  const bytes = new Uint8Array(await r.arrayBuffer());
+  if (bytes[0] === 0x1f && bytes[1] === 0x8b) {
+    return new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))).json();
+  }
+  return JSON.parse(new TextDecoder().decode(bytes));
 }
-const initial = path => get(path + (publicFeed ? '.gz' : ''));
+const snapshotPath = './data/snapshot.json' + (publicFeed ? '.gz' : '');
+const fetchSnapshot = previous => loadSnapshot(path => get(path, { cache: 'no-store', signal: AbortSignal.timeout(12_000) }),
+  snapshotPath, publicFeed, Date.now(), previous);
+async function reference(path) {
+  try { return await get('./data/' + path); }
+  catch (error) {
+    if (!publicFeed) throw error;
+    return get(new URL(path, publicFeed));
+  }
+}
+const historicalArchive = () => reference('archive.json' + (publicFeed ? '.gz' : ''));
 let live, archive, validation, europeValidation;
 let day = tonight(), diaryMode = 'daily', diaryLimit = 30, updated = '';
 let daily = [], previousDaily = [];
-let refresh;
+let lastToday = day;
+let lastRequest = 0;
 let activeTrigger;
 
 function showView() {
-  const view = ['matches', 'diary', 'coverage'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'matches';
+  const hash = location.hash.slice(1);
+  const view = hash === 'sources' ? 'coverage' : ['matches', 'diary', 'coverage'].includes(hash) ? hash : 'matches';
   for (const id of ['matches', 'diary', 'coverage']) $(id).hidden = id !== view;
+  if (hash === 'sources') {
+    $('sources').open = true;
+    requestAnimationFrame(() => $('sources').scrollIntoView({block: 'start'}));
+  }
   document.querySelectorAll('[data-view]').forEach(a => {
     if (a.dataset.view === view) a.setAttribute('aria-current', 'page');
     else a.removeAttribute('aria-current');
@@ -114,26 +136,38 @@ function renderMatches() {
   const now = Date.now();
   const upcoming = live.matches.filter(m => Date.parse(m.kickoff) > now);
   const today = tonight();
+  if (today !== lastToday && day === lastToday) day = today;
+  lastToday = today;
   const days = scheduleDays();
   const filter = $('league-filter').value;
   const fixtures = upcoming.filter(m => stamp(m) === day && (!filter || m.league === filter));
   const official = daily.filter(entry => entry.day === day);
-  const picks = official.length ? official : selectDaily(upcoming.filter(m => stamp(m) === day && selectionLeague(m)));
+  const delayed = now - Date.parse(live.asOf) > DELAY_AFTER;
+  const available = upcoming.filter(m => stamp(m) === day && selectionLeague(m) && Date.parse(m.kickoff) - now >= MIN_LEAD);
+  const picks = official.length ? official : delayed ? [] : selectDaily(available);
   $('hero-leagues').textContent = new Set(upcoming.map(m => m.league)).size;
   $('hero-matches').textContent = upcoming.length;
-  $('hero-capture').textContent = dateTime(live.calendarTime);
+  $('hero-capture').textContent = dateTime(live.asOf);
+  $('forecast-delay').hidden = !delayed;
+  $('forecast-delay').textContent = delayed ? 'Обновяването закъснява. Последните прогнози са изчислени на ' +
+    dateTime(live.asOf) + ' ч.' : '';
   $('dates').innerHTML = days.map(d => '<button type="button" class="day" data-day="' + d + '" aria-pressed="' +
     (d === day) + '"><b>' + (d === today ? 'Днес' : escape(shortDate(noon(d)))) +
     '</b><span>' + (d === today ? escape(shortDate(noon(d))) : escape(local(noon(d), { weekday: 'short' }))) +
     '</span></button>').join('');
   $('date-picker').value = day;
   const next = upcoming.find(m => stamp(m) > day && (!filter || m.league === filter));
-  const captureLabel = official[0]?.paired ? 'С положения' : 'Предишен подбор';
+  const captureLabel = 'Записан в дневника';
   $('pick-caption').textContent = official.length ? captureLabel + ' · ' + clock(official[0].captured) + ' ч.' :
     'Предварителен · Честен ' + odds(SELECTION.fairMin) + '–' + odds(SELECTION.fairMax);
-  $('picks').innerHTML = picks.length ? picks.map(pickCard).join('') :
-    empty(fixtures.length ? 'За този ден няма предложения в диапазона за подбора.' :
-      'За тази дата няма предстоящи анализи.', next && stamp(next));
+  let reason = 'За тази дата няма предстоящи анализи.';
+  if (upcoming.some(m => stamp(m) === day)) {
+    reason = available.length
+      ? 'Брой проверени мачове за подбора · ' + available.length + '. Няма подходящ пазар с честен коефициент от 1,70 до 2,00.'
+      : 'За подбора са нужни одобрено първенство и поне 90 минути до началото.';
+  }
+  if (delayed) reason = 'Предварителният подбор ще се покаже при следващото успешно обновяване.';
+  $('picks').innerHTML = picks.length ? picks.map(pickCard).join('') : empty(reason, next && stamp(next));
   $('match-count').textContent = fixtures.length + (fixtures.length === 1 ? ' предстоящ мач' : ' предстоящи мача') +
     ' · ' + shortDate(noon(day));
   $('fixture-list').innerHTML = fixtures.length ? grouped(fixtures) :
@@ -154,22 +188,21 @@ function dailyRow(entry, previous = false) {
 }
 
 function renderDailyDiary(entries, controls) {
-  const comparison = dailyComparison(daily, previousDaily);
-  if (live.selectionVersion || comparison.days) {
-    $('diary-subtitle').textContent = 'Двата подбора се записват едновременно преди мачовете.';
-    const result = stats => stats.settled
-      ? pct(stats.rate, 1) + ' · ' + stats.hits + '/' + stats.settled : '—';
-    $('diary-summary').innerHTML = metric(result(comparison.current), 'С положения') +
-      metric(result(comparison.previous), 'Предишен подбор') +
-      metric(comparison.complete + ' от ' + comparison.days, 'Дни с резултати и за двата') +
-      (comparison.days ? '<p class="muted diary-readout">Успеваемостта обхваща дните с краен резултат за всеки избран мач.</p>' :
-        '<p class="muted diary-readout">Сравнението започва с първия нов запис в дневника.</p>');
-  } else {
-    const stats = dailySummary(entries);
-    $('diary-subtitle').textContent = 'Подборът се записва преди мачовете при първото обновяване за деня с подходящи срещи.';
-    $('diary-summary').innerHTML = metric(format(stats.recorded), 'Записани') +
-      metric(stats.settled ? format(stats.hits) + ' от ' + format(stats.settled) : '—', 'Попадения') +
-      metric(format(stats.waiting), 'Чакат резултат');
+  const stats = dailySummary(entries);
+  $('diary-subtitle').textContent = 'Всеки избор се записва преди началото. Успеваемостта се смята само за мачове с потвърден резултат.';
+  const hitRate = stats.settled ? pct(stats.rate, 1) : '—';
+  const sample = stats.hits + ' от ' + stats.settled + ' приключили';
+  $('diary-summary').innerHTML = metric(hitRate, sample) +
+    metric(format(stats.recorded), 'Записани избора') + metric(format(stats.waiting), 'Чакат резултат');
+  if (live.selectionVersion && !$('diary-league').value) {
+    const paired = dailyComparison(daily, previousDaily);
+    const compare = row => row.hits + '/' + row.settled;
+    const detail = paired.complete
+      ? 'С положения ' + compare(paired.current) + ' · само Prime ' + compare(paired.previous) +
+          ' · ' + paired.complete + ' завършени дни.'
+      : 'Изчакваме първия ден с крайни резултати за всички избори и на двата варианта.';
+    $('diary-summary').innerHTML += '<p class="muted diary-readout">Сравнение на двата подбора за едни и същи дни. ' +
+      escape(detail) + '</p>';
   }
   const dates = new Map();
   for (const [key, choices] of [['main', entries], ['control', controls]]) {
@@ -201,6 +234,14 @@ function renderDiary() {
   const shown = diaryMode === 'daily' ? daily : archive[diaryMode].map(m => ({ ...m, result: live.settlements?.[m.id] ?? m.result }));
   const filtered = shown.filter(included);
   let hasMore = filtered.length > diaryLimit;
+  if (diaryMode !== 'daily' && archive.unavailable) {
+    $('diary-subtitle').textContent = 'Архивните прогнози временно са недостъпни.';
+    $('diary-summary').innerHTML = '';
+    $('diary-list').innerHTML = empty('Натисни „Обнови“ за нова проверка на архива.');
+    $('diary-more-wrap').hidden = true;
+    document.querySelectorAll('[data-diary]').forEach(b => b.setAttribute('aria-pressed', b.dataset.diary === diaryMode));
+    return;
+  }
   if (diaryMode === 'daily') {
     hasMore = renderDailyDiary(filtered, previousDaily.filter(included));
   } else if (diaryMode === 'replay') {
@@ -227,9 +268,15 @@ function renderCoverage() {
     dateTime(live.calendarTime) + ' ч.';
   $('coverage-method').innerHTML = '<p>Изискването е над 80% покритие и в двата периода. За допълнителните лиги броим резултат и четирите полета за удари. За топ 5 през текущия сезон броим двойката xG.</p>' +
     '<p>Топ 5 и ' + supporting.length + ' допълнителни лиги влизат в дневния подбор. За тях лиговият модел има по-ниска средна грешка за Над/Под и Гол/Гол в теста за 2025/26. Покритието измерва наличните данни.</p>';
+  const feeds = [['Прогнозите са изчислени', live.asOf], ['Програма на Prime', live.calendarTime],
+    ['Публикация на xGTables', live.xgTime], ['Проверка на резултатите от УЕФА', live.europeTime]];
+  $('source-times').innerHTML = feeds.filter(([, t]) => t && Number.isFinite(Date.parse(t))).map(([name, t]) =>
+    '<div><dt>' + escape(name) + '</dt><dd>' + escape(dateTime(t)) + ' ч.</dd></div>').join('');
   $('coverage-rows').innerHTML = live.audit.map(x => {
     const l = LEAGUE_BY_ID[x.id];
-    const model = l.core ? 'Сходни защити' : x.forecastCount ? 'Лигов модел' : 'Изчаква данни';
+    const upgraded = live.matches.filter(m => m.league === x.id && m.forecastEdition === 'Prime 80/20').length;
+    const model = upgraded ? 'Prime 80/20 · ' + upgraded + ' мача' :
+      l.core && x.forecastCount ? 'Сходни защити' : x.forecastCount ? 'Лигов модел' : 'Изчаква данни';
     const curr = x.currentN ? pct(x.currentRatio, 1) : '—';
     const role = l.core ? 'Топ 5 · общо xG' : !x.forecastCount ? 'Под прага или без програма' :
       selectionLeague({ league: x.id, model: 'results' }) ? 'В дневния подбор' : 'Предварителен анализ';
@@ -263,7 +310,7 @@ function render() {
   renderMatches();
   renderDiary();
   renderCoverage();
-  $('footer-sync').textContent = updated || 'Календар към ' + dateTime(live.calendarTime) + ' ч.';
+  $('footer-sync').textContent = updated || 'Прогнози от ' + dateTime(live.asOf) + ' ч.';
   $('notice').textContent = $('footer-sync').textContent;
 }
 
@@ -364,36 +411,26 @@ function openMatch(trigger) {
   $('match-dialog').showModal();
 }
 
-function requestUpdate() {
-  if ((!refresh && !publicFeed) || $('refresh').disabled) return;
+async function requestUpdate() {
+  if ($('refresh').disabled) return;
+  if (!live) return start();
   $('refresh').disabled = true;
   $('refresh').textContent = 'Обновяване…';
-  if (publicFeed) {
-    get(publicFeed, { cache: 'no-cache' }).then(snapshot => {
-      if (!Array.isArray(snapshot.matches) || !Array.isArray(snapshot.euroAudit) || snapshot.version !== live.version ||
-          !Number.isFinite(Date.parse(snapshot.asOf)) || Date.parse(snapshot.asOf) > Date.now() + 60_000 ||
-          Date.parse(snapshot.asOf) < Date.parse(live.asOf)) throw new Error('Невалидно обновяване');
-      finishRefresh({ status: snapshot.asOf === live.asOf ? 'unchanged' : 'updated', snapshot });
-    }).catch(() => finishRefresh({ status: 'error' }));
-    return;
-  }
-  refresh.postMessage({ xgTime: live.xgTime, calendarTime: live.calendarTime,
-    pilot: archive.pilot, previous: live.matches, euroAudit: live.euroAudit ?? [], euroCached: live.euroCached });
-}
-
-function finishRefresh(data) {
-  $('refresh').disabled = false;
-  $('refresh').textContent = 'Обнови';
-  if (data.status === 'updated') {
-    live = data.snapshot;
+  lastRequest = Date.now();
+  try {
+    const [snapshot, archiveUpdate] = await Promise.all([fetchSnapshot(live),
+      archive.unavailable ? historicalArchive().catch(() => archive) : archive]);
+    archive = archiveUpdate;
+    live = snapshot;
     updateLeagueControls(live);
-    updated = 'Обновен календар · ' + dateTime(live.calendarTime) + ' ч.';
-  } else if (data.status === 'error') {
-    updated = 'Последна налична снимка · ' + dateTime(live.calendarTime) + ' ч.';
-  } else {
-    updated = 'Календар към ' + dateTime(live.calendarTime) + ' ч.';
+    updated = 'Прогнози от ' + dateTime(live.asOf) + ' ч.';
+  } catch {
+    updated = 'Последни достъпни прогнози от ' + dateTime(live.asOf) + ' ч.';
+  } finally {
+    $('refresh').disabled = false;
+    $('refresh').textContent = 'Обнови';
+    render();
   }
-  render();
 }
 document.addEventListener('click', event => {
   const button = event.target.closest('button');
@@ -415,19 +452,29 @@ $('league-filter').addEventListener('change', renderMatches);
 $('market-filter').addEventListener('change', renderMatches);
 $('diary-league').addEventListener('change', () => { diaryLimit = 30; renderDiary(); });
 $('diary-more').addEventListener('click', () => { diaryLimit += 30; renderDiary(); });
-Promise.all([initial('./data/snapshot.json'), initial('./data/archive.json'), get('./data/extra-models.json'), get('./data/europe-models.json')])
-  .then(([snapshot, archiveData, models, euroModels]) => {
+async function start() {
+  $('refresh').disabled = true;
+  lastRequest = Date.now();
+  try {
+    const [snapshot, archiveData, models, euroModels] = await Promise.all([
+      fetchSnapshot(), historicalArchive().catch(() => ({ pilot: [], replay: [], unavailable: true })),
+      reference('extra-models.json'), reference('europe-models.json')
+    ]);
     live = snapshot;
     archive = archiveData;
     validation = models;
     europeValidation = euroModels;
     updateLeagueControls(live);
     render();
-    if (!publicFeed) {
-      refresh = new Worker(new URL('./refresh-worker.js?v=08c05a43670f', import.meta.url), { type: 'module' });
-      refresh.onmessage = e => finishRefresh(e.data);
-      refresh.onerror = () => finishRefresh({ status: 'error' });
-    }
-    requestUpdate();
-    setInterval(() => { if (!document.hidden) requestUpdate(); }, 20 * 60_000);
-  }).catch(() => { $('picks').innerHTML = empty('Прогнозите временно са недостъпни. Обнови страницата.'); });
+  } catch {
+    $('footer-sync').textContent = $('notice').textContent = 'Данните временно са недостъпни.';
+    $('picks').innerHTML = empty('Прогнозите временно са недостъпни. Натисни „Обнови“ за нова проверка.');
+  } finally {
+    $('refresh').disabled = false;
+  }
+}
+start();
+setInterval(() => { if (!document.hidden) requestUpdate(); }, 20 * 60_000);
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && Date.now() - lastRequest >= 5 * 60_000) requestUpdate();
+});

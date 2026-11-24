@@ -282,3 +282,13 @@ dialog::backdrop{background:#020805c7}
 }
 
 .hero{--hero-image:url("./assets/floodlights.jpg")}
+
+
+.delay-note{border-left:3px solid #dfb968;background:var(--surface);padding:10px 14px;margin:0 0 16px;color:var(--fg)}
+.source-times{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,185px),1fr));gap:12px 20px;margin:12px 0 2px}
+.source-times dt{color:var(--muted);font-size:.9rem}
+.source-times dd{margin:2px 0 0;font-weight:700;color:var(--fg);font-variant-numeric:tabular-nums}
+.how summary{cursor:pointer;font-size:1.05rem;font-weight:750;color:var(--fg)}
+.how ol{padding-inline-start:1.5rem;margin:12px 0}
+.how li+li{margin-top:.55rem}
+.how strong{color:var(--fg)}

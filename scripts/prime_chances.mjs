@@ -199,7 +199,7 @@ export function addChances(snapshot, { raw, live, now, checkpoint }) {
   }
   const state = structuredClone(checkpoint);
   const observations = historyAfter(state, raw, live, now, Math.min(now, Date.parse(snapshot.xgTime)),
-                                    Math.min(now, Date.parse(snapshot.calendarTime)));
+                                    Math.min(now, Date.parse(snapshot.archiveTime ?? snapshot.calendarTime)));
   replay(state, observations);
   const matches = snapshot.matches.map(({ chances: previous, ...match }) => {
     const opinionForMatch = opinion(state, match);

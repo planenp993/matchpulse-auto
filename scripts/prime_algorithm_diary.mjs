@@ -195,7 +195,7 @@ export function advanceDiary(diary, snapshot, { raw, base, live, version, now })
 
   const results = [...diary.results];
   if (diary.days.length) {
-    const findResult = resultFromSources(raw, live, { domestic: Date.parse(snapshot.calendarTime),
+    const findResult = resultFromSources(raw, live, { domestic: Date.parse(snapshot.archiveTime ?? snapshot.calendarTime),
       xg: Date.parse(snapshot.xgTime), europe: Date.parse(raw.europeCoverage.checked_utc) }, diary);
     for (const entry of diary.days) {
       for (const pick of allPicks(entry)) {
