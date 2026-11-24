@@ -1,7 +1,7 @@
 import './club-aliases.js?v=08c05a43670f';
-import './model-core.js?v=08c05a43670f';
-import { europeanForecasts, readEuropeanHistory } from './europe.js?v=08c05a43670f';
-import { CORE_CODES, CORE_LEAGUES, MIN_LEAD, parseCoreFixtures, topForecasts, markets } from './core.js?v=08c05a43670f';
+import './model-core.js?v=d017cb640a6f';
+import { europeanForecasts, readEuropeanHistory } from './europe.js?v=c193010b9619';
+import { CORE_CODES, CORE_LEAGUES, MIN_LEAD, parseCoreFixtures, topForecasts, markets } from './core.js?v=d017cb640a6f';
 
 const model = globalThis.MatchpulseModel;
 export const SOFIA = 'Europe/Sofia';
@@ -190,6 +190,7 @@ export function priceReference(match, quotes, now) {
 }
 
 export function forecastVersion(f) {
+  if (f.forecastEdition) return f.forecastEdition;
   if (f.model === 'europe') return 'Европейски модел';
   if (f.model === 'results') return 'Лигов модел';
   if (f.model === 'retrospective') return 'V3 / ' + f.bttsVersion;
@@ -209,8 +210,16 @@ export function eligiblePrice(p, rule = SELECTION) {
   return price != null && price >= rule.fairMin - 1e-9 && price <= rule.fairMax + 1e-9;
 }
 
+export function selectionMatch(match) {
+  if (!match.selectionForecast) return match;
+  const { selectionForecast, forecastEdition, ...fixture } = match;
+  return { ...fixture, ...selectionForecast,
+    matchForecast: { probabilities: fixture.probabilities, edition: forecastEdition } };
+}
+
 export function dailyCandidates(matches, rule = SELECTION) {
-  return matches.flatMap(m => {
+  return matches.flatMap(match => {
+    const m = selectionMatch(match);
     const best = MARKETS.map(key => ({ key, p: m.probabilities[key] }))
       .filter(({ p }) => eligiblePrice(p, rule)).sort((a, b) => b.p - a.p)[0];
     if (!best) return [];
@@ -287,7 +296,7 @@ export function makeData({ raw, base, live, now, keep = [], quotes = null, previ
   if (raw.europeHistory && raw.europeCoverage) {
     try {
       europe = europeanForecasts({ records: readEuropeanHistory(raw.europeHistory), domestic: rows, allDomestic: raw.history, index: live.index,
-        csv: live.csv, coverage: raw.europeCoverage, fitted: base.euroFitted, now, day: sofiaDate(now),
+        csv: live.csv, coverage: raw.europeCoverage, fitted: base.euroFitted, releaseWeights: base.release?.europe, now, day: sofiaDate(now),
         observed: Math.min(now, Math.min(xgTime, Date.parse(raw.europeCoverage.checked_utc))) });
     } catch (error) {
       if (!previousEuropeanAudit.length) throw error;

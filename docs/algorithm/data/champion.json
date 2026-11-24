@@ -1,0 +1,8 @@
+{
+  "version": "prime-forecast-2026-11-v1",
+  "domesticChanceWeight": 0.2,
+  "domestic": ["E0", "D1", "F1", "I1", "SP1", "E1", "E2", "E3", "SP2", "I2", "N1", "B1", "P1", "T1", "G1", "SC0"],
+  "europe": {
+    "UCL": {"europe": 0.6, "domestic": 0.15}
+  }
+}

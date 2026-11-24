@@ -208,7 +208,7 @@ function teamForm(records, domestic) {
   return byTeam;
 }
 
-export function europeanForecasts({ records, domestic, allDomestic = domestic, index, csv, coverage, fitted, now, day, observed }) {
+export function europeanForecasts({ records, domestic, allDomestic = domestic, index, csv, coverage, fitted, releaseWeights = {}, now, day, observed }) {
   const history = records.filter(r => r.day < day);
   const ratings = europeRatings();
   for (const batch of historyByDay(history).values()) ratings.update(batch);
@@ -231,14 +231,21 @@ export function europeanForecasts({ records, domestic, allDomestic = domestic, i
       xgN: season.stages.reduce((n, x) => n + (x.with_xg ?? 0), 0), xgDenom: season.results });
     for (const m of upcoming) {
       const config = fitted[code];
-      const weights = config?.matchWeights?.[m.phase] ?? { europe: config?.weight ?? .6, domestic: 0 };
-      const { league, lambdas, counts, domesticCounts } = ratings.estimate(m, weights, local);
-      const odds = model.distribution(...lambdas, model.params.standard.rho);
+      const original = config?.matchWeights?.[m.phase] ?? { europe: config?.weight ?? .6, domestic: 0 };
+      const upgrade = releaseWeights[code];
+      const forWeights = weights => {
+        const { league, lambdas, counts, domesticCounts } = ratings.estimate(m, weights, local);
+        const distribution = model.distribution(...lambdas, model.params.standard.rho);
+        return { ...markets(distribution.matrix), facts: { goals: lambdas, league,
+          euroSample: counts, domesticSample: domesticCounts, euroWeight: weights.europe,
+          domesticWeight: weights.domestic, form: m.teams.map(k => forms.get(k) ?? []) } };
+      };
+      const result = forWeights(upgrade ?? original);
       matches.push({ id: m.id, providerId: m.providerId, league: code, home: m.home, away: m.away,
         kickoff: new Date(m.kickoff).toISOString(), issued: new Date(now).toISOString(),
         dataAsOf: new Date(observed).toISOString(), source: 'Календар xGTables · резултати УЕФА',
-        model: 'europe', round: m.round, ...markets(odds.matrix), facts: { goals: lambdas, league,
-          euroSample: counts, domesticSample: domesticCounts, euroWeight: weights.europe, domesticWeight: weights.domestic, form: m.teams.map(k => forms.get(k) ?? []) } });
+        model: 'europe', round: m.round, ...result,
+        ...(upgrade ? { forecastEdition: 'УЕФА · европейска и домашна форма', selectionForecast: forWeights(original) } : {}) });
     }
   }
   return { matches, audit };

@@ -172,3 +172,34 @@ test('both ranks freeze the same daily candidates and settle selections exclusiv
   assert.equal(comparison.complete, 1);
   assert.deepEqual([comparison.current.hits, comparison.previous.hits], [3, 2]);
 });
+
+test('the full 80/20 forecast is coherent and the daily quote follows the tested selector', async () => {
+  const { markets, scoreGrid } = await import('../docs/algorithm/core.js');
+  const { selectDaily } = await import('../docs/algorithm/catalog.js');
+  const { applyForecastRelease, mixDistribution } = await import('../scripts/prime_full_forecast.mjs');
+  const rates = [1.6, 1.3], first = [.78, .78], positiveGoalRates = [1.1, 1.1], dependence = .0434;
+  const grid = scoreGrid(first, positiveGoalRates, dependence);
+  const original = markets(grid);
+  const chances = markets(mixDistribution(grid, rates, 1)).probabilities;
+  const row = match('epl/13', .57, { ...original, chances, chanceRates: rates, facts:{first,positiveGoalRates} });
+  const options = { release:{version:'new', domestic:['E0'], domesticChanceWeight:.2},
+    scoring:{parameters:{dependence}}, fitted:{} };
+  const output = applyForecastRelease({ matches:[row] }, options);
+  const newMatch = output.matches[0];
+  const close = (a,b) => assert.ok(Math.abs(a-b) < 1e-12, `${a} != ${b}`);
+  for (const key of ['over_2_5','btts_yes','home','draw','away']) {
+    close(newMatch.probabilities[key], .8*original.probabilities[key]+.2*chances[key]);
+  }
+  close(newMatch.probabilities.home_or_draw + newMatch.probabilities.away,1);
+  close(newMatch.probabilities.over_2_5 + newMatch.probabilities.under_2_5,1);
+  close(newMatch.probabilities.btts_yes + newMatch.probabilities.btts_no,1);
+  assert.equal(newMatch.forecastEdition,'Prime 80/20');
+  assert.deepEqual(newMatch.selectionForecast.probabilities, original.probabilities);
+  assert.ok(!Object.hasOwn(newMatch,'chanceRates'));
+  assert.deepEqual(applyForecastRelease(output,options),output);
+  const baseline = selectDaily([row])[0];
+  const upgraded = selectDaily([newMatch])[0];
+  assert.ok(baseline && upgraded);
+  assert.deepEqual([upgraded.key,upgraded.p],[baseline.key,baseline.p]);
+  assert.deepEqual(upgraded.m.matchForecast.probabilities,newMatch.probabilities);
+});

@@ -1,5 +1,5 @@
 import { LEAGUES, LEAGUE_BY_ID, MARKETS, PRICE_BUFFER, SELECTION, eligibleForSelection, fairPrice, forecastVersion,
-  priceFrom, selectDaily, sofiaDate, SOFIA } from './catalog.js?v=1f1094501b14';
+  priceFrom, selectDaily, selectionMatch, sofiaDate, SOFIA } from './catalog.js?v=bdd233d7a3c4';
 
 import { attachFormInteraction, formView } from './form-view.js?v=08c05a43670f';
 import { marketFacts } from './market-facts.js?v=08c05a43670f';
@@ -85,7 +85,7 @@ function grouped(rows, diary = false) {
 }
 function pickCard(record) {
   const { m, key, p } = record;
-  return '<button type="button" class="pick" data-set="' + (record.id ? 'daily' : 'live') +
+  return '<button type="button" class="pick" data-set="' + (record.id ? 'daily' : 'selection-live') +
     '" data-match="' + escape(record.id ?? m.id) + '" data-market="' + key + '">' +
     '<div class="pick-head"><span class="market-chip">' + names[key] + '</span><span class="pick-meta">' +
     escape(clock(m.kickoff)) + '</span></div><h3>' + escape(m.home + ' – ' + m.away) + '</h3>' +
@@ -279,6 +279,14 @@ function explain(m, market) {
 function modelContext(m, market, ranked) {
   const f = m.facts;
   const lines = [];
+  if (m.forecastEdition === 'Prime 80/20') {
+    const original = m.selectionForecast.probabilities[market];
+    lines.push('За този пазар Prime дава ' + pct(original, 1) + ', а моделът за положенията дава ' +
+      pct(m.chances[market], 1) + '. Общата оценка използва 80% от Prime и 20% от модела за положенията.');
+  }
+  if (m.forecastEdition && m.model === 'europe' && f.domesticWeight) {
+    lines.push('Оценката отчита представянето в Европа и последните мачове в националните първенства.');
+  }
   if (ranked && Number.isFinite(m.chances?.[market])) {
     lines.push('За този пазар Prime дава ' + pct(m.probabilities[market], 1) + ', а моделът за положенията дава ' +
       pct(m.chances[market], 1) + '. Средната от двете оценки определя реда в подбора.');
@@ -298,8 +306,10 @@ function openMatch(trigger) {
   const previous = trigger.dataset.set === 'daily-previous';
   const records = previous ? previousDaily : trigger.dataset.set === 'daily' ? daily : [];
   const dailyPick = records.find(entry => entry.id === trigger.dataset.match);
-  const list = trigger.dataset.set === 'live' ? live.matches : archive[trigger.dataset.set];
-  const m = dailyPick?.m ?? list?.find(x => x.id === trigger.dataset.match);
+  const isSelection = trigger.dataset.set === 'selection-live';
+  const list = trigger.dataset.set === 'live' || isSelection ? live.matches : archive[trigger.dataset.set];
+  const match = list?.find(x => x.id === trigger.dataset.match);
+  const m = dailyPick?.m ?? (isSelection && match ? selectionMatch(match) : match);
   if (!m) return;
   activeTrigger = trigger;
   const p = m.probabilities;
@@ -311,6 +321,10 @@ function openMatch(trigger) {
   const tag = label(m) + ' · ' + t;
   const ranked = !previous && (dailyPick?.paired || (!dailyPick && trigger.classList.contains('pick')));
   const explanation = explain(m, recommended) + modelContext(m, recommended, ranked);
+  const separate = m.matchForecast?.probabilities[recommended];
+  const fullForecast = Number.isFinite(separate) && Math.abs(separate - p[recommended]) > 1e-9
+    ? '<p class="status-line">Общ анализ по ' + escape(m.matchForecast.edition) + ' · ' +
+      pct(separate, 1) + ' · честен ' + odds(fairPrice(separate)) + '</p>' : '';
   const chance = (key, text) => '<span><small>' + text + '</small>' + pct(p[key]) + '</span>';
   const ref = m.quote ? '<section class="detail-section"><h3>Пазарен ориентир</h3><p>' + escape(m.quote.source) +
     ' · засечка от ' + escape(dateTime(m.quote.seen)) + ' ч. · Над ' + odds(m.quote.over) + ' / Под ' +
@@ -326,8 +340,9 @@ function openMatch(trigger) {
     '</div><h2 class="detail-title" id="detail-title">' + title + '</h2><p class="muted">' +
     escape(forecastVersion(m)) + (m.round ? ' · ' + escape(roundText(m.round)) : '') + (result ? ' · Краен резултат ' + result.join(':') : '') + '</p></div>' +
     '<div class="detail-summary"><b>' + names[recommended] + ' · ' + pct(p[recommended], 1) +
-    '</b><p>Честен ' + odds(dailyPick?.fair ?? fairPrice(p[recommended])) + ' · праг за проверка ' +
-    odds(dailyPick?.threshold ?? priceFrom(p[recommended])) + '+</p></div>' + diaryDetail +
+    '</b><p>' + (fullForecast ? 'Честен за подбора ' : 'Честен ') +
+    odds(dailyPick?.fair ?? fairPrice(p[recommended])) + ' · праг за проверка ' +
+    odds(dailyPick?.threshold ?? priceFrom(p[recommended])) + '+</p>' + fullForecast + '</div>' + diaryDetail +
     (explanation ? '<section class="detail-section match-why"><h3>Защо този избор</h3>' +
       explanation + '</section>' : '') +
     formView(m, escape, LEAGUE_BY_ID, day => shortDate(noon(day))) +

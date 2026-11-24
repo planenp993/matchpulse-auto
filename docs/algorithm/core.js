@@ -149,7 +149,7 @@ export function markets(grid) {
     expectedGoals, scoring, scorelines: scorelines.sort((a, b) => b.p - a.p).slice(0, 3) };
 }
 
-function scoreGrid(p, rate, dependence) {
+export function scoreGrid(p, rate, dependence) {
   let both = p[0] * p[1];
   both += dependence * (dependence >= 0
     ? Math.min(...p) - both : both - Math.max(0, p[0] + p[1] - 1));
@@ -226,7 +226,7 @@ export function topForecasts(fixtures, league, season, now, observed, cfg, until
       home: match.home, away: match.away, kickoff: new Date(match.kickoff).toISOString(),
       issued: new Date(now).toISOString(), dataAsOf: new Date(observed).toISOString(),
       source: 'xGTables · Sportmonks', model: 'similar_defence', ...model,
-      facts: { xg, ranks, ppg, first, form: both.map(c => c.form), oppositionCases: f.map(v => v.n),
+      facts: { xg, ranks, ppg, first, positiveGoalRates: rates, form: both.map(c => c.form), oppositionCases: f.map(v => v.n),
         league: xc, xgCounts: both.map(c => c.chance.games),
         adjustments: [model.probabilities.over_2_5 - control.over_2_5,
           model.probabilities.btts_yes - control.btts_yes] } }];

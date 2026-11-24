@@ -188,7 +188,7 @@ function opinion(state, match) {
   const p = value => clamp(value, .000001, .999999);
   const over = p(1 - Math.exp(-total) * (1 + total + total * total / 2));
   const btts = p(Math.expm1(-means[0]) * Math.expm1(-means[1]));
-  return { over_2_5: over, under_2_5: 1 - over, btts_yes: btts, btts_no: 1 - btts };
+  return { chances: { over_2_5: over, under_2_5: 1 - over, btts_yes: btts, btts_no: 1 - btts }, chanceRates: means };
 }
 
 export function addChances(snapshot, { raw, live, now, checkpoint }) {
@@ -202,8 +202,8 @@ export function addChances(snapshot, { raw, live, now, checkpoint }) {
                                     Math.min(now, Date.parse(snapshot.calendarTime)));
   replay(state, observations);
   const matches = snapshot.matches.map(({ chances: previous, ...match }) => {
-    const chances = opinion(state, match);
-    return chances ? { ...match, chances } : match;
+    const opinionForMatch = opinion(state, match);
+    return opinionForMatch ? { ...match, ...opinionForMatch } : match;
   });
   return { ...snapshot, matches, selectionVersion: CHANCES_VERSION };
 }
