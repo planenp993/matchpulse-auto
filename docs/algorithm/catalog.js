@@ -204,15 +204,30 @@ export function eligibleForSelection(match, fitted, europeFitted) {
     model.reference.overLoss + model.reference.bttsLoss;
 }
 
-export function selectDaily(matches) {
+export function eligiblePrice(p, rule = SELECTION) {
+  const price = Number.isFinite(p) ? fairPrice(p) : null;
+  return price != null && price >= rule.fairMin - 1e-9 && price <= rule.fairMax + 1e-9;
+}
+
+export function dailyCandidates(matches, rule = SELECTION) {
   return matches.flatMap(m => {
-    const available = MARKETS.map(key => ({ key, p: m.probabilities[key] }))
-      .filter(({ p }) => Number.isFinite(p) && p > 0 &&
-        1 / p >= SELECTION.fairMin - 1e-9 && 1 / p <= SELECTION.fairMax + 1e-9)
-      .sort((a, b) => b.p - a.p);
-    return available.length ? [{ m, ...available[0] }] : [];
-  }).sort((a, b) => b.p - a.p || a.m.kickoff.localeCompare(b.m.kickoff) ||
-                    a.m.id.localeCompare(b.m.id)).slice(0, SELECTION.count);
+    const best = MARKETS.map(key => ({ key, p: m.probabilities[key] }))
+      .filter(({ p }) => eligiblePrice(p, rule)).sort((a, b) => b.p - a.p)[0];
+    if (!best) return [];
+    const second = m.chances?.[best.key];
+    return [{ m, ...best, second: Number.isFinite(second) && second > 0 && second < 1 ? second : null }];
+  });
+}
+
+export function orderDaily(candidates, useChances, limit = SELECTION.count) {
+  const rank = candidate => useChances && candidate.second != null
+    ? (candidate.p + candidate.second) / 2 : candidate.p;
+  return [...candidates].sort((a, b) => rank(b) - rank(a) || a.m.kickoff.localeCompare(b.m.kickoff) ||
+    a.m.id.localeCompare(b.m.id)).slice(0, limit);
+}
+
+export function selectDaily(matches) {
+  return orderDaily(dailyCandidates(matches), true);
 }
 
 export function makeData({ raw, base, live, now, keep = [], quotes = null, previousEuropeanAudit = [] }) {

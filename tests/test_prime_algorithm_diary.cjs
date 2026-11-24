@@ -129,3 +129,46 @@ test('an eligible European pick uses the UEFA regulation result', async () => {
   assert.equal(settled.results[0].source, 'УЕФА');
   assert.deepEqual(settled.results[0].score, [1, 1]);
 });
+
+test('both ranks freeze the same daily candidates and settle selections exclusive to the old rank', async () => {
+  const { createHash } = require('node:crypto');
+  const { advanceDiary, validateDiary } = await import('../scripts/prime_algorithm_diary.mjs');
+  const { selectDaily } = await import('../docs/algorithm/catalog.js');
+  const { dailyComparison, dailyEntries } = await import('../docs/algorithm/daily-diary.js');
+  const fixtureList = [
+    match('epl/12', .585, { chances: { over_2_5: .41 } }),
+    match('epl/13', .581, { chances: { over_2_5: .603 } }),
+    match('epl/14', .574),
+    match('epl/15', .550, { chances: { over_2_5: .73 } }),
+    match('epl/16', .635, { chances: { over_2_5: .99 } }),
+  ];
+  const next = { ...snapshot(fixtureList), selectionVersion: 'prime-chances-2026-v1' };
+  const ledger = advanceDiary(empty, next, context());
+  const record = ledger.days[0];
+  const ids = picks => picks.map(pick => pick.m.id);
+  assert.deepEqual(ids(selectDaily(fixtureList)), ['epl/15', 'epl/13', 'epl/14']);
+  assert.deepEqual(ids(record.picks), ['epl/15', 'epl/13', 'epl/14']);
+  assert.deepEqual(ids(record.comparison.picks), ['epl/12', 'epl/13', 'epl/14']);
+  assert.equal(record.comparison.candidates.length, 4);
+  assert.equal(record.picks[0].key, 'over_2_5');
+  assert.equal(record.picks[0].fair, 1 / .550);
+  assert.deepEqual(advanceDiary(ledger, { ...next, matches: fixtureList.slice(0, 2) }, context()), ledger);
+
+  const changed = structuredClone(record);
+  changed.comparison.picks.reverse();
+  delete changed.sha256;
+  changed.sha256 = createHash('sha256').update(JSON.stringify(changed)).digest('hex');
+  assert.throws(() => validateDiary({ ...ledger, days: [changed] }), /rankings differ/);
+  assert.equal(dailyComparison(dailyEntries(ledger), dailyEntries(ledger, true)).complete, 0);
+
+  const seen = '2026-11-23T22:45:00.000Z';
+  const settle = context(seen);
+  settle.live.csv.epl = headers + '\n' + [12, 13, 14, 15].map(id =>
+    [id, fixtureDay, kickoff, 'Home', 'Away', 'league', 'Sportmonks', 'full_time',
+      '', '', id === 12 ? 0 : 2, 1, '', '', ''].join(',')).join('\n') + '\n';
+  const final = advanceDiary(ledger, snapshot([], seen), settle);
+  assert.equal(final.results.length, 4);
+  const comparison = dailyComparison(dailyEntries(final), dailyEntries(final, true));
+  assert.equal(comparison.complete, 1);
+  assert.deepEqual([comparison.current.hits, comparison.previous.hits], [3, 2]);
+});

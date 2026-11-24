@@ -1,9 +1,9 @@
 import { LEAGUES, LEAGUE_BY_ID, MARKETS, PRICE_BUFFER, SELECTION, eligibleForSelection, fairPrice, forecastVersion,
-  priceFrom, selectDaily, sofiaDate, SOFIA } from './catalog.js?v=fc2d95be3c2c';
+  priceFrom, selectDaily, sofiaDate, SOFIA } from './catalog.js?v=1f1094501b14';
 
 import { attachFormInteraction, formView } from './form-view.js?v=08c05a43670f';
 import { marketFacts } from './market-facts.js?v=08c05a43670f';
-import { dailyEntries, dailySummary } from './daily-diary.js?v=fc2d95be3c2c';
+import { dailyComparison, dailyEntries, dailySummary } from './daily-diary.js?v=f24b26c50906';
 
 const $ = id => document.getElementById(id);
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c =>
@@ -34,7 +34,7 @@ async function get(path, options) {
 const initial = path => get(path + (publicFeed ? '.gz' : ''));
 let live, archive, validation, europeValidation;
 let day = tonight(), diaryMode = 'daily', diaryLimit = 30, updated = '';
-let daily = [];
+let daily = [], previousDaily = [];
 let refresh;
 let activeTrigger;
 
@@ -96,8 +96,9 @@ function pickCard(record) {
 }
 function updateLeagueControls(data) {
   daily = dailyEntries(data.diary);
+  previousDaily = dailyEntries(data.diary, true);
   for (const [id, include] of [['league-filter', new Set(data.matches.map(m => m.league))],
-    ['diary-league', new Set([...archive.pilot, ...archive.replay, ...daily.map(pick => pick.m)].map(m => m.league))]]) {
+    ['diary-league', new Set([...archive.pilot, ...archive.replay, ...[...daily, ...previousDaily].map(pick => pick.m)].map(m => m.league))]]) {
     const filter = $(id), prev = filter.value;
     const available = LEAGUES.filter(l => include.has(l.id));
     const option = l => '<option value="' + l.id + '">' + escape(l.europe ? l.name : l.name + ' · ' + l.country) + '</option>';
@@ -127,7 +128,8 @@ function renderMatches() {
     '</span></button>').join('');
   $('date-picker').value = day;
   const next = upcoming.find(m => stamp(m) > day && (!filter || m.league === filter));
-  $('pick-caption').textContent = official.length ? 'Записан в ' + clock(official[0].captured) + ' ч.' :
+  const captureLabel = official[0]?.paired ? 'С положения' : 'Предишен подбор';
+  $('pick-caption').textContent = official.length ? captureLabel + ' · ' + clock(official[0].captured) + ' ч.' :
     'Предварителен · Честен ' + odds(SELECTION.fairMin) + '–' + odds(SELECTION.fairMax);
   $('picks').innerHTML = picks.length ? picks.map(pickCard).join('') :
     empty(fixtures.length ? 'За този ден няма предложения в диапазона за подбора.' :
@@ -140,10 +142,10 @@ function renderMatches() {
 const metric = (value, name) => '<article class="metric"><strong>' + escape(value) + '</strong><small>' + escape(name) + '</small></article>';
 const diaryOutcome = entry => ({ hit: 'Позната', miss: 'Пропуск', pending: 'Чака резултат', void: 'Изключена' })[entry.state];
 
-function dailyRow(entry) {
+function dailyRow(entry, previous = false) {
   const { m, key, p, result } = entry;
   const score = result?.score ? ' · ' + result.score.join(':') : '';
-  return '<button type="button" class="daily-entry" data-set="daily" data-match="' + escape(entry.id) +
+  return '<button type="button" class="daily-entry" data-set="' + (previous ? 'daily-previous' : 'daily') + '" data-match="' + escape(entry.id) +
     '" data-market="' + key + '"><span class="daily-teams"><strong>' + escape(m.home + ' – ' + m.away) +
     '</strong><small>' + escape(label(m)) + ' · ' + escape(clock(m.kickoff)) + '</small></span>' +
     '<span class="daily-market"><span class="market-chip">' + names[key] + '</span> <b>' + pct(p, 1) + '</b></span>' +
@@ -151,31 +153,56 @@ function dailyRow(entry) {
     '<span class="daily-outcome ' + entry.state + '">' + diaryOutcome(entry) + escape(score) + '</span></button>';
 }
 
-function renderDailyDiary(entries) {
-  const stats = dailySummary(entries);
-  $('diary-subtitle').textContent = 'Подборът се записва преди мачовете при първото обновяване за деня с подходящи срещи.';
-  const measured = stats.settled ? '<p class="muted diary-readout">Среден шанс ' + pct(stats.expected, 1) +
-    ' · Реални попадения ' + pct(stats.rate, 1) + (stats.quoted ? ' · Със засечен коефициент ' + stats.quoted : '') + '</p>' : '';
-  $('diary-summary').innerHTML = metric(format(stats.recorded), 'Записани') +
-    metric(stats.settled ? format(stats.hits) + ' от ' + format(stats.settled) : '—', 'Попадения') +
-    metric(format(stats.waiting), 'Чакат резултат') + measured;
-  const dates = new Map();
-  for (const entry of entries.slice(0, diaryLimit)) {
-    if (!dates.has(entry.day)) dates.set(entry.day, []);
-    dates.get(entry.day).push(entry);
+function renderDailyDiary(entries, controls) {
+  const comparison = dailyComparison(daily, previousDaily);
+  if (live.selectionVersion || comparison.days) {
+    $('diary-subtitle').textContent = 'Двата подбора се записват едновременно преди мачовете.';
+    const result = stats => stats.settled
+      ? pct(stats.rate, 1) + ' · ' + stats.hits + '/' + stats.settled : '—';
+    $('diary-summary').innerHTML = metric(result(comparison.current), 'С положения') +
+      metric(result(comparison.previous), 'Предишен подбор') +
+      metric(comparison.complete + ' от ' + comparison.days, 'Дни с резултати и за двата') +
+      (comparison.days ? '<p class="muted diary-readout">Успеваемостта обхваща дните с краен резултат за всеки избран мач.</p>' :
+        '<p class="muted diary-readout">Сравнението започва с първия нов запис в дневника.</p>');
+  } else {
+    const stats = dailySummary(entries);
+    $('diary-subtitle').textContent = 'Подборът се записва преди мачовете при първото обновяване за деня с подходящи срещи.';
+    $('diary-summary').innerHTML = metric(format(stats.recorded), 'Записани') +
+      metric(stats.settled ? format(stats.hits) + ' от ' + format(stats.settled) : '—', 'Попадения') +
+      metric(format(stats.waiting), 'Чакат резултат');
   }
-  $('diary-list').innerHTML = [...dates].map(([date, picks]) => '<section class="fixture-group">' +
-    '<div class="group-title"><strong>' + escape(local(noon(date), { day: 'numeric', month: 'long', year: 'numeric' })) +
-    '</strong><span>Записан в ' + escape(clock(picks[0].captured)) + ' ч.</span></div>' + picks.map(dailyRow).join('') +
-    '</section>').join('') || empty('Все още няма записан дневен подбор за този филтър.');
+  const dates = new Map();
+  for (const [key, choices] of [['main', entries], ['control', controls]]) {
+    for (const entry of choices) {
+      if (!dates.has(entry.day)) dates.set(entry.day, { main: [], control: [] });
+      dates.get(entry.day)[key].push(entry);
+    }
+  }
+  const shownDays = Math.ceil(diaryLimit / SELECTION.count);
+  $('diary-list').innerHTML = [...dates.keys()].sort().reverse().slice(0, shownDays).map(date => {
+    const { main, control } = dates.get(date);
+    const first = main[0] ?? control[0];
+    const badge = first.paired ? 'С положения' : 'Предишен подбор';
+    const alternative = control.length ? '<details class="daily-previous"><summary>Предишен подбор · ' +
+      control.length + '</summary>' + control.map(entry => dailyRow(entry, true)).join('') + '</details>' : '';
+    return '<section class="fixture-group"><div class="group-title"><strong>' +
+      escape(local(noon(date), { day: 'numeric', month: 'long', year: 'numeric' })) +
+      '</strong><span>' + badge + ' · ' + escape(clock(first.captured)) + ' ч.</span></div>' +
+      (main.length ? main.map(entry => dailyRow(entry)).join('') :
+        '<p class="muted daily-filter-empty">С този филтър има мачове в предишния подбор.</p>') +
+      alternative + '</section>';
+  }).join('') || empty('Все още няма записан дневен подбор за този филтър.');
+  return dates.size > shownDays;
 }
 
 function renderDiary() {
   const filter = $('diary-league').value;
+  const included = item => !filter || (item.m ?? item).league === filter;
   const shown = diaryMode === 'daily' ? daily : archive[diaryMode].map(m => ({ ...m, result: live.settlements?.[m.id] ?? m.result }));
-  const filtered = shown.filter(item => !filter || (item.m ?? item).league === filter);
+  const filtered = shown.filter(included);
+  let hasMore = filtered.length > diaryLimit;
   if (diaryMode === 'daily') {
-    renderDailyDiary(filtered);
+    hasMore = renderDailyDiary(filtered, previousDaily.filter(included));
   } else if (diaryMode === 'replay') {
     $('diary-subtitle').textContent = 'Исторически тест с предмачови входове, 2023/24–2025/26.';
     $('diary-summary').innerHTML = metric(format(archive.totalBenchmarks), 'проверени мача') +
@@ -189,9 +216,10 @@ function renderDiary() {
   }
   if (diaryMode !== 'daily') $('diary-list').innerHTML = filtered.length ? grouped(filtered.slice(0, diaryLimit), true) :
     empty('Няма мачове за този филтър.');
-  $('diary-more-wrap').hidden = filtered.length <= diaryLimit;
+  $('diary-more-wrap').hidden = !hasMore;
   document.querySelectorAll('[data-diary]').forEach(b => b.setAttribute('aria-pressed', b.dataset.diary === diaryMode));
 }
+
 function renderCoverage() {
   const eligible = live.audit.filter(x => x.eligible && x.forecastCount > 0);
   const supporting = eligible.filter(x => !LEAGUE_BY_ID[x.id].core && selectionLeague({ league: x.id, model: 'results' }));
@@ -248,9 +276,13 @@ function explain(m, market) {
     ? '<p class="muted uel-note">Пробна оценка за съперниците спрямо головата норма на Лига Европа.</p>' : '');
 }
 
-function modelContext(m) {
+function modelContext(m, market, ranked) {
   const f = m.facts;
   const lines = [];
+  if (ranked && Number.isFinite(m.chances?.[market])) {
+    lines.push('За този пазар Prime дава ' + pct(m.probabilities[market], 1) + ', а моделът за положенията дава ' +
+      pct(m.chances[market], 1) + '. Средната от двете оценки определя реда в подбора.');
+  }
   if (f.ranks) lines.push(m.home + ' е ' + f.ranks[0] + '. в нашето предмачово класиране, а ' + m.away + ' е ' + f.ranks[1] + '.');
   if (f.xg) lines.push('Оценка за положенията · ' + format(f.xg[0], 2) + ' xG за ' + m.home + ' и ' +
     format(f.xg[1], 2) + ' за ' + m.away + '.');
@@ -263,7 +295,9 @@ function modelContext(m) {
 }
 
 function openMatch(trigger) {
-  const dailyPick = trigger.dataset.set === 'daily' ? daily.find(entry => entry.id === trigger.dataset.match) : null;
+  const previous = trigger.dataset.set === 'daily-previous';
+  const records = previous ? previousDaily : trigger.dataset.set === 'daily' ? daily : [];
+  const dailyPick = records.find(entry => entry.id === trigger.dataset.match);
   const list = trigger.dataset.set === 'live' ? live.matches : archive[trigger.dataset.set];
   const m = dailyPick?.m ?? list?.find(x => x.id === trigger.dataset.match);
   if (!m) return;
@@ -275,13 +309,15 @@ function openMatch(trigger) {
   const result = dailyPick ? dailyPick.result?.score : live.settlements?.[m.id] ?? m.result;
   const t = m.kickoff ? dateTime(m.kickoff) + ' ч.' : shortDate(noon(m.date)) + ' ' + m.date.slice(0, 4);
   const tag = label(m) + ' · ' + t;
-  const explanation = explain(m, recommended) + modelContext(m);
+  const ranked = !previous && (dailyPick?.paired || (!dailyPick && trigger.classList.contains('pick')));
+  const explanation = explain(m, recommended) + modelContext(m, recommended, ranked);
   const chance = (key, text) => '<span><small>' + text + '</small>' + pct(p[key]) + '</span>';
   const ref = m.quote ? '<section class="detail-section"><h3>Пазарен ориентир</h3><p>' + escape(m.quote.source) +
     ' · засечка от ' + escape(dateTime(m.quote.seen)) + ' ч. · Над ' + odds(m.quote.over) + ' / Под ' +
     odds(m.quote.under) + ' за линия 2,5.</p></section>' : '';
   const diaryDetail = dailyPick ? '<section class="detail-section"><h3>Запис в дневника</h3><p>' +
-    escape(dateTime(dailyPick.captured)) + ' ч. · ' + escape(dailyPick.method) + ' · версия ' +
+    escape(dateTime(dailyPick.captured)) + ' ч. · ' +
+    (dailyPick.paired && !previous ? 'С положения' : 'Предишен подбор') + ' · версия ' +
     escape(dailyPick.version.slice(0, 8)) + '</p><p>Засечен коефициент ' + odds(dailyPick.price?.selected) +
     (dailyPick.price ? ' · ' + escape(dailyPick.price.source) + ' · CSV от ' + escape(dateTime(dailyPick.price.seen)) + ' ч.' : '') +
     '</p><p>' + diaryOutcome(dailyPick) + (dailyPick.result?.score ? ' · ' + escape(dailyPick.result.source) :

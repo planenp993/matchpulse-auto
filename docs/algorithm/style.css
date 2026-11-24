@@ -97,6 +97,10 @@ h3{font-size:1.14rem;letter-spacing:-.021em}
 .segmented button[aria-pressed=true]{background:#2b4229;color:var(--accent)}
 .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
 .diary-readout{grid-column:1/-1;margin:3px 0 0;font-size:.9rem}
+.daily-previous{border-top:1px solid var(--line)}
+.daily-previous summary{padding:10px 14px;color:var(--soft);font-weight:750;cursor:pointer}
+.daily-previous summary:hover,.daily-previous summary:focus-visible{color:var(--accent)}
+.daily-filter-empty{padding:10px 14px;margin:0}
 .daily-entry{display:grid;grid-template-columns:minmax(140px,1fr) auto auto auto;align-items:center;gap:12px;width:100%;padding:12px 14px;text-align:left;border:0;border-top:1px solid var(--line);background:transparent;color:inherit;cursor:pointer}
 .daily-entry:hover,.daily-entry:focus-visible{background:#19271d}
 .daily-teams{display:grid;gap:2px;min-width:0;overflow-wrap:anywhere}

@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { appendFile, mkdir, readFile } from 'node:fs/promises';
-import { eligibleForSelection, fairPrice, forecastVersion, MARKETS, matchKey, priceFrom,
-  priceReference, PRICE_BUFFER, SELECTION, selectDaily, sofiaDate } from '../docs/algorithm/catalog.js';
+import { dailyCandidates, eligibleForSelection, eligiblePrice, fairPrice, forecastVersion, MARKETS, matchKey,
+  orderDaily, priceFrom, priceReference, PRICE_BUFFER, SELECTION, sofiaDate } from '../docs/algorithm/catalog.js';
 import { CORE_LEAGUES, MIN_LEAD, parseCoreFixtures } from '../docs/algorithm/core.js';
 import { EURO_LEAGUES, euroKey, parseEuropeanFixtures, readEuropeanHistory } from '../docs/algorithm/europe.js';
 
@@ -18,6 +18,41 @@ const sameMatch = (one, two) => one?.split('|').filter((_, i) => i !== 1).join('
 
 function verifySeal({ sha256, ...record }) {
   if (sha256 !== seal(record).sha256) throw new Error('Changed Prime Algorithm diary record');
+}
+
+function verifyComparison(day, captured) {
+  if (!day.comparison) return day.picks;
+  const { version, candidates, picks } = day.comparison;
+  if (typeof version !== 'string' || !version || !Array.isArray(candidates) ||
+      !Array.isArray(picks) || picks.length !== day.picks.length || candidates.length < picks.length)
+    throw new Error('Invalid Prime Algorithm selection comparison');
+  const ids = new Set();
+  const pool = candidates.map(({ id, kickoff, key, p, second }) => {
+    const time = Date.parse(kickoff);
+    if (!id || ids.has(id) || !(time - captured >= MIN_LEAD) || sofiaDate(time) !== day.day ||
+        !MARKETS.includes(key) || !eligiblePrice(p, day.rule) ||
+        (second !== null && !(Number.isFinite(second) && second > 0 && second < 1))) {
+      throw new Error('Invalid Prime Algorithm comparison candidate');
+    }
+    ids.add(id);
+    return { m: { id, kickoff }, key, p, second };
+  });
+  for (const [useChances, chosen] of [[true, day.picks], [false, picks]]) {
+    const ordered = orderDaily(pool, useChances, day.rule.count);
+    if (ordered.length !== chosen.length || chosen.some((pick, i) => {
+      const candidate = ordered[i];
+      const actual = dailyCandidates([pick.m], day.rule)[0];
+      return !actual || candidate.m.id !== pick.m.id || candidate.m.kickoff !== pick.m.kickoff ||
+        candidate.key !== pick.key || candidate.key !== actual.key || candidate.p !== pick.p ||
+        candidate.second !== actual.second;
+    })) throw new Error('Prime Algorithm rankings differ from the sealed candidate list');
+  }
+  return [...day.picks, ...picks];
+}
+
+function allPicks(day) {
+  const choices = [...day.picks, ...(day.comparison?.picks ?? [])];
+  return [...new Map(choices.map(pick => [pick.id, pick])).values()];
 }
 
 export function validateDiary(diary, previous) {
@@ -37,11 +72,12 @@ export function validateDiary(diary, previous) {
         !/^[a-f0-9]{64}$/.test(day.version) || !Number.isInteger(count) || count < 1 ||
         !(fairMin > 1 && fairMax >= fairMin && buffer >= 0) || !day.picks.length || day.picks.length > count)
       throw new Error('Invalid Prime Algorithm selection day');
-    for (const pick of day.picks) {
+    const checked = new Map();
+    for (const pick of verifyComparison(day, captured)) {
       const kickoff = Date.parse(pick.m.kickoff);
       const issued = Date.parse(pick.m.issued);
       if (!Number.isFinite(kickoff) || kickoff - captured < MIN_LEAD || sofiaDate(kickoff) !== day.day ||
-          !(issued <= captured) || !pick.method || picks.has(pick.id) || pick.id !== `${day.day}/${pick.m.id}` ||
+          !(issued <= captured) || !pick.method || (picks.has(pick.id) && picks.get(pick.id) !== day) || pick.id !== `${day.day}/${pick.m.id}` ||
           !MARKETS.includes(pick.key) || !Number.isFinite(pick.p) || pick.p !== pick.m.probabilities[pick.key] ||
           pick.fair !== fairPrice(pick.p) || pick.fair < fairMin - 1e-9 || pick.fair > fairMax + 1e-9 ||
           pick.threshold !== priceFrom(pick.p, buffer))
@@ -52,6 +88,9 @@ export function validateDiary(diary, previous) {
             ![pick.price.selected, pick.price.opposite].every(odds => Number.isFinite(odds) && odds > 1))
           throw new Error('Invalid selection price observation');
       }
+      if (checked.has(pick.id) && (!day.comparison || JSON.stringify(checked.get(pick.id)) !== JSON.stringify(pick)))
+        throw new Error('Inconsistent shared selection in Prime Algorithm comparison');
+      checked.set(pick.id, pick);
       picks.set(pick.id, day);
     }
     lastDay = day.day;
@@ -93,7 +132,7 @@ function indexUnique(rows, key) {
 
 function resultFromSources(raw, live, clocks, diary) {
   const season = slug => live.index.competitions.find(c => c.slug === slug)?.seasons[0];
-  const from = new Set(diary.days.flatMap(day => day.picks.map(({ m }) => m.id.split('/')[0])));
+  const from = new Set(diary.days.flatMap(day => allPicks(day).map(({ m }) => m.id.split('/')[0])));
   const major = new Map(CORE_LEAGUES.filter(slug => from.has(slug)).flatMap(slug =>
     parseCoreFixtures(live.csv[slug], season(slug)?.fixtures).map(fixture => [`${slug}/${fixture.id}`, fixture])));
   const euro = new Map(EURO_LEAGUES.filter(slug => from.has(slug)).flatMap(slug =>
@@ -133,23 +172,33 @@ export function advanceDiary(diary, snapshot, { raw, base, live, version, now })
   const day = sofiaDate(now);
   const last = diary.days.at(-1);
   const captured = utc(now);
-  const alreadyPicked = new Set(diary.days.flatMap(item => item.picks.map(pick => pick.m.id)));
-  const picks = last?.day >= day ? [] : selectDaily(snapshot.matches.filter(match =>
+  const alreadyPicked = new Set(diary.days.flatMap(item => allPicks(item).map(pick => pick.m.id)));
+  const candidates = last?.day >= day ? [] : dailyCandidates(snapshot.matches.filter(match =>
     !alreadyPicked.has(match.id) && Date.parse(match.kickoff) - now >= MIN_LEAD &&
     sofiaDate(match.kickoff) === day && eligibleForSelection(match, base.fitted, base.euroFitted)));
   const days = [...diary.days];
-  if (picks.length) days.push(seal({ day, captured, version, rule: { ...SELECTION, buffer: PRICE_BUFFER }, picks: picks.map(({ m, key, p }) => {
-    const { quote, ...match } = m;
-    return { id: `${day}/${match.id}`, m: match, key, p, fair: fairPrice(p), threshold: priceFrom(p),
-      method: forecastVersion(match), price: selectionPrice(match, key, raw.prices, now) };
-  }) }));
+  if (candidates.length) {
+    const detail = ({ m, key, p }) => {
+      const { quote, ...match } = m;
+      return { id: `${day}/${match.id}`, m: match, key, p, fair: fairPrice(p), threshold: priceFrom(p),
+        method: forecastVersion(match), price: selectionPrice(match, key, raw.prices, now) };
+    };
+    const record = { day, captured, version, rule: { ...SELECTION, buffer: PRICE_BUFFER },
+      picks: orderDaily(candidates, Boolean(snapshot.selectionVersion)).map(detail) };
+    if (snapshot.selectionVersion) record.comparison = {
+      version: snapshot.selectionVersion,
+      candidates: candidates.map(({ m, key, p, second }) => ({ id: m.id, kickoff: m.kickoff, key, p, second })),
+      picks: orderDaily(candidates, false).map(detail),
+    };
+    days.push(seal(record));
+  }
 
   const results = [...diary.results];
   if (diary.days.length) {
     const findResult = resultFromSources(raw, live, { domestic: Date.parse(snapshot.calendarTime),
       xg: Date.parse(snapshot.xgTime), europe: Date.parse(raw.europeCoverage.checked_utc) }, diary);
     for (const entry of diary.days) {
-      for (const pick of entry.picks) {
+      for (const pick of allPicks(entry)) {
         const actual = findResult(pick.m);
         const old = latest.get(pick.id);
         if (!actual || !Number.isFinite(actual.kickoff) || !(actual.observed <= now &&
