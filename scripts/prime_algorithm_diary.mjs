@@ -1,13 +1,12 @@
 import { createHash } from 'node:crypto';
 import { appendFile, mkdir, readFile } from 'node:fs/promises';
-import { dailyCandidates, eligibleForSelection, eligiblePrice, fairPrice, forecastVersion, MARKETS, matchKey,
-  orderDaily, priceFrom, priceReference, PRICE_BUFFER, SELECTION, sofiaDate } from '../docs/algorithm/catalog.js';
+import { dailyCandidates, dailySelectionPool, eligibleForSelection, eligiblePrice, fairPrice, forecastVersion, MARKETS, matchKey,
+  orderDaily, priceFrom, priceReference, PRICE_BUFFER, PRICE_WINDOW, SELECTION, sofiaDate } from '../docs/algorithm/catalog.js';
 import { CORE_LEAGUES, MIN_LEAD, parseCoreFixtures } from '../docs/algorithm/core.js';
 import { EURO_LEAGUES, euroKey, parseEuropeanFixtures, readEuropeanHistory } from '../docs/algorithm/europe.js';
 
 const MINUTE = 60_000;
 const RESULT_WAIT = 180 * MINUTE;
-const PRICE_WINDOW = 60 * MINUTE;
 const utc = time => new Date(time).toISOString();
 const hash = data => createHash('sha256').update(data).digest('hex');
 const seal = record => ({ ...record, sha256: hash(JSON.stringify(record)) });
@@ -173,15 +172,15 @@ export function advanceDiary(diary, snapshot, { raw, base, live, version, now })
   const last = diary.days.at(-1);
   const captured = utc(now);
   const alreadyPicked = new Set(diary.days.flatMap(item => allPicks(item).map(pick => pick.m.id)));
-  const candidates = last?.day >= day ? [] : dailyCandidates(snapshot.matches.filter(match =>
+  const candidates = last?.day >= day ? [] : dailySelectionPool(snapshot.matches.filter(match =>
     !alreadyPicked.has(match.id) && Date.parse(match.kickoff) - now >= MIN_LEAD &&
-    sofiaDate(match.kickoff) === day && eligibleForSelection(match, base.fitted, base.euroFitted)));
+    sofiaDate(match.kickoff) === day && eligibleForSelection(match, base.fitted, base.euroFitted)), now).eligible;
   const days = [...diary.days];
   if (candidates.length) {
-    const detail = ({ m, key, p }) => {
-      const { quote, ...match } = m;
+    const detail = ({ m, key, p, price }) => {
+      const { quote, marketPrices, ...match } = m;
       return { id: `${day}/${match.id}`, m: match, key, p, fair: fairPrice(p), threshold: priceFrom(p),
-        method: forecastVersion(match), price: selectionPrice(match, key, raw.prices, now) };
+        method: forecastVersion(match), price: price ?? selectionPrice(match, key, raw.prices, now) };
     };
     const record = { day, captured, version, rule: { ...SELECTION, buffer: PRICE_BUFFER },
       picks: orderDaily(candidates, Boolean(snapshot.selectionVersion)).map(detail) };

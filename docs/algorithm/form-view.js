@@ -24,7 +24,8 @@ export function formView(match, escape, leagueNames, shortDay) {
   const y = n => 50 - 40 * n / extent;
   const date = game => game.day ? shortDay(game.day) : '';
   const location = game => game.venue ? (game.venue === 'home' ? 'Домакин' : 'Гост') : '';
-  const venue = game => [date(game), location(game), leagueNames[game.competition]?.name].filter(Boolean).join(' · ');
+  const venue = game => [date(game), location(game), leagueNames[game.competition]?.name ?? game.competitionName]
+    .filter(Boolean).join(' · ');
   const describe = (team, game) => [team.name + ' ' + score(game) + ' ' + game.opponent,
     outcomes[game.tag], venue(game)].filter(Boolean).join(' · ');
   const line = team => {

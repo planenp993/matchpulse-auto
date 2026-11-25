@@ -69,6 +69,9 @@ h3{font-size:1.14rem;letter-spacing:-.021em}
 .market-chip{display:inline-flex;align-items:center;color:#e6f5d5;background:#30462a;border:1px solid #47633c;border-radius:8px;padding:3px 8px;font-size:.82rem;font-weight:800;line-height:1.2;white-space:nowrap}
 .pick-footer{font-size:.84rem;color:var(--soft);display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:2px}
 .pick-footer b{color:#d8e6d9}
+.review-note{grid-column:1/-1;color:#f6cb90;font-size:.86rem}
+.selection-review summary{cursor:pointer;font-weight:700;color:var(--fg)}
+.selection-review[open] .pick-list{margin-top:12px}
 .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .fixture-group{background:#101813;border:1px solid var(--line);border-radius:var(--radius);margin-block:0 10px;overflow:hidden}
 .group-title{background:#19261d;display:flex;align-items:center;gap:10px;padding:9px 15px;font-size:.89rem}

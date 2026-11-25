@@ -9,6 +9,7 @@ const model = globalThis.MatchpulseModel;
 const aliases = [
   ['Slovan Bratislava', 'S. Bratislava'], ['Shakhtar Donetsk', 'Shakhtar'],
   ['Lillestrøm', 'Lillestrom'], ['Jagiellonia Białystok', 'Jagiellonia'],
+  ['Nordsjælland', 'Nordsjaelland'], ['Bodø / Glimt', 'Bodo/Glimt'], ['Bodø/Glimt', 'Bodo/Glimt'],
   ['Omonia Nicosia', 'Omonia'], ['Ferencvárosi', 'Ferencváros'], ['OFI', 'OFI Crete'],
   ["Hapoel Be'er Sheva", 'H. Beer-Sheva'], ['Hapoel Beer-Sheva', 'H. Beer-Sheva'],
   ['Dinamo Zagreb', 'GNK Dinamo'], ['Celta de Vigo', 'RC Celta de Vigo'],
@@ -146,13 +147,13 @@ export function historyByDay(records) {
 // Country-qualified club keys prevent data for two homonyms being mixed together.
 export function domesticHistory(rows) {
   return rows.flatMap(row => {
-    const [code, country,, day,, home, away, g1, g2] = row;
+    const [code, country, competitionName, day,, home, away, g1, g2] = row;
     if (ids.has(code) || !country || !date(day) || !home || !away ||
         !regularResult(g1) || !regularResult(g2) || row[13]?.AWARDED === true) return [];
     const clubs = matchInfo(home, away);
     const keys = clubs.map(name => country + '/' + name);
     if (keys[0] === keys[1]) return [];
-    return [{ code, country, day, clubs, teams: keys, goals: [g1, g2], phase: 'main' }];
+    return [{ code, country, competitionName, day, home, away, clubs, teams: keys, goals: [g1, g2], phase: 'main' }];
   }).sort((a, b) => a.day.localeCompare(b.day));
 }
 
@@ -186,18 +187,16 @@ function teamForm(records, domestic) {
   }
   // Merge domestic form only for an unambiguous cross-competition club name.
   const countries = new Map();
-  for (const m of domestic) for (const name of m.slice(5, 7)) {
-    const key = euroKey(name);
+  for (const m of domestic) for (const key of m.clubs) {
     if (!selected.has(key)) continue;
     if (!countries.has(key)) countries.set(key, new Set());
-    countries.get(key).add(m[1]);
+    countries.get(key).add(m.country);
   }
   for (const m of domestic) {
-    for (const [side, name] of m.slice(5, 7).entries()) {
-      const key = euroKey(name);
+    for (const [side, key] of m.clubs.entries()) {
       if (countries.get(key)?.size !== 1) continue;
-      add(key, { day: m[3], opponent: m[6 - side], gf: m[7 + side], ga: m[8 - side],
-        venue: side ? 'away' : 'home', competition: m[0] });
+      add(key, { day: m.day, opponent: side ? m.home : m.away, gf: m.goals[side], ga: m.goals[1 - side],
+        venue: side ? 'away' : 'home', competition: m.code, competitionName: m.competitionName });
     }
   }
   for (const [key, rows] of byTeam) {
@@ -212,9 +211,10 @@ export function europeanForecasts({ records, domestic, allDomestic = domestic, i
   const history = records.filter(r => r.day < day);
   const ratings = europeRatings();
   for (const batch of historyByDay(history).values()) ratings.update(batch);
+  const nationalHistory = domesticHistory(allDomestic.filter(r => r[3] < day));
   const local = domesticRatings();
-  for (const batch of historyByDay(domesticHistory(allDomestic.filter(r => r[3] >= '2021-07-01' && r[3] < day))).values()) local.update(batch);
-  const forms = teamForm(history, domestic.filter(r => r[3] < day));
+  for (const batch of historyByDay(nationalHistory.filter(r => r.day >= '2021-07-01')).values()) local.update(batch);
+  const forms = teamForm(history, nationalHistory);
   const matches = [], audit = [];
   for (const slug of EURO_LEAGUES) {
     const code = EURO_CODES[slug];

@@ -118,8 +118,11 @@ test('an eligible European pick uses the UEFA regulation result', async () => {
   opts.live.index.competitions.push({ slug: 'ucl', seasons: [{ fixtures: 1 }] });
   opts.live.csv.ucl = 'fixture_id,date,kickoff_utc,home,away,home_id,away_id,phase,source,status,stage\n' +
     `88,${fixtureDay},${kickoff},FC København,Away,12,32,main,Sportmonks,full_time,Final\n`;
-  const forecast = match('ucl/88', .575, { league: 'UCL', model: 'europe', home: 'FC København' });
+  const quote = { selected: 1.95, opposite: 1.90, seen: '2026-11-23T14:42:00Z', source: 'Bookmaker' };
+  const forecast = match('ucl/88', .575, { league: 'UCL', model: 'europe', home: 'FC København',
+    facts: { domesticSample: [12, 18] }, marketPrices: { over_2_5: quote } });
   const first = advanceDiary(empty, snapshot([forecast]), opts);
+  assert.deepEqual(first.days[0].picks[0].price, { ...quote, seen: '2026-11-23T14:42:00.000Z' });
   const settledOn = '2026-11-24T03:00:00Z';
   opts.now = Date.parse(settledOn);
   opts.raw.europeCoverage.checked_utc = settledOn;
@@ -128,6 +131,57 @@ test('an eligible European pick uses the UEFA regulation result', async () => {
   const settled = advanceDiary(first, snapshot([], settledOn), opts);
   assert.equal(settled.results[0].source, 'УЕФА');
   assert.deepEqual(settled.results[0].score, [1, 1]);
+});
+
+test('unconfirmed or inconsistent UEFA candidates appear for review and stay out of both diary rankings', async () => {
+  const { advanceDiary } = await import('../scripts/prime_algorithm_diary.mjs');
+  const { dailySelectionPool, europeanPricePairs } = await import('../docs/algorithm/catalog.js');
+  const opts = context();
+  opts.base.euroFitted.UECL = { selected: true };
+  opts.live.index.competitions.push({ slug: 'uecl', seasons: [{ fixtures: 1 }] });
+  opts.live.csv.uecl = 'fixture_id,date,kickoff_utc,home,away,home_id,away_id,phase,source,status,stage\n' +
+    `88,${fixtureDay},${kickoff},Sporting Braga,KuPS,12,32,main,Sportmonks,unplayed,League phase\n`;
+  const forecast = match('uecl/88', .433, { league: 'UECL', model: 'europe', home: 'Sporting Braga', away: 'KuPS',
+    facts: { domesticSample: [181, 20] } });
+  const quote = { selected: 1.44, opposite: 2.85, seen: '2026-11-23T14:42:00Z', source: 'Bookmaker' };
+  const withPrice = (pair, time = kickoff) => ({ ...forecast,
+    marketPrices: europeanPricePairs(forecast, { fixtures: { [forecast.id]: { kickoff: time, markets: { over_2_5: pair } } } },
+      opts.raw.prices, opts.now) });
+  const inconsistent = withPrice(quote);
+  const missing = { ...inconsistent, facts: { domesticSample: [181, 0] } };
+  const stale = withPrice({ ...quote, seen: '2026-11-23T13:59:00Z' });
+  const moved = withPrice(quote, '2026-11-24T19:45:00Z');
+  for (const [candidate, reason] of [[inconsistent, 'gap'], [missing, 'domestic'], [stale, 'price'], [moved, 'price'], [forecast, 'price']]) {
+    const { eligible, review } = dailySelectionPool([candidate], opts.now);
+    assert.equal(eligible.length, 0);
+    assert.equal(review[0].check.reason, reason);
+    assert.deepEqual(advanceDiary(empty, { ...snapshot([candidate]), selectionVersion: 'test' }, opts), empty);
+  }
+  const [review] = dailySelectionPool([inconsistent], opts.now).review;
+  assert.equal(review.key, 'under_2_5');
+  assert.equal(review.check.price.selected, 2.85);
+  assert.ok(Math.abs(review.check.marketProbability - 0.3356643356643357) < 1e-9);
+
+  const near = withPrice({ ...quote, selected: 2.10, opposite: 1.75 });
+  const saved = advanceDiary(empty, { ...snapshot([near]), selectionVersion: 'test' }, opts);
+  assert.equal(saved.days[0].picks[0].price.selected, 1.75);
+  assert.equal(saved.days[0].comparison.picks[0].price.opposite, 2.10);
+  assert.deepEqual(advanceDiary(saved, snapshot([inconsistent]), opts), saved);
+});
+
+test('UEFA BTTS selections record the actual market pair', async () => {
+  const { dailySelectionPool, europeanPricePairs } = await import('../docs/algorithm/catalog.js');
+  const opts = context();
+  const forecast = match('uecl/33', .68, { league: 'UECL', model: 'europe', home: 'Home', away: 'Away',
+    probabilities: { over_2_5: .68, under_2_5: .32, btts_yes: .42, btts_no: .58 },
+    facts: { domesticSample: [12, 14] } });
+  const pair = { selected: 2.16, opposite: 1.70, seen: '2026-11-23T14:42:00Z', source: 'Bookmaker' };
+  const source = { fixtures: { [forecast.id]: { kickoff, markets: { btts_yes: pair } } } };
+  const priced = { ...forecast, marketPrices: europeanPricePairs(forecast, source, opts.raw.prices, opts.now) };
+  const { eligible, review } = dailySelectionPool([priced], opts.now);
+  assert.equal(review.length, 0);
+  assert.equal(eligible[0].key, 'btts_no');
+  assert.equal(eligible[0].price.selected, 1.70);
 });
 
 test('both ranks freeze the same daily candidates and settle selections exclusive to the old rank', async () => {

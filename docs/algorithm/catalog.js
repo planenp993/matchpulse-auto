@@ -1,12 +1,14 @@
 import './club-aliases.js?v=08c05a43670f';
 import './model-core.js?v=d017cb640a6f';
-import { europeanForecasts, readEuropeanHistory } from './europe.js?v=c193010b9619';
+import { europeanForecasts, readEuropeanHistory } from './europe.js?v=e2b2d2fe8657';
 import { CORE_CODES, CORE_LEAGUES, MIN_LEAD, parseCoreFixtures, topForecasts, markets } from './core.js?v=d017cb640a6f';
 
 const model = globalThis.MatchpulseModel;
 export const SOFIA = 'Europe/Sofia';
 export const HORIZON = 9 * 86_400_000;
 export const PRICE_BUFFER = .05;
+export const PRICE_WINDOW = 60 * 60_000;
+export const MARKET_REVIEW_GAP = .20;
 export const SELECTION = { fairMin: 1.70, fairMax: 2.00, count: 3 };
 export const PUBLISHED_HISTORY = 'https://planenp993.github.io/matchpulse-auto/data/';
 const DOMESTIC_LEAGUES = [
@@ -228,6 +230,50 @@ export function dailyCandidates(matches, rule = SELECTION) {
   });
 }
 
+function verifiedPrice(entry, match, now) {
+  if (!entry || typeof entry.seen !== 'string' || !/(?:Z|[+-]\d{2}:\d{2})$/.test(entry.seen) ||
+      typeof entry.source !== 'string' || !entry.source.trim() || entry.source.trim() === 'Пазарна средна' ||
+      ![entry.selected, entry.opposite].every(odds => Number.isFinite(odds) && odds > 1)) return null;
+  const seen = Date.parse(entry.seen);
+  if (!(seen <= now && now - seen <= PRICE_WINDOW && seen < Date.parse(match.kickoff))) return null;
+  return { selected: entry.selected, opposite: entry.opposite, seen: new Date(seen).toISOString(), source: entry.source.trim() };
+}
+
+export function europeanPricePairs(match, submissions, prices, now) {
+  const submitted = submissions?.fixtures?.[match.id];
+  const markets = Date.parse(submitted?.kickoff) === Date.parse(match.kickoff) ? submitted.markets : null;
+  const reference = priceReference(match, prices, now);
+  const over = verifiedPrice(markets?.over_2_5, match, now) ?? (reference &&
+    verifiedPrice({ selected: reference.over, opposite: reference.under, seen: reference.seen, source: reference.source }, match, now));
+  const btts = verifiedPrice(markets?.btts_yes, match, now);
+  return { ...(over && { over_2_5: over }), ...(btts && { btts_yes: btts }) };
+}
+
+export function europeanSelectionReview({ m, key, p }, now) {
+  if (m.model !== 'europe') return null;
+  const market = key === 'btts_yes' || key === 'btts_no' ? 'btts_yes' : 'over_2_5';
+  const pair = verifiedPrice(m.marketPrices?.[market], m, now);
+  const price = pair && (key === market ? pair : { ...pair, selected: pair.opposite, opposite: pair.selected });
+  const marketProbability = price ? (1 / price.selected) / (1 / price.selected + 1 / price.opposite) : null;
+  const missing = [m.home, m.away].filter((_, i) => !Number.isInteger(m.facts?.domesticSample?.[i]) ||
+    m.facts.domesticSample[i] < 1);
+  let reason = null;
+  if (missing.length) reason = 'domestic';
+  else if (!price) reason = 'price';
+  else if (Math.abs(p - marketProbability) >= MARKET_REVIEW_GAP - 1e-9) reason = 'gap';
+  return { reason, missing, price, marketProbability };
+}
+
+export function dailySelectionPool(matches, now) {
+  const eligible = [], review = [];
+  for (const candidate of dailyCandidates(matches)) {
+    const check = europeanSelectionReview(candidate, now);
+    if (check?.reason) review.push({ ...candidate, check });
+    else eligible.push({ ...candidate, price: check?.price ?? null });
+  }
+  return { eligible, review };
+}
+
 export function orderDaily(candidates, useChances, limit = SELECTION.count) {
   const rank = candidate => useChances && candidate.second != null
     ? (candidate.p + candidate.second) / 2 : candidate.p;
@@ -235,8 +281,8 @@ export function orderDaily(candidates, useChances, limit = SELECTION.count) {
     a.m.id.localeCompare(b.m.id)).slice(0, limit);
 }
 
-export function selectDaily(matches) {
-  return orderDaily(dailyCandidates(matches), true);
+export function selectDaily(matches, now = Date.now()) {
+  return orderDaily(dailySelectionPool(matches, now).eligible, true);
 }
 
 export function makeData({ raw, base, live, now, keep = [], quotes = null, previousEuropeanAudit = [] }) {

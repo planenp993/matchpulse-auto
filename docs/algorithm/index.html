@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#0d1310">
   <meta name="description" content="Предмачови футболни вероятности, дневен подбор и дневник на Prime Algorithm.">
   <title>Prime Syndicate Algorithm</title>
-  <link rel="stylesheet" href="./style.css?v=2a156871f6d6">
-  <script type="module" src="./app.js?v=70e1435a5b27"></script>
+  <link rel="stylesheet" href="./style.css?v=e1a8b0a16e81">
+  <script type="module" src="./app.js?v=2b61ba0e0ec1"></script>
   <meta name="prime-public-feed" content="https://raw.githubusercontent.com/planenp993/matchpulse-auto/main/docs/algorithm/data/snapshot.json.gz">
 </head>
 <body>
@@ -52,6 +52,10 @@
           <span id="pick-caption" class="muted"></span>
         </div>
         <div id="picks" class="pick-list"><p class="empty">Зареждане на прогнозите…</p></div>
+        <details id="selection-review" class="method selection-review" hidden>
+          <summary id="selection-review-title">За проверка</summary>
+          <div id="review-picks" class="pick-list"></div>
+        </details>
       </section>
       <section aria-labelledby="fixture-title">
         <div class="section-head fixture-tools">
@@ -106,6 +110,7 @@
         <p>Пример с условни числа. Prime дава 55% за Над 2,5, а положенията дават 65%. Общата прогноза е 57%, а честният ѝ коефициент е 1,75. За дневния подбор базовите 55% дават честен 1,82. Средната оценка от 60% служи за подреждането.</p>
         <p><strong>Другите първенства</strong> използват програмата на Soccerway и архива на Prime Syndicate с резултати и статистика от Football-Data. Лиговият модел сравнява до 30 мача на отбор със средните голове за лигата за три години. Мачовете у дома и навън се отчитат отделно.</p>
         <p><strong>В Европа</strong> моделът ползва официални резултати от УЕФА за 90 минути, програмата от xGTables и нормата за съответната фаза. Шампионската лига отчита и националната форма. Лигата на конференциите използва европейската форма. Лига Европа има пробна оценка за всяка среща. Шампионската лига и Лигата на конференциите участват в дневния подбор.</p>
+        <p><strong>Проверка на евромачовете.</strong> За дневния подбор са нужни свързана местна история и за двата клуба и коефициенти от един букмейкър за двете страни на същия пазар през последния час. При липса на данни или разлика от поне 20 процентни пункта с пазара без маржа мачът се показва в „За проверка“.</p>
         <p><strong>Честният коефициент</strong> е 1, разделено на вероятността. В дневника действително засечена цена има отделна колона. Elo, Pi, Claude, V3 и V9b са сред сравнените архивни алтернативи.</p>
         <p><a href="https://www.xgtables.io/data/">xGTables</a> · <a href="../">Архив и календар на Prime Syndicate</a></p>
       </details>

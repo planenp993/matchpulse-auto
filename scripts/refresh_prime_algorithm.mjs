@@ -3,7 +3,7 @@ import { gzipSync, gunzipSync } from 'node:zlib';
 import { createHash } from 'node:crypto';
 import { CORE_LEAGUES } from '../docs/algorithm/core.js';
 import { EURO_LEAGUES } from '../docs/algorithm/europe.js';
-import { makeData } from '../docs/algorithm/catalog.js';
+import { europeanPricePairs, makeData } from '../docs/algorithm/catalog.js';
 import { advanceDiary, appendDiary, readDiary } from './prime_algorithm_diary.mjs';
 import { addChances } from './prime_chances.mjs';
 import { applyForecastRelease } from './prime_full_forecast.mjs';
@@ -52,14 +52,15 @@ const chancesPath = new URL('./prime-chances-state.json.gz', import.meta.url);
 const sourceFiles = ['core.js', 'catalog.js', 'europe.js', 'club-aliases.js', 'model-core.js',
   'data/scoring-config.json', 'data/extra-models.json', 'data/europe-models.json', 'data/champion.json'];
 const [status, history, fixtures, europeHistory, europeCoverage, config, fitted, euroFitted, archive,
-  links, prices, release, sourceBytes, checkpointBytes] =
+  links, prices, euroPrices, release, sourceBytes, checkpointBytes] =
   await Promise.all([
     readLocal(relative('data/status.json')), readLocal(relative('data/history.json')),
     readLocal(relative('data/fixtures.json')), readLocal(relative('data/europe_history.json')),
     readLocal(relative('data/europe_coverage.json')), readLocal(art('scoring-config.json')),
     readLocal(art('extra-models.json')), readLocal(art('europe-models.json')),
     decompress(archivePath), readLocal(relative('data/match_links.json')),
-    readLocal(relative('data/selection_quotes.json')), readLocal(art('champion.json')),
+    readLocal(relative('data/selection_quotes.json')),
+    readLocal(new URL('../ops/prime_europe_prices.json', import.meta.url)), readLocal(art('champion.json')),
     Promise.all([...sourceFiles.map(path => relative('algorithm/' + path)),
       new URL('./prime_chances.mjs', import.meta.url), new URL('./prime_algorithm_diary.mjs', import.meta.url),
       new URL('./prime_full_forecast.mjs', import.meta.url)]
@@ -80,7 +81,10 @@ for (const model of next.euroAudit) {
   const sites = next.matches.filter(m => m.league === model.id);
   if (sites.length !== model.upcoming) throw new Error('Unpublished European match in ' + model.id);
 }
-for (const match of next.matches) delete match.quote;
+for (const match of next.matches) {
+  if (match.model === 'europe') match.marketPrices = europeanPricePairs(match, euroPrices, prices, now);
+  delete match.quote;
+}
 const version = createHash('sha256').update(JSON.stringify([...sourceBytes, checkpointBytes].map(bytes =>
   createHash('sha256').update(bytes).digest('hex')))).digest('hex');
 const diary = await readDiary(diaryDirectory, last.diary);
