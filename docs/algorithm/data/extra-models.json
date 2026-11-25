@@ -81,7 +81,11 @@
       "bttsLoss": 0.698269593579133
     },
     "testPeriod": "2025/26",
-    "tuningPeriod": "2024/25"
+    "tuningPeriod": "2024/25",
+    "reserve": {
+      "market": "over_2_5",
+      "method": "shots"
+    }
   },
   "D2": {
     "preset": "cautious",
@@ -123,7 +127,11 @@
       "bttsLoss": 0.69289535909239
     },
     "testPeriod": "2025/26",
-    "tuningPeriod": "2024/25"
+    "tuningPeriod": "2024/25",
+    "reserve": {
+      "market": "btts_yes",
+      "method": "xg"
+    }
   },
   "F2": {
     "preset": "cautious",
@@ -207,7 +215,11 @@
       "bttsLoss": 0.7011651521425906
     },
     "testPeriod": "2025/26",
-    "tuningPeriod": "2024/25"
+    "tuningPeriod": "2024/25",
+    "reserve": {
+      "market": "over_2_5",
+      "method": "shots"
+    }
   },
   "T1": {
     "preset": "cautious",
@@ -228,7 +240,11 @@
       "bttsLoss": 0.6910686790192153
     },
     "testPeriod": "2025/26",
-    "tuningPeriod": "2024/25"
+    "tuningPeriod": "2024/25",
+    "reserve": {
+      "market": "over_2_5",
+      "method": "shots"
+    }
   },
   "G1": {
     "preset": "recent",
@@ -271,5 +287,12 @@
     },
     "testPeriod": "2025/26",
     "tuningPeriod": "2024/25"
+  },
+  "SWE": {
+    "preset": "cautious",
+    "reserve": {
+      "market": "over_2_5",
+      "method": "league"
+    }
   }
 }

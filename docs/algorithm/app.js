@@ -1,7 +1,7 @@
 import { DELAY_AFTER, loadSnapshot } from './refresh-state.js?v=ad7cbaff7250';
 import { MIN_LEAD } from './core.js?v=d017cb640a6f';
 import { LEAGUES, LEAGUE_BY_ID, MARKETS, PRICE_BUFFER, SELECTION, dailySelectionPool, eligibleForSelection, europeanSelectionReview,
-  fairPrice, forecastVersion, orderDaily, priceFrom, selectionMatch, sofiaDate, SOFIA } from './catalog.js?v=c2de3ae6c499';
+  fairPrice, forecastVersion, orderDaily, priceFrom, selectionMatch, sofiaDate, SOFIA } from './catalog.js?v=9880ec988a17';
 
 import { attachFormInteraction, formView } from './form-view.js?v=46eb13c524af';
 import { marketFacts } from './market-facts.js?v=08c05a43670f';
@@ -50,7 +50,7 @@ async function reference(path) {
 const historicalArchive = () => reference('archive.json' + (publicFeed ? '.gz' : ''));
 let live, archive, validation, europeValidation;
 let day = tonight(), diaryMode = 'daily', diaryLimit = 30, updated = '';
-let daily = [], previousDaily = [];
+let daily = [], previousDaily = [], previewPicks = [];
 let lastToday = day;
 let lastRequest = 0;
 let activeTrigger;
@@ -153,7 +153,8 @@ function renderMatches() {
   const delayed = now - Date.parse(live.asOf) > DELAY_AFTER;
   const available = upcoming.filter(m => stamp(m) === day && selectionLeague(m) && Date.parse(m.kickoff) - now >= MIN_LEAD);
   const { eligible, review } = dailySelectionPool(available, now);
-  const picks = official.length ? official : delayed ? [] : orderDaily(eligible, true);
+  previewPicks = official.length || delayed ? [] : orderDaily(eligible, true);
+  const picks = official.length ? official : previewPicks;
   $('selection-review').hidden = delayed || !review.length;
   $('selection-review-title').textContent = 'За проверка · ' + review.length;
   $('review-picks').innerHTML = delayed ? '' : orderDaily(review, true, review.length).map(pickCard).join('');
@@ -170,8 +171,9 @@ function renderMatches() {
   $('date-picker').value = day;
   const next = upcoming.find(m => stamp(m) > day && (!filter || m.league === filter));
   const captureLabel = 'Записан в дневника';
-  $('pick-caption').textContent = official.length ? captureLabel + ' · ' + clock(official[0].captured) + ' ч.' :
-    'Предварителен · Честен ' + odds(SELECTION.fairMin) + '–' + odds(SELECTION.fairMax);
+  const trialPrefix = picks.some(record => record.m.trialMarket) ? 'Пробен резерв · ' : '';
+  $('pick-caption').textContent = trialPrefix + (official.length ? captureLabel + ' · ' + clock(official[0].captured) + ' ч.' :
+    'Предварителен · Честен ' + odds(SELECTION.fairMin) + '–' + odds(SELECTION.fairMax));
   let reason = 'За тази дата няма предстоящи анализи.';
   if (upcoming.some(m => stamp(m) === day)) {
     reason = available.length
@@ -194,7 +196,7 @@ function dailyRow(entry, previous = false) {
   const score = result?.score ? ' · ' + result.score.join(':') : '';
   return '<button type="button" class="daily-entry" data-set="' + (previous ? 'daily-previous' : 'daily') + '" data-match="' + escape(entry.id) +
     '" data-market="' + key + '"><span class="daily-teams"><strong>' + escape(m.home + ' – ' + m.away) +
-    '</strong><small>' + escape(label(m)) + ' · ' + escape(clock(m.kickoff)) + '</small></span>' +
+    '</strong><small>' + escape(label(m)) + ' · ' + escape(clock(m.kickoff)) + (m.trialMarket ? ' · Пробен резерв' : '') + '</small></span>' +
     '<span class="daily-market"><span class="market-chip">' + names[key] + '</span> <b>' + pct(p, 1) + '</b></span>' +
     '<span class="daily-prices">Честен <b>' + odds(entry.fair) + '</b> · Засечен <b>' + odds(entry.price?.selected) + '</b></span>' +
     '<span class="daily-outcome ' + entry.state + '">' + diaryOutcome(entry) + escape(score) + '</span></button>';
@@ -374,7 +376,9 @@ function openMatch(trigger) {
   const isSelection = trigger.dataset.set === 'selection-live' || inReview;
   const list = trigger.dataset.set === 'live' || isSelection ? live.matches : archive[trigger.dataset.set];
   const match = list?.find(x => x.id === trigger.dataset.match);
-  const m = dailyPick?.m ?? (isSelection && match ? selectionMatch(match) : match);
+  const preview = trigger.dataset.set === 'selection-live'
+    ? previewPicks.find(entry => entry.m.id === trigger.dataset.match) : null;
+  const m = dailyPick?.m ?? preview?.m ?? (isSelection && match ? selectionMatch(match) : match);
   if (!m) return;
   activeTrigger = trigger;
   const p = m.probabilities;
