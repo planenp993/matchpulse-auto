@@ -3,6 +3,8 @@ import './model-core.js?v=d017cb640a6f';
 import { europeanForecasts, readEuropeanHistory } from './europe.js?v=e2b2d2fe8657';
 import { CORE_CODES, CORE_LEAGUES, MIN_LEAD, parseCoreFixtures, topForecasts, markets } from './core.js?v=d017cb640a6f';
 
+import { DELAY_AFTER } from './refresh-state.js?v=ad7cbaff7250';
+
 const model = globalThis.MatchpulseModel;
 export const SOFIA = 'Europe/Sofia';
 export const HORIZON = 9 * 86_400_000;
@@ -143,16 +145,107 @@ function compactForm(matches, club) {
   }).reverse();
 }
 
-export function resultsForecasts(clean, fixtures, audit, fitted, now, dataTime) {
+const RESERVE_MARKETS = { over_2_5: ['over_2_5', 'under_2_5'], btts_yes: ['btts_yes', 'btts_no'] };
+const RESERVE_LABELS = {
+  shots: 'точни удари', xg: 'xG', league: 'лигова честота'
+};
+
+function approvedReserveLeagues(rows, audit, fitted, now, status) {
+  const observed = Date.parse(status?.last_soccerway_success_utc);
+  if (!(observed <= now && now - observed <= DELAY_AFTER)) return new Map();
+  const previousYear = String(Number(sofiaDate(now).slice(0, 4)) - 1);
+  return new Map(audit.flatMap(coverage => {
+    const league = LEAGUE_BY_ID[coverage.id], fit = fitted[coverage.id], rule = fit?.reserve;
+    const feed = status.soccerway_checks?.[coverage.id];
+    if (league.core || !rule || !Object.hasOwn(RESERVE_MARKETS, rule.market) || !Object.hasOwn(RESERVE_LABELS, rule.method) ||
+        feed?.status !== 'ok' || feed.window_covered !== true ||
+        status.stale_secondary_leagues?.includes(coverage.id)) return [];
+    const fullCalendarYear = rule.method === 'league' &&
+      rows.filter(row => row[0] === coverage.id && row[3].startsWith(previousYear + '-')).length >= league.minPrevious;
+    return coverage.eligible || fullCalendarYear ? [[coverage.id, rule]] : [];
+  }));
+}
+
+// Use the same publication lag and historical windows as the paired test.
+function reserveContext(candidates, day) {
+  const previous = new Date(Date.parse(day) - 86_400_000).toISOString().slice(0, 10);
+  const threeYears = (Number(day.slice(0, 4)) - 3) + day.slice(4);
+  const history = candidates.filter(r => r[3] < previous);
+  const rates = new Map();
+  for (const row of history) {
+    if (row[3] < threeYears) continue;
+    const stats = rates.get(row[0]) ?? { count: 0, over: 0, shots: 0, goals: [0, 0], target: [0, 0] };
+    stats.count++;
+    stats.over += Number(row[7] + row[8] >= 3);
+    if (completeShots(row)) {
+      stats.shots++;
+      stats.goals[0] += row[7];
+      stats.goals[1] += row[8];
+      stats.target[0] += row[13].HST;
+      stats.target[1] += row[13].AST;
+    }
+    rates.set(row[0], stats);
+  }
+  return { history, rates, bases: model.leagueBases(history, day) };
+}
+
+function reservePrediction(fixture, rule, context, preset, day) {
+  const [code, , , , , home, away] = fixture;
+  const country = LEAGUE_BY_ID[code].countryCode;
+  const games = context.history.filter(row => LEAGUE_BY_ID[row[0]].countryCode === country);
+  const profiles = [home, away].map(club => model.teamMatches(games, club, day));
+  let homeMatches = profiles[0], awayMatches = profiles[1], xg = 0;
+  const hasPair = row => Number.isFinite(row[9]) && Number.isFinite(row[10]);
+  if (rule.method === 'xg') {
+    const seasonStart = (Number(day.slice(0, 4)) - Number(day.slice(5, 7) < '07')) + '-07-01';
+    if (profiles.some(rows => rows.slice(0, 30).filter(row => row[0] === code && row[3] >= seasonStart && hasPair(row)).length < 6))
+      return null;
+    xg = preset.xg;
+  }
+  if (rule.method === 'shots') {
+    const total = profiles.map(rows => rows.slice(0, 30).map(row => {
+      const stats = context.rates.get(row[0]);
+      // These are temporary shot-based contributions to the team strength, never stored xG.
+      const signal = stats?.shots >= 100 && stats.target.every(n => n > 0) && completeShots(row)
+        ? [stats.goals[0] * row[13].HST / stats.target[0], stats.goals[1] * row[13].AST / stats.target[1]]
+        : [null, null];
+      return [...row.slice(0, 9), ...signal, ...row.slice(11)];
+    }));
+    if (total.some(rows => rows.filter(hasPair).length < 6)) return null;
+    [homeMatches, awayMatches] = total;
+    xg = preset.xg;
+  }
+  const modelForecast = model.evaluateContext(fixture, { bases: context.bases, homeMatches, awayMatches }, { ...preset, xg });
+  if (modelForecast.error || !modelForecast.bases.count) return null;
+  let grid = modelForecast.distribution.matrix;
+  if (rule.method === 'league') {
+    const stats = context.rates.get(code);
+    const current = modelForecast.distribution.probs.over25;
+    if (!stats || stats.count < 12 || !(current > 0 && current < 1)) return null;
+    const adjusted = .75 * current + .25 * (stats.over + 1) / (stats.count + 2);
+    const over = adjusted / current, under = (1 - adjusted) / (1 - current);
+    grid = grid.map((row, h) => row.map((p, a) => p * (h + a >= 3 ? over : under)));
+  }
+  const output = markets(grid);
+  return { market: rule.market, label: 'Пробен резерв · ' + RESERVE_LABELS[rule.method], forecast: {
+    ...output, facts: { goals: output.expectedGoals, league: [modelForecast.bases.home, modelForecast.bases.away],
+      baseCount: modelForecast.bases.count, form: [compactForm(profiles[0], home), compactForm(profiles[1], away)] }
+  } };
+}
+
+export function resultsForecasts(clean, fixtures, audit, fitted, now, dataTime, status) {
+  const reserveLeagues = approvedReserveLeagues(clean, audit, fitted, now, status);
   const passed = new Set(audit.filter(l => l.eligible && !LEAGUE_BY_ID[l.id].core && fitted[l.id]?.qualified).map(l => l.id));
   const day = sofiaDate(now);
   const old = (Number(day.slice(0, 4)) - 4) + day.slice(4);
   const candidates = clean.filter(m => m[3] < day && m[3] >= old);
   const existing = new Set(clean.map(matchKey));
   const bases = model.leagueBases(candidates, day);
+  const reserve = reserveLeagues.size ? reserveContext(candidates, day) : null;
   const seen = new Set();
   return fixtures.flatMap(f => {
-    if (!passed.has(f[0]) || !f[5] || !f[6]) return [];
+    const rule = reserveLeagues.get(f[0]);
+    if ((!passed.has(f[0]) && !rule) || !f[5] || !f[6]) return [];
     const stamp = timeOf(f);
     if (!(stamp >= now + MIN_LEAD && stamp < now + HORIZON)) return [];
     const id = matchKey(f);
@@ -162,13 +255,17 @@ export function resultsForecasts(clean, fixtures, audit, fitted, now, dataTime) 
     const domestic = candidates.filter(m => LEAGUE_BY_ID[m[0]].countryCode === country);
     const home = model.teamMatches(domestic, f[5], day);
     const away = model.teamMatches(domestic, f[6], day);
-    const forecast = model.evaluateContext(f, { bases, homeMatches: home, awayMatches: away },
-      { ...model.params[fitted[f[0]].preset], xg: 0 });
+    const fit = fitted[f[0]];
+    const preset = model.params[fit.preset];
+    const forecast = model.evaluateContext(f, { bases, homeMatches: home, awayMatches: away }, { ...preset, xg: 0 });
     if (forecast.error || !forecast.bases.count) return [];
+    const trial = rule && reservePrediction(f, rule, reserve, preset, day);
+    if (!passed.has(f[0]) && !trial) return [];
     return [{ id, league: f[0], home: f[5], away: f[6], kickoff: new Date(stamp).toISOString(),
       issued: new Date(now).toISOString(), dataAsOf: new Date(dataTime).toISOString(),
       source: String(f[13] || 'Prime Syndicate · календар').split(' / ')[0],
       model: 'results', ...markets(forecast.distribution.matrix),
+      ...(trial && { reserve: trial, reserveOnly: !legacyResultsEligible(fit) }),
       facts: { goals: [forecast.lambdaHome, forecast.lambdaAway], league: [forecast.bases.home, forecast.bases.away],
         baseCount: forecast.bases.count, form: [compactForm(home, f[5]), compactForm(away, f[6])] } }];
   });
@@ -199,12 +296,15 @@ export function forecastVersion(f) {
   return 'Сходни защити';
 }
 
+function legacyResultsEligible(profile) {
+  return profile?.qualified && profile.test.overLoss + profile.test.bttsLoss <
+    profile.reference.overLoss + profile.reference.bttsLoss;
+}
+
 export function eligibleForSelection(match, fitted, europeFitted) {
   if (match.model === 'europe') return europeFitted[match.league]?.selected === true;
   if (match.model !== 'results') return true;
-  const model = fitted[match.league];
-  return model?.qualified && model.test.overLoss + model.test.bttsLoss <
-    model.reference.overLoss + model.reference.bttsLoss;
+  return Boolean(match.reserve) || legacyResultsEligible(fitted[match.league]);
 }
 
 export function eligiblePrice(p, rule = SELECTION) {
@@ -222,7 +322,10 @@ export function selectionMatch(match) {
 export function dailyCandidates(matches, rule = SELECTION) {
   return matches.flatMap(match => {
     const m = selectionMatch(match);
-    const best = MARKETS.map(key => ({ key, p: m.probabilities[key] }))
+    const marketsToCheck = m.trialMarket
+      ? (Object.hasOwn(RESERVE_MARKETS, m.trialMarket) ? RESERVE_MARKETS[m.trialMarket] : [])
+      : MARKETS;
+    const best = marketsToCheck.map(key => ({ key, p: m.probabilities[key] }))
       .filter(({ p }) => eligiblePrice(p, rule)).sort((a, b) => b.p - a.p)[0];
     if (!best) return [];
     const second = m.chances?.[best.key];
@@ -266,12 +369,23 @@ export function europeanSelectionReview({ m, key, p }, now) {
 
 export function dailySelectionPool(matches, now) {
   const eligible = [], review = [];
-  for (const candidate of dailyCandidates(matches)) {
+  const regular = matches.filter(m => !m.reserveOnly).map(({ reserve, reserveOnly, ...match }) => match);
+  for (const candidate of dailyCandidates(regular)) {
     const check = europeanSelectionReview(candidate, now);
     if (check?.reason) review.push({ ...candidate, check });
     else eligible.push({ ...candidate, price: check?.price ?? null });
   }
-  return { eligible, review };
+  if (eligible.length) return { eligible, review };
+  const fallback = matches.flatMap(({ reserve, reserveOnly, ...match }) => {
+    if (!reserve?.forecast || match.model !== 'results' || !Object.hasOwn(RESERVE_MARKETS, reserve.market)) return [];
+    const time = Date.parse(match.issued);
+    if (!(time <= now && now - time <= DELAY_AFTER)) return [];
+    const { selectionForecast, chances, ...ordinary } = match;
+    return dailyCandidates([{ ...ordinary, ...reserve.forecast, trialMarket: reserve.market,
+      forecastEdition: reserve.label,
+      matchForecast: { probabilities: match.probabilities, edition: forecastVersion(match) } }]);
+  });
+  return { eligible: orderDaily(fallback, false, 1), review };
 }
 
 export function orderDaily(candidates, useChances, limit = SELECTION.count) {
@@ -325,7 +439,7 @@ export function makeData({ raw, base, live, now, keep = [], quotes = null, previ
       present.add(f.id);
     }
   }
-  const extras = resultsForecasts(rows, raw.fixtures, audit, base.fitted, now, baseTime);
+  const extras = resultsForecasts(rows, raw.fixtures, audit, base.fitted, now, baseTime, base.status);
   const namedExtras = new Set(extras.map(m => m.id));
   const finalKeys = new Set(rows.map(matchKey));
   const activeExtra = new Map(raw.fixtures.filter(isDomestic).map(f => [matchKey(f), timeOf(f)]));

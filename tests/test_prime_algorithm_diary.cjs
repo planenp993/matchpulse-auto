@@ -257,3 +257,55 @@ test('the full 80/20 forecast is coherent and the daily quote follows the tested
   assert.deepEqual([upgraded.key,upgraded.p],[baseline.key,baseline.p]);
   assert.deepEqual(upgraded.m.matchForecast.probabilities,newMatch.probabilities);
 });
+
+test('a fresh market-specific reserve fills an empty day and freezes its own probabilities', async () => {
+  const { advanceDiary, validateDiary } = await import('../scripts/prime_algorithm_diary.mjs');
+  const { dailySelectionPool, eligibleForSelection } = await import('../docs/algorithm/catalog.js');
+  const reserve = match('I2|2026-11-23|home|away', .57, {
+    league: 'I2', model: 'results', reserveOnly: true,
+    reserve: {
+      market: 'btts_yes', label: 'Пробен резерв · xG',
+      forecast: { probabilities: { over_2_5: .585, under_2_5: .415, btts_yes: .46, btts_no: .54 } }
+    }
+  });
+  const now = Date.parse(captured);
+  assert.equal(eligibleForSelection(reserve, {}, {}), true);
+  assert.deepEqual(dailySelectionPool([reserve, match('epl/12', .52)], now).eligible.map(p => p.m.id), ['epl/12']);
+  assert.equal(dailySelectionPool([reserve], now + 2 * 3600000 + 1).eligible.length, 0);
+  const alternative = { ...reserve, id: 'I2|2026-11-23|other|away',
+    reserve: { ...reserve.reserve, forecast: { probabilities: { btts_yes: .565, btts_no: .435 } } } };
+  const opts = context();
+  const evidence = snapshot([reserve, alternative]);
+  evidence.selectionVersion = 'paired';
+  const recorded = advanceDiary(empty, evidence, opts);
+  assert.equal(recorded.days[0].picks.length, 1);
+  const [pick] = recorded.days[0].picks;
+  assert.deepEqual([pick.m.id, pick.key, pick.p, pick.m.trialMarket], [alternative.id, 'btts_yes', .565, 'btts_yes']);
+  assert.equal(pick.method, reserve.reserve.label);
+  const another = advanceDiary(empty, snapshot([reserve]), opts).days[0].picks[0];
+  assert.deepEqual([another.key, another.p], ['btts_no', .54]);
+  assert.equal(another.m.probabilities.over_2_5, .585);
+  assert.doesNotThrow(() => validateDiary(recorded));
+  assert.deepEqual(advanceDiary(recorded, snapshot([match('epl/12', .56)]), opts), recorded);
+});
+
+test('reserve forecasts require current league coverage and six prior xG games per club', async () => {
+  const { resultsForecasts } = await import('../docs/algorithm/catalog.js');
+  const now = Date.parse(captured);
+  const past = Array.from({ length: 12 }, (_, i) => [
+    'I2', 'Italy', 'Serie B', '2026-11-' + String(i + 1).padStart(2, '0'), '15:00', 'Home', 'Away',
+    i % 3, 1, 1.4, .9, null, null
+  ]);
+  const audit = [{ id: 'I2', eligible: true }];
+  const f = ['I2', 'Italy', 'Serie B', fixtureDay, '21:45', 'Home', 'Away'];
+  const cfg = { I2: { preset: 'cautious', qualified: false, reserve: { market: 'btts_yes', method: 'xg' } } };
+  const good = { last_soccerway_success_utc: captured, soccerway_checks: { I2: { status: 'ok', window_covered: true } } };
+  const [forecast] = resultsForecasts(past, [f], audit, cfg, now, now, good);
+  assert.equal(forecast.reserveOnly, true);
+  assert.equal(forecast.reserve.market, 'btts_yes');
+  const noXg = past.map((row, i) => i >= 5 ? [...row.slice(0, 9), null, null] : row);
+  assert.equal(resultsForecasts(noXg, [f], audit, cfg, now, now, good).length, 0);
+  assert.equal(resultsForecasts(past, [f], audit, cfg, now, now, {
+    ...good, soccerway_checks: { I2: { status: 'ok', window_covered: false } }
+  }).length, 0);
+});
