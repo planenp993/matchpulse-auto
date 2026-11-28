@@ -80,6 +80,9 @@ jobs:
                 echo "::warning::Prime update failed. Publishing the last verified Prime forecast with the new calendar."
               fi
             fi
+            # The all-match archive reads only committed, genuinely pre-match forecasts.
+            node scripts/prime_match_history.mjs
+            git add -- docs/algorithm/data/match-history/
             python scripts/statarea.py --check
             python scripts/forebet.py --check
             python scripts/soccerway.py --check

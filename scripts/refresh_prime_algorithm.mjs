@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { CORE_LEAGUES } from '../docs/algorithm/core.js';
 import { EURO_LEAGUES } from '../docs/algorithm/europe.js';
 import { europeanPricePairs, makeData } from '../docs/algorithm/catalog.js';
+import { confirmedCoreResults } from './prime_match_history.mjs';
 import { advanceDiary, appendDiary, readDiary } from './prime_algorithm_diary.mjs';
 import { addChances } from './prime_chances.mjs';
 import { applyForecastRelease } from './prime_full_forecast.mjs';
@@ -82,9 +83,10 @@ for (const model of next.euroAudit) {
   if (sites.length !== model.upcoming) throw new Error('Unpublished European match in ' + model.id);
 }
 for (const match of next.matches) {
-  if (match.model === 'europe') match.marketPrices = europeanPricePairs(match, euroPrices, prices, now);
+  match.marketPrices = europeanPricePairs(match, match.model === 'europe' ? euroPrices : null, prices, now);
   delete match.quote;
 }
+next.calendarResults = confirmedCoreResults(live, next.xgTime, now);
 const version = createHash('sha256').update(JSON.stringify([...sourceBytes, checkpointBytes].map(bytes =>
   createHash('sha256').update(bytes).digest('hex')))).digest('hex');
 const diary = await readDiary(diaryDirectory, last.diary);

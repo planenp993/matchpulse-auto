@@ -47,7 +47,9 @@ jobs:
           node scripts/curated_diary.cjs --check --base-ref origin/main
           node scripts/telegram_diary.cjs --check --base-ref origin/main
       - name: Verify historical calendar against sealed pre-match records
-        run: node scripts/schedule_archive.cjs --check
+        run: |
+          node scripts/schedule_archive.cjs --check
+          node scripts/prime_match_history.mjs --check
       - name: Check registered research against its frozen inputs
         run: python scripts/check_research.py
       - name: Audit the checked-out snapshot without provider requests
@@ -116,10 +118,14 @@ jobs:
           else
             timeout 180s npx playwright install --with-deps chromium
           fi
-      - name: Verify real match data, markets and identities on desktop and mobile
+      - name: Serve the checked-out snapshot
         run: |
           python -m http.server 8765 --directory docs > /tmp/scout-http.log 2>&1 &
           python -c 'import time,urllib.request; exec("for attempt in range(50):\n try:\n  urllib.request.urlopen(\"http://127.0.0.1:8765/scout.html\",timeout=1); break\n except OSError: time.sleep(0.1)\nelse: raise RuntimeError(\"Preview server did not start\")")'
+      - name: Verify Prime Algorithm history and price check on desktop and mobile
+        run: node scripts/test_prime_calendar_browser.cjs
+      - name: Verify real Scout match data, markets and identities on desktop and mobile
+        run: |
           node scripts/test_scout_browser.cjs
           node scripts/test_selections_browser.cjs
           node scripts/test_backup_browser.cjs
