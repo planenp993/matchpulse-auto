@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#0d1310">
   <meta name="description" content="Предмачови футболни вероятности, дневен подбор и дневник на Prime Algorithm.">
   <title>Prime Syndicate Algorithm</title>
-  <link rel="stylesheet" href="./style.css?v=9fb640f3ffb4">
-  <script type="module" src="./app.js?v=569f4eb98601"></script>
+  <link rel="stylesheet" href="./style.css?v=855f98ebb883">
+  <script type="module" src="./app.js?v=6d79bd733573"></script>
   <meta name="prime-public-feed" content="https://raw.githubusercontent.com/planenp993/matchpulse-auto/main/docs/algorithm/data/snapshot.json.gz">
 </head>
 <body>
@@ -20,6 +20,7 @@
       </a>
       <nav class="nav" aria-label="Основна навигация">
         <a href="#matches" data-view="matches" aria-current="page">Мачове</a>
+        <a href="#value" data-view="value">Prime Value</a>
         <a href="#diary" data-view="diary">Дневник</a>
         <a href="#coverage" data-view="coverage">Покритие</a>
       </nav>
@@ -56,6 +57,7 @@
           <span id="pick-caption" class="muted"></span>
         </div>
         <div id="picks" class="pick-list"><p class="empty">Зареждане на прогнозите…</p></div>
+        <a class="pv-entry-link" href="#value"><span><b>Prime Value</b><small>Отделен тест с реални цени 1,70–2,00 и пазарна оценка</small></span><span aria-hidden="true">→</span></a>
         <details id="value-review" class="method value-review" hidden>
           <summary>Проверка на реални коефициенти · до 3 избора</summary>
           <p class="muted">Моделният шанс и реалната цена са различни. Въведи актуалните коефициенти за същия пазар или използвай наличните свежи засечки. Търсим реална цена поне 1,70 и поне 5% над честната цена по модела. Това е отделна проверка, не променя записания дневен подбор.</p>
@@ -83,6 +85,61 @@
           </div>
         </div>
         <div id="fixture-list"></div>
+      </section>
+    </section>
+    <section class="view pv-view" id="value" aria-labelledby="pv-title" hidden>
+      <div class="pv-heading">
+        <div><div class="eyebrow accent">НЕЗАВИСИМ ПРЕДМАЧОВ ТЕСТ · V1</div><h2 id="pv-title">Prime Value</h2>
+          <p class="muted">Реални цени, пазарна вероятност и съгласие между две моделни оценки. Основният Prime остава непроменен.</p></div>
+        <div class="pv-rule-badge"><b>1,70 – 2,00</b><small>реална цена</small></div>
+      </div>
+      <section class="pv-panel" aria-labelledby="pv-auto-title">
+        <div class="pv-panel-head"><div><div class="eyebrow accent">ПУБЛИЧЕН ТЕСТ</div><h3 id="pv-auto-title">Днешни избори</h3></div><strong id="pv-today-count">— / 3</strong></div>
+        <p id="pv-status" role="status">Зареждане…</p>
+        <p class="muted" id="pv-coverage"></p><p class="muted pv-asof" id="pv-asof"></p>
+        <div id="pv-today" class="pv-grid"></div>
+        <p class="muted">Автоматичният дневник приема само конкретна двойка от един букмейкър, засечена през последния час. Без котировка няма избор.</p>
+      </section>
+      <details class="method how pv-method">
+        <summary>Как работи и какво знаем от теста</summary>
+        <ol>
+          <li>Пазар без маржа: нормализираме обратните стойности на двете реални цени.</li>
+          <li>Комбинация: 50% пазар, 25% базов Prime, 25% модел за положения. И двата модела трябва да подкрепят същия пазар; разлика между тях до 10 процентни пункта, спрямо пазара до 15.</li>
+          <li>Само цена 1,70–2,00, пазарен марж до 12% и оценена стойност поне +2% след комбинацията. Поне 90 минути до началото. До 3 различни мача за деня, записвани без замяна.</li>
+          <li>Следим успеваемост, резултат на една условна единица за всеки избор, доходност и грешка спрямо пазара. Липсващи/спорни резултати не влизат в доходността.</li>
+        </ol>
+        <p><strong>Архивна проверка:</strong> 140 избора Над/Под 2,5, 69 познати (49,3%), средна цена 1,87, доходност −8,19%. Това са ранни архивни цени на Pinnacle, не текущи изпълними котировки; няма съпоставими архивни цени за Гол/Гол. Тестът не доказва предимство. Не е препоръка за залагане.</p>
+        <p><a href="./prime-value-protocol.md">Пълен протокол на теста</a></p>
+      </details>
+      <section class="pv-panel" aria-labelledby="pv-public-title">
+        <div class="section-head"><div><h3 id="pv-public-title">Публичен дневник</h3><p class="muted" id="pv-days-summary"></p></div></div>
+        <div class="metrics pv-metrics" id="pv-public-stats"></div>
+        <p class="muted pv-brier" id="pv-public-brier"></p>
+        <details class="pv-day-coverage"><summary>Дни с проверка и покритие</summary><div id="pv-day-log"></div></details>
+        <div id="pv-public-diary"></div>
+        <button type="button" class="button small" id="pv-more" hidden>По-стари записи</button>
+      </section>
+      <section class="pv-panel pv-personal" aria-labelledby="pv-personal-title">
+        <div class="section-head"><div><div class="eyebrow accent">САМО В ТОЗИ БРАУЗЪР</div><h3 id="pv-personal-title">Личен тест с реални цени</h3>
+          <p class="muted">При липса на автоматични котировки въведи двете цени от един букмейкър. Данните не се публикуват и не се правят залози.</p></div></div>
+        <p class="muted" id="pv-local-note"></p>
+        <form id="pv-form" class="pv-form">
+          <label class="pv-fixture-field"><span>Мач от днес</span><select id="pv-fixture" required><option value="">Изчакваме данни</option></select></label>
+          <label><span>Пазар</span><select id="pv-family" required></select></label>
+          <label><span>Букмейкър</span><input id="pv-book" type="text" maxlength="100" placeholder="Име на букмейкъра" required></label>
+          <label><span id="pv-first-label">Над 2,5</span><input id="pv-first" type="text" inputmode="decimal" autocomplete="off" placeholder="1,85" required></label>
+          <label><span id="pv-other-label">Под 2,5</span><input id="pv-other" type="text" inputmode="decimal" autocomplete="off" placeholder="1,95" required></label>
+          <p class="muted pv-model-preview" id="pv-model-preview"></p>
+          <button type="submit" class="button">Добави двойка за проверка</button>
+        </form>
+        <p id="pv-manual-message" class="pv-manual-message" role="status"></p>
+        <div id="pv-drafts"></div>
+        <div class="pv-commit-row"><strong id="pv-draft-count"></strong><button type="button" class="button pv-action" id="pv-commit" disabled>Запиши в личния тест</button></div>
+        <p class="muted">Цените важат до един час. Замразените лични тестове се оценяват по потвърдените резултати от календара. Записът остава на този телефон/браузър; изчистването на браузърните данни го премахва.</p>
+        <h3 class="pv-local-title">Личен дневник</h3>
+        <div class="metrics pv-metrics" id="pv-local-stats"></div>
+        <p class="muted pv-brier" id="pv-local-brier"></p>
+        <div id="pv-local-diary"></div>
       </section>
     </section>
     <section class="view" id="diary" aria-labelledby="diary-title" hidden>

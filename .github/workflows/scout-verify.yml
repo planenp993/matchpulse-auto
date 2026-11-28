@@ -50,6 +50,7 @@ jobs:
         run: |
           node scripts/schedule_archive.cjs --check
           node scripts/prime_match_history.mjs --check
+          node scripts/prime_value_diary.mjs --check --base-ref origin/main
       - name: Check registered research against its frozen inputs
         run: python scripts/check_research.py
       - name: Audit the checked-out snapshot without provider requests
@@ -123,7 +124,9 @@ jobs:
           python -m http.server 8765 --directory docs > /tmp/scout-http.log 2>&1 &
           python -c 'import time,urllib.request; exec("for attempt in range(50):\n try:\n  urllib.request.urlopen(\"http://127.0.0.1:8765/scout.html\",timeout=1); break\n except OSError: time.sleep(0.1)\nelse: raise RuntimeError(\"Preview server did not start\")")'
       - name: Verify Prime Algorithm history and price check on desktop and mobile
-        run: node scripts/test_prime_calendar_browser.cjs
+        run: |
+          node scripts/test_prime_calendar_browser.cjs
+          node scripts/test_prime_value_browser.cjs
       - name: Verify real Scout match data, markets and identities on desktop and mobile
         run: |
           node scripts/test_scout_browser.cjs

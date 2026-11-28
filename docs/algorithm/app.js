@@ -8,6 +8,7 @@ import { marketFacts } from './market-facts.js?v=08c05a43670f';
 import { dailyComparison, dailyEntries, dailySummary } from './daily-diary.js?v=f24b26c50906';
 import { FIRST_DAY, calendarRows, forecastMarkets, marketOutcome, shiftDay, validCalendarDay, validCalendarIndex } from './calendar-view.js?v=269732adda9d';
 import { availableQuote, evaluatePrice, parseOdds, qualifyingPrices } from './value-check.js?v=0eece3b97e02';
+import { createPrimeValueView } from './prime-value-view.js?v=8a233c2e1c8a';
 
 const $ = id => document.getElementById(id);
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c =>
@@ -71,10 +72,32 @@ let lastToday = day;
 let lastRequest = 0;
 let activeTrigger;
 
+async function loadValueState() {
+  const path = 'prime-value/state.json';
+  for (const url of ['./data/' + path, publicFeed && new URL(path, publicFeed)].filter(Boolean)) {
+    try { return await get(url, { cache: 'no-store' }); } catch {}
+  }
+  throw new Error('Prime Value unavailable');
+}
+const primeValueView = createPrimeValueView({
+  getContext: () => ({ snapshot: live, fitted: validation, euroFitted: europeValidation }),
+  loadPublic: loadValueState,
+  loadDay: async selected => {
+    const meta = calendarIndex?.days[selected];
+    if (!meta || selected > tonight()) return null;
+    const key = selected + '/' + meta.sha256;
+    if (calendarCache.has(key)) return calendarCache.get(key);
+    const bucket = await reference('match-history/' + selected + '.json.gz?v=' + meta.sha256.slice(0,12));
+    if (!validCalendarDay(bucket,selected,meta)) return null;
+    return bucket;
+  }
+});
+
 function showView() {
   const hash = location.hash.slice(1);
-  const view = hash === 'sources' ? 'coverage' : ['matches', 'diary', 'coverage'].includes(hash) ? hash : 'matches';
-  for (const id of ['matches', 'diary', 'coverage']) $(id).hidden = id !== view;
+  const view = hash === 'sources' ? 'coverage' : ['matches', 'value', 'diary', 'coverage'].includes(hash) ? hash : 'matches';
+  for (const id of ['matches', 'value', 'diary', 'coverage']) $(id).hidden = id !== view;
+  if (view === 'value' && live) void primeValueView.refresh();
   if (hash === 'sources') {
     $('sources').open = true;
     requestAnimationFrame(() => $('sources').scrollIntoView({block: 'start'}));
@@ -463,6 +486,7 @@ function render() {
   renderMatches();
   renderDiary();
   renderCoverage();
+  if (location.hash === '#value') void primeValueView.refresh({force:true});
   $('footer-sync').textContent = updated || 'Прогнози от ' + dateTime(live.asOf) + ' ч.';
   $('notice').textContent = $('footer-sync').textContent;
 }
