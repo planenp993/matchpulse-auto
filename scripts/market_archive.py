@@ -15,7 +15,7 @@ DIRECTORY = 'data/markets'
 SUMMARY = 'docs/data/market_coverage.json'
 # Current and legacy Football-Data bookmakers and aggregates. Counts such as
 # Bb1X2/BbOU/BbAH are not prices. Unknown columns are reported, not guessed.
-BOOKS = ('B365', 'BFD', 'BF', 'BFE', 'BV', 'BW', 'IW', 'LB', 'PS', 'PP', 'SJ', 'SKB',
+BOOKS = ('B365', 'BFD', 'BF', 'BFE', 'BV', 'BW', 'IW', 'LB', 'PS', 'P', 'PP', 'SJ', 'SKB',
          'SO', 'SB', 'SY', 'VC', 'WH', 'GB', 'BS', 'Max', 'Avg', 'BbMx', 'BbAv')
 PRICE = re.compile(r'^(?:'+'|'.join(BOOKS)+r')(?:C)?(?:H|D|A|>2\.5|<2\.5|AHH|AHA)$')
 LINES = {'AHh', 'AHCh', 'BbAHh'}
