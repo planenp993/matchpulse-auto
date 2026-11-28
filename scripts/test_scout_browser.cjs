@@ -273,9 +273,24 @@
   europeanInDomestic:index.history.some(r=>MatchpulseArchive.european(r))}));
  if(stats.europeArchive.europeanInDomestic)throw new Error('UEFA rows contaminated the domestic index');
  if(stats.europeArchive.total>stats.europeArchive.domestic){
-  const euroFixture=await desktop.evaluate(()=>fixtures.find(f=>MatchpulseArchive.european(f)&&!profile(f).home.proxy&&!profile(f).away.proxy));
-  if(!euroFixture)throw new Error('Imported UEFA archive is unavailable to all future dossiers');
-  await desktop.evaluate(f=>openMatch(f),euroFixture);
+  const euroSample=await desktop.evaluate(()=>{
+   const covered=f=>{const p=profile(f);return !p.home.proxy&&!p.away.proxy&&p.home.all.length>0&&p.away.all.length>0;};
+   const future=fixtures.filter(f=>MatchpulseArchive.european(f));
+   if(future.length){
+    const fixture=future.find(covered);
+    return fixture?{fixture,scenario:'scheduled'}:null;
+   }
+   // Between UEFA rounds the live calendar can legitimately have no such fixture.
+   // Still exercise the identical archive/profile/guard with a real past match
+   // and history strictly before that match; do not synthesize future data.
+   const fixture=archive.international.history.filter(r=>MatchpulseArchive.european(r))
+    .sort((a,b)=>b[3].localeCompare(a[3])).find(covered);
+   return fixture?{fixture,scenario:'real-archived-match'}:null;
+  });
+  if(!euroSample)throw new Error('Imported UEFA archive has no covered fixture for a dossier');
+  stats.europeArchive.scenario=euroSample.scenario;
+  await desktop.evaluate(f=>openMatch(f),euroSample.fixture);
+  await desktop.waitForFunction(()=>document.querySelector('#matchContent')?.textContent.includes('няма моделни проценти'));
   if(!(await desktop.locator('#matchContent').textContent()).includes('няма моделни проценти'))throw new Error('UEFA model guard disappeared');
   const scope=await desktop.evaluate(()=>({home:profile(activeMatch).home.all.map(r=>r[0]),away:profile(activeMatch).away.all.map(r=>r[0]),div:activeMatch[0]}));
   if(!scope.home.length||!scope.away.length||[...scope.home,...scope.away].some(d=>d!==scope.div))throw new Error('UEFA dossier mixed domestic or other tournament form');
