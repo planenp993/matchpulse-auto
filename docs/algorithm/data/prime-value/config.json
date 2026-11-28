@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "createdAt": "2026-11-28T08:04:34.810Z",
+  "rule": {
+    "version": "prime-value-v1",
+    "release": "prime-forecast-2026-11-v1",
+    "minimum": 1.7,
+    "maximum": 2,
+    "leadMs": 5400000,
+    "quoteAgeMs": 3600000,
+    "forecastAgeMs": 7200000,
+    "cap": 3,
+    "modelGap": 0.1,
+    "marketGap": 0.15,
+    "maxOverround": 1.12,
+    "minEdge": 0.02,
+    "weights": {
+      "market": 0.5,
+      "prime": 0.25,
+      "chances": 0.25
+    }
+  },
+  "modelSources": {
+    "scripts/prime_value_diary.mjs": "0649c074f3b325c03467fe6d28d75ad93f8be6da1123c3c251866992eafe8e02",
+    "docs/algorithm/prime-value-v1.js": "efe32f5efcfb5b47023cfa280e6516e086745aae9f041ee551292e8a145883a9",
+    "docs/algorithm/value-check.js": "0eece3b97e0298307de74f493e62320aa3d96fb096b95fb1805b59523b9d735a",
+    "docs/algorithm/core.js": "d017cb640a6f94429fd1b8629b398a7acbb64af186fe1a2ab9f109f6c0448b2c",
+    "docs/algorithm/catalog.js": "9880ec988a17db080e5acc9134c88c3584900ec719e0c5dacfa7d70be1697d92",
+    "docs/algorithm/europe.js": "e2b2d2fe865738efb5f4466332f46004a22ec46761557a11c425f28b9afda8e5",
+    "docs/algorithm/club-aliases.js": "18fccab2d3a8f44278c0c7b825b46c54da5e791d481a3bfce09ff9108ad90297",
+    "docs/algorithm/model-core.js": "1b0d29cc6e3573acfd9e9e443e38314d58c4d420938f992ccf9aeb216b48ce9e",
+    "docs/algorithm/refresh-state.js": "ad7cbaff72508e2074486f77b03491156dc021be14779ed90553067817521e08",
+    "docs/algorithm/calendar-view.js": "269732adda9d63e1aa102704ea96a716fee83657a173835d15401053f02a01a2",
+    "docs/algorithm/data/scoring-config.json": "b21ca0e7f48c6f50c2c736bc7d8d1ba09716f0a4f54948f8084637a772873afc",
+    "docs/algorithm/data/extra-models.json": "69613564ff89bf8cb8217573b8b6890bef1404b67f06b1042ba2caff2364b37d",
+    "docs/algorithm/data/europe-models.json": "b94a38a129c8a04c46f1c9bc3124557eeadc5e2b6361ea939769afd4d1d41003",
+    "docs/algorithm/data/champion.json": "6a88ca795c258783b0afd8f83e04591540f36355f2d333812bf6f5751aa65548",
+    "scripts/prime_chances.mjs": "0b87f2d7b2a268f74c13796624d32cecc7bb7a0047f1f9111fa8f7d43f85462c",
+    "scripts/prime_full_forecast.mjs": "47ce8976a42916c66fbc6c0a47550af6a30d51afda93d780188894eeeaac68b3",
+    "scripts/prime-chances-state.json.gz": "25b40dc0bf1739428aa238d6e8a5c7c2dfe12f9dea723914e65a9e8746f28bfb"
+  }
+}

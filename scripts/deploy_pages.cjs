@@ -7,6 +7,7 @@ const {createHash}=require('node:crypto');
 const {gunzipSync}=require('node:zlib');
 const primePath='algorithm/data/snapshot.json.gz';
 const calendarPath='algorithm/data/match-history/index.json';
+const valuePath='algorithm/data/prime-value/state.json';
 
 function primeDigest(bytes){
  const body=bytes[0]===0x1f && bytes[1]===0x8b ? gunzipSync(bytes) : bytes;
@@ -22,6 +23,7 @@ async function publishPages({
  version=JSON.parse(readFileSync('docs/data/client_manifest.json','utf8')).version,
  expectedPrime=primeDigest(readFileSync('docs/'+primePath)),
  expectedCalendar=primeDigest(readFileSync('docs/'+calendarPath)),
+ expectedValue=primeDigest(readFileSync('docs/'+valuePath)),
  fetchPage=fetch,pause=wait
 }){
  if(!Number.isSafeInteger(artifactId)||artifactId<=0||!/^[a-f0-9]{40}$/.test(revision)||!/^[a-f0-9]{64}$/.test(version))throw Error('Invalid Pages artifact or snapshot version');
@@ -52,6 +54,7 @@ async function publishPages({
    const manifestUrl=new URL('data/client_manifest.json',siteUrl);
    const primeUrl=new URL(primePath,siteUrl);
    const calendarUrl=new URL(calendarPath,siteUrl);
+   const valueUrl=new URL(valuePath,siteUrl);
    for(let check=0;check<12;check++){
     manifestUrl.searchParams.set('verify',revision+'-'+process.env.GITHUB_RUN_ATTEMPT+'-'+timeout+'-'+check);
     try{
@@ -65,7 +68,11 @@ async function publishPages({
       const calendar=await fetchPage(calendarUrl,{cache:'no-store',signal:AbortSignal.timeout(10000)});
       if(!calendar.ok || primeDigest(Buffer.from(await calendar.arrayBuffer()))!==expectedCalendar)
        throw Error('Published Prime calendar differs from the uploaded archive');
-      core.info('Public Pages and Prime forecast/calendar verified: '+version+' / '+expectedPrime+' / '+expectedCalendar);
+      valueUrl.search=manifestUrl.search;
+      const value=await fetchPage(valueUrl,{cache:'no-store',signal:AbortSignal.timeout(10000)});
+      if(!value.ok || primeDigest(Buffer.from(await value.arrayBuffer()))!==expectedValue)
+       throw Error('Published Prime Value differs from the uploaded diary');
+      core.info('Public Pages and Prime forecast/calendar/value verified: '+version+' / '+expectedPrime+' / '+expectedCalendar+' / '+expectedValue);
       core.setOutput('page_url',siteUrl.href);
       return;
      }
