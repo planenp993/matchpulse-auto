@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#0d1310">
   <meta name="description" content="Предмачови футболни вероятности, дневен подбор и дневник на Prime Algorithm.">
   <title>Prime Syndicate Algorithm</title>
-  <link rel="stylesheet" href="./style.css?v=855f98ebb883">
-  <script type="module" src="./app.js?v=6d79bd733573"></script>
+  <link rel="stylesheet" href="./style.css?v=661233253429">
+  <script type="module" src="./app.js?v=e22d21afec48"></script>
   <meta name="prime-public-feed" content="https://raw.githubusercontent.com/planenp993/matchpulse-auto/main/docs/algorithm/data/snapshot.json.gz">
 </head>
 <body>
@@ -57,6 +57,13 @@
           <span id="pick-caption" class="muted"></span>
         </div>
         <div id="picks" class="pick-list"><p class="empty">Зареждане на прогнозите…</p></div>
+        <section id="conditional-prices" class="conditional-panel" aria-labelledby="conditional-title" hidden>
+          <div class="conditional-head"><div><p class="eyebrow accent">БЕЗ API</p><h3 id="conditional-title">Условен подбор</h3></div><span class="conditional-badge">До 3 мача</span></div>
+          <p class="muted">Минимална цена по базовия Prime с 5% моделен резерв, в диапазона 1,70–2,00. Това не са реални котировки. Ако цената при букмейкъра е под прага, мачът не покрива условието.</p>
+          <div id="conditional-caption" class="conditional-caption muted"></div>
+          <div id="conditional-list" class="conditional-list"></div>
+          <p class="muted conditional-note">Отделен автоматичен ориентир, без промяна на записания дневен подбор. Няма гаранция за печалба.</p>
+        </section>
         <a class="pv-entry-link" href="#value"><span><b>Prime Value</b><small>Отделен тест с реални цени 1,70–2,00 и пазарна оценка</small></span><span aria-hidden="true">→</span></a>
         <details id="value-review" class="method value-review" hidden>
           <summary>Проверка на реални коефициенти · до 3 избора</summary>
