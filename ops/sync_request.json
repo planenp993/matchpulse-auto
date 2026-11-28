@@ -1,1 +1,1 @@
-{"schema":1,"id":"soccerway-calendar-recovery-2026-11-16","mode":"calendar","reason":"Recover the primary calendar and pre-match diary capture after the provider changed the feed path format."}
+{"schema":1,"id":"pinnacle-market-recovery-2026-11-28","mode":"full","reason":"Restore exact omitted Pinnacle P/PC market observations from the official Football-Data CSV sources after verified data-only archive fix."}
