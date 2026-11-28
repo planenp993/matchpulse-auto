@@ -47,7 +47,9 @@ jobs:
           node scripts/curated_diary.cjs --check --base-ref origin/main
           node scripts/telegram_diary.cjs --check --base-ref origin/main
       - name: Verify historical calendar against sealed pre-match records
-        run: node scripts/schedule_archive.cjs --check
+        run: |
+          node scripts/schedule_archive.cjs --check
+          node scripts/prime_match_history.mjs --check
       - name: Check registered research against its frozen inputs
         run: python scripts/check_research.py
       - name: Audit the checked-out snapshot without provider requests
@@ -125,6 +127,7 @@ jobs:
           node scripts/test_backup_browser.cjs
           node scripts/test_loading_browser.cjs
           node scripts/test_calendar_browser.cjs
+          node scripts/test_prime_calendar_browser.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:

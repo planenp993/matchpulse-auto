@@ -1,11 +1,13 @@
 import { DELAY_AFTER, loadSnapshot } from './refresh-state.js?v=ad7cbaff7250';
 import { MIN_LEAD } from './core.js?v=d017cb640a6f';
-import { LEAGUES, LEAGUE_BY_ID, MARKETS, PRICE_BUFFER, SELECTION, dailySelectionPool, eligibleForSelection, europeanSelectionReview,
+import { LEAGUES, LEAGUE_BY_ID, MARKETS, PRICE_BUFFER, PRICE_WINDOW, SELECTION, dailySelectionPool, eligibleForSelection, europeanSelectionReview,
   fairPrice, forecastVersion, orderDaily, priceFrom, selectionMatch, sofiaDate, SOFIA } from './catalog.js?v=9880ec988a17';
 
 import { attachFormInteraction, formView } from './form-view.js?v=46eb13c524af';
 import { marketFacts } from './market-facts.js?v=08c05a43670f';
 import { dailyComparison, dailyEntries, dailySummary } from './daily-diary.js?v=f24b26c50906';
+import { FIRST_DAY, calendarRows, forecastMarkets, marketOutcome, shiftDay, validCalendarDay, validCalendarIndex } from './calendar-view.js?v=269732adda9d';
+import { availableQuote, evaluatePrice, parseOdds, qualifyingPrices } from './value-check.js?v=0eece3b97e02';
 
 const $ = id => document.getElementById(id);
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c =>
@@ -48,7 +50,21 @@ async function reference(path) {
   }
 }
 const historicalArchive = () => reference('archive.json' + (publicFeed ? '.gz' : ''));
+async function loadCalendarIndex() {
+  const path = 'match-history/index.json';
+  for (const url of ['./data/' + path, publicFeed && new URL(path, publicFeed)].filter(Boolean)) {
+    try {
+      const index = await get(url, { cache: 'no-store' });
+      if (validCalendarIndex(index)) return index;
+    } catch {}
+  }
+  return null;
+}
 let live, archive, validation, europeValidation;
+let calendarIndex, calendarError = false, visibleCalendar = [];
+const calendarCache = new Map(), calendarLoading = new Set(), calendarFailures = new Set();
+const typedPrices = new Map();
+let valueRows = [];
 let day = tonight(), diaryMode = 'daily', diaryLimit = 30, updated = '';
 let daily = [], previousDaily = [], previewPicks = [];
 let lastToday = day;
@@ -72,8 +88,30 @@ window.addEventListener('hashchange', showView);
 showView();
 
 function scheduleDays() {
-  const nowDay = tonight();
-  return [...new Set([nowDay, day, ...live.matches.map(stamp).filter(d => d >= nowDay)])].sort();
+  const first = shiftDay(day, -2) < FIRST_DAY ? FIRST_DAY : shiftDay(day, -2);
+  return Array.from({ length: 8 }, (_, i) => shiftDay(first, i));
+}
+function readCalendarDay(selected) {
+  if (!calendarIndex || selected > tonight()) return null;
+  const meta = calendarIndex.days[selected];
+  if (!meta) return null;
+  const key = selected + '/' + meta.sha256;
+  if (calendarCache.has(key)) return calendarCache.get(key);
+  if (!calendarLoading.has(key) && !calendarFailures.has(key)) {
+    calendarLoading.add(key);
+    reference('match-history/' + selected + '.json.gz?v=' + meta.sha256.slice(0, 12))
+      .then(bucket => {
+        if (!validCalendarDay(bucket, selected, meta)) throw new Error('Archive changed');
+        calendarCache.set(key, bucket);
+        if (calendarCache.size > 12) calendarCache.delete(calendarCache.keys().next().value);
+      })
+      .catch(() => calendarFailures.add(key))
+      .finally(() => {
+        calendarLoading.delete(key);
+        if (day === selected) renderMatches();
+      });
+  }
+  return null;
 }
 const selectionLeague = m => eligibleForSelection(m, validation, europeValidation);
 function label(m) {
@@ -86,14 +124,25 @@ function empty(text, next) {
 }
 function matchRow(m, diary = false) {
   const show = diary ? '' : $('market-filter').value;
-  const cells = (show ? [show] : ['over_2_5', 'btts_yes']).map(key =>
-    '<span class="cell-market"><small>' + brief[key] + '</small><b>' + pct(m.probabilities[key], m.league === 'UEL' ? 1 : 0) + '</b></span>').join('');
-  const when = diary ? (m.result ? m.result.join(':') : shortDate(noon(stamp(m)))) : clock(m.kickoff);
+  const historical = !diary && m.calendarState !== 'upcoming';
+  const final = historical && m.calendarState === 'final';
+  const keys = show ? [show] : historical && m.probabilities ? forecastMarkets(m.probabilities) : ['over_2_5', 'btts_yes'];
+  const cells = m.probabilities ? keys.map(key => {
+    const outcome = final && !m.resultConflict ? marketOutcome(key, m.result) : null;
+    return '<span class="cell-market' + (outcome === null ? '' : outcome ? ' result-hit' : ' result-miss') + '"><small>' +
+      brief[key] + '</small><b>' + pct(m.probabilities[key], m.league === 'UEL' ? 1 : 0) + '</b>' +
+      (outcome === null ? '' : '<span class="result-mark" aria-label="' + (outcome ? 'Пазарът се е случил' : 'Пазарът не се е случил') +
+        '">' + (outcome ? '✓' : '×') + '</span>') + '</span>';
+  }).join('') : '<span class="cell-market no-forecast"><small>Няма запазена<br>прогноза</small></span>';
+  const when = diary ? (m.result ? m.result.join(':') : shortDate(noon(stamp(m)))) :
+    final ? m.result.join(':') : m.kickoff ? clock(m.kickoff) : '—';
+  const badge = final ? '<small>' + (m.resultConflict ? 'СВЕРИ' : 'КРАЕН') + '</small>' : historical ? '<small>ЧАКА</small>' : '';
   return '<button type="button" class="match-button' + (show ? ' single' : '') + (diary ? ' diary-row' : '') +
-    '" data-match="' + escape(m.id) + '" data-set="' + (diary ? diaryMode : 'live') +
-    '" data-market="' + show + '"><span class="time">' + escape(when) + '</span>' +
+    (historical ? ' historical-row' : '') + (final ? ' final-row' : '') + (!m.probabilities ? ' without-forecast' : '') +
+    '" data-match="' + escape(m.id) + '" data-set="' + (diary ? diaryMode : 'calendar') +
+    '" data-market="' + show + '"><span class="time">' + escape(when) + badge + '</span>' +
     '<span class="teams"><strong>' + escape(m.home) + '</strong><i aria-hidden="true">–</i><strong>' + escape(m.away) +
-    '</strong></span>' + cells + '<span class="open-match">Анализ</span></button>';
+    '</strong></span>' + cells + '<span class="open-match">' + (m.probabilities ? 'Анализ' : 'Резултат') + '</span></button>';
 }
 function grouped(rows, diary = false) {
   return LEAGUES.flatMap(l => {
@@ -117,17 +166,21 @@ function pickCard(record) {
   return '<button type="button" class="pick" data-set="' + set +
     '" data-match="' + escape(record.id ?? m.id) + '" data-market="' + key + '">' +
     '<div class="pick-head"><span class="market-chip">' + names[key] + '</span><span class="pick-meta">' +
-    escape(clock(m.kickoff)) + '</span></div><h3>' + escape(m.home + ' – ' + m.away) + '</h3>' +
+    escape(record.result?.score ? record.result.score.join(':') + ' · ' + diaryOutcome(record) : clock(m.kickoff)) +
+    '</span></div><h3>' + escape(m.home + ' – ' + m.away) + '</h3>' +
     '<div class="pick-values"><b class="pick-p">' + pct(p) + '</b><span class="pick-k"><small>Честен</small><b>' +
     odds(record.fair ?? fairPrice(p)) + '</b></span><span class="pick-k"><small>Праг</small><b>' +
     odds(record.threshold ?? priceFrom(p)) + '+</b></span></div>' +
     '<div class="pick-footer"><span>' + escape(label(m)) + '</span><b>Анализ</b></div>' +
-    (record.check ? '<p class="review-note">' + escape(reviewText(record.check, p)) + '</p>' : '') + '</button>';
+    (record.check ? '<p class="review-note">' + escape(reviewText(record.check, p)) + '</p>' : '') +
+    (!record.check && day >= tonight() && Date.parse(m.kickoff) > Date.now() ?
+      '<p class="pick-price-note">' + (availableQuote(record, Date.now()) ?
+        'Засечен: ' + odds(availableQuote(record, Date.now()).selected) : 'Без потвърден актуален коефициент') + '</p>' : '') + '</button>';
 }
 function updateLeagueControls(data) {
   daily = dailyEntries(data.diary);
   previousDaily = dailyEntries(data.diary, true);
-  for (const [id, include] of [['league-filter', new Set(data.matches.map(m => m.league))],
+  for (const [id, include] of [['league-filter', new Set(LEAGUES.map(l => l.id))],
     ['diary-league', new Set([...archive.pilot, ...archive.replay, ...[...daily, ...previousDaily].map(pick => pick.m)].map(m => m.league))]]) {
     const filter = $(id), prev = filter.value;
     const available = LEAGUES.filter(l => include.has(l.id));
@@ -140,6 +193,68 @@ function updateLeagueControls(data) {
     if (include.has(prev)) filter.value = prev;
   }
 }
+
+const valueKey = ({ m, key }) => m.id + '|' + m.kickoff + '|' + key;
+function priceLabel(row) {
+  const { state, ev } = row.assessment;
+  if (state === 'unknown') return 'Нужна е реална цена';
+  const estimate = (ev > 0 ? '+' : '') + pct(ev, 1);
+  return (state === 'negative' ? 'Под честния' : state === 'below' ? 'Под прага' : 'Покрива прага') +
+    ' · моделно ' + estimate;
+}
+function assessValueRow(row, supplied) {
+  row.assessment = evaluatePrice(row.candidate.p, supplied);
+}
+function renderValueSummary() {
+  const now = Date.now();
+  const active = now - Date.parse(live.asOf) <= DELAY_AFTER
+    ? valueRows.filter(row => Date.parse(row.candidate.m.kickoff) - now >= MIN_LEAD) : [];
+  const selected = qualifyingPrices(active);
+  const checked = valueRows.filter(row => row.assessment.state !== 'unknown').length;
+  $('value-summary').innerHTML = '<strong>' + selected.length + ' от максимум 3 покриват прага</strong><span class="muted"> · Проверени цени ' +
+    checked + '/' + valueRows.length + '</span>' + (selected.length
+    ? '<div class="value-qualified">' + selected.map(({ candidate, assessment }) =>
+      '<div><b>' + escape(candidate.m.home + ' – ' + candidate.m.away) + '</b><small>' + names[candidate.key] +
+      ' · ' + odds(assessment.price) + ' · моделно +' + pct(assessment.ev, 1) + '</small></div>').join('') + '</div>'
+    : '<p class="muted">Няма потвърдена от въведените цени стойност над прага. Не допълваме насила до три.</p>');
+}
+function renderValueReview(official, eligible, delayed, now) {
+  const visible = day === tonight() && !delayed;
+  $('value-review').hidden = !visible;
+  if (!visible) { valueRows = []; return; }
+  const activeMatch = record => live.matches.some(m => m.id === record.m.id && m.kickoff === record.m.kickoff);
+  const candidates = [...official.filter(record => Date.parse(record.m.kickoff) - now >= MIN_LEAD && activeMatch(record)),
+    ...orderDaily(eligible, true, eligible.length)];
+  const seen = new Set();
+  valueRows = candidates.flatMap(candidate => {
+    const id = valueKey(candidate);
+    if (seen.has(id)) return [];
+    seen.add(id);
+    const liveMatch = live.matches.find(m => m.id === candidate.m.id && m.kickoff === candidate.m.kickoff);
+    const quote = availableQuote({ ...candidate, m: liveMatch ?? candidate.m }, now) ?? availableQuote(candidate, now);
+    const typed = typedPrices.get(id);
+    const manual = typed && now - typed.at <= PRICE_WINDOW && typed.at <= now ? typed : null;
+    const supplied = manual ? manual.text : quote?.selected ?? '';
+    const row = { id, candidate, quote, manual, supplied };
+    assessValueRow(row, supplied);
+    return [row];
+  });
+  $('value-list').innerHTML = valueRows.map((row, i) => {
+    const { candidate, quote, manual, supplied, assessment } = row;
+    return '<article class="value-row"><div class="value-match"><b>' + escape(candidate.m.home + ' – ' + candidate.m.away) +
+      '</b><small>' + escape(label(candidate.m)) + ' · ' + clock(candidate.m.kickoff) + '</small><small>' +
+      names[candidate.key] + ' · ' + pct(candidate.p, 1) + ' · минимум <b>' + odds(assessment.threshold) +
+      '</b></small></div><label class="value-field"><span>Реален коеф.</span><input type="text" inputmode="decimal" autocomplete="off" ' +
+      'placeholder="—" data-price-row="' + i + '" aria-label="' +
+      escape('Реален коефициент: ' + candidate.m.home + ' – ' + candidate.m.away + ' · ' + names[candidate.key]) +
+      '" value="' + escape(String(supplied).replace('.', ',')) + '"><small data-price-source="' + i + '">' +
+      (manual ? 'Въведен от теб' : quote ? escape(quote.source + ' · ' + clock(quote.seen)) : 'Няма засечка') +
+      '</small></label><span class="value-status ' + assessment.state + '" data-price-status="' + i + '">' +
+      escape(priceLabel(row)) + '</span></article>';
+  }).join('') || '<p class="muted">Няма предстоящи допустими кандидати с поне 90 минути до началото.</p>';
+  renderValueSummary();
+}
+
 function renderMatches() {
   const now = Date.now();
   const upcoming = live.matches.filter(m => Date.parse(m.kickoff) > now);
@@ -148,7 +263,9 @@ function renderMatches() {
   lastToday = today;
   const days = scheduleDays();
   const filter = $('league-filter').value;
-  const fixtures = upcoming.filter(m => stamp(m) === day && (!filter || m.league === filter));
+  const bucket = readCalendarDay(day);
+  visibleCalendar = calendarRows(bucket, live, day, now);
+  const fixtures = visibleCalendar.filter(m => !filter || m.league === filter);
   const official = daily.filter(entry => entry.day === day);
   const delayed = now - Date.parse(live.asOf) > DELAY_AFTER;
   const available = upcoming.filter(m => stamp(m) === day && selectionLeague(m) && Date.parse(m.kickoff) - now >= MIN_LEAD);
@@ -168,12 +285,20 @@ function renderMatches() {
     (d === day) + '"><b>' + (d === today ? 'Днес' : escape(shortDate(noon(d)))) +
     '</b><span>' + (d === today ? escape(shortDate(noon(d))) : escape(local(noon(d), { weekday: 'short' }))) +
     '</span></button>').join('');
+  $('previous-day').disabled = day <= FIRST_DAY;
+  $('date-picker').min = FIRST_DAY;
   $('date-picker').value = day;
+  const activeDate = $('dates').querySelector('[aria-pressed="true"]');
+  if (activeDate && (activeDate.offsetLeft < $('dates').scrollLeft ||
+      activeDate.offsetLeft + activeDate.offsetWidth > $('dates').scrollLeft + $('dates').clientWidth))
+    $('dates').scrollLeft = activeDate.offsetLeft - 6;
+  $('calendar-caption').textContent = 'Архив от 23.11.2026 г. · Последната запазена предмачова прогноза и резултат за 90 минути.';
   const next = upcoming.find(m => stamp(m) > day && (!filter || m.league === filter));
   const captureLabel = 'Записан в дневника';
   const trialPrefix = picks.some(record => record.m.trialMarket) ? 'Пробен резерв · ' : '';
   $('pick-caption').textContent = trialPrefix + (official.length ? captureLabel + ' · ' + clock(official[0].captured) + ' ч.' :
     'Предварителен · Честен ' + odds(SELECTION.fairMin) + '–' + odds(SELECTION.fairMax));
+  if (day >= today) $('pick-caption').textContent += ' · Подбор по модел';
   let reason = 'За тази дата няма предстоящи анализи.';
   if (upcoming.some(m => stamp(m) === day)) {
     reason = available.length
@@ -182,11 +307,24 @@ function renderMatches() {
   }
   if (review.length && !eligible.length) reason = 'Кандидатите за деня са в „За проверка“.';
   if (delayed) reason = 'Предварителният подбор ще се покаже при следващото успешно обновяване.';
-  $('picks').innerHTML = picks.length ? picks.map(pickCard).join('') : empty(reason, next && stamp(next));
-  $('match-count').textContent = fixtures.length + (fixtures.length === 1 ? ' предстоящ мач' : ' предстоящи мача') +
-    ' · ' + shortDate(noon(day));
-  $('fixture-list').innerHTML = fixtures.length ? grouped(fixtures) :
-    empty('Избери друга дата или първенство.', next && stamp(next));
+  $('picks').innerHTML = picks.length ? picks.map(pickCard).join('') : empty(day < today ? 'Няма записан дневен подбор.' : reason,
+    day < today ? null : next && stamp(next));
+  renderValueReview(official, eligible, delayed, now);
+  const finished = fixtures.filter(m => m.calendarState === 'final').length;
+  const pending = fixtures.filter(m => m.calendarState === 'pending').length;
+  const future = fixtures.length - finished - pending;
+  const count = [finished && finished + ' приключили', pending && pending + ' чакат резултат',
+    future && future + ' предстоящи'].filter(Boolean).join(' · ') || '0 мача';
+  $('match-count').textContent = count + ' · ' + shortDate(noon(day));
+  const calendarMeta = calendarIndex?.days[day];
+  const failed = calendarMeta && calendarFailures.has(day + '/' + calendarMeta.sha256);
+  const loading = day <= today && calendarMeta && !bucket && !failed;
+  const notice = day <= today && (calendarError || failed)
+    ? '<p class="muted archive-note">Архивът временно не е достъпен. Натисни „Обнови“.</p>'
+    : loading ? '<p class="muted archive-note" role="status">Зареждане на приключилите мачове…</p>'
+    : finished ? '<p class="muted archive-note">✓ Пазарът се е случил · × Не се е случил · Процентите са предмачови.</p>' : '';
+  $('fixture-list').innerHTML = notice + (fixtures.length ? grouped(fixtures) :
+    loading || calendarError && day <= today || failed ? '' : empty('Няма мачове за тази дата или първенство.', next && stamp(next)));
 }
 const metric = (value, name) => '<article class="metric"><strong>' + escape(value) + '</strong><small>' + escape(name) + '</small></article>';
 const diaryOutcome = entry => ({ hit: 'Позната', miss: 'Пропуск', pending: 'Чака резултат', void: 'Изключена' })[entry.state];
@@ -374,7 +512,8 @@ function openMatch(trigger) {
   const dailyPick = records.find(entry => entry.id === trigger.dataset.match);
   const inReview = trigger.dataset.set === 'selection-review';
   const isSelection = trigger.dataset.set === 'selection-live' || inReview;
-  const list = trigger.dataset.set === 'live' || isSelection ? live.matches : archive[trigger.dataset.set];
+  const list = trigger.dataset.set === 'calendar' ? visibleCalendar :
+    trigger.dataset.set === 'live' || isSelection ? live.matches : archive[trigger.dataset.set];
   const match = list?.find(x => x.id === trigger.dataset.match);
   const preview = trigger.dataset.set === 'selection-live'
     ? previewPicks.find(entry => entry.m.id === trigger.dataset.match) : null;
@@ -382,12 +521,23 @@ function openMatch(trigger) {
   if (!m) return;
   activeTrigger = trigger;
   const p = m.probabilities;
-  const recommended = trigger.dataset.market || [...MARKETS].sort((a, b) => p[b] - p[a])[0];
   const title = escape(m.home + ' – ' + m.away);
-  const replay = m.model === 'retrospective';
-  const result = dailyPick ? dailyPick.result?.score : live.settlements?.[m.id] ?? m.result;
+  const result = dailyPick ? dailyPick.result?.score : m.result ?? live.settlements?.[m.id];
   const t = m.kickoff ? dateTime(m.kickoff) + ' ч.' : shortDate(noon(m.date)) + ' ' + m.date.slice(0, 4);
   const tag = label(m) + ' · ' + t;
+  if (!p) {
+    $('detail').innerHTML = '<div class="detail-top"><div class="eyebrow accent">' + escape(tag) +
+      '</div><h2 class="detail-title" id="detail-title">' + title + '</h2></div><div class="detail-summary"><b>Краен резултат ' +
+      escape(result?.join(':') ?? '—') + '</b><p>Източник: ' + escape(m.resultSource) +
+      (m.resultConflict ? ' · Разминаване в източниците — за проверка.' : '') +
+      '</p></div><p class="muted">За този мач няма запазена предмачова Prime прогноза. Не изчисляваме прогноза след резултата.</p>';
+    $('match-dialog').showModal();
+    return;
+  }
+  const historical = trigger.dataset.set === 'calendar' && m.calendarState !== 'upcoming';
+  const recommended = trigger.dataset.market || [...MARKETS].sort((a, b) => p[b] - p[a])[0];
+  const replay = m.model === 'retrospective';
+  const outcome = historical && result && !m.resultConflict ? marketOutcome(recommended, result) : null;
   const ranked = !inReview && !previous && (dailyPick?.paired || (!dailyPick && trigger.classList.contains('pick')));
   const explanation = explain(m, recommended) + modelContext(m, recommended, ranked);
   const separate = m.matchForecast?.probabilities[recommended];
@@ -410,23 +560,34 @@ function openMatch(trigger) {
     (dailyPick.price ? ' · ' + escape(dailyPick.price.source) + ' · засечка от ' + escape(dateTime(dailyPick.price.seen)) + ' ч.' : '') +
     '</p><p>' + diaryOutcome(dailyPick) + (dailyPick.result?.score ? ' · ' + escape(dailyPick.result.source) :
       dailyPick.result?.void ? ' · ' + escape(dailyPick.result.void) : '') + '</p></section>' : '';
+  const calendarDetail = historical ? '<section class="detail-section"><h3>Предмачов запис</h3><p>Изчислен на ' +
+    escape(dateTime(m.issued)) + ' ч. · запазен на ' + escape(dateTime(m.calendarSaved)) + ' ч.' +
+    (m.calendarCommit ? ' · <a target="_blank" rel="noopener" href="https://github.com/planenp993/matchpulse-auto/commit/' +
+      escape(m.calendarCommit) + '">Оригинален запис</a>' : '') + '</p><p>' +
+    (result ? 'Краен резултат ' + escape(result.join(':')) + ' · ' + escape(m.resultSource) +
+      (m.resultConflict ? ' · Разминаване в източниците — за проверка.' : '') : 'Очакваме потвърден краен резултат.') +
+    '</p></section>' : '';
   $('detail').innerHTML = '<div class="detail-top"><div class="eyebrow accent">' + escape(tag) +
     '</div><h2 class="detail-title" id="detail-title">' + title + '</h2><p class="muted">' +
     escape(forecastVersion(m)) + (m.round ? ' · ' + escape(roundText(m.round)) : '') + (result ? ' · Краен резултат ' + result.join(':') : '') + '</p></div>' +
     '<div class="detail-summary"><b>' + names[recommended] + ' · ' + pct(p[recommended], 1) +
-    '</b><p>' + (fullForecast ? 'Честен за подбора ' : 'Честен ') +
+    '</b>' + (outcome === null ? '' : '<p class="forecast-outcome ' + (outcome ? 'result-hit' : 'result-miss') +
+      '">' + (outcome ? '✓ Прогнозата е позната' : '× Прогнозата не е позната') + '</p>') +
+    '<p>' + (fullForecast ? 'Честен за подбора ' : 'Честен ') +
     odds(dailyPick?.fair ?? fairPrice(p[recommended])) + ' · праг за проверка ' +
     odds(dailyPick?.threshold ?? priceFrom(p[recommended])) + '+</p>' + fullForecast +
     (inReview && check?.reason ? '<p class="review-note">' + escape(reviewText(check, p[recommended])) + '</p>' : '') +
-    '</div>' + diaryDetail +
+    '</div>' + diaryDetail + calendarDetail +
     (explanation ? '<section class="detail-section match-why"><h3>' + (inReview ? 'Данни за прогнозата' : 'Защо този избор') + '</h3>' +
       explanation + '</section>' : '') +
     formView(m, escape, LEAGUE_BY_ID, day => shortDate(noon(day))) +
     '<section class="detail-section"><h3>Голови пазари</h3><table class="detail-odds"><thead><tr>' +
-    '<th scope="col">Пазар</th><th scope="col">Шанс</th><th scope="col">Честен</th><th scope="col">Праг</th></tr></thead><tbody>' +
+    '<th scope="col">Пазар</th><th scope="col">Шанс</th><th scope="col">Честен</th><th scope="col">Праг</th>' +
+    (historical && result && !m.resultConflict ? '<th scope="col">Изход</th>' : '') + '</tr></thead><tbody>' +
     MARKETS.map(key => '<tr' + (key === recommended ? ' class="active"' : '') + '><td>' + names[key] + '</td><td>' +
       pct(p[key], 1) + '</td><td>' + odds(fairPrice(p[key])) + '</td><td>' + odds(priceFrom(p[key])) +
-      '+</td></tr>').join('') +
+      '+</td>' + (historical && result && !m.resultConflict
+        ? '<td class="' + (marketOutcome(key, result) ? 'result-hit">✓' : 'result-miss">×') + '</td>' : '') + '</tr>').join('') +
     '</tbody></table><p class="status-line">Прагът за проверка включва пилотен резерв от ' +
     pct(dailyPick?.rule.buffer ?? PRICE_BUFFER) + ' над честния коефициент.</p></section>' +
     ref + '<section class="detail-section"><h3>Краен резултат</h3><div class="chances">' +
@@ -447,9 +608,12 @@ async function requestUpdate() {
   $('refresh').textContent = 'Обновяване…';
   lastRequest = Date.now();
   try {
-    const [snapshot, archiveUpdate] = await Promise.all([fetchSnapshot(live),
-      archive.unavailable ? historicalArchive().catch(() => archive) : archive]);
+    const [snapshot, archiveUpdate, historyIndex] = await Promise.all([fetchSnapshot(live),
+      archive.unavailable ? historicalArchive().catch(() => archive) : archive, loadCalendarIndex()]);
     archive = archiveUpdate;
+    calendarError = !historyIndex && !calendarIndex;
+    calendarIndex = historyIndex ?? calendarIndex;
+    calendarFailures.clear();
     live = snapshot;
     updateLeagueControls(live);
     updated = 'Прогнози от ' + dateTime(live.asOf) + ' ч.';
@@ -465,7 +629,7 @@ document.addEventListener('click', event => {
   const button = event.target.closest('button');
   if (!button || !live) return;
   if (button.dataset.day) {
-    day = button.dataset.day;
+    day = button.dataset.day < FIRST_DAY ? FIRST_DAY : button.dataset.day;
     renderMatches();
     [...$('dates').children].find(b => b.dataset.day === day)?.focus({ preventScroll: true });
   }
@@ -476,7 +640,33 @@ attachFormInteraction($('detail'));
 $('match-dialog').addEventListener('click', e => { if (e.target === $('match-dialog')) $('match-dialog').close(); });
 $('match-dialog').addEventListener('close', () => activeTrigger?.focus());
 $('refresh').addEventListener('click', requestUpdate);
-$('date-picker').addEventListener('change', e => { if (e.target.value) { day = e.target.value; renderMatches(); } });
+$('date-picker').addEventListener('change', e => { if (e.target.value) {
+  day = e.target.value < FIRST_DAY ? FIRST_DAY : e.target.value;
+  renderMatches();
+} });
+$('previous-day').addEventListener('click', () => {
+  if (live && day > FIRST_DAY) { day = shiftDay(day, -1); renderMatches(); }
+});
+$('next-day').addEventListener('click', () => { if (live) { day = shiftDay(day, 1); renderMatches(); } });
+$('today-date').addEventListener('click', () => { if (live) { day = tonight(); renderMatches(); } });
+$('value-list').addEventListener('input', event => {
+  const input = event.target.closest('[data-price-row]');
+  if (!input) return;
+  const i = Number(input.dataset.priceRow), row = valueRows[i];
+  if (!row) return;
+  const text = input.value.trim();
+  if (text) typedPrices.set(row.id, { text, at: Date.now() });
+  else typedPrices.delete(row.id);
+  const manual = Boolean(text);
+  const quote = availableQuote({ ...row.candidate, price: row.quote }, Date.now());
+  assessValueRow(row, manual ? text : quote?.selected);
+  const status = $('value-list').querySelector('[data-price-status="' + i + '"]');
+  status.className = 'value-status ' + row.assessment.state;
+  status.textContent = text && parseOdds(text) === null ? 'Въведи валиден десетичен коефициент' : priceLabel(row);
+  $('value-list').querySelector('[data-price-source="' + i + '"]').textContent = manual ? 'Въведен от теб' :
+    quote ? quote.source + ' · ' + clock(quote.seen) : 'Няма засечка';
+  renderValueSummary();
+});
 $('league-filter').addEventListener('change', renderMatches);
 $('market-filter').addEventListener('change', renderMatches);
 $('diary-league').addEventListener('change', () => { diaryLimit = 30; renderDiary(); });
@@ -485,14 +675,16 @@ async function start() {
   $('refresh').disabled = true;
   lastRequest = Date.now();
   try {
-    const [snapshot, archiveData, models, euroModels] = await Promise.all([
+    const [snapshot, archiveData, models, euroModels, historyIndex] = await Promise.all([
       fetchSnapshot(), historicalArchive().catch(() => ({ pilot: [], replay: [], unavailable: true })),
-      reference('extra-models.json'), reference('europe-models.json')
+      reference('extra-models.json'), reference('europe-models.json'), loadCalendarIndex()
     ]);
     live = snapshot;
     archive = archiveData;
     validation = models;
     europeValidation = euroModels;
+    calendarIndex = historyIndex;
+    calendarError = !historyIndex;
     updateLeagueControls(live);
     render();
   } catch {

@@ -6,6 +6,7 @@ const {readFileSync}=require('node:fs');
 const {createHash}=require('node:crypto');
 const {gunzipSync}=require('node:zlib');
 const primePath='algorithm/data/snapshot.json.gz';
+const calendarPath='algorithm/data/match-history/index.json';
 
 function primeDigest(bytes){
  const body=bytes[0]===0x1f && bytes[1]===0x8b ? gunzipSync(bytes) : bytes;
@@ -20,6 +21,7 @@ async function publishPages({
  revision=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),
  version=JSON.parse(readFileSync('docs/data/client_manifest.json','utf8')).version,
  expectedPrime=primeDigest(readFileSync('docs/'+primePath)),
+ expectedCalendar=primeDigest(readFileSync('docs/'+calendarPath)),
  fetchPage=fetch,pause=wait
 }){
  if(!Number.isSafeInteger(artifactId)||artifactId<=0||!/^[a-f0-9]{40}$/.test(revision)||!/^[a-f0-9]{64}$/.test(version))throw Error('Invalid Pages artifact or snapshot version');
@@ -49,6 +51,7 @@ async function publishPages({
    }
    const manifestUrl=new URL('data/client_manifest.json',siteUrl);
    const primeUrl=new URL(primePath,siteUrl);
+   const calendarUrl=new URL(calendarPath,siteUrl);
    for(let check=0;check<12;check++){
     manifestUrl.searchParams.set('verify',revision+'-'+process.env.GITHUB_RUN_ATTEMPT+'-'+timeout+'-'+check);
     try{
@@ -58,7 +61,11 @@ async function publishPages({
       const forecast=await fetchPage(primeUrl,{cache:'no-store',signal:AbortSignal.timeout(10000)});
       if(!forecast.ok || primeDigest(Buffer.from(await forecast.arrayBuffer()))!==expectedPrime)
        throw Error('Published Prime forecast differs from the uploaded snapshot');
-      core.info('Public Pages and Prime forecast verified: '+version+' / '+expectedPrime);
+      calendarUrl.search=manifestUrl.search;
+      const calendar=await fetchPage(calendarUrl,{cache:'no-store',signal:AbortSignal.timeout(10000)});
+      if(!calendar.ok || primeDigest(Buffer.from(await calendar.arrayBuffer()))!==expectedCalendar)
+       throw Error('Published Prime calendar differs from the uploaded archive');
+      core.info('Public Pages and Prime forecast/calendar verified: '+version+' / '+expectedPrime+' / '+expectedCalendar);
       core.setOutput('page_url',siteUrl.href);
       return;
      }
