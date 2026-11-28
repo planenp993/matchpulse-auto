@@ -211,7 +211,7 @@ function renderValueSummary() {
     ? valueRows.filter(row => Date.parse(row.candidate.m.kickoff) - now >= MIN_LEAD) : [];
   const selected = qualifyingPrices(active);
   const checked = valueRows.filter(row => row.assessment.state !== 'unknown').length;
-  $('value-summary').innerHTML = '<strong>' + selected.length + ' от максимум 3 покриват прага</strong><span class="muted"> · Проверени цени ' +
+  $('value-summary').innerHTML = '<strong>' + selected.length + ' от максимум 3 покриват моделния праг</strong><span class="muted"> · Въведени/засечени цени ' +
     checked + '/' + valueRows.length + '</span>' + (selected.length
     ? '<div class="value-qualified">' + selected.map(({ candidate, assessment }) =>
       '<div><b>' + escape(candidate.m.home + ' – ' + candidate.m.away) + '</b><small>' + names[candidate.key] +
