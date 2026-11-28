@@ -314,6 +314,30 @@ dialog::backdrop{background:#020805c7}
 .match-button.single.without-forecast .no-forecast{grid-column:3}
 .forecast-outcome{font-weight:750;margin:3px 0}
 .pick-price-note{font-size:.79rem;color:#efd2a1;margin:0}
+.conditional-panel{margin:14px 0;padding:14px;border:1px solid #3a5040;border-radius:13px;background:#17251a}
+.conditional-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.conditional-head .eyebrow{margin:0 0 3px;font-size:.67rem}
+.conditional-head h3{margin:0;font-size:1.09rem;color:var(--fg)}
+.conditional-badge{padding:5px 9px;border:1px solid #4b6846;border-radius:999px;color:#d6edc7;background:#243b28;font-size:.72rem;font-weight:700}
+.conditional-panel>p{font-size:.82rem;margin:8px 0;line-height:1.45}
+.conditional-caption{font-size:.76rem;margin:10px 0 4px}
+.conditional-list{display:grid;gap:5px}
+.conditional-row{display:grid;grid-template-columns:minmax(0,1fr) 74px 92px;gap:10px;align-items:center;width:100%;text-align:left;padding:10px 9px;border:1px solid #344a38;border-radius:9px;color:var(--fg);background:#101c14;cursor:pointer}
+.conditional-row:hover,.conditional-row:focus-visible{border-color:#a3c482}
+.conditional-match,.conditional-prob,.conditional-floor{display:grid;gap:3px;min-width:0;overflow-wrap:anywhere}
+.conditional-match strong{font-size:.93rem}
+.conditional-row small{font-size:.72rem;color:var(--soft);line-height:1.25}
+.conditional-prob{text-align:right}
+.conditional-floor{text-align:right;border-left:1px solid #405846;padding-left:8px}
+.conditional-floor>b{color:#d5f4a8;font-size:1.2rem;white-space:nowrap}
+.conditional-panel .conditional-note{margin:9px 0 0;font-size:.75rem}
+@media(max-width:430px){
+ .conditional-panel{padding:11px}
+ .conditional-row{grid-template-columns:minmax(0,1fr) 55px 74px;gap:6px;padding:9px 7px}
+ .conditional-match strong{font-size:.83rem}
+ .conditional-floor>b{font-size:1.02rem}
+ .conditional-row small{font-size:.68rem}
+}
 .value-review summary{font-weight:800;cursor:pointer;color:var(--fg)}
 .value-review[open]>p{margin:10px 0}
 .value-summary{margin:12px 0;padding:10px 12px;background:#111c15;border:1px solid var(--line);border-radius:10px}

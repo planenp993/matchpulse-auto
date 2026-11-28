@@ -9,6 +9,7 @@ import { dailyComparison, dailyEntries, dailySummary } from './daily-diary.js?v=
 import { FIRST_DAY, calendarRows, forecastMarkets, marketOutcome, shiftDay, validCalendarDay, validCalendarIndex } from './calendar-view.js?v=269732adda9d';
 import { availableQuote, evaluatePrice, parseOdds, qualifyingPrices } from './value-check.js?v=0eece3b97e02';
 import { createPrimeValueView } from './prime-value-view.js?v=8a233c2e1c8a';
+import { conditionalPriceSelection } from './conditional-prices.js?v=977ae7720d83';
 
 const $ = id => document.getElementById(id);
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c =>
@@ -68,6 +69,7 @@ const typedPrices = new Map();
 let valueRows = [];
 let day = tonight(), diaryMode = 'daily', diaryLimit = 30, updated = '';
 let daily = [], previousDaily = [], previewPicks = [];
+let conditionalRows = [];
 let lastToday = day;
 let lastRequest = 0;
 let activeTrigger;
@@ -192,7 +194,7 @@ function pickCard(record) {
     escape(record.result?.score ? record.result.score.join(':') + ' · ' + diaryOutcome(record) : clock(m.kickoff)) +
     '</span></div><h3>' + escape(m.home + ' – ' + m.away) + '</h3>' +
     '<div class="pick-values"><b class="pick-p">' + pct(p) + '</b><span class="pick-k"><small>Честен</small><b>' +
-    odds(record.fair ?? fairPrice(p)) + '</b></span><span class="pick-k"><small>Праг</small><b>' +
+    odds(record.fair ?? fairPrice(p)) + '</b></span><span class="pick-k"><small>Мин. цена</small><b>' +
     odds(record.threshold ?? priceFrom(p)) + '+</b></span></div>' +
     '<div class="pick-footer"><span>' + escape(label(m)) + '</span><b>Анализ</b></div>' +
     (record.check ? '<p class="review-note">' + escape(reviewText(record.check, p)) + '</p>' : '') +
@@ -278,6 +280,24 @@ function renderValueReview(official, eligible, delayed, now) {
   renderValueSummary();
 }
 
+function renderConditionalPrices(now) {
+  const result = conditionalPriceSelection({ snapshot: live, fitted: validation, day, now });
+  const visible = result.status === 'ready';
+  $('conditional-prices').hidden = !visible;
+  conditionalRows = visible ? result.rows : [];
+  if (!visible) return;
+  const scope = result.scope === 'top5' ? 'Топ 5' : result.scope === 'other' ? 'Други одобрени първенства · няма кандидат в топ 5' : 'Без подходящ кандидат';
+  $('conditional-caption').textContent = scope + ' · Проверени ' + result.checked + ' · Моделна минимална цена до 2,00: ' + result.qualified;
+  $('conditional-list').innerHTML = conditionalRows.map(({ m, key, p, floor }) =>
+    '<button type="button" class="conditional-row" data-set="selection-conditional" data-match="' + escape(m.id) +
+    '" data-market="' + key + '" data-floor="' + floor.toFixed(2) + '"><span class="conditional-match"><strong>' +
+    escape(m.home + ' – ' + m.away) + '</strong><small>' + escape(label(m)) + ' · ' + clock(m.kickoff) +
+    ' · ' + names[key] + '</small></span><span class="conditional-prob"><b>' + pct(p, 1) +
+    '</b><small>Prime</small></span><span class="conditional-floor"><b>' + odds(floor) +
+    '+</b><small>Мин. цена</small></span></button>').join('') ||
+    '<p class="empty">Няма предстоящ мач, който покрива условния диапазон. Не допълваме насила до три.</p>';
+}
+
 function renderMatches() {
   const now = Date.now();
   const upcoming = live.matches.filter(m => Date.parse(m.kickoff) > now);
@@ -332,6 +352,7 @@ function renderMatches() {
   if (delayed) reason = 'Предварителният подбор ще се покаже при следващото успешно обновяване.';
   $('picks').innerHTML = picks.length ? picks.map(pickCard).join('') : empty(day < today ? 'Няма записан дневен подбор.' : reason,
     day < today ? null : next && stamp(next));
+  renderConditionalPrices(now);
   renderValueReview(official, eligible, delayed, now);
   const finished = fixtures.filter(m => m.calendarState === 'final').length;
   const pending = fixtures.filter(m => m.calendarState === 'pending').length;
@@ -535,12 +556,13 @@ function openMatch(trigger) {
   const records = previous ? previousDaily : trigger.dataset.set === 'daily' ? daily : [];
   const dailyPick = records.find(entry => entry.id === trigger.dataset.match);
   const inReview = trigger.dataset.set === 'selection-review';
-  const isSelection = trigger.dataset.set === 'selection-live' || inReview;
+  const inConditional = trigger.dataset.set === 'selection-conditional';
+  const isSelection = trigger.dataset.set === 'selection-live' || inReview || inConditional;
   const list = trigger.dataset.set === 'calendar' ? visibleCalendar :
     trigger.dataset.set === 'live' || isSelection ? live.matches : archive[trigger.dataset.set];
   const match = list?.find(x => x.id === trigger.dataset.match);
-  const preview = trigger.dataset.set === 'selection-live'
-    ? previewPicks.find(entry => entry.m.id === trigger.dataset.match) : null;
+  const preview = inConditional ? conditionalRows.find(entry => entry.m.id === trigger.dataset.match) :
+    trigger.dataset.set === 'selection-live' ? previewPicks.find(entry => entry.m.id === trigger.dataset.match) : null;
   const m = dailyPick?.m ?? preview?.m ?? (isSelection && match ? selectionMatch(match) : match);
   if (!m) return;
   activeTrigger = trigger;
